@@ -19,9 +19,9 @@ public interface IProductRepository
 
 public class ProductRepository : IProductRepository
 {
-    private readonly ICatologContext _catologContext;
+    private readonly ICatalogContext _catologContext;
 
-    public ProductRepository(ICatologContext catologContext)
+    public ProductRepository(ICatalogContext catologContext)
     {
         _catologContext = catologContext ?? throw new ArgumentNullException(nameof(catologContext));
     }

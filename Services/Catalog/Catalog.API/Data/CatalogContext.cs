@@ -3,12 +3,12 @@ using MongoDB.Driver;
 
 namespace Catalog.API.Data;
 
-public interface ICatologContext
+public interface ICatalogContext
 {
     IMongoCollection<Product> Products { get; }
 }
 
-public class CatalogContext : ICatologContext
+public class CatalogContext : ICatalogContext
 {
     public IMongoCollection<Product> Products { get; }
 
