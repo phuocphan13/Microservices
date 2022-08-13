@@ -2,11 +2,11 @@
 
 namespace Ordering.Application.Features.Queries.GetOrderList;
 
-public class GetOrderListQuery : IRequest<List<OrdersVm>>
+public class GetOrdersListQuery : IRequest<List<OrdersVm>>
 {
     public string? UserName { get; set; }
 
-    public GetOrderListQuery(string userName)
+    public GetOrdersListQuery(string userName)
     {
         UserName = userName ?? throw new ArgumentNullException(nameof(userName));
     }
