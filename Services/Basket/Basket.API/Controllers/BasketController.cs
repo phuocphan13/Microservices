@@ -68,14 +68,10 @@ public class BasketController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> Checkout([FromBody] BasketCheckout basketCheckout)
     {
-        // get existing basket with total price            
-        // Set TotalPrice on basketCheckout eventMessage
-        // send checkout event to rabbitmq
-        // remove the basket
-
         // get existing basket with total price
         var basket = await _basketRepository.GetBasket(basketCheckout.UserName);
-        if (basket == null)
+
+        if (basket == null || string.IsNullOrWhiteSpace(basket.UserName))
         {
             return BadRequest();
         }
