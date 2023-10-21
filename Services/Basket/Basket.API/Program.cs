@@ -19,6 +19,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 builder.Services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(x => x.Address = new(builder.Configuration["GrpcSettings:DiscountUrl"]));
 
 builder.Services.AddMassTransit(config =>

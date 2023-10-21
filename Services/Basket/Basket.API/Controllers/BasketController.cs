@@ -3,6 +3,7 @@ using Basket.API.Entitites;
 using Basket.API.GrpcServices;
 using Basket.API.Repositories;
 using EventBus.Messages.Events;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -16,12 +17,15 @@ public class BasketController : ControllerBase
     private readonly ILogger<BasketController> _logger;
     private readonly IDiscountGrpcService _discountGrpcService;
     private readonly IMapper _mapper;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public BasketController(IBasketRepository basketRepository, ILogger<BasketController> logger, IDiscountGrpcService discountGrpcService)
+    public BasketController(IBasketRepository basketRepository, ILogger<BasketController> logger, IDiscountGrpcService discountGrpcService, IMapper mapper, IPublishEndpoint publishEndpoint)
     {
         _basketRepository = basketRepository ?? throw new ArgumentNullException(nameof(basketRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
+        _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(_publishEndpoint));
     }
 
     [HttpGet("{userName}", Name = "GetBasket")]
@@ -79,7 +83,8 @@ public class BasketController : ControllerBase
         // send checkout event to rabbitmq
         var eventMessage = _mapper.Map<BasketCheckoutEvent>(basketCheckout);
         eventMessage.TotalPrice = basket.TotalPrice;
-        await _publishEndpoint.Publish<BasketCheckoutEvent>(eventMessage);
+
+        await _publishEndpoint.Publish(eventMessage);
 
         // remove the basket
         await _basketRepository.DeleteBasket(basket.UserName);
