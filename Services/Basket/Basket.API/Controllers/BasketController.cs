@@ -6,6 +6,7 @@ using EventBus.Messages.Events;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Basket.API.Controllers;
 
@@ -24,17 +25,18 @@ public class BasketController : ControllerBase
         _basketRepository = basketRepository ?? throw new ArgumentNullException(nameof(basketRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
-        _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(_publishEndpoint));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
     }
 
+    [Authorize]
     [HttpGet("{userName}", Name = "GetBasket")]
     [ProducesResponseType(typeof(ShoppingCart), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetBasket(string userName)
     {
         var result = await _basketRepository.GetBasket(userName);
         //For user first time to go to Basket
-        return Ok(result ?? new(userName));
+        return Ok(result ?? new ShoppingCart(userName));
     }
 
     [HttpPost]

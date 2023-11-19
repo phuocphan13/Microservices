@@ -14,7 +14,11 @@
         }
       ],
       "UpstreamPathTemplate": "/",
-      "UpstreamHttpMethod": [ "Get" ]
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT"
+      ]
     },
     //Catalog API
     {

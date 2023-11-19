@@ -1,3 +1,4 @@
+using IdentityServer.Common;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Cache.CacheManager;
@@ -21,9 +22,14 @@ builder.Services
     .AddOcelot()
     .AddCacheManager(settings => settings.WithDictionaryHandle());
 
+builder.Services.AddCustomAuthenticate(builder.Configuration);
+
 var app = builder.Build();
 
 await app.UseOcelot();
 app.MapGet("/", () => "Hello World!");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();
