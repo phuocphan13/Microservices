@@ -64,6 +64,12 @@ services:
       context: .
       dockerfile: ApiGateways/Shopping.Aggregator/Dockerfile
 
+  identityserver:
+    image: ${DOCKER_REGISTRY-}identityserver
+    build:
+      context: .
+      dockerfile: Identity/IdentityServer/Dockerfile
+      
 volumes:
   mongo_data:
   portainer_data:

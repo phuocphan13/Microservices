@@ -81,6 +81,10 @@ services:
       - "CacheSettings:ConnectionString=basketdb:6379"
       - "GrpcSettings:DiscountUrl=http://discount.grpc"
       - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+      - "ApiSettings:JwtSettings:Issuer=http://identityserver"
+      - "ApiSettings:JwtSettings:Audience=http://ocelotapigw"
+      - "ApiSettings:JwtSettings:Key=LuciferForTheHellLuciferForTheHellLuciferForTheHellLuciferForTheHell"
+      - "ApiSettings:JwtSettings:LifeTime=8"
     depends_on:
       - basketdb
       - rabbitmq
@@ -123,6 +127,10 @@ services:
     container_name: ocelotapigw
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - "ApiSettings:JwtSettings:Issuer=http://identityserver"
+      - "ApiSettings:JwtSettings:Audience=http://ocelotapigw"
+      - "ApiSettings:JwtSettings:Key=LuciferForTheHellLuciferForTheHellLuciferForTheHellLuciferForTheHell"
+      - "ApiSettings:JwtSettings:LifeTime=8"
     depends_on:
       - catalog.api
       - basket.api
@@ -144,3 +152,16 @@ services:
       - ordering.api
     ports:
       - "8005:80"
+        
+  identityserver:
+    container_name: identityserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "JwtSettings:Issuer=http://identityserver"
+      - "JwtSettings:Audience=http://ocelotapigw"
+      - "JwtSettings:Key=LuciferForTheHellLuciferForTheHellLuciferForTheHellLuciferForTheHell"
+      - "JwtSettings:LifeTime=8"
+    depends_on:
+      - ocelotapigw
+    ports:
+      - "8015:80"

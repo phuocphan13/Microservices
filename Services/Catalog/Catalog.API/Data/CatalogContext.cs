@@ -20,7 +20,4 @@ public class CatalogContext : ICatalogContext
         Products = database.GetCollection<Product>(configuration.GetValue<string>("DatabaseSettings:CollectionName"));
         CatalogContextSeed.SeedData(Products);
     }
-
-
-    
 }
