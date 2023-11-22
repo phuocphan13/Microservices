@@ -20,9 +20,9 @@ public class CatalogController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetProducts()
+    public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
     {
-        var result = await _productRepository.GetProducts();
+        var result = await _productRepository.GetProductsAsync(cancellationToken);
 
         if (result is null)
         {
@@ -35,9 +35,9 @@ public class CatalogController : ControllerBase
     [HttpGet("{id:length(24)}", Name = "GetProduct")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetProductById(string id)
+    public async Task<IActionResult> GetProductById(string id, CancellationToken cancellationToken)
     {
-        var result = await _productRepository.GetProductById(id);
+        var result = await _productRepository.GetProductByIdAsync(id, cancellationToken);
         if (result is null)
         {
             _logger.LogError($"Product with id: {id}, not found.");
@@ -50,32 +50,32 @@ public class CatalogController : ControllerBase
     [Route("[action]/{category}", Name = "GetProductByCategory")]
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetProductByCategory(string category)
+    public async Task<IActionResult> GetProductByCategory(string category, CancellationToken cancellationToken)
     {
-        var result = await _productRepository.GetProductByCategory(category);
+        var result = await _productRepository.GetProductByCategoryAsync(category, cancellationToken);
         return Ok(result);
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> CreateProduct([FromBody] Product product)
+    public async Task<IActionResult> CreateProduct([FromBody] Product product, CancellationToken cancellationToken)
     {
-        await _productRepository.CreateProduct(product);
+        await _productRepository.CreateProductAsync(product, cancellationToken);
 
         return CreatedAtRoute("GetProduct", new { id = product.Id }, product);
     }
 
     [HttpPut]
     [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> UpdateProduct([FromBody] Product product)
+    public async Task<IActionResult> UpdateProduct([FromBody] Product product, CancellationToken cancellationToken)
     {
-        return Ok(await _productRepository.UpdateProduct(product));
+        return Ok(await _productRepository.UpdateProductAsync(product, cancellationToken));
     }
 
     [HttpDelete("{id:length(24)}", Name = "DeleteProduct")]
     [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> DeleteProductById(string id)
+    public async Task<IActionResult> DeleteProductById(string id, CancellationToken cancellationToken)
     {
-        return Ok(await _productRepository.DeleteProduct(id));
+        return Ok(await _productRepository.DeleteProductAsync(id, cancellationToken));
     }
 }

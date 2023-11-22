@@ -6,13 +6,13 @@ namespace Catalog.API.Repositories;
 
 public interface IProductRepository
 {
-    Task<IEnumerable<Product>> GetProducts();
-    Task<Product> GetProductById(string id);
-    Task<IEnumerable<Product>> GetProductByName(string name);
-    Task<IEnumerable<Product>> GetProductByCategory(string categoryName);
-    Task CreateProduct(Product product);
-    Task<bool> UpdateProduct(Product product);
-    Task<bool> DeleteProduct(string id);
+    Task<IEnumerable<Product>> GetProductsAsync(CancellationToken cancellationToken);
+    Task<Product> GetProductByIdAsync(string id, CancellationToken cancellationToken);
+    Task<IEnumerable<Product>> GetProductByNameAsync(string name, CancellationToken cancellationToken);
+    Task<IEnumerable<Product>> GetProductByCategoryAsync(string categoryName, CancellationToken cancellationToken);
+    Task CreateProductAsync(Product product, CancellationToken cancellationToken);
+    Task<bool> UpdateProductAsync(Product product, CancellationToken cancellationToken);
+    Task<bool> DeleteProductAsync(string id, CancellationToken cancellationToken);
 }
 
 public class ProductRepository : IProductRepository
@@ -24,46 +24,56 @@ public class ProductRepository : IProductRepository
         _catologContext = catologContext ?? throw new ArgumentNullException(nameof(catologContext));
     }
 
-    public async Task<IEnumerable<Product>> GetProducts()
+    public async Task<IEnumerable<Product>> GetProductsAsync(CancellationToken cancellationToken)
     {
-        return await _catologContext.Products.Find(x => true).ToListAsync();
+        return await _catologContext.Products.Find(x => true).ToListAsync(cancellationToken);
     }
 
-    public async Task<Product> GetProductById(string id)
+    public async Task<Product> GetProductByIdAsync(string id, CancellationToken cancellationToken)
     {
-        return await _catologContext.Products.Find(x => x.Id == id).FirstOrDefaultAsync();
+        return await _catologContext.Products.Find(x => x.Id == id).FirstOrDefaultAsync(cancellationToken);
     }
 
     //Eq and ElementMatch of Mongo???
-    public async Task<IEnumerable<Product>> GetProductByName(string name)
+    public async Task<IEnumerable<Product>> GetProductByNameAsync(string name, CancellationToken cancellationToken)
     {
         FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(x => x.Name, name);
 
-        return await _catologContext.Products.Find(filter).ToListAsync();
+        return await _catologContext.Products.Find(filter).ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Product>> GetProductByCategory(string categoryName)
+    public async Task<IEnumerable<Product>> GetProductByCategoryAsync(string categoryName, CancellationToken cancellationToken)
     {
         FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(x => x.Category, categoryName);
 
-        return await _catologContext.Products.Find(filter).ToListAsync();
+        return await _catologContext.Products.Find(filter).ToListAsync(cancellationToken);
     }
 
-    public async Task CreateProduct(Product product)
+    public async Task CreateProductAsync(Product product, CancellationToken cancellationToken)
     {
-        await _catologContext.Products.InsertOneAsync(product);
+        var options = new InsertOneOptions()
+        {
+            BypassDocumentValidation = false
+        };
+        
+        await _catologContext.Products.InsertOneAsync(product, options, cancellationToken);
     }
 
-    public async Task<bool> UpdateProduct(Product product)
+    public async Task<bool> UpdateProductAsync(Product product, CancellationToken cancellationToken)
     {
-        var updateResult = await _catologContext.Products.ReplaceOneAsync(filter: g => g.Id == product.Id, replacement: product);
+        var options = new ReplaceOptions()
+        {
+            BypassDocumentValidation = false,
+        };
+        
+        var updateResult = await _catologContext.Products.ReplaceOneAsync(g => g.Id == product.Id, product, options, cancellationToken);
         return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0;
     }
 
-    public async Task<bool> DeleteProduct(string id)
+    public async Task<bool> DeleteProductAsync(string id, CancellationToken cancellationToken)
     {
         FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(x => x.Id, id);
-        DeleteResult deleteResult = await _catologContext.Products.DeleteOneAsync(filter);
+        DeleteResult deleteResult = await _catologContext.Products.DeleteOneAsync(filter, cancellationToken);
 
         return deleteResult.IsAcknowledged && deleteResult.DeletedCount > 0;
     }
