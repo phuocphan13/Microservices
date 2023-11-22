@@ -27,7 +27,7 @@ public class DiscountRepository : IDiscountRepository
 
         if (coupon is null)
         {
-            return new()
+            return new Coupon()
             {
                 ProductName = "No Discount",
                 Amount = 0,
