@@ -47,6 +47,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer", "Identity\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer.Common", "Identity\IdentityServer.Common\IdentityServer.Common.csproj", "{45CE1788-919F-4705-891A-9E3EC004F6E6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApps", "WebApps", "{F8010F61-AC18-429E-AB5E-BBD13EC2B1F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularClient", "WebApps\AngularClient\AngularClient.csproj", "{D392B827-C336-4E36-9E6B-0B7CB7609BEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +113,10 @@ Global
 		{45CE1788-919F-4705-891A-9E3EC004F6E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45CE1788-919F-4705-891A-9E3EC004F6E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45CE1788-919F-4705-891A-9E3EC004F6E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D392B827-C336-4E36-9E6B-0B7CB7609BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D392B827-C336-4E36-9E6B-0B7CB7609BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D392B827-C336-4E36-9E6B-0B7CB7609BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D392B827-C336-4E36-9E6B-0B7CB7609BEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,6 +139,7 @@ Global
 		{E12A5A92-A370-4F24-92D8-336E47CFAF07} = {6C3A0F0F-2052-4CFE-A43F-A11F3FFEA1AA}
 		{24393EB4-F007-4121-8ABC-8C20CD1F3D8F} = {FED74185-9414-4287-B1E7-9F57F9C1530E}
 		{45CE1788-919F-4705-891A-9E3EC004F6E6} = {FED74185-9414-4287-B1E7-9F57F9C1530E}
+		{D392B827-C336-4E36-9E6B-0B7CB7609BEA} = {F8010F61-AC18-429E-AB5E-BBD13EC2B1F6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C4BB872B-A5B8-4E0D-8B6D-79FB8B7CB8D7}
