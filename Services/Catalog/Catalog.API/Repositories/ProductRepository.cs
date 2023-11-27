@@ -1,12 +1,14 @@
-﻿using Catalog.API.Data;
+﻿using ApiClient.Catalog.Models;
+using Catalog.API.Data;
 using Catalog.API.Entities;
+using Catalog.API.Extensions;
 using MongoDB.Driver;
 
 namespace Catalog.API.Repositories;
 
 public interface IProductRepository
 {
-    Task<IEnumerable<Product>> GetProductsAsync(CancellationToken cancellationToken);
+    Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken);
     Task<Product> GetProductByIdAsync(string id, CancellationToken cancellationToken);
     Task<IEnumerable<Product>> GetProductByNameAsync(string name, CancellationToken cancellationToken);
     Task<IEnumerable<Product>> GetProductByCategoryAsync(string categoryName, CancellationToken cancellationToken);
@@ -24,9 +26,11 @@ public class ProductRepository : IProductRepository
         _catologContext = catologContext ?? throw new ArgumentNullException(nameof(catologContext));
     }
 
-    public async Task<IEnumerable<Product>> GetProductsAsync(CancellationToken cancellationToken)
+    public async Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken)
     {
-        return await _catologContext.Products.Find(x => true).ToListAsync(cancellationToken);
+        var entities = await _catologContext.Products.Find(x => true).ToListAsync(cancellationToken);
+
+        return entities.Select(x => x.ToSummary()).ToList();
     }
 
     public async Task<Product> GetProductByIdAsync(string id, CancellationToken cancellationToken)

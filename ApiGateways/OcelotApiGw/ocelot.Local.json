@@ -10,7 +10,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 8000
+          "Port": 5000
         }
       ],
       "UpstreamPathTemplate": "/",
@@ -27,7 +27,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 8000
+          "Port": 5000
         }
       ],
       "UpstreamPathTemplate": "/Catalog",
@@ -47,7 +47,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 8000
+          "Port": 5000
         }
       ],
       "UpstreamPathTemplate": "/Catalog/{id}",
@@ -59,7 +59,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 8000
+          "Port": 5000
         }
       ],
       "UpstreamPathTemplate": "/Catalog/GetProductByCategory/{category}",

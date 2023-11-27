@@ -2,6 +2,7 @@
 using Catalog.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using ApiClient.Catalog.Models;
 
 namespace Catalog.API.Controllers;
 
@@ -19,7 +20,6 @@ public class CatalogController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
     {
         var result = await _productRepository.GetProductsAsync(cancellationToken);

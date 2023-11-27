@@ -51,6 +51,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApps", "WebApps", "{F801
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularClient", "WebApps\AngularClient\AngularClient.csproj", "{D392B827-C336-4E36-9E6B-0B7CB7609BEA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiClient", "Common\ApiClient\ApiClient.csproj", "{B62912A7-255C-4528-9CEB-C837B65BC4C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{D392B827-C336-4E36-9E6B-0B7CB7609BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D392B827-C336-4E36-9E6B-0B7CB7609BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D392B827-C336-4E36-9E6B-0B7CB7609BEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B62912A7-255C-4528-9CEB-C837B65BC4C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B62912A7-255C-4528-9CEB-C837B65BC4C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B62912A7-255C-4528-9CEB-C837B65BC4C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B62912A7-255C-4528-9CEB-C837B65BC4C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +146,7 @@ Global
 		{24393EB4-F007-4121-8ABC-8C20CD1F3D8F} = {FED74185-9414-4287-B1E7-9F57F9C1530E}
 		{45CE1788-919F-4705-891A-9E3EC004F6E6} = {FED74185-9414-4287-B1E7-9F57F9C1530E}
 		{D392B827-C336-4E36-9E6B-0B7CB7609BEA} = {F8010F61-AC18-429E-AB5E-BBD13EC2B1F6}
+		{B62912A7-255C-4528-9CEB-C837B65BC4C6} = {A0E2C293-4F44-4498-A802-6846E8F23A98}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C4BB872B-A5B8-4E0D-8B6D-79FB8B7CB8D7}

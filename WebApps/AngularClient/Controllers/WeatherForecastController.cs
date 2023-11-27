@@ -3,7 +3,7 @@
 namespace AngularClient.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]/[action]")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
@@ -19,7 +19,7 @@ public class WeatherForecastController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<WeatherForecast> Get()
+    public IEnumerable<WeatherForecast> GetProducts()
     {
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
