@@ -10,7 +10,9 @@ import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { CatalogComponent } from './catalog/catalog.component';
-import { DetailsComponent } from './catalog/details/details.component';
+import { ProductListComponent } from './catalog/product-list/product-list.component';
+import { ProductComponent } from './catalog/product/product.component';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
@@ -19,33 +21,15 @@ import { DetailsComponent } from './catalog/details/details.component';
     HomeComponent,
     CounterComponent,
     FetchDataComponent,
-    CatalogComponent
+    CatalogComponent,
+    ProductListComponent,
+    ProductComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
-    RouterModule.forRoot([
-      { 
-        path: '', component: HomeComponent
-      },
-      {
-        path:'home', component:HomeComponent
-      },
-      { 
-        path: 'counter', component: CounterComponent 
-      },
-      { 
-        path: 'fetch-data', component: FetchDataComponent 
-      },
-      {
-        path: 'catalog', component:CatalogComponent,children:[
-          {
-            path: 'details', component:DetailsComponent
-          }
-        ]
-      }
-    ])
+    AppRoutingModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
