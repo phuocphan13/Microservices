@@ -19,6 +19,7 @@ import { DetailsComponent } from './catalog/details/details.component';
     HomeComponent,
     CounterComponent,
     FetchDataComponent,
+    CatalogComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
