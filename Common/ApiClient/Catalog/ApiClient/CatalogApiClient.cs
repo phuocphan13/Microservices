@@ -7,6 +7,7 @@ namespace ApiClient.Catalog.ApiClient;
 public interface ICatalogApiClient
 {
     Task<ApiStatusResult<List<ProductSummary>>> GetProducts(CancellationToken cancellationToken = default);
+    Task<ApiStatusResult<ProductDetail>> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
 }
 
 public class CatalogApiClient : CommonApiClient, ICatalogApiClient
@@ -21,6 +22,17 @@ public class CatalogApiClient : CommonApiClient, ICatalogApiClient
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetProducts}";
 
         var result = await GetAsync<List<ProductSummary>>(url, cancellationToken);
+
+        return result;
+    }
+
+    public async Task<ApiStatusResult<ProductDetail>> GetProductByIdAsync(string id, CancellationToken cancellationToken)
+    {
+        var url = $"{GetBaseUrl()}{ApiUrlConstants.GetProductById}";
+
+        url.AddQueryStringParameter("id", id, true);
+
+        var result = await GetAsync<ProductDetail>(url, cancellationToken);
 
         return result;
     }

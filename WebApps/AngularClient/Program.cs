@@ -7,6 +7,7 @@ builder.Services.AddControllersWithViews();
 
 // Add services to the container.
 builder.Services.AddHttpClient();
+builder.Services.AddCommonServices();
 builder.Services.AddCatalogServices();
 builder.Services.AddScoped<ICatalogService, CatalogService>();
 

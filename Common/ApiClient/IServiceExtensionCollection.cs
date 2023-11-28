@@ -1,12 +1,17 @@
 using ApiClient.Catalog.ApiClient;
+using ApiClient.Common;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApiClient;
 
 public static class IServiceExtensionCollection
 {
-    public static IServiceCollection AddCatalogServices(this IServiceCollection services)
+    public static void AddCatalogServices(this IServiceCollection services)
     {
-        return services.AddScoped<ICatalogApiClient, CatalogApiClient>();
+        services.AddScoped<ICatalogApiClient, CatalogApiClient>();
+    }
+
+    public static void AddCommonServices(this IServiceCollection services)
+    {
     }
 }

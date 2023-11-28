@@ -1,5 +1,9 @@
+using System.Net;
 using System.Text.Json;
+using ApiClient.Common.Models;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ApiClient.Common;
 
@@ -22,14 +26,61 @@ public class CommonApiClient
     protected async Task<ApiStatusResult<TResult>> GetAsync<TResult>(string url, CancellationToken cancellationToken)
         where TResult : class, new()
     {
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+        var httpClient = _httpClientFactory.CreateClient();
+        var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
+        
+        return await TransferResponseMessageToDataAsync<TResult>(httpResponseMessage, cancellationToken);
+    }
+
+    protected async Task<ApiStatusResult<TResult>> PostAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
+        where TRequestBody : BaseRequestBody
+        where TResult : class, new()
+    {
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url);
+        httpRequestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody), System.Text.Encoding.UTF8, "application/json");
         var httpClient = _httpClientFactory.CreateClient();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
-        ApiStatusResult<TResult> result = new()
+        return await TransferResponseMessageToDataAsync<TResult>(httpResponseMessage, cancellationToken);
+    }
+
+    protected async Task<ApiStatusResult<TResult>> PutAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
+        where TRequestBody : BaseRequestBody
+        where TResult : class, new()
+    {
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, url);
+        httpRequestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody), System.Text.Encoding.UTF8, "application/json");
+        var httpClient = _httpClientFactory.CreateClient();
+        var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
+
+        return await TransferResponseMessageToDataAsync<TResult>(httpResponseMessage, cancellationToken);
+    }
+
+    protected async Task<ApiStatusResult<TResult>> DeleteAsync<TResult>(string url, CancellationToken cancellationToken)
+        where TResult : class, new()
+    {
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, url);
+        var httpClient = _httpClientFactory.CreateClient();
+        var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
+
+        return await TransferResponseMessageToDataAsync<TResult>(httpResponseMessage, cancellationToken);
+    }
+
+    private async Task<ApiStatusResult<TResult>> TransferResponseMessageToDataAsync<TResult>(HttpResponseMessage? httpResponseMessage, CancellationToken cancellationToken)
+        where TResult : class, new()
+    {
+        var result = new ApiStatusResult<TResult>();
+        if (httpResponseMessage is null)
         {
-            IsSuccessCode = httpResponseMessage.IsSuccessStatusCode,
-        };
+            result.IsSuccessCode = false;
+            result.InternalErrorCode = -1;
+            result.Message = "Not Response.";
+
+            return result;
+        }
+
+        result.IsSuccessCode = httpResponseMessage.IsSuccessStatusCode;
 
         if (httpResponseMessage.IsSuccessStatusCode)
         {
