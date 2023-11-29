@@ -2,6 +2,8 @@
 using Catalog.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using ApiClient.Catalog.Models;
+using Catalog.API.Services;
 
 namespace Catalog.API.Controllers;
 
@@ -9,20 +11,19 @@ namespace Catalog.API.Controllers;
 [Route("api/v1/[controller]")]
 public class CatalogController : ControllerBase
 {
-    private readonly IProductRepository _productRepository;
+    private readonly IProductService _productService;
     private readonly ILogger<CatalogController> _logger;
 
-    public CatalogController(IProductRepository productRepository, ILogger<CatalogController> logger)
+    public CatalogController(IProductService productService, ILogger<CatalogController> logger)
     {
-        _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
+        _productService = productService ?? throw new ArgumentNullException(nameof(productService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
     {
-        var result = await _productRepository.GetProductsAsync(cancellationToken);
+        var result = await _productService.GetProductsAsync(cancellationToken);
 
         if (result is null)
         {
@@ -32,12 +33,17 @@ public class CatalogController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{id:length(24)}", Name = "GetProduct")]
+    [HttpGet("{id:length(24)}", Name = "GetProductById")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetProductById(string id, CancellationToken cancellationToken)
     {
-        var result = await _productRepository.GetProductByIdAsync(id, cancellationToken);
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return BadRequest("Missing Id.");
+        }
+        
+        var result = await _productService.GetProductByIdAsync(id, cancellationToken);
+        
         if (result is null)
         {
             _logger.LogError($"Product with id: {id}, not found.");
@@ -49,33 +55,63 @@ public class CatalogController : ControllerBase
 
     [Route("[action]/{category}", Name = "GetProductByCategory")]
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetProductByCategory(string category, CancellationToken cancellationToken)
     {
-        var result = await _productRepository.GetProductByCategoryAsync(category, cancellationToken);
+        var result = await _productService.GetProductsByCategoryAsync(category, cancellationToken);
         return Ok(result);
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> CreateProduct([FromBody] Product product, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
-        await _productRepository.CreateProductAsync(product, cancellationToken);
+        if (requestBody is null)
+        {
+            return BadRequest("RequestBody is not allowed null.");
+        }
+        
+        var result = await _productService.CreateProductAsync(requestBody, cancellationToken);
 
-        return CreatedAtRoute("GetProduct", new { id = product.Id }, product);
+        if (result is null)
+        {
+            return Problem($"Cannot create product with name: {requestBody.Name}");
+        }
+
+        return Ok(result);
     }
 
     [HttpPut]
-    [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> UpdateProduct([FromBody] Product product, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
-        return Ok(await _productRepository.UpdateProductAsync(product, cancellationToken));
+        if (requestBody is null)
+        {
+            return BadRequest("RequestBody is not allowed null.");
+        }
+
+        if (string.IsNullOrWhiteSpace(requestBody.Id))
+        {
+            return BadRequest("Product Id is not allowed null.");
+        }
+
+        var result = await _productService.UpdateProductAsync(requestBody, cancellationToken);
+
+        if (result is null)
+        {
+            return Problem($"Cannot update product with name: {requestBody.Name}");
+        }
+            
+        return Ok(result);
     }
 
     [HttpDelete("{id:length(24)}", Name = "DeleteProduct")]
-    [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> DeleteProductById(string id, CancellationToken cancellationToken)
     {
-        return Ok(await _productRepository.DeleteProductAsync(id, cancellationToken));
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return BadRequest("Product Id is not allowed null.");
+        }
+        
+        var result = await _productService.DeleteProductAsync(id, cancellationToken);
+        
+        return Ok(result);
     }
 }
