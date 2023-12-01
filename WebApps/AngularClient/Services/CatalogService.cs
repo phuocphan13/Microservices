@@ -7,7 +7,7 @@ public interface ICatalogService
 {
     Task<List<ProductSummary>?> GetProductsAsync(CancellationToken cancellationToken = default);
     Task<ProductDetail> GetProductById(string id, CancellationToken cancellationToken = default);
-    Task<List<ProductSummary>?> GetProductCategory (string category, CancellationToken cancellationToken = default);
+    Task<List<ProductSummary>?> GetProductByCategoryAsync(string category, CancellationToken cancellationToken = default);
 }
 
 public class CatalogService : ICatalogService
@@ -32,19 +32,9 @@ public class CatalogService : ICatalogService
         //Ocelot ---> CatalogAPI
     }
 
-    public async Task<ProductDetail> GetProductById (string id, CancellationToken cancellationToken)
+    public async Task<ProductDetail> GetProductById(string id, CancellationToken cancellationToken)
     {
         var result = await _catalogApiClient.GetProductByIdAsync(id, cancellationToken);
-        if(result.IsSuccessCode && result.Data is not null)
-        {
-            return result.Data;
-        }
-        return null;
-    }
-
-    public async Task<List<ProductSummary>> GetProductCategory (string category, CancellationToken cancellationToken)
-    {
-        var result = await _catalogApiClient.GetProductCategory(category, cancellationToken);
         if (result.IsSuccessCode && result.Data is not null)
         {
             return result.Data;
@@ -53,4 +43,15 @@ public class CatalogService : ICatalogService
         return null;
     }
 
+    public async Task<List<ProductSummary>?> GetProductByCategoryAsync(string category, CancellationToken cancellationToken)
+    {
+        var result = await _catalogApiClient.GetProductByCategoryAsync(category, cancellationToken);
+        
+        if (result.IsSuccessCode && result.Data is not null)
+        {
+            return result.Data;
+        }
+
+        return null;
+    }
 }

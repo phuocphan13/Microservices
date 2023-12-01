@@ -4,11 +4,23 @@
 
 export const environment = {
   production: false,
-  apiHost: "http://localhost:8000/api",
-  apiLocalHost: "http://localhost:5000/api",
-  catalogLocalHost: "http://localhost:5010/api/catalog",
-  webHost: "http://localhost:8000",
-  authenHost: "http://localhost:7289/api/Identity/GenerateToken?Email=admin&UserId=admin&additionalProp1=string&additionalProp2=string&additionalProp3=string"
+  baseApiUrl: "http://localhost:7273/api"
+
+
+  // apiHost: "http://localhost:8000/api",
+  //
+  //
+  //
+  //
+  // apiLocalHost: "http://localhost:5000/api",
+  //
+  //
+  //
+  // catalogLocalHost: "http://localhost:5010/api/catalog",
+  //
+  //
+  // webHost: "http://localhost:8000",
+  // authenHost: "http://localhost:7289/api/Identity/GenerateToken?Email=admin&UserId=admin&additionalProp1=string&additionalProp2=string&additionalProp3=string"
 };
 
 /*

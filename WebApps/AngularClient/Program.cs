@@ -4,6 +4,7 @@ using ApiClient;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddCors();
 
 // Add services to the container.
 builder.Services.AddHttpClient();
@@ -23,6 +24,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+app.UseCors(b => b.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
 
 app.MapControllerRoute(
     name: "default",
