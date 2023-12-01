@@ -1,23 +1,21 @@
-import { Component, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Component, Inject, OnInit} from '@angular/core';
+import {CatalogService} from "../core/service/catalog.service";
 
 @Component({
   selector: 'app-fetch-data',
   templateUrl: './fetch-data.component.html'
 })
-export class FetchDataComponent {
-  public forecasts: WeatherForecast[] = [];
+export class FetchDataComponent implements OnInit {
+  constructor(private catalogService: CatalogService) {
+  }
 
-  constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    http.get<WeatherForecast[]>(baseUrl + 'api/catalog/getproducts').subscribe(result => {
-      this.forecasts = result;
-    }, error => console.error(error));
+  async getProductsAsync() {
+    let products = await this.catalogService.getProductByCategoryAsync("Smart Phone");
+    console.log(products);
+  }
+
+  async ngOnInit() {
+    await this.getProductsAsync();
   }
 }
 
-interface WeatherForecast {
-  date: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
-}

@@ -13,4 +13,12 @@ public static class ApiUrlBuilder
 
         return url;
     }
+
+    public static string AddDataInUrl(this string url, string key, string value)
+    {
+        var paramPlace = "{" + key.ToLower() + "}";
+        url = url.Replace(paramPlace, value);
+        
+        return url;
+    }
 }
