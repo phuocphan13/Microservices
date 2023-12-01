@@ -9,6 +9,10 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
+import { CatalogComponent } from './catalog/catalog.component';
+import { ProductListComponent } from './catalog/product-list/product-list.component';
+import { ProductComponent } from './catalog/product/product.component';
+import { AppRoutingModule } from './app-routing.module';
 import {ServiceModule} from "./core/service/service.module";
 
 @NgModule({
@@ -17,18 +21,16 @@ import {ServiceModule} from "./core/service/service.module";
     NavMenuComponent,
     HomeComponent,
     CounterComponent,
-    FetchDataComponent
+    FetchDataComponent,
+    CatalogComponent,
+    ProductListComponent,
+    ProductComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
-    ServiceModule,
-    RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
-    ])
+    AppRoutingModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
