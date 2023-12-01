@@ -26,4 +26,27 @@ public class CatalogController : ControllerBase
    
       return Ok(result);
    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetProductById (string id, CancellationToken cancellationToken)
+    {
+        var result = await _catalogService.GetProductById(id, cancellationToken);
+        if (result is null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetProductCategory (string category, CancellationToken cancellationToken)
+    {
+        var result = await _catalogService.GetProductCategory(category, cancellationToken);
+        if(result is null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
+
 }
