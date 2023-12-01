@@ -37,6 +37,16 @@
               >Fetch data</a
             >
           </li>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-dark" [routerLink]="['/catalog/product-list']"
+              >Product List</a
+            >
+          </li>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-dark" [routerLink]="['/catalog/product-detail/1']"
+              >Product Detail (ID: 1)</a
+            >
+          </li>
         </ul>
       </div>
     </div>
