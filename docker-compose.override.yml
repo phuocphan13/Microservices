@@ -69,6 +69,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
+      - "DatabaseSettings:DatabaseName=CatalogDb"
+      - "DatabaseSettings:IsRebuildSchema=true"
     depends_on:
       - catalogdb
     ports:

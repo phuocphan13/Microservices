@@ -1,18 +1,14 @@
-﻿using MongoDB.Bson;
+﻿using Catalog.API.Common;
+using Catalog.API.Common.Consts;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Catalog.API.Entities;
 
-public class Product
+[BsonCollection(DatabaseConst.CollectionName.Product)]
+public class Product : BaseEntity
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; set; }
-
     [BsonElement("Name")]
     public string? Name { get;  set; }
-
-    public string? Category { get; set; }
 
     public string? Summary { get; set; }
 
@@ -21,4 +17,7 @@ public class Product
     public string? ImageFile { get; set; }
 
     public decimal Price { get; set; }
+
+    public string? CategoryId { get; set; }
+    public string? SubCategoryId { get; set; }
 }

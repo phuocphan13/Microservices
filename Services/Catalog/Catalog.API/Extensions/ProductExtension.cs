@@ -5,13 +5,14 @@ namespace Catalog.API.Extensions;
 
 public static class ProductExtension
 {
-    public static ProductSummary ToSummary(this Product product)
+    public static ProductSummary ToSummary(this Product product, string? categoryName, string? subCategoryName)
     {
         return new ProductSummary()
         {
             Id = product.Id,
             Name = product.Name,
-            Category = product.Category,
+            Category = categoryName,
+            SubCategory = subCategoryName,
             Description = product.Description,
         };
     }
@@ -22,7 +23,7 @@ public static class ProductExtension
         {
             Id = product.Id,
             Name = product.Name,
-            Category = product.Category,
+            // Category = product.Category,
             Description = product.Description,
             Price = product.Price,
             Summary = product.Summary,
@@ -35,7 +36,7 @@ public static class ProductExtension
         return new Product()
         {
             Name = requestBody.Name,
-            Category = requestBody.Category,
+            // Category = requestBody.Category,
             Description = requestBody.Description,
             Price = requestBody.Price,
             Summary = requestBody.Summary,
@@ -47,7 +48,7 @@ public static class ProductExtension
     {
         product.Id = requestBody.Id;
         product.Name = requestBody.Name;
-        product.Category = requestBody.Category;
+        // product.Category = requestBody.Category;
         product.Description = requestBody.Description;
         product.Price = requestBody.Price;
         product.Summary = requestBody.Summary;

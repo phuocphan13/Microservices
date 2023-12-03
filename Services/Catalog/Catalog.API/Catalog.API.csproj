@@ -15,4 +15,8 @@
     <ProjectReference Include="..\..\..\Common\ApiClient\ApiClient.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
 </Project>
