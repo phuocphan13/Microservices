@@ -1,0 +1,27 @@
+.txtbox-search{
+    border-radius: 7px;
+}
+
+.search-container{
+    background: #ffff;
+    margin-bottom: 30px;
+}
+
+.search-menu{
+    padding: 20px;
+}
+
+.search-menu button{
+    border: none;
+}
+
+.search-menu input{
+    border: none;
+}
+
+.part-search{
+    width: 100%;
+    display: flex;
+    border: 1px solid #dcdce2;
+    justify-content: center;
+}

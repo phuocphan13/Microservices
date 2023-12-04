@@ -13,7 +13,7 @@ import { CatalogComponent } from './catalog/catalog.component';
 import { ProductListComponent } from './catalog/product-list/product-list.component';
 import { ProductComponent } from './catalog/product/product.component';
 import { AppRoutingModule } from './app-routing.module';
-import {ServiceModule} from "./core/service/service.module";
+import { SearchMenuComponent } from './search-menu/search-menu.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +24,8 @@ import {ServiceModule} from "./core/service/service.module";
     FetchDataComponent,
     CatalogComponent,
     ProductListComponent,
-    ProductComponent
+    ProductComponent,
+    SearchMenuComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
