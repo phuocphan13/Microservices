@@ -1,8 +1,13 @@
-using Catalog.API.Data;
+using Catalog.API.Common;
+using Catalog.API.Common.Consts;
+using Catalog.API.Common.Extensions;
 using Catalog.API.Repositories;
 using Catalog.API.Services;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var isRebuildSchema = builder.Configuration.GetValue<bool>(DatabaseConst.CollectionName.IsRebuildSchema);
 
 // Add services to the container.
 
@@ -11,10 +16,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<ICatalogContext, CatalogContext>();
+builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
 
-//Repositories
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddSingleton<IDatabaseSettings>(serviceProvider =>
+    serviceProvider.GetRequiredService<IOptions<DatabaseSettings>>().Value);
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 //Services
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -32,4 +39,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.InitializePlatformDbContextsAsync(builder.Configuration, isRebuildSchema);
+
+await app.RunAsync();
