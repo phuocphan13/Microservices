@@ -1,0 +1,32 @@
+.container {
+    display: flex;
+}
+
+.navigation-menu {
+    background: #ffff;
+    border-radius: 10px;
+    width: 20%;
+}
+
+.navigation-menu-items {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.navigation-menu-items button{
+    border-radius: 7px;
+    padding: 10px;
+    align-items: center;
+    width: 100%;
+    background-color: transparent;
+    border: none;
+}
+
+.content {
+    border-radius: 10px;
+    background: #ffff;
+    overflow: auto;
+    width: 80%;
+    margin-left: 2%;
+}
