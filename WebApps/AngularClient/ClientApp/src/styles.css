@@ -14,28 +14,42 @@ code {
 }
 
 .btn-primary {
-  color: white;
-  background-color: #004759bf;
-  border-color: #004759bf;;
+  color: #ffff;
+  background-color: #0c67ff;
   height: 40px;
   width: 100px;
   padding: 5px;
   font-size: 18px;
-  font-weight: bold;
+  font-weight:normal;
+  text-align: center;
+  border-radius: 5px;
+  border-color: transparent;
+}
+
+.btn-primary:hover{
+  background-color: #0c51c7;
+}
+
+.btn-transparent {
+  color: #006dff;
+  background-color: transparent;
+  height: 40px;
+  width: 100px;
+  padding: 5px;
+  font-size: 18px;
+  font-weight: solid;
   text-align: center;
   border-radius: 5px;
 }
 
-.btn-primary:hover{
-  color: rgb(82, 82, 255);
-  background-color: white;
-  border-color: rgb(82, 82, 255);;
+.btn-transparent:hover{
+  background-color: #cee1ff;
 }
 
 .btn-secondary {
-  color: rgb(82, 82, 255);
+  color: #006dff;
   background-color: white;
-  border-color: rgb(82, 82, 255);
+  border-color: #006dff;
   height: 40px;
   width: 100px;
   padding: 5px;
@@ -46,9 +60,7 @@ code {
 }
 
 .btn-secondary:hover{
-  color: white;
-  background-color: rgb(82, 82, 255);
-  border-color: rgb(82, 82, 255);
+  background-color: #f3f3f3;
 }
 
 .input-editable{
@@ -64,6 +76,10 @@ code {
   border-width: thin;
 }
 
+.input-editable:focus{
+  outline: none;
+}
+
 .input-readonly{
   color: black;
   background-color: rgb(226, 225, 225);
@@ -77,8 +93,12 @@ code {
   border-width: thin;
 }
 
+.input-readonly:focus{
+  outline: none;
+}
+
 .btn-dropdown {
-  background-color: rgb(82, 82, 255);
+  background-color: #006dff;
   color: white;
   padding: 5px;
   font-size: 18px;
@@ -86,6 +106,7 @@ code {
   border-width: thin;
   width: 100px;
   height: 40px;
+  border: none;
 }
 
 .dropdown {
@@ -120,6 +141,10 @@ select {
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+select:focus{
+  outline: none;
 }
 
 option {
