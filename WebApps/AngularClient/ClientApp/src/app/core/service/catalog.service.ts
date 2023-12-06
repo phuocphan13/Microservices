@@ -2,6 +2,7 @@ import {HttpParams} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {environment} from "src/environments/environment";
 import {ApiService} from "./api.service";
+import { ProductSummary } from "../models/product-sumary.model";
 
 @Injectable()
 export class CatalogService {
@@ -11,7 +12,7 @@ export class CatalogService {
 
   }
 
-  async getProductsAsync(): Promise<any> {
+  async getProductsAsync(): Promise<ProductSummary[]> {
     return await this.apiService.getAsync(`${environment.baseApiUrl}/${this.apiName}/GetProducts`, new HttpParams());
   }
 
