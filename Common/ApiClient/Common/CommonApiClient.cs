@@ -34,7 +34,7 @@ public class CommonApiClient
     }
 
     protected async Task<ApiStatusResult<TResult>> PostAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
-        where TRequestBody : BaseRequestBody
+        where TRequestBody : BaseRequestBody, new()
         where TResult : class, new()
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url);
