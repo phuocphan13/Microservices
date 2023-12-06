@@ -1,4 +1,5 @@
 using AngularClient.Services;
+using ApiClient.Catalog.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AngularClient.Controllers;
@@ -51,4 +52,41 @@ public class CatalogController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPost("{requestBody}")]
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequestBody requestBody, CancellationToken cancellationToken)
+    {
+        var result = await _catalogService.CreateProductAsync(requestBody, cancellationToken);
+        if (result is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> DeleteProduct (string id, CancellationToken cancellationToken)
+    {
+        var result = await _catalogService.DeleteProductAsync(id, cancellationToken);
+        if (result is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
+    [HttpPost("{requestBody}")]
+    public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductRequestBody requestBody, CancellationToken cancellationToken)
+    {
+        var result = await _catalogService.UpdateProductAsync(requestBody, cancellationToken);
+        if (result is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
 }
