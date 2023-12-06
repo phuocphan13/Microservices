@@ -55,3 +55,8 @@
     border-bottom-left-radius: 0px;
     border-top-left-radius: 0px;
 }
+
+.search-icon{
+    height: 40px;
+    padding: 7px;
+}
