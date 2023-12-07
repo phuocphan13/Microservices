@@ -1,4 +1,6 @@
 using ApiClient.Catalog.Models;
+using ApiClient.Common;
+using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
@@ -10,7 +12,7 @@ public interface IProductService
     Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken = default);
     Task<ProductDetail> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<List<ProductSummary>> GetProductsByCategoryAsync(string category, CancellationToken cancellationToken = default);
-    Task<ProductDetail?> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<ProductDetail>> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<bool> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
 }
@@ -61,21 +63,35 @@ public class ProductService : IProductService
         return entity.ToDetail();
     }
 
-    public async Task<ProductDetail?> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<ProductDetail>> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
+        var apiDataResult = new ApiDataResult<ProductDetail>();
         var product = requestBody.ToCreateProduct();
         
         await MappingProductInternalAsync(product, requestBody, cancellationToken);
+        
+        if (string.IsNullOrWhiteSpace(product.CategoryId))
+        {
+            apiDataResult.Message = ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
+            return apiDataResult;
+        }
+
+        if (string.IsNullOrWhiteSpace(product.SubCategoryId))
+        {
+            apiDataResult.Message = ResponseMessages.Product.PropertyNotExisted("SubCategory", requestBody.SubCategory);
+            return apiDataResult;
+        }
 
         await _productRepository.CreateEntityAsync(product, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(product.Id))
         {
-            // entity.ValidationFailures.Add(new ValidationFailure(nameof(product.Id), "Create Product failed."));
-            return null;
+            apiDataResult.Message = ResponseMessages.Product.CreatFailure;
+            return apiDataResult;
         }
 
-        return product.ToDetail();
+        apiDataResult.Data = product.ToDetail();
+        return apiDataResult;
     }
 
     public async Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken)
@@ -107,6 +123,7 @@ public class ProductService : IProductService
         return product.ToDetail();
     }
 
+    // --> ApiStatusResult
     public async Task<bool> DeleteProductAsync(string id, CancellationToken cancellationToken)
     {
         var product = await _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
@@ -153,15 +170,15 @@ public class ProductService : IProductService
             return;
         }
 
-        var subCateglory = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.CategoryId == category.Id && string.Equals(x.Name, requestBody.SubCategory), cancellationToken);
+        var subCategory = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.CategoryId == category.Id && string.Equals(x.Name, requestBody.SubCategory), cancellationToken);
 
-        if (subCateglory is null)
+        if (subCategory is null)
         {
             return;
         }
 
         entity.CategoryId = category.Id;
-        entity.SubCategoryId = subCateglory.Id;
+        entity.SubCategoryId = subCategory.Id;
     }
     #endregion
 }

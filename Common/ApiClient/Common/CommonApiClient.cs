@@ -72,14 +72,11 @@ public class CommonApiClient
         
         if (httpResponseMessage is null)
         {
-            result.IsSuccessCode = false;
             result.InternalErrorCode = -1;
             result.Message = "Not Response.";
 
             return result;
         }
-
-        result.IsSuccessCode = httpResponseMessage.IsSuccessStatusCode;
 
         return result;
     }
@@ -90,14 +87,11 @@ public class CommonApiClient
         var result = new ApiDataResult<TResult>();
         if (httpResponseMessage is null)
         {
-            result.IsSuccessCode = false;
             result.InternalErrorCode = -1;
             result.Message = "Not Response.";
 
             return result;
         }
-
-        result.IsSuccessCode = httpResponseMessage.IsSuccessStatusCode;
 
         if (httpResponseMessage.IsSuccessStatusCode)
         {
@@ -108,8 +102,13 @@ public class CommonApiClient
                 PropertyNameCaseInsensitive = true
             };
             
-            result.Data = await JsonSerializer.DeserializeAsync<TResult>(contentStream, options, cancellationToken: cancellationToken);
-
+            var deserialize = await JsonSerializer.DeserializeAsync<ApiDataResult<TResult>>(contentStream, options, cancellationToken: cancellationToken);
+            
+            if (deserialize is not null)
+            {
+                result = deserialize;
+            }
+            
             return result;
         }
 

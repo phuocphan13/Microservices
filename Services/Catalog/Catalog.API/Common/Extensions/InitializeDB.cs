@@ -49,18 +49,21 @@ public static class InitializeDB
             new()
             {
                 Id = CategorySmartPhoneId,
+                CategoryCode = ModelHelpers.GenerateGuid(),
                 Name = "Smart Phone",
                 Description = "Smart Phone Description"
             },
             new()
             {
                 Id = CategoryLaptopPhoneId,
+                CategoryCode = ModelHelpers.GenerateGuid(),
                 Name = "Laptop",
                 Description = "Laptop Description"
             },
             new()
             {
                 Id = CategoryHeadphoneId,
+                CategoryCode = ModelHelpers.GenerateGuid(),
                 Name = "Head Phone",
                 Description = "Laptop Description"
             }
@@ -74,6 +77,7 @@ public static class InitializeDB
             new()
             {
                 Id = SubCategoryAppleId,
+                SubCategoryCode = ModelHelpers.GenerateGuid(),
                 Name = "Apple",
                 Description = "Apple Description",
                 CategoryId = CategorySmartPhoneId
@@ -81,6 +85,7 @@ public static class InitializeDB
             new()
             {
                 Id = SubCategorySamSungId,
+                SubCategoryCode = ModelHelpers.GenerateGuid(),
                 Name = "SamSung",
                 Description = "SamSung Description",
                 CategoryId = CategorySmartPhoneId
@@ -88,6 +93,7 @@ public static class InitializeDB
             new()
             {
                 Id = SubCategoryHauweiId,
+                SubCategoryCode = ModelHelpers.GenerateGuid(),
                 Name = "Huawei",
                 Description = "Huawei Description",
                 CategoryId = CategorySmartPhoneId
@@ -95,6 +101,7 @@ public static class InitializeDB
             new()
             {
                 Id = SubCategoryXiaomiId,
+                SubCategoryCode = ModelHelpers.GenerateGuid(),
                 Name = "Xiaomi",
                 Description = "Xiaomi Description",
                 CategoryId = CategorySmartPhoneId
@@ -102,6 +109,7 @@ public static class InitializeDB
             new()
             {
                 Id = SubCategoryHTCId,
+                SubCategoryCode = ModelHelpers.GenerateGuid(),
                 Name = "HTC",
                 Description = "HTC Description",
                 CategoryId = CategorySmartPhoneId
@@ -109,6 +117,7 @@ public static class InitializeDB
             new()
             {
                 Id = SubCategoryLGId,
+                SubCategoryCode = ModelHelpers.GenerateGuid(),
                 Name = "LG",
                 Description = "LG Description",
                 CategoryId = CategorySmartPhoneId

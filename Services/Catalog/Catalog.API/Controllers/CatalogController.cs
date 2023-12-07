@@ -1,6 +1,4 @@
-﻿using Catalog.API.Entities;
-using Catalog.API.Repositories;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using ApiClient.Catalog.Models;
 using Catalog.API.Services;

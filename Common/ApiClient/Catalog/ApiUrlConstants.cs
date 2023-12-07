@@ -8,7 +8,7 @@ public static class ApiUrlConstants
 
     public const string GetProductByCategory = "/Catalog/GetProductByCategory/{category}";
 
-    public const string CreateProduct = "/Catalog/CreateProduct";
+    public const string CreateProduct = "/Catalog";
 
     public const string UpdateProduct = "/Catalog/UpdateProduct";
 

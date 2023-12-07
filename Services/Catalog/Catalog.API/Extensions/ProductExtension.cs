@@ -36,7 +36,6 @@ public static class ProductExtension
         return new Product()
         {
             Name = requestBody.Name,
-            // Category = requestBody.Category,
             Description = requestBody.Description,
             Price = requestBody.Price,
             Summary = requestBody.Summary,
@@ -46,9 +45,7 @@ public static class ProductExtension
 
     public static void ToUpdateProduct(this Product product, UpdateProductRequestBody requestBody)
     {
-        product.Id = requestBody.Id;
         product.Name = requestBody.Name;
-        // product.Category = requestBody.Category;
         product.Description = requestBody.Description;
         product.Price = requestBody.Price;
         product.Summary = requestBody.Summary;

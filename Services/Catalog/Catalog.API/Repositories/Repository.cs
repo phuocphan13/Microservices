@@ -65,8 +65,6 @@ public class Repository<TEntity> : IRepository<TEntity>
             BypassDocumentValidation = false
         };
 
-        product.Id = ModelHelpers.GenerateId();
-
         await _collection.InsertOneAsync(product, options, cancellationToken);
     }
 
