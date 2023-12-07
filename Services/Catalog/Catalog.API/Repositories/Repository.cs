@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Catalog.API.Common;
 using Catalog.API.Common.Consts;
+using Catalog.API.Common.Helpers;
 using Catalog.API.Entities;
 using MongoDB.Driver;
 
@@ -63,6 +64,8 @@ public class Repository<TEntity> : IRepository<TEntity>
         {
             BypassDocumentValidation = false
         };
+
+        product.Id = ModelHelpers.GenerateId();
 
         await _collection.InsertOneAsync(product, options, cancellationToken);
     }

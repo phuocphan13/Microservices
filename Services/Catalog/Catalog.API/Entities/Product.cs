@@ -9,6 +9,8 @@ public class Product : BaseEntity
 {
     [BsonElement("Name")]
     public string? Name { get;  set; }
+    
+    public string? ProductCode { get; set; }
 
     public string? Summary { get; set; }
 
@@ -18,6 +20,9 @@ public class Product : BaseEntity
 
     public decimal Price { get; set; }
 
+    [BsonElement("CategoryId")]
     public string? CategoryId { get; set; }
+
+    [BsonElement("SubCategoryId")]
     public string? SubCategoryId { get; set; }
 }

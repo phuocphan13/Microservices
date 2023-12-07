@@ -48,7 +48,7 @@ public class CatalogApiClient : CommonApiClient, ICatalogApiClient
         url = url.AddDataInUrl(nameof(category), category);
 
         var result = await GetAsync<List<ProductSummary>>(url, cancellationToken);
-
+        
         return result;
     }
 
