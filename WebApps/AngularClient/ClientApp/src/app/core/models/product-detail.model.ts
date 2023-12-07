@@ -1,4 +1,4 @@
-import { ProductSummary } from "./ProductSummary.model";
+import { ProductSummary } from "./product-summary.model";
 
 export class ProductDetail extends ProductSummary {
     summary!: string;

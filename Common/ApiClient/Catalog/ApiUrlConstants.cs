@@ -10,8 +10,7 @@ public static class ApiUrlConstants
 
     public const string CreateProduct = "/Catalog/CreateProduct";
 
+    public const string UpdateProduct = "/Catalog/UpdateProduct";
+
     public const string DeleteProduct = "/Catalog/DeleteProductById/{id}";
-
-    public const string UpdateProduct = "/Catalog/UpdateProduct/";
-
 }
