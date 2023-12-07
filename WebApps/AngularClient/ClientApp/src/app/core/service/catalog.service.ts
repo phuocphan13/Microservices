@@ -13,7 +13,7 @@ export class CatalogService {
 
   }
 
-  async getProductsAsync(): Promise<ProductSummary> {
+  async getProductsAsync(): Promise<ProductSummary[]> {
     return await this.apiService.getAsync(`${environment.baseApiUrl}/${this.apiName}/GetProducts`, new HttpParams());
   }
 
