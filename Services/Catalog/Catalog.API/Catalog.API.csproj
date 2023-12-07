@@ -14,16 +14,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\ApiClient\ApiClient.csproj" />
+    <ProjectReference Include="..\..\..\Common\Platform\Platform.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Data\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="..\..\..\.dockerignore">
-      <Link>.dockerignore</Link>
-    </Content>
   </ItemGroup>
 
 </Project>

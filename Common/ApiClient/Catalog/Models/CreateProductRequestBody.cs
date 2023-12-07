@@ -1,5 +1,5 @@
 namespace ApiClient.Catalog.Models;
 
-public class CreateProductRequestBody : BaseRequestBody
+public class CreateProductRequestBody : BaseProductRequestBody
 {
 }

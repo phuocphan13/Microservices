@@ -1,6 +1,6 @@
 namespace ApiClient.Catalog.Models;
 
-public class UpdateProductRequestBody : BaseRequestBody
+public class UpdateProductRequestBody : BaseProductRequestBody
 {
     public string? Id { get; set; }
 }

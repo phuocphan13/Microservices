@@ -1,9 +1,8 @@
-using Catalog.API.Common;
 using Catalog.API.Common.Consts;
 using Catalog.API.Common.Extensions;
 using Catalog.API.Repositories;
 using Catalog.API.Services;
-using Microsoft.Extensions.Options;
+using Platform;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,14 +11,11 @@ var isRebuildSchema = builder.Configuration.GetValue<bool>(DatabaseConst.Collect
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddPlatformCommonServices();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
-
-builder.Services.AddSingleton<IDatabaseSettings>(serviceProvider =>
-    serviceProvider.GetRequiredService<IOptions<DatabaseSettings>>().Value);
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 

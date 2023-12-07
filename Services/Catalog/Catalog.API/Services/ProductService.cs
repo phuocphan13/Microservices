@@ -64,11 +64,14 @@ public class ProductService : IProductService
     public async Task<ProductDetail?> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
         var product = requestBody.ToCreateProduct();
+        
+        await MappingProductInternalAsync(product, requestBody, cancellationToken);
 
         await _productRepository.CreateEntityAsync(product, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(product.Id))
         {
+            // entity.ValidationFailures.Add(new ValidationFailure(nameof(product.Id), "Create Product failed."));
             return null;
         }
 
@@ -79,12 +82,20 @@ public class ProductService : IProductService
     {
         var product = await _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == requestBody.Id, cancellationToken);
 
+        // IValidationResult<Product> entity = new ValidationResult<Product>(product);
+        
         if (product is null)
         {
             return null;
         }
 
         product.ToUpdateProduct(requestBody);
+        await MappingProductInternalAsync(product, requestBody, cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(product.CategoryId) || string.IsNullOrWhiteSpace(product.SubCategoryId))
+        {
+            return null;
+        }
 
         var result = await _productRepository.UpdateEntityAsync(product, cancellationToken);
 
@@ -130,6 +141,27 @@ public class ProductService : IProductService
         }
 
         return summaries;
+    }
+
+    private async Task MappingProductInternalAsync<TRequestBody>(Product entity, TRequestBody requestBody, CancellationToken cancellationToken)
+        where TRequestBody : BaseProductRequestBody
+    {
+        var category = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => string.Equals(x.Name, requestBody.Category), cancellationToken);
+
+        if (category is null)
+        {
+            return;
+        }
+
+        var subCateglory = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.CategoryId == category.Id && string.Equals(x.Name, requestBody.SubCategory), cancellationToken);
+
+        if (subCateglory is null)
+        {
+            return;
+        }
+
+        entity.CategoryId = category.Id;
+        entity.SubCategoryId = subCateglory.Id;
     }
     #endregion
 }
