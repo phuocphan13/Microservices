@@ -1,6 +1,8 @@
+using ApiClient.Common.Models;
+
 namespace ApiClient.Catalog.Models;
 
-public class BaseRequestBody
+public class BaseProductRequestBody : BaseRequestBody
 {
     public string? Name { get; set; }
 
@@ -8,6 +10,7 @@ public class BaseRequestBody
     public string? SubCategory { get; set; }
 
     public string? Description { get; set; }
+
     public string? Summary { get; set; }
 
     public string? ImageFile { get; set; }

@@ -144,7 +144,7 @@ public class ProductService : IProductService
     }
 
     private async Task MappingProductInternalAsync<TRequestBody>(Product entity, TRequestBody requestBody, CancellationToken cancellationToken)
-        where TRequestBody : BaseRequestBody
+        where TRequestBody : BaseProductRequestBody
     {
         var category = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => string.Equals(x.Name, requestBody.Category), cancellationToken);
 

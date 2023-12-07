@@ -23,7 +23,7 @@ public class CommonApiClient
         return _configuration["ApiServices:OcelotApiGw"];
     }
 
-    protected async Task<ApiStatusResult<TResult>> GetAsync<TResult>(string url, CancellationToken cancellationToken)
+    protected async Task<ApiDataResult<TResult>> GetAsync<TResult>(string url, CancellationToken cancellationToken)
         where TResult : class, new()
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
@@ -33,7 +33,7 @@ public class CommonApiClient
         return await TransferResponseMessageToDataAsync<TResult>(httpResponseMessage, cancellationToken);
     }
 
-    protected async Task<ApiStatusResult<TResult>> PostAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
+    protected async Task<ApiDataResult<TResult>> PostAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
         where TRequestBody : BaseRequestBody, new()
         where TResult : class, new()
     {
@@ -45,7 +45,7 @@ public class CommonApiClient
         return await TransferResponseMessageToDataAsync<TResult>(httpResponseMessage, cancellationToken);
     }
 
-    protected async Task<ApiStatusResult<TResult>> PutAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
+    protected async Task<ApiDataResult<TResult>> PutAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
         where TRequestBody : BaseRequestBody
         where TResult : class, new()
     {
@@ -57,20 +57,37 @@ public class CommonApiClient
         return await TransferResponseMessageToDataAsync<TResult>(httpResponseMessage, cancellationToken);
     }
 
-    protected async Task<ApiStatusResult<TResult>> DeleteAsync<TResult>(string url, CancellationToken cancellationToken)
-        where TResult : class, new()
+    protected async Task<ApiStatusResult> DeleteAsync(string url, CancellationToken cancellationToken)
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, url);
         var httpClient = _httpClientFactory.CreateClient();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
-        return await TransferResponseMessageToDataAsync<TResult>(httpResponseMessage, cancellationToken);
+        return TransferResponseMessageToStatusAsync(httpResponseMessage);
     }
 
-    private async Task<ApiStatusResult<TResult>> TransferResponseMessageToDataAsync<TResult>(HttpResponseMessage? httpResponseMessage, CancellationToken cancellationToken)
+    private ApiStatusResult TransferResponseMessageToStatusAsync(HttpResponseMessage? httpResponseMessage)
+    {
+        var result = new ApiStatusResult();
+        
+        if (httpResponseMessage is null)
+        {
+            result.IsSuccessCode = false;
+            result.InternalErrorCode = -1;
+            result.Message = "Not Response.";
+
+            return result;
+        }
+
+        result.IsSuccessCode = httpResponseMessage.IsSuccessStatusCode;
+
+        return result;
+    }
+
+    private async Task<ApiDataResult<TResult>> TransferResponseMessageToDataAsync<TResult>(HttpResponseMessage? httpResponseMessage, CancellationToken cancellationToken)
         where TResult : class, new()
     {
-        var result = new ApiStatusResult<TResult>();
+        var result = new ApiDataResult<TResult>();
         if (httpResponseMessage is null)
         {
             result.IsSuccessCode = false;
@@ -85,10 +102,12 @@ public class CommonApiClient
         if (httpResponseMessage.IsSuccessStatusCode)
         {
             using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
+            
             var options = new JsonSerializerOptions()
             {
                 PropertyNameCaseInsensitive = true
             };
+            
             result.Data = await JsonSerializer.DeserializeAsync<TResult>(contentStream, options, cancellationToken: cancellationToken);
 
             return result;
