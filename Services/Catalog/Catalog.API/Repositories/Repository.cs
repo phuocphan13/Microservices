@@ -13,6 +13,7 @@ public interface IRepository<TEntity>
     Task<List<TEntity>> GetEntitiesAsync(CancellationToken cancellationToken = default);
     Task<TEntity> GetEntityFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     Task<List<TEntity>> GetEntitiesQueryAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     Task CreateEntityAsync(TEntity product, CancellationToken cancellationToken = default);
     Task<bool> UpdateEntityAsync(TEntity product, CancellationToken cancellationToken = default);
     Task<bool> DeleteEntityAsync(string id, CancellationToken cancellationToken = default);
@@ -56,6 +57,13 @@ public class Repository<TEntity> : IRepository<TEntity>
         var entities = await _collection.Find(predicate).ToListAsync(cancellationToken);
 
         return entities;
+    }
+
+    public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
+    {
+        var isExisted = await _collection.Find(predicate).AnyAsync(cancellationToken);
+
+        return isExisted;
     }
 
     public async Task CreateEntityAsync(TEntity product, CancellationToken cancellationToken)

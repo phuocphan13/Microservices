@@ -66,6 +66,13 @@ public class ProductService : IProductService
     public async Task<ApiDataResult<ProductDetail>> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
         var apiDataResult = new ApiDataResult<ProductDetail>();
+        var isExisted = await _productRepository.AnyAsync(x => x.Name == requestBody.Name, cancellationToken);
+
+        if (isExisted)
+        {
+            apiDataResult.Message = ResponseMessages.Product.ProductExisted(requestBody.Name);
+        }
+        
         var product = requestBody.ToCreateProduct();
         
         await MappingProductInternalAsync(product, requestBody, cancellationToken);

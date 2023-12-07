@@ -68,10 +68,19 @@ public class CatalogController : ControllerBase
         }
         
         var result = await _productService.CreateProductAsync(requestBody, cancellationToken);
-
-        if (result is null)
+        
+        if (!result.IsSuccessCode)
         {
-            return Problem($"Cannot create product with name: {requestBody.Name}");
+            if (result.InternalErrorCode == 404)
+            {
+                return NotFound(result.Message);
+            }
+            
+            if (result.InternalErrorCode == 500)
+            {
+
+                return Problem(result.Message); 
+            }
         }
 
         return Ok(result);

@@ -72,8 +72,7 @@ public class CommonApiClient
         
         if (httpResponseMessage is null)
         {
-            result.InternalErrorCode = -1;
-            result.Message = "Not Response.";
+            result.HttpErrorCode = -1;
 
             return result;
         }
@@ -87,8 +86,8 @@ public class CommonApiClient
         var result = new ApiDataResult<TResult>();
         if (httpResponseMessage is null)
         {
-            result.InternalErrorCode = -1;
-            result.Message = "Not Response.";
+            //Todo
+            result.HttpErrorCode = -1;
 
             return result;
         }
@@ -112,7 +111,7 @@ public class CommonApiClient
             return result;
         }
 
-        result.InternalErrorCode = (int)httpResponseMessage.StatusCode;
+        result.HttpErrorCode = (int)httpResponseMessage.StatusCode;
 
         return result;
     }
