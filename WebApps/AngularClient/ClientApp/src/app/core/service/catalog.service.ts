@@ -6,14 +6,14 @@ import { ProductSummary } from "../models/product-sumary.model";
 
 @Injectable()
 export class CatalogService {
-  apiName: string = "Catalog";
+  apiName: string = "catalog";
 
   constructor(public apiService: ApiService) {
 
   }
 
   async getProductsAsync(): Promise<ProductSummary[]> {
-    return await this.apiService.getAsync(`${environment.baseApiUrl}/${this.apiName}/GetProducts`, new HttpParams());
+    return await this.apiService.getAsync(`${environment.devApiUrl}/${this.apiName}/GetProducts`, new HttpParams());
   }
 
   async getProductByIdAsync(id: string): Promise<any> {

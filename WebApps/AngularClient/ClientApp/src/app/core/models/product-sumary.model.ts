@@ -4,4 +4,6 @@ export class ProductSummary {
     category!: string;
     subCategory!: string;
     description!: string;
+    imageFile!: string;
+    price!: number;
 }

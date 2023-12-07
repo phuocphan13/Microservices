@@ -14,6 +14,8 @@ import { ProductListComponent } from './catalog/product-list/product-list.compon
 import { ProductComponent } from './catalog/product/product.component';
 import { AppRoutingModule } from './app-routing.module';
 import { SearchMenuComponent } from './search-menu/search-menu.component';
+import { CatalogService } from './core/service/catalog.service';
+import { ApiService } from './core/service/api.service';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,10 @@ import { SearchMenuComponent } from './search-menu/search-menu.component';
     FormsModule,
     AppRoutingModule,
   ],
-  providers: [],
+  providers: [
+    CatalogService,
+    ApiService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

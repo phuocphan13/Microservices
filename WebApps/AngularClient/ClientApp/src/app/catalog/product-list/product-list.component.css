@@ -44,15 +44,23 @@
 }
 
 .product-logo{
-    margin-bottom: 5%;
+    padding:5%
 }
 
 .product-name{
-    margin-bottom: 20%;
-    color: black;
+    color: #008cff;
     padding:5%;
     font-weight: lighter;
     font-size: medium;
+    font-family: "Arial";
+}
+
+.product-description{
+    color:black;
+    padding:5%;
+    font-weight:normal;
+    font-size: medium;
+    font-family: 'Arial';
 }
 
 .product-price{
@@ -75,9 +83,9 @@
 
 .product-delivery span{
     font-size: small;
+    color: #b4b4b9;
 }
 
 .product-delivery-logo{
     width: 20%;
-
 }
