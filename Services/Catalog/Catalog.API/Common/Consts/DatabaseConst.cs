@@ -6,7 +6,6 @@ public static class DatabaseConst
     {
         public const string ConnectionString = "DatabaseSettings:ConnectionString";
         public const string DatabaseName = "DatabaseSettings:DatabaseName";
-        public  const string IsRebuildSchema = "DatabaseSettings:IsRebuildSchema";
         
         public const string Product = "Products";
         public const string Category = "Categories";

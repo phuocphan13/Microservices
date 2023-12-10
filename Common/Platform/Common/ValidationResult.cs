@@ -9,13 +9,13 @@ public interface IValidationResult<T>
 
 public class ValidationResult<T> : IValidationResult<T>
 {
-    public T? Instance { get; set; }
+    public T Instance { get; set; }
     public string? EntityName { get; set; }
     public List<ValidationFailure> ValidationFailures { get; set; }
 
     public bool IsValid => ValidationFailures.Count == 0;
 
-    public ValidationResult(T? instance)
+    public ValidationResult(T instance)
     {
         Instance = instance;
         EntityName = nameof(instance);

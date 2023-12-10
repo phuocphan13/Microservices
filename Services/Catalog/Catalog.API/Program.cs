@@ -1,4 +1,3 @@
-using Catalog.API.Common.Consts;
 using Catalog.API.Common.Extensions;
 using Catalog.API.Repositories;
 using Catalog.API.Services;
@@ -6,7 +5,7 @@ using Platform;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var isRebuildSchema = builder.Configuration.GetValue<bool>(DatabaseConst.CollectionName.IsRebuildSchema);
+var isRebuildSchema = builder.Configuration.GetValue<bool>(Platform.Constants.DatabaseConst.CollectionName.IsRebuildSchema);
 
 // Add services to the container.
 

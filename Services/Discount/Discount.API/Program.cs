@@ -3,7 +3,7 @@ using Discount.Domain;
 using Discount.Domain.Common.InitializeDB;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var isRebuildSchema = builder.Configuration.GetValue<bool>(Platform.Constants.DatabaseConst.CollectionName.IsRebuildSchema);
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -28,6 +28,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-await app.InitializePlatformDbContextsAsync(builder.Configuration, true);
+await app.InitializeDiscountDbContextsAsync(builder.Configuration, isRebuildSchema);
 
 app.Run();

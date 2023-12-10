@@ -7,7 +7,7 @@ namespace Discount.Domain.Common.InitializeDB;
 
 public static class InitializeDB
 {
-    public static async Task InitializePlatformDbContextsAsync(
+    public static async Task InitializeDiscountDbContextsAsync(
         this IApplicationBuilder builder,
         ConfigurationManager configuration,
         bool isRebuildSchema = false)
