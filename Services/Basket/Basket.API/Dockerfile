@@ -14,7 +14,6 @@ WORKDIR "/src/Services/Basket/Basket.API"
 RUN dotnet build "Basket.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "Basket.API.csproj" -c Release -o /app/publish
 
 FROM base AS final

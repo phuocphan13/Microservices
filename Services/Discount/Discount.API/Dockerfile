@@ -14,7 +14,6 @@ WORKDIR "/src/Services/Discount/Discount.API"
 RUN dotnet build "Discount.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "Discount.API.csproj" -c Release -o /app/publish
 
 FROM base AS final
