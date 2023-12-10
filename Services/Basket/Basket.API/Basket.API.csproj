@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\ApiClient\ApiClient.csproj" />
     <ProjectReference Include="..\..\..\EventBus.Messages\EventBus.Messages.csproj" />
     <ProjectReference Include="..\..\..\Identity\IdentityServer.Common\IdentityServer.Common.csproj" />
   </ItemGroup>

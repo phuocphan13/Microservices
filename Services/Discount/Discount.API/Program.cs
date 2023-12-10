@@ -1,5 +1,6 @@
 using Discount.API.Extensions;
-using Discount.API.Repositories;
+using Discount.Domain;
+using Discount.Domain.Common.InitializeDB;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
+builder.Services.AddDiscountCommonServices();
 
 var app = builder.Build();
 
@@ -26,5 +27,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+
+await app.InitializePlatformDbContextsAsync(builder.Configuration, true);
 
 app.Run();

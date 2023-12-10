@@ -1,4 +1,3 @@
-using System.Net;
 using System.Text.Json;
 using ApiClient.Common.Models;
 using Microsoft.Extensions.Configuration;

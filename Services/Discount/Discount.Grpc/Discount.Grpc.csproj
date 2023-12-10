@@ -12,13 +12,15 @@
 	<ItemGroup>
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
 		<PackageReference Include="Grpc.AspNetCore" Version="2.47.0" />
-		<PackageReference Include="Dapper" Version="2.0.123" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
-		<PackageReference Include="Npgsql" Version="6.0.5" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Protobuf Include="Protos\discount.proto" GrpcServices="Server" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Discount.Domain\Discount.Domain.csproj" />
 	</ItemGroup>
 
 </Project>

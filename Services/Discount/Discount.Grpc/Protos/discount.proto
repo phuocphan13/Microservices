@@ -3,36 +3,53 @@ syntax = "proto3";
 option csharp_namespace = "Discount.Grpc.Protos";
 
 service DiscountProtoService {
-	rpc GetDiscount (GetDiscountRequest) returns (CouponModel);
+  rpc GetDiscount (GetDiscountRequest) returns (CouponDetailModel);
 
-	rpc CreateDiscount (CreateDiscountRequest) returns (CouponModel);
-	rpc UpdateDiscount (UpdateDiscountRequest) returns (CouponModel);
-	rpc DeleteDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
+  rpc CreateDiscount (CreateCouponRequest) returns (CouponDetailModel);
+  rpc UpdateDiscount (UpdateCouponRequest) returns (CouponDetailModel);
+  rpc DeleteDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
+}
+
+enum CatalogType
+{
+  Default = 0;
+  Category = 1;
+  SubCategory = 2;
+  Product = 3;
 }
 
 message GetDiscountRequest {
-	string productName = 1;
+  string searchText = 1;
+  CatalogType type = 2;
 }
 
-message CouponModel {
-	int32 id = 1;
-	string productName = 2;
-	string description = 3;
-	int32 amount = 4;
+message CreateCouponRequest {
+  string code = 1;
+  CatalogType type = 2;
+  string description = 3;
+  int32 amount = 4;
 }
 
-message CreateDiscountRequest {
-	CouponModel coupon = 1;
-}
-
-message UpdateDiscountRequest {
-	CouponModel coupon = 1;
+message UpdateCouponRequest {
+  string id = 1;
+  string code = 2;
+  CatalogType type = 3;
+  string description = 4;
+  int32 amount = 5;
 }
 
 message DeleteDiscountRequest {
-	string productName = 1;
+  int32 id = 1;
 }
 
 message DeleteDiscountResponse{
-	bool success = 1;
+  bool success = 1;
+}
+
+message CouponDetailModel {
+  int32 id = 1;
+  string CatalogName = 2;
+  CatalogType Type = 3;
+  string Description = 4;
+  int32 Amount = 5;
 }

@@ -1,50 +1,48 @@
-﻿using Discount.API.Entities;
-using Discount.API.Repositories;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
+﻿using Microsoft.AspNetCore.Mvc;
+using ApiClient.Discount.Models.Coupon;
+using Discount.Domain.Entities;
+using Discount.Domain.Services;
 
 namespace Discount.API.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/[controller]/[action]")]
 public class DiscountController : ControllerBase
 {
-    private readonly IDiscountRepository _discountRepository;
+    private readonly IDiscountService _discountService;
     private readonly ILogger<DiscountController> _logger;
 
-    public DiscountController(IDiscountRepository discountRepository, ILogger<DiscountController> logger)
+    public DiscountController(ILogger<DiscountController> logger, IDiscountService discountService)
     {
-        _discountRepository = discountRepository ?? throw new ArgumentNullException(nameof(discountRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _discountService = discountService ?? throw new ArgumentNullException(nameof(discountService));
     }
 
-    [HttpGet("{productName}", Name = "GetDiscount")]
-    [ProducesResponseType(typeof(Coupon), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<Coupon>> GetDiscount(string productName)
+    [HttpGet]
+    public async Task<ActionResult<Coupon>> GetDiscount([FromQuery] string searchText, [FromQuery] CatalogType type)
     {
-        var coupon = await _discountRepository.GetDiscount(productName);
+        var coupon = await _discountService.GetDiscountByTextAsync(searchText, type);
         return Ok(coupon);
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(Coupon), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<Coupon>> CreateDiscount([FromBody] Coupon coupon)
+    public async Task<ActionResult<CouponDetail>> CreateDiscount([FromBody] CreateCouponRequestBody requestBody)
     {
-        await _discountRepository.CreateDiscount(coupon);
-        return CreatedAtRoute("GetDiscount", new { productName = coupon.ProductName }, coupon);
+        var coupon = await _discountService.CreateDiscountAsync(requestBody);
+        return Ok(coupon);
     }
 
     [HttpPut]
-    [ProducesResponseType(typeof(Coupon), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<Coupon>> UpdateDiscount([FromBody] Coupon coupon)
+    public async Task<ActionResult<CouponDetail>> UpdateDiscount([FromBody] UpdateCouponRequestBody requestBody)
     {
-        return Ok(await _discountRepository.UpdateDiscount(coupon));
+        var coupon = await _discountService.UpdateDiscountAsync(requestBody);
+        return Ok(coupon);
     }
-
-    [HttpDelete("{productName}", Name = "DeleteDiscount")]
-    [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<bool>> DeleteDiscount(string productName)
+    
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult<bool>> DeleteDiscount(int id)
     {
-        return Ok(await _discountRepository.DeleteDiscount(productName));
+        var result = await _discountService.DeleteDiscountAsync(id);
+        return Ok(result);
     }
 }

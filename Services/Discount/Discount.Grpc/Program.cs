@@ -1,5 +1,5 @@
+using Discount.Domain;
 using Discount.Grpc.Extensions;
-using Discount.Grpc.Repositories;
 using Discount.Grpc.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGrpc();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
+builder.Services.AddDiscountCommonServices();
 
 var app = builder.Build();
 
