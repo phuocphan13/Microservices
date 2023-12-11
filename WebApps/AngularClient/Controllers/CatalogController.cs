@@ -1,5 +1,5 @@
 using AngularClient.Services;
-using ApiClient.Catalog.Models;
+using ApiClient.Catalog.Models.Product;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AngularClient.Controllers;

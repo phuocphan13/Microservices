@@ -1,6 +1,6 @@
 using ApiClient.Common.Models;
 
-namespace ApiClient.Catalog.Models;
+namespace ApiClient.Catalog.Models.Product;
 
 public class BaseProductRequestBody : BaseRequestBody
 {
@@ -15,5 +15,5 @@ public class BaseProductRequestBody : BaseRequestBody
 
     public string? ImageFile { get; set; }
 
-    public decimal Price { get; set; } 
+    public decimal Price { get; set; }
 }

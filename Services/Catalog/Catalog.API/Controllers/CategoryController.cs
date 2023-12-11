@@ -1,4 +1,5 @@
-﻿using Catalog.API.Services;
+﻿using ApiClient.Catalog.Models.Category;
+using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.API.Controllers
@@ -22,6 +23,81 @@ namespace Catalog.API.Controllers
             if (result is null)
             {
                 return NotFound();
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequestBody requestBody, CancellationToken cancellationToken)
+        {
+            if (requestBody is null)
+            {
+                return BadRequest("RequestBody is not allowed null.");
+            }
+
+            var result = await _categoryService.CreateCategoryAsync(requestBody, cancellationToken);
+
+            if (!result.IsSuccessCode)
+            {
+                if (result.InternalErrorCode == 404)
+                {
+                    return NotFound(result.Message);
+                }
+
+                if (result.InternalErrorCode == 500)
+                {
+                    return Problem(result.Message);
+                }
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCategoryByName([FromQuery] string categoryName, CancellationToken cancellationToken)
+        {
+            var result = await _categoryService.GetCategoryByNameAsync(categoryName,cancellationToken);
+
+            if (result is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCategoryById([FromQuery] string categoryId, CancellationToken cancellationToken)
+        {
+            var result = await _categoryService.GetCategoryByIdAsync(categoryId, cancellationToken);
+
+            if (result is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken)
+        {
+            if (requestBody is null)
+            {
+                return BadRequest("RequestBody is not allowed null.");
+            }
+
+            if (string.IsNullOrWhiteSpace(requestBody.Name))
+            {
+                return BadRequest("Category Name is not allowed null.");
+            }
+
+            var result = await _categoryService.UpdateCategoryAsync(requestBody, cancellationToken);
+
+            if (result is null)
+            {
+                return Problem($"Cannot update category with name: {requestBody.Name}");
             }
 
             return Ok(result);

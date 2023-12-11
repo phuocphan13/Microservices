@@ -1,4 +1,4 @@
-using ApiClient.Catalog.Models;
+using ApiClient.Catalog.Models.Product;
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
 

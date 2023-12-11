@@ -1,4 +1,4 @@
-using ApiClient.Catalog.Models;
+using ApiClient.Catalog.Models.Product;
 using Catalog.API.Entities;
 
 namespace Catalog.API.Extensions;
@@ -14,6 +14,8 @@ public static class ProductExtension
             Category = categoryName,
             SubCategory = subCategoryName,
             Description = product.Description,
+            ImageFile = product.ImageFile,
+            Price =product.Price,
         };
     }
 
