@@ -1,4 +1,4 @@
-using ApiClient.Catalog.Models;
+﻿using ApiClient.Catalog.Models;
 using ApiClient.Common;
 using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
@@ -13,7 +13,7 @@ public interface IProductService
     Task<ProductDetail> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<List<ProductSummary>> GetProductsByCategoryAsync(string category, CancellationToken cancellationToken = default);
     Task<ApiDataResult<ProductDetail>> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken = default);
-    Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<ProductDetail>> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<bool> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
 }
 
@@ -24,8 +24,8 @@ public class ProductService : IProductService
     private readonly IRepository<SubCategory> _subCategoryRepository;
 
     public ProductService(
-        IRepository<Product> productRepository, 
-        IRepository<Category> categoryRepository, 
+        IRepository<Product> productRepository,
+        IRepository<Category> categoryRepository,
         IRepository<SubCategory> subCategoryRepository)
     {
         _productRepository = productRepository;
@@ -38,7 +38,7 @@ public class ProductService : IProductService
         var entities = await _productRepository.GetEntitiesAsync(cancellationToken);
 
         var summaries = await GetProductSummariesInternalAsync(entities, cancellationToken);
-        
+
         return summaries;
     }
 
@@ -72,11 +72,11 @@ public class ProductService : IProductService
         {
             apiDataResult.Message = ResponseMessages.Product.ProductExisted(requestBody.Name);
         }
-        
+
         var product = requestBody.ToCreateProduct();
-        
+
         await MappingProductInternalAsync(product, requestBody, cancellationToken);
-        
+
         if (string.IsNullOrWhiteSpace(product.CategoryId))
         {
             apiDataResult.Message = ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
@@ -101,33 +101,42 @@ public class ProductService : IProductService
         return apiDataResult;
     }
 
-    public async Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<ProductDetail>> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
+        var apiDataResult = new ApiDataResult<ProductDetail>();
         var product = await _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == requestBody.Id, cancellationToken);
 
-        // IValidationResult<Product> entity = new ValidationResult<Product>(product);
-        
         if (product is null)
         {
-            return null;
+            apiDataResult.Message = ResponseMessages.Product.NotFound;
+            return apiDataResult;
         }
 
         product.ToUpdateProduct(requestBody);
         await MappingProductInternalAsync(product, requestBody, cancellationToken);
 
-        if (string.IsNullOrWhiteSpace(product.CategoryId) || string.IsNullOrWhiteSpace(product.SubCategoryId))
+        if (string.IsNullOrWhiteSpace(product.CategoryId))
         {
-            return null;
+            apiDataResult.Message = ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
+            return apiDataResult;
+        }
+
+        if (string.IsNullOrWhiteSpace(product.SubCategoryId))
+        {
+            apiDataResult.Message = ResponseMessages.Product.PropertyNotExisted("SubCategory", requestBody.SubCategory);
+            return apiDataResult;
         }
 
         var result = await _productRepository.UpdateEntityAsync(product, cancellationToken);
 
         if (!result)
         {
-            return null;
+            apiDataResult.Message = ResponseMessages.Product.UpdateFailed;
+            return apiDataResult;
         }
 
-        return product.ToDetail();
+        apiDataResult.Data = product.ToDetail();
+        return apiDataResult;
     }
 
     // --> ApiStatusResult

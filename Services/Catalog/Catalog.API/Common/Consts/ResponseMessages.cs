@@ -9,5 +9,9 @@ public static class ResponseMessages
         public static string ProductExisted(string? name) => $"Product with Name '{name}' is existed.";
 
         public const string CreatFailure = "Creating Product is failed.";
+
+        public const string NotFound = "Not Found.";
+
+        public const string UpdateFailed = "Update Has Failed.";
     }
 }
