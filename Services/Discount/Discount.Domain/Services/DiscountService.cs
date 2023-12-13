@@ -1,4 +1,5 @@
-using ApiClient.Discount.Models.Coupon;
+using ApiClient.Discount.Models.Discount;
+using AutoMapper;
 using Discount.Domain.Entities;
 using Discount.Domain.Extensions;
 using Discount.Domain.Repositories;
@@ -7,60 +8,49 @@ namespace Discount.Domain.Services;
 
 public interface IDiscountService
 {
-    Task<Coupon> GetDiscountByTextAsync(string searchText, CatalogType type);
-    Task<CouponDetail> CreateDiscountAsync(CreateCouponRequestBody requestBody);
-    Task<CouponDetail> UpdateDiscountAsync(UpdateCouponRequestBody requestBody);
-    Task<bool> DeleteDiscountAsync(int id);
+    Task<DiscountDetail?> CreateDiscountVersionAsync(CreateDiscountRequestBody requestBody);
+    Task<DiscountDetail?> InactiveDiscountAsync(int id);
 }
 
 public class DiscountService : IDiscountService
 {
-    private readonly IDiscountRepository _discountRepository;
+    private readonly IDiscountEntityRepository _discountEntityRepository;
+    private readonly IMapper _mapper;
 
-    public DiscountService(IDiscountRepository discountRepository)
+    public DiscountService(IDiscountEntityRepository discountEntityRepository, IMapper mapper)
     {
-        _discountRepository = discountRepository;
+        _discountEntityRepository = discountEntityRepository ?? throw new ArgumentNullException(nameof(discountEntityRepository));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<Coupon> GetDiscountByTextAsync(string searchText, CatalogType type)
+    public async Task<DiscountDetail?> CreateDiscountVersionAsync(CreateDiscountRequestBody requestBody)
     {
-        var coupon = await _discountRepository.GetDiscountAsync(searchText, type);
-
-        if (coupon is null)
+        //ToDo: Check null and Add Message
+        if (string.IsNullOrWhiteSpace(requestBody.CouponId))
         {
-            //ToDo Create Summary/Detail Coupon
-            return new Coupon()
-            {
-                Amount = 0,
-                Description = "No Discount Desc"
-            };
+            return null;
         }
 
-        return coupon;
-    }
+        var version = requestBody.ToCreateDiscountVersion(requestBody.CouponId);
 
-    public async Task<CouponDetail> CreateDiscountAsync(CreateCouponRequestBody requestBody)
-    {
-        var coupon = requestBody.ToCreateCoupon();
-
-        var entity = await _discountRepository.CreateDiscountAsync(coupon);
+        var entity = await _discountEntityRepository.CreateDiscountAsync(version);
 
         return entity.ToDetail();
     }
 
-    public async Task<CouponDetail> UpdateDiscountAsync(UpdateCouponRequestBody requestBody)
+    public async Task<DiscountDetail?> InactiveDiscountAsync(int id)
     {
-        var coupon = requestBody.ToUpdateCoupon();
+        var discountCurrentVersion = await _discountEntityRepository.GetDiscountAsync<DiscountVersion>(id.ToString());
 
-        var entity = await _discountRepository.UpdateDiscountAsync(coupon);
+        if (discountCurrentVersion is null)
+        {
+            return null;
+        }
 
-        return entity.ToDetail();
-    }
+        var history = _mapper.Map<DiscountHistory>(discountCurrentVersion);
+        await _discountEntityRepository.CreateDiscountAsync(history);
+        await _discountEntityRepository.DeleteDiscountAsync<DiscountVersion>(discountCurrentVersion.Id);
 
-    public async Task<bool> DeleteDiscountAsync(int id)
-    {
-        var result = await _discountRepository.DeleteDiscountAsync(id);
-
-        return result;
+        return discountCurrentVersion.ToDetail();
     }
 }

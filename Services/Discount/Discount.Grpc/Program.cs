@@ -1,5 +1,4 @@
 using Discount.Domain;
-using Discount.Grpc.Extensions;
 using Discount.Grpc.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,8 +13,6 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDiscountCommonServices();
 
 var app = builder.Build();
-
-app.MigrateDatabase<Program>();
 
 // Configure the HTTP request pipeline.
 app.MapGrpcService<DiscountService>();
