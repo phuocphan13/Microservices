@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Catalog\ApiClient\Catalog\Category\" />
       <Folder Include="Discount\Enum\" />
     </ItemGroup>
 </Project>

@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApiClient.Catalog.Models.Category
+namespace ApiClient.Catalog.Models.Catalog.Category
 {
-    public class BaseCategoryRequestBody
+    public class CategorySummary
     {
+        public string? Id { get;set; }
+
         public string? Name { get; set; }
 
         public string? CategoryCode { get; set; }

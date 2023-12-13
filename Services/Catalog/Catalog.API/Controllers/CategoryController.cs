@@ -1,4 +1,4 @@
-﻿using ApiClient.Catalog.Models.Category;
+﻿using ApiClient.Catalog.Models.Catalog.Category;
 using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -98,6 +98,25 @@ namespace Catalog.API.Controllers
             if (result is null)
             {
                 return Problem($"Cannot update category with name: {requestBody.Name}");
+            }
+
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteCategory([FromQuery] string categoryId, CancellationToken cancellationToken)
+        {
+
+            if (string.IsNullOrWhiteSpace(categoryId) || categoryId == "")
+            {
+                return BadRequest("Category Id is not allowed null.");
+            }
+
+            var result = await _categoryService.DeleteCategoryAsync(categoryId, cancellationToken);
+
+            if (result is null)
+            {
+                return Problem($"Cannot delete category with id: {categoryId}");
             }
 
             return Ok(result);

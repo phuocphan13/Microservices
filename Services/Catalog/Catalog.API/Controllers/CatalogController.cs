@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Catalog.API.Services;
-using ApiClient.Catalog.Models.Product;
+using ApiClient.Catalog.Models.Catalog.Product;
 
 namespace Catalog.API.Controllers;
 

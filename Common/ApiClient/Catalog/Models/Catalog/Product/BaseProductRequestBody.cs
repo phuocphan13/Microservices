@@ -1,6 +1,6 @@
 using ApiClient.Common.Models;
 
-namespace ApiClient.Catalog.Models.Product;
+namespace ApiClient.Catalog.Models.Catalog.Product;
 
 public class BaseProductRequestBody : BaseRequestBody
 {

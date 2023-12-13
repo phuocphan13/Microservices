@@ -19,13 +19,14 @@ public static class ResponseMessages
     {
         public static string PropertyNotExisted(string propertyName, string? name) => $"{propertyName} with Name {name} is not existed";
 
-        public static string CategoryExisted(string? name) => $"Category with Name '{name}' is existed.";
+        public static string CategoryNameExisted(string? name) => $"Category with Name '{name}' is existed.";
+
+        public static string CategoryCodeExisted(string? code) => $"Category with Code '{code}' is existed.";
 
         public const string CreateFailed = "Created Category Has Failed.";
 
         public const string NotFound = "Not Found.";
 
         public const string UpdateFailed = "Update Has Failed.";
-
     }
 }

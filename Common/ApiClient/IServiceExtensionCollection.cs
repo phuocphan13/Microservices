@@ -1,4 +1,4 @@
-using ApiClient.Catalog.ApiClient;
+using ApiClient.Catalog.ApiClient.Catalog.Product;
 using ApiClient.Common;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,7 +8,7 @@ public static class IServiceExtensionCollection
 {
     public static void AddCatalogServices(this IServiceCollection services)
     {
-        services.AddScoped<ICatalogApiClient, CatalogApiClient>();
+        services.AddScoped<ICatalogApiClient, ProductApiClient>();
     }
 
     public static void AddCommonServices(this IServiceCollection services)

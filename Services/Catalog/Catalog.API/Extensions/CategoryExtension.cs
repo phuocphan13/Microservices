@@ -1,4 +1,6 @@
-﻿using ApiClient.Catalog.Models.Category;
+﻿using ApiClient.Catalog.Models.Catalog.Category;
+using ApiClient.Catalog.Models.Catalog.Product;
+using Catalog.API.Common.Helpers;
 using Catalog.API.Entities;
 
 namespace Catalog.API.Extensions
@@ -20,6 +22,17 @@ namespace Catalog.API.Extensions
             category.Name = requestBody.Name;
             category.Description = requestBody.Description;
             category.CategoryCode = requestBody.CategoryCode;
+        }
+
+        public static CategorySummary ToSummary(this Category category)
+        {
+            return new CategorySummary()
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Description = category.Description,
+                CategoryCode = category.CategoryCode,
+            };
         }
     }
 }

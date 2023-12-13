@@ -1,4 +1,4 @@
-using ApiClient.Catalog.Models.Product;
+using ApiClient.Catalog.Models.Catalog.Product;
 using Catalog.API.Entities;
 
 namespace Catalog.API.Extensions;

@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApiClient.Catalog.Models.Category
+namespace ApiClient.Catalog.Models.Catalog.Category;
+
+public class CreateCategoryRequestBody : BaseCategoryRequestBody
 {
-    public class UpdateCategoryRequestBody:BaseCategoryRequestBody
-    {
-    }
 }
