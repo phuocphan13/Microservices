@@ -3,36 +3,35 @@ using ApiClient.Catalog.Models.Catalog.Product;
 using Catalog.API.Common.Helpers;
 using Catalog.API.Entities;
 
-namespace Catalog.API.Extensions
+namespace Catalog.API.Extensions;
+
+public static class CategoryExtension
 {
-    public static class CategoryExtension
+    public static Category ToCreateCategory(this CreateCategoryRequestBody requestBody)
     {
-        public static Category ToCreateCategory(this CreateCategoryRequestBody requestBody)
+        return new Category()
         {
-            return new Category()
-            {
-                Name = requestBody.Name,
-                Description = requestBody.Description,
-                CategoryCode = requestBody.CategoryCode,
-            };
-        }
+            Name = requestBody.Name,
+            Description = requestBody.Description,
+            CategoryCode = requestBody.CategoryCode,
+        };
+    }
 
-        public static void ToUpdateCategory(this Category category, UpdateCategoryRequestBody requestBody)
-        {
-            category.Name = requestBody.Name;
-            category.Description = requestBody.Description;
-            category.CategoryCode = requestBody.CategoryCode;
-        }
+    public static void ToUpdateCategory(this Category category, UpdateCategoryRequestBody requestBody)
+    {
+        category.Name = requestBody.Name;
+        category.Description = requestBody.Description;
+        category.CategoryCode = requestBody.CategoryCode;
+    }
 
-        public static CategorySummary ToSummary(this Category category)
+    public static CategorySummary ToSummary(this Category category)
+    {
+        return new CategorySummary()
         {
-            return new CategorySummary()
-            {
-                Id = category.Id,
-                Name = category.Name,
-                Description = category.Description,
-                CategoryCode = category.CategoryCode,
-            };
-        }
+            Id = category.Id,
+            Name = category.Name,
+            Description = category.Description,
+            CategoryCode = category.CategoryCode,
+        };
     }
 }

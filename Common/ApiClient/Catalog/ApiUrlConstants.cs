@@ -2,17 +2,17 @@ namespace ApiClient.Catalog;
 
 public static class ApiUrlConstants
 {
-    public const string GetProducts = "/Catalog";
+    public const string GetProducts = "/Product";
 
-    public const string GetProductById = "/Catalog/GetProductById/{id}";
+    public const string GetProductById = "/Product/GetProductById/{id}";
 
-    public const string GetProductByCategory = "/Catalog/GetProductByCategory/{category}";
+    public const string GetProductByCategory = "/Product/GetProductByCategory/{category}";
 
-    public const string CreateProduct = "/Catalog";
+    public const string CreateProduct = "/Product";
 
-    public const string UpdateProduct = "/Catalog/UpdateProduct";
+    public const string UpdateProduct = "/Product/UpdateProduct";
 
-    public const string DeleteProduct = "/Catalog/DeleteProductById/{id}";
+    public const string DeleteProduct = "/Product/DeleteProductById/{id}";
 
     public const string GetCategories = "/Category/GetCategories";
 
@@ -22,7 +22,7 @@ public static class ApiUrlConstants
 
     public const string CreateCategory = "/Category/CreateCategory";
 
-    public const string UpdateCategory = "/Catalog/UpdateCategory";
+    public const string UpdateCategory = "/Category/UpdateCategory";
 
-    public const string DeleteCategory = "/Catalog/DeleteCategory/{id}";
+    public const string DeleteCategory = "/Category/DeleteCategory/{id}";
 }
