@@ -7,12 +7,12 @@ namespace Catalog.API.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class CatalogController : ControllerBase
+public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
-    private readonly ILogger<CatalogController> _logger;
+    private readonly ILogger<ProductController> _logger;
 
-    public CatalogController(IProductService productService, ILogger<CatalogController> logger)
+    public ProductController(IProductService productService, ILogger<ProductController> logger)
     {
         _productService = productService ?? throw new ArgumentNullException(nameof(productService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

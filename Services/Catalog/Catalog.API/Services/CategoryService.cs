@@ -101,6 +101,22 @@ public class CategoryService : ICategoryService
             var isNameExisted = await _categoryRepository.AnyAsync(x => x.Name == requestBody.Name, cancellationToken);
             if (isNameExisted)
             {
+                var isIdExisted = await _categoryRepository.AnyAsync(x => x.Id == requestBody.Id, cancellationToken);
+                if (isIdExisted)
+                {
+                    category.ToUpdateCategory(requestBody);
+
+                    var updateItem = await _categoryRepository.UpdateEntityAsync(category, cancellationToken);
+
+                    if (!updateItem)
+                    {
+                        apiDataResult.Message = ResponseMessages.Product.UpdateFailed;
+                        return apiDataResult;
+                    }
+
+                    apiDataResult.Data = category.ToSummary();
+                    return apiDataResult;
+                }
                 apiDataResult.Message = ResponseMessages.Category.CategoryNameExisted(requestBody.Name);
                 return apiDataResult;
             }
