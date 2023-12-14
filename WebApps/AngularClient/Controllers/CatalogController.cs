@@ -28,7 +28,7 @@ public class CatalogController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById(string id, CancellationToken cancellationToken)
     {
         var result = await _catalogService.GetProductById(id, cancellationToken);
@@ -53,7 +53,7 @@ public class CatalogController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("{requestBody}")]
+    [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
         var result = await _catalogService.CreateProductAsync(requestBody, cancellationToken);
@@ -65,19 +65,7 @@ public class CatalogController : ControllerBase
         return Ok(result);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteProduct (string id, CancellationToken cancellationToken)
-    {
-        var result = await _catalogService.DeleteProductAsync(id, cancellationToken);
-        if (result is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(result);
-    }
-
-    [HttpPost("{requestBody}")]
+    [HttpPost]
     public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
         var result = await _catalogService.UpdateProductAsync(requestBody, cancellationToken);
@@ -89,4 +77,11 @@ public class CatalogController : ControllerBase
         return Ok(result);
     }
 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProduct(string id, CancellationToken cancellationToken)
+    {
+        var result = await _catalogService.DeleteProductAsync(id, cancellationToken);
+
+        return Ok(result);
+    }
 }

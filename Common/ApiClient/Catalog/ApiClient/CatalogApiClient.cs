@@ -6,12 +6,12 @@ namespace ApiClient.Catalog.ApiClient;
 
 public interface ICatalogApiClient
 {
-    Task<ApiStatusResult<List<ProductSummary>>> GetProducts(CancellationToken cancellationToken = default);
-    Task<ApiStatusResult<ProductDetail>> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
-    Task<ApiStatusResult<List<ProductSummary>>> GetProductByCategoryAsync(string category, CancellationToken cancellationToken = default);
-    Task<ApiStatusResult<ProductDetail>> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
-    Task<ApiStatusResult<ProductDetail>> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken = default);
-    Task<ApiStatusResult<ProductDetail>> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<List<ProductSummary>>> GetProducts(CancellationToken cancellationToken = default);
+    Task<ApiDataResult<ProductDetail>> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<List<ProductSummary>>> GetProductByCategoryAsync(string category, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<ProductDetail>> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<ProductDetail>> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<ApiStatusResult> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
 }
 
 public class CatalogApiClient : CommonApiClient, ICatalogApiClient
@@ -21,7 +21,7 @@ public class CatalogApiClient : CommonApiClient, ICatalogApiClient
     {
     }
 
-    public async Task<ApiStatusResult<List<ProductSummary>>> GetProducts(CancellationToken cancellationToken)
+    public async Task<ApiDataResult<List<ProductSummary>>> GetProducts(CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetProducts}";
 
@@ -30,7 +30,7 @@ public class CatalogApiClient : CommonApiClient, ICatalogApiClient
         return result;
     }
 
-    public async Task<ApiStatusResult<ProductDetail>> GetProductByIdAsync(string id, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<ProductDetail>> GetProductByIdAsync(string id, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetProductById}";
 
@@ -41,7 +41,7 @@ public class CatalogApiClient : CommonApiClient, ICatalogApiClient
         return result;
     }
 
-    public async Task<ApiStatusResult<List<ProductSummary>>> GetProductByCategoryAsync(string category, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<List<ProductSummary>>> GetProductByCategoryAsync(string category, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetProductByCategory}";
 
@@ -52,7 +52,7 @@ public class CatalogApiClient : CommonApiClient, ICatalogApiClient
         return result;
     }
 
-    public async Task<ApiStatusResult<ProductDetail>> CreateProductAsync ( CreateProductRequestBody requestBody, CancellationToken cancellationToken )
+    public async Task<ApiDataResult<ProductDetail>> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.CreateProduct}";
 
@@ -62,22 +62,21 @@ public class CatalogApiClient : CommonApiClient, ICatalogApiClient
         return result;
     }
 
-    public async Task<ApiStatusResult<ProductDetail>> DeleteProductAsync (string id, CancellationToken cancellationToken)
-    {
-        var url = $"{GetBaseUrl()}{ApiUrlConstants.DeleteProduct}";
-        
-        //var result = await DeleteAsync<ProductDetail>(url, cancellationToken);
-
-        return await  DeleteAsync<ProductDetail>(url, cancellationToken);
-    }
-
-    public async Task<ApiStatusResult<ProductDetail>> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken )
+    public async Task<ApiDataResult<ProductDetail>> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.UpdateProduct}";
 
-        //var result = await PostAsync<UpdateProductRequestBody, ProductDetail>(url, requestBody, cancellationToken);
+        var result = await PutAsync<UpdateProductRequestBody, ProductDetail>(url, requestBody, cancellationToken);
 
-        return await PostAsync<UpdateProductRequestBody, ProductDetail>(url, requestBody, cancellationToken);
+        return result;
     }
 
+    public async Task<ApiStatusResult> DeleteProductAsync(string id, CancellationToken cancellationToken)
+    {
+        var url = $"{GetBaseUrl()}{ApiUrlConstants.DeleteProduct}";
+
+        var result = await DeleteAsync(url, cancellationToken);
+
+        return result;
+    }
 }

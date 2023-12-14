@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {CatalogService} from "../core/service/catalog.service";
-import { ProductDetail } from '../core/models/ProductDetail.model';
+import { ProductDetail } from '../core/models/product-detail.model';
 
 @Component({
   selector: 'app-fetch-data',
@@ -37,14 +37,14 @@ export class FetchDataComponent implements OnInit {
 
   }
 
-  
+
 
 
   async getProductsAsync() {
     let products = await this.catalogService.getProductsAsync;
     console.log(products);
   }
-  
+
   async getProductByIdAsync() {
     let product = await this.catalogService.getProductByIdAsync("655b766bd61059921a53744d");
   }
