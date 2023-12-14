@@ -10,20 +10,24 @@ public interface IProductService
     Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken = default);
     Task<ProductDetail> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<List<ProductSummary>> GetProductsByCategoryAsync(string category, CancellationToken cancellationToken = default);
-    Task<ProductDetail?> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken = default);
-    Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<ProductDetail>> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<ProductDetail>> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<bool> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
+=======
+    Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<ApiStatusResult> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
+>>>>>>> Stashed changes
 }
 
 public class ProductService : IProductService
 {
     private readonly IRepository<Product> _productRepository;
     private readonly IRepository<Category> _categoryRepository;
-    private readonly IRepository<SubCategory> _subCategoryRepository;
+    private readonly IRepository<SubCategoryService> _subCategoryRepository;
 
     public ProductService(
-        IRepository<Product> productRepository, 
-        IRepository<Category> categoryRepository, 
+        IRepository<Product> productRepository,
+        IRepository<Category> categoryRepository,
         IRepository<SubCategory> subCategoryRepository)
     {
         _productRepository = productRepository;
@@ -96,18 +100,28 @@ public class ProductService : IProductService
         return product.ToDetail();
     }
 
+    // --> ApiStatusResult
     public async Task<bool> DeleteProductAsync(string id, CancellationToken cancellationToken)
     {
         var product = await _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
+        var outcome = new ApiStatusResult();
+
         if (product is null)
         {
-            return false;
+            outcome.Message = ResponseMessages.Delete.NotFound;
+
+            return outcome;
         }
 
         var result = await _productRepository.DeleteEntityAsync(id, cancellationToken);
 
-        return result;
+        if (result == false)
+        {
+            outcome.Message = ResponseMessages.Delete.DeleteFailed;
+        }
+
+        return outcome;
     }
 
     #region Internal Functions
