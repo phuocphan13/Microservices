@@ -148,9 +148,9 @@ public class CategoryService : ICategoryService
     public async Task<ApiStatusResult> DeleteCategoryAsync(string categoryId, CancellationToken cancellationToken)
     {
         var apiDataResult = new ApiStatusResult();
-        var isExisted = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == categoryId, cancellationToken);
+        var isExisted = await _categoryRepository.AnyAsync(x => x.Id == categoryId, cancellationToken);
 
-        if(isExisted is null)
+        if(isExisted)
         {
             apiDataResult.Message = ResponseMessages.Category.NotFound;
             return apiDataResult;
@@ -160,7 +160,7 @@ public class CategoryService : ICategoryService
 
         if (!result)
         {
-            apiDataResult.Message = ResponseMessages.Product.UpdateFailed;
+            apiDataResult.Message = ResponseMessages.Category.UpdateFailed;
             return apiDataResult;
         }
 

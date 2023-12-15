@@ -1,4 +1,5 @@
-using AngularClient.Services.Catalog.Product;
+
+using AngularClient.Services.Catalog;
 using ApiClient;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,8 @@ builder.Services.AddCors();
 builder.Services.AddHttpClient();
 builder.Services.AddCommonServices();
 builder.Services.AddCatalogServices();
-builder.Services.AddScoped<ICatalogService, ProductService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 

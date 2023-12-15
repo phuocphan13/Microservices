@@ -1,3 +1,4 @@
+using ApiClient.Catalog.ApiClient.Catalog.Category;
 using Catalog.API.Common.Extensions;
 using Catalog.API.Repositories;
 using Catalog.API.Services;

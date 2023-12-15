@@ -5,7 +5,7 @@
   "Routes": [
     //Default path
     {
-      "DownstreamPathTemplate": "/api/v1/catalog",
+      "DownstreamPathTemplate": "/api/v1/product",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -63,6 +63,19 @@
         }
       ],
       "UpstreamPathTemplate": "/Catalog/GetProductByCategory/{category}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    //Catalog:Category
+    {
+      "DownstreamPathTemplate": "/api/v1/Category/GetCategories",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/Category/GetCategories",
       "UpstreamHttpMethod": [ "GET" ]
     },
     //Basket API

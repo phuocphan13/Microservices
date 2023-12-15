@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace ApiClient.Catalog.ApiClient.Catalog.Product;
 
-public interface ICatalogApiClient
+public interface IProductApiClient
 {
     Task<ApiDataResult<List<ProductSummary>>> GetProducts(CancellationToken cancellationToken = default);
     Task<ApiDataResult<ProductDetail>> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
@@ -14,7 +14,7 @@ public interface ICatalogApiClient
     Task<ApiStatusResult> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
 }
 
-public class ProductApiClient : CommonApiClient, ICatalogApiClient
+public class ProductApiClient : CommonApiClient, IProductApiClient
 {
     public ProductApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         : base(httpClientFactory, configuration)

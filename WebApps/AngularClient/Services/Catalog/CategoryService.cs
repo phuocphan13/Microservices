@@ -4,7 +4,7 @@ using ApiClient.Catalog.Models.Catalog.Product;
 using ApiClient.Common;
 using System.Threading.Tasks;
 
-namespace AngularClient.Services.Catalog.Category;
+namespace AngularClient.Services.Catalog;
 
 public interface ICategoryService
 {
@@ -18,7 +18,8 @@ public interface ICategoryService
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryApiClient _categoryApiClient;
-    public CategoryService(ICategoryApiClient categoryApiClient) { 
+    public CategoryService(ICategoryApiClient categoryApiClient)
+    {
         _categoryApiClient = categoryApiClient;
     }
     public async Task<List<CategorySummary>?> GetCategoriesAsync(CancellationToken cancellationToken)
