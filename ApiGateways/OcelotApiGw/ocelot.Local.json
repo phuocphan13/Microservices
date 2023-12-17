@@ -22,7 +22,7 @@
     },
     //Catalog API
     {
-      "DownstreamPathTemplate": "/api/v1/catalog",
+      "DownstreamPathTemplate": "/api/v1/Product",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -30,7 +30,7 @@
           "Port": 5000
         }
       ],
-      "UpstreamPathTemplate": "/Catalog",
+      "UpstreamPathTemplate": "/Product",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT" ],
       "RateLimitOptions": {
         "ClientWhitelist": [],
@@ -42,7 +42,7 @@
       "FileCacheOptions": { "TtlSeconds": 30 }
     },
     {
-      "DownstreamPathTemplate": "/api/v1/Catalog/{id}",
+      "DownstreamPathTemplate": "/api/v1/Product/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -50,11 +50,11 @@
           "Port": 5000
         }
       ],
-      "UpstreamPathTemplate": "/Catalog/{id}",
+      "UpstreamPathTemplate": "/Product/{id}",
       "UpstreamHttpMethod": [ "GET", "DELETE" ]
     },
     {
-      "DownstreamPathTemplate": "/api/v1/Catalog/GetProductByCategory/{category}",
+      "DownstreamPathTemplate": "/api/v1/Product/GetProductByCategory/{category}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -62,7 +62,7 @@
           "Port": 5000
         }
       ],
-      "UpstreamPathTemplate": "/Catalog/GetProductByCategory/{category}",
+      "UpstreamPathTemplate": "/Product/GetProductByCategory/{category}",
       "UpstreamHttpMethod": [ "GET" ]
     },
     //Catalog:Category

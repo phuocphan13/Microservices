@@ -11,7 +11,7 @@ public interface ICategoryService
 {
     Task<List<CategorySummary>> GetCategoriesAsync(CancellationToken cancellationToken = default);
     Task<ApiDataResult<CategorySummary>> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
-    Task<CategorySummary> GetCategoryByNameAsync(string categoryName, CancellationToken cancellationToken = default);
+    Task<CategorySummary> GetCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
     Task<CategorySummary> GetCategoryByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<ApiDataResult<CategorySummary>> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<ApiStatusResult> DeleteCategoryAsync(string categoryId, CancellationToken cancellationToken = default);
@@ -125,6 +125,22 @@ public class CategoryService : ICategoryService
                 var isCodeExisted = await _categoryRepository.AnyAsync(x => x.CategoryCode == requestBody.CategoryCode, cancellationToken);
                 if (isCodeExisted)
                 {
+                    var isIdExisted = await _categoryRepository.AnyAsync(x => x.Id == requestBody.Id, cancellationToken);
+                    if (isIdExisted)
+                    {
+                        category.ToUpdateCategory(requestBody);
+
+                        var updateItem = await _categoryRepository.UpdateEntityAsync(category, cancellationToken);
+
+                        if (!updateItem)
+                        {
+                            apiDataResult.Message = ResponseMessages.Product.UpdateFailed;
+                            return apiDataResult;
+                        }
+
+                        apiDataResult.Data = category.ToSummary();
+                        return apiDataResult;
+                    }
                     apiDataResult.Message = ResponseMessages.Category.CategoryCodeExisted(requestBody.CategoryCode);
                     return apiDataResult;
                 }
@@ -150,7 +166,7 @@ public class CategoryService : ICategoryService
         var apiDataResult = new ApiStatusResult();
         var isExisted = await _categoryRepository.AnyAsync(x => x.Id == categoryId, cancellationToken);
 
-        if(isExisted)
+        if(!isExisted)
         {
             apiDataResult.Message = ResponseMessages.Category.NotFound;
             return apiDataResult;

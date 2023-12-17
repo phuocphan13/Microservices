@@ -65,7 +65,7 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPut]
     public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
         var result = await _categoryService.UpdateCategoryAsync(requestBody, cancellationToken);
@@ -81,6 +81,10 @@ public class CategoryController : ControllerBase
     public async Task<IActionResult> DeleteCategory(string id, CancellationToken cancellationToken)
     {
         var result = await _categoryService.DeleteCategoryAsync(id, cancellationToken);
+        if (result is null)
+        {
+            return NotFound();
+        }
 
         return Ok(result);
     }

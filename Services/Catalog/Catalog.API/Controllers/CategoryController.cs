@@ -28,10 +28,10 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetCategoryByName([FromQuery] string categoryName, CancellationToken cancellationToken)
+    [HttpGet("{name}", Name = "GetCategoryByName")]
+    public async Task<IActionResult> GetCategoryByName(string name, CancellationToken cancellationToken)
     {
-        var result = await _categoryService.GetCategoryByNameAsync(categoryName, cancellationToken);
+        var result = await _categoryService.GetCategoryByNameAsync(name, cancellationToken);
 
         if (result is null)
         {
@@ -41,10 +41,10 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetCategoryById([FromQuery] string categoryId, CancellationToken cancellationToken)
+    [HttpGet("{id}", Name = "GetCategoryById")]
+    public async Task<IActionResult> GetCategoryById(string id, CancellationToken cancellationToken)
     {
-        var result = await _categoryService.GetCategoryByIdAsync(categoryId, cancellationToken);
+        var result = await _categoryService.GetCategoryByIdAsync(id, cancellationToken);
 
         if (result is null)
         {
@@ -104,7 +104,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteCategory([FromQuery] string categoryId, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteCategory(string categoryId, CancellationToken cancellationToken)
     {
 
         if (string.IsNullOrWhiteSpace(categoryId) || categoryId == "")
