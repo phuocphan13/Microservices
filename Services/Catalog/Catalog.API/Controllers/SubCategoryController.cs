@@ -7,7 +7,7 @@ using static Catalog.API.Common.Consts.ResponseMessages;
 namespace Catalog.API.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/[controller]/[action]")]
 public class SubCatagoryController : ControllerBase
 {
     private readonly ISubCategoryService _subCategory;
@@ -109,6 +109,14 @@ public class SubCatagoryController : ControllerBase
         }
 
         var result = await _subCategory.DeleteSubCategoryAsync(id, cancellationToken);
+
+        return Ok(result);
+    }
+
+    [HttpGet("{categoryId}")]
+    public async Task<IActionResult> GetSubCategoryByCategoryId (string categoryId, CancellationToken cancellationToken)
+    {
+        var result = await  _subCategory.GetSubCategoryByCategoryIdAsync(categoryId, cancellationToken);
 
         return Ok(result);
     }

@@ -13,9 +13,10 @@ namespace Catalog.API.Services
 {
     public interface ISubCategoryService
     {
-        Task<List<SubCategorySummary>> GetSubCategoriesAsync(CancellationToken cancellationToken = default);
-        Task<SubCategorySummary> GetSubCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
-        Task<SubCategorySummary> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken = default);
+        Task<ApiDataResult<List<SubCategorySummary>>> GetSubCategoriesAsync(CancellationToken cancellationToken = default);
+        Task<ApiDataResult<SubCategorySummary>> GetSubCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
+        Task<ApiDataResult<SubCategorySummary>> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken = default);
+        Task<ApiDataResult<List<SubCategorySummary>>> GetSubCategoryByCategoryIdAsync (string categoryId, CancellationToken cancellationToken = default);
         Task <ApiStatusResult> DeleteSubCategoryAsync(string id, CancellationToken cancellationToken = default);
         Task <ApiDataResult<SubCategorySummary>> CreateSubCategoryAsync (CreateSubCategoryRequestBody body, CancellationToken cancellationToken = default);
         Task<ApiDataResult<SubCategorySummary>> UpdateSubCategoryAsync(UpdateSubCategoryRequestBody body, CancellationToken cancellationToken = default);
@@ -23,38 +24,103 @@ namespace Catalog.API.Services
     public class SubCategoryService : ISubCategoryService
     {
         private readonly IRepository<SubCategory> _subCategoryRepository;
-        private readonly IRepository<Category> _Category;
+        private readonly IRepository<Category> _category;
         public SubCategoryService(IRepository<SubCategory> subCategoryRepository)
         {
             _subCategoryRepository = subCategoryRepository;
         }
 
-        public async Task<List<SubCategorySummary>> GetSubCategoriesAsync(CancellationToken cancellationToken)
+        public async Task<ApiDataResult<List<SubCategorySummary>>> GetSubCategoriesAsync(CancellationToken cancellationToken)
         {
+            var apiDataResult = new ApiDataResult<List<SubCategorySummary>>()
+            {
+                Data = new List<SubCategorySummary>()
+            };
+
             var entities = await _subCategoryRepository.GetEntitiesAsync(cancellationToken);
 
-            var subCategoryList = new List<SubCategorySummary>();
-
-            foreach (var entity in entities)
+            if(entities != null)
             {
-                subCategoryList.Add(entity.ToSummary());
-            }
+                foreach (var entity in entities)
+                {
+                    apiDataResult.Data.Add(entity.ToSummary());
+                }
 
-            return subCategoryList;
+                return apiDataResult;
+            }    
+
+            apiDataResult.Message = ResponseMessages.SubCategory.NotFound;
+            return apiDataResult;
+            
         }
 
-        public async Task<SubCategorySummary> GetSubCategoryByNameAsync (string name, CancellationToken cancellationToken)
+        public async Task<ApiDataResult<SubCategorySummary>> GetSubCategoryByNameAsync (string name, CancellationToken cancellationToken)
         {
+            var apiDataResult = new ApiDataResult<SubCategorySummary>();
+
             var subCategoryByName = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
-            return subCategoryByName.ToSummary();
+            if(subCategoryByName == null)
+            {
+                apiDataResult.Message = ResponseMessages.SubCategory.NotFound;
+                return apiDataResult;
+            }    
+
+            apiDataResult.Data = subCategoryByName.ToSummary();
+            
+            return apiDataResult;
         }
 
-        public async Task<SubCategorySummary> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<ApiDataResult<SubCategorySummary>> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken)
         {
-            var subCategoryByName = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+            var apiDataResult = new ApiDataResult<SubCategorySummary>();
 
-            return subCategoryByName.ToSummary();
+            var subCategoryById = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+            if (subCategoryById == null)
+            {
+                apiDataResult.Message = ResponseMessages.SubCategory.NotFound;
+                return apiDataResult;
+            }
+            apiDataResult.Data = subCategoryById.ToSummary();
+
+            return apiDataResult;
+        }
+
+        public async Task<ApiDataResult<List<SubCategorySummary>>> GetSubCategoryByCategoryIdAsync(string categoryId, CancellationToken cancellationToken)
+        {
+            var apiDataResult = new ApiDataResult<List<SubCategorySummary>>()
+            {
+                Data = new List<SubCategorySummary>()
+            };
+            //check CategoryID trong Category
+
+            //var isExisted = await _category.AnyAsync(x => x.Id == categoryId, cancellationToken);
+            //if(!isExisted)
+            //{
+            //    apiDataResult.Message = ResponseMessages.SubCategory.NotFound;
+            //    return apiDataResult;
+            //}   
+            
+            var entities = await _subCategoryRepository.GetEntitiesAsync(cancellationToken);
+
+            if(entities is null)
+            {
+                apiDataResult.Message = ResponseMessages.SubCategory.NotFound;
+                return apiDataResult;
+            }
+
+            var filter = entities.Where(x => x.CategoryId == categoryId).ToList();
+
+            foreach(var item in filter)
+            {
+
+                apiDataResult.Data.Add(item.ToSummary());
+            }
+
+            return apiDataResult;
+
+
         }
 
         public async Task<ApiStatusResult> DeleteSubCategoryAsync (string id, CancellationToken cancellationToken)
@@ -107,6 +173,8 @@ namespace Catalog.API.Services
             {
                 apiDataResult.Message = ResponseMessages.SubCategory.CreateSubCategoryFailed;
             }
+            // add data
+            apiDataResult.Data = subcategory.ToSummary();
 
             return apiDataResult;
 

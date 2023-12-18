@@ -20,6 +20,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 //Services
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 
 var app = builder.Build();
 
