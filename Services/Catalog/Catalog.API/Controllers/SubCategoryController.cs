@@ -11,7 +11,6 @@ namespace Catalog.API.Controllers;
 public class SubCatagoryController : ControllerBase
 {
     private readonly ISubCategoryService _subCategory;
-    private object apiDataResult;
 
     public SubCatagoryController(ISubCategoryService subCategory)
     {
@@ -114,9 +113,13 @@ public class SubCatagoryController : ControllerBase
     }
 
     [HttpGet("{categoryId}")]
-    public async Task<IActionResult> GetSubCategoryByCategoryId (string categoryId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSubCategoriesByCategoryId (string categoryId, CancellationToken cancellationToken)
     {
-        var result = await  _subCategory.GetSubCategoryByCategoryIdAsync(categoryId, cancellationToken);
+        if(string.IsNullOrWhiteSpace(categoryId))
+        {
+            return BadRequest("Missing CategoryId");
+        }
+        var result = await  _subCategory.GetSubCategoriesByCategoryIdAsync(categoryId, cancellationToken);
 
         return Ok(result);
     }

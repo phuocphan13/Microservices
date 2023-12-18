@@ -17,7 +17,6 @@ public interface IRepository<TEntity>
     Task CreateEntityAsync(TEntity product, CancellationToken cancellationToken = default);
     Task<bool> UpdateEntityAsync(TEntity product, CancellationToken cancellationToken = default);
     Task<bool> DeleteEntityAsync(string id, CancellationToken cancellationToken = default);
-    Task<List<TEntity>> GetEntitiesWithConditionAsync(string id, CancellationToken cancellationToken = default);
 }
 
 public class Repository<TEntity> : IRepository<TEntity>
@@ -45,17 +44,6 @@ public class Repository<TEntity> : IRepository<TEntity>
 
         return entities;
     }
-
-    //ask later how to write generic function  
-    public async Task<List<TEntity>> GetEntitiesWithConditionAsync(string id, CancellationToken cancellationToken)
-    {
-        var filter = Builders<TEntity>.Filter.Eq(x => x.Id, id);
-
-        var entities = await _collection.Find(filter).ToListAsync(cancellationToken);
-
-        return entities;
-    }
-
 
     public async Task<TEntity> GetEntityFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
     {
