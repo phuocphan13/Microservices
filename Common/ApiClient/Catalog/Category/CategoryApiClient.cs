@@ -1,13 +1,6 @@
 ﻿using ApiClient.Catalog.Models.Catalog.Category;
-using ApiClient.Catalog.Models.Catalog.Product;
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace ApiClient.Catalog.ApiClient.Catalog.Category;
 

@@ -1,9 +1,6 @@
-﻿using ApiClient.Catalog.ApiClient.Catalog;
-using ApiClient.Catalog.ApiClient.Catalog.Category;
+﻿using ApiClient.Catalog.ApiClient.Catalog.Category;
 using ApiClient.Catalog.Models.Catalog.Category;
-using ApiClient.Catalog.Models.Catalog.Product;
 using ApiClient.Common;
-using System.Threading.Tasks;
 
 namespace AngularClient.Services.Catalog;
 

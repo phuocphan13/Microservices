@@ -4,7 +4,6 @@ using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
-using System.Collections.Generic;
 
 namespace Catalog.API.Services;
 
@@ -21,6 +20,7 @@ public interface ICategoryService
 public class CategoryService : ICategoryService
 {
     private readonly IRepository<Category> _categoryRepository;
+
     public CategoryService(IRepository<Category> categoryRepository)
     {
         _categoryRepository = categoryRepository;
@@ -35,11 +35,11 @@ public class CategoryService : ICategoryService
 
         var entities = await _categoryRepository.GetEntitiesAsync(cancellationToken);
 
-        if(entities is null)
+        if (entities is null)
         {
             categoryList.Message = ResponseMessages.Category.NotFound;
             return categoryList;
-        }    
+        }
 
         foreach (var entity in entities)
         {
@@ -53,15 +53,15 @@ public class CategoryService : ICategoryService
     {
         var result = new ApiDataResult<CategorySummary>();
 
-        var categoryByName = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == name, cancellationToken);
+        var entity = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
-        if(categoryByName is null)
+        if (entity is null)
         {
             result.Message = ResponseMessages.Category.NotFound;
             return result;
         }
 
-        result.Data = categoryByName.ToSummary();
+        result.Data = entity.ToSummary();
 
         return result;
     }
@@ -70,14 +70,15 @@ public class CategoryService : ICategoryService
     {
         var result = new ApiDataResult<CategorySummary>();
 
-        var categoryById = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-        if (categoryById is null)
+        var entity = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        if (entity is null)
         {
             result.Message = ResponseMessages.Category.NotFound;
             return result;
         }
 
-        result.Data = categoryById.ToSummary();
+        result.Data = entity.ToSummary();
 
         return result;
     }
@@ -86,19 +87,12 @@ public class CategoryService : ICategoryService
     {
         var apiDataResult = new ApiDataResult<CategorySummary>();
 
-        var isNameExisted = await _categoryRepository.AnyAsync(x => x.Name == requestBody.Name, cancellationToken);
+        var isExisted = await _categoryRepository.AnyAsync(x => x.Name == requestBody.Name || x.CategoryCode == requestBody.CategoryCode, cancellationToken);
 
-        if (isNameExisted)
+        if (isExisted)
         {
-            apiDataResult.Message = ResponseMessages.Category.CategoryNameExisted(requestBody.Name);
+            apiDataResult.Message = ResponseMessages.Category.CategoryExisted(requestBody.Name, requestBody.CategoryCode);
             return apiDataResult;
-        }else 
-        {
-            var isCodeExisted = await _categoryRepository.AnyAsync(x => x.CategoryCode == requestBody.CategoryCode, cancellationToken);
-            if (isCodeExisted) {
-                apiDataResult.Message = ResponseMessages.Category.CategoryCodeExisted(requestBody.CategoryCode);
-                return apiDataResult;
-            } 
         }
 
         var category = requestBody.ToCreateCategory();
@@ -125,68 +119,27 @@ public class CategoryService : ICategoryService
             apiDataResult.Message = ResponseMessages.Category.NotFound;
             return apiDataResult;
         }
-        else
+
+        var isExisted = await _categoryRepository.AnyAsync(x => (x.CategoryCode == requestBody.CategoryCode || x.Name == requestBody.Name) && x.Id != requestBody.Id, cancellationToken);
+
+        if (isExisted)
         {
-            var isNameExisted = await _categoryRepository.AnyAsync(x => x.Name == requestBody.Name, cancellationToken);
-            if (isNameExisted)
-            {
-                var isIdExisted = await _categoryRepository.AnyAsync(x => x.Id == requestBody.Id, cancellationToken);
-                if (isIdExisted)
-                {
-                    category.ToUpdateCategory(requestBody);
-
-                    var updateItem = await _categoryRepository.UpdateEntityAsync(category, cancellationToken);
-
-                    if (!updateItem)
-                    {
-                        apiDataResult.Message = ResponseMessages.Product.UpdateFailed;
-                        return apiDataResult;
-                    }
-
-                    apiDataResult.Data = category.ToSummary();
-                    return apiDataResult;
-                }
-                apiDataResult.Message = ResponseMessages.Category.CategoryNameExisted(requestBody.Name);
-                return apiDataResult;
-            }
-            else
-            {
-                var isCodeExisted = await _categoryRepository.AnyAsync(x => x.CategoryCode == requestBody.CategoryCode, cancellationToken);
-                if (isCodeExisted)
-                {
-                    var isIdExisted = await _categoryRepository.AnyAsync(x => x.Id == requestBody.Id, cancellationToken);
-                    if (isIdExisted)
-                    {
-                        category.ToUpdateCategory(requestBody);
-
-                        var updateItem = await _categoryRepository.UpdateEntityAsync(category, cancellationToken);
-
-                        if (!updateItem)
-                        {
-                            apiDataResult.Message = ResponseMessages.Product.UpdateFailed;
-                            return apiDataResult;
-                        }
-
-                        apiDataResult.Data = category.ToSummary();
-                        return apiDataResult;
-                    }
-                    apiDataResult.Message = ResponseMessages.Category.CategoryCodeExisted(requestBody.CategoryCode);
-                    return apiDataResult;
-                }
-            }
+            apiDataResult.Message = ResponseMessages.Category.CategoryExisted(requestBody.Name, requestBody.CategoryCode);
+            return apiDataResult;
         }
 
         category.ToUpdateCategory(requestBody);
 
-        var result = await _categoryRepository.UpdateEntityAsync(category, cancellationToken);
+        var updateItem = await _categoryRepository.UpdateEntityAsync(category, cancellationToken);
 
-        if (!result)
+        if (!updateItem)
         {
-            apiDataResult.Message = ResponseMessages.Product.UpdateFailed;
+            apiDataResult.Message = ResponseMessages.Category.UpdateFailed;
             return apiDataResult;
         }
 
         apiDataResult.Data = category.ToSummary();
+        
         return apiDataResult;
     }
 
@@ -195,7 +148,7 @@ public class CategoryService : ICategoryService
         var apiDataResult = new ApiStatusResult();
         var isExisted = await _categoryRepository.AnyAsync(x => x.Id == id, cancellationToken);
 
-        if(!isExisted)
+        if (!isExisted)
         {
             apiDataResult.Message = ResponseMessages.Category.NotFound;
             return apiDataResult;

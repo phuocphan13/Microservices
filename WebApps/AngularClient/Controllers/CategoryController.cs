@@ -58,6 +58,7 @@ public class CategoryController : ControllerBase
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
         var result = await _categoryService.CreateCategoryAsync(requestBody, cancellationToken);
+        
         if (result is null)
         {
             return NotFound();
@@ -82,6 +83,7 @@ public class CategoryController : ControllerBase
     public async Task<IActionResult> DeleteCategory(string id, CancellationToken cancellationToken)
     {
         var result = await _categoryService.DeleteCategoryAsync(id, cancellationToken);
+        
         if (result is null)
         {
             return NotFound();

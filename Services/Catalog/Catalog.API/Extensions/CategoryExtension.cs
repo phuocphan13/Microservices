@@ -1,6 +1,4 @@
 ﻿using ApiClient.Catalog.Models.Catalog.Category;
-using ApiClient.Catalog.Models.Catalog.Product;
-using Catalog.API.Common.Helpers;
 using Catalog.API.Entities;
 
 namespace Catalog.API.Extensions;

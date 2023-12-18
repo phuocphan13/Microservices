@@ -19,7 +19,7 @@ public static class ResponseMessages
     {
         public static string PropertyNotExisted(string propertyName, string? name) => $"{propertyName} with Name {name} is not existed";
 
-        public static string CategoryNameExisted(string? name) => $"Category with Name '{name}' is existed.";
+        public static string CategoryExisted(string? name, string? code) => $"Category with Name '{name}' or Code '{code} is existed.";
 
         public static string CategoryCodeExisted(string? code) => $"Category with Code '{code}' is existed.";
 

@@ -31,6 +31,11 @@ public class CategoryController : ControllerBase
     [HttpGet("{name}")]
     public async Task<IActionResult> GetCategoryByName(string name, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return BadRequest("Name is not allowed.");
+        }
+
         var result = await _categoryService.GetCategoryByNameAsync(name, cancellationToken);
 
         if (result is null)
@@ -44,6 +49,11 @@ public class CategoryController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCategoryById(string id, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return BadRequest("Id is not allowed.");
+        }
+
         var result = await _categoryService.GetCategoryByIdAsync(id, cancellationToken);
 
         if (result is null)
@@ -60,6 +70,11 @@ public class CategoryController : ControllerBase
         if (requestBody is null)
         {
             return BadRequest("RequestBody is not allowed null.");
+        }
+
+        if (string.IsNullOrWhiteSpace(requestBody.Name))
+        {
+            return BadRequest("Category Name is not allowed null.");
         }
 
         var result = await _categoryService.CreateCategoryAsync(requestBody, cancellationToken);
@@ -104,10 +119,9 @@ public class CategoryController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteCategory( string id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteCategory(string id, CancellationToken cancellationToken)
     {
-
-        if (string.IsNullOrWhiteSpace(id) || id == "")
+        if (string.IsNullOrWhiteSpace(id))
         {
             return BadRequest("Category Id is not allowed null.");
         }
