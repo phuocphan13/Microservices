@@ -7,6 +7,6 @@ public class MapperProfile : Profile
 {
     public MapperProfile()
     {
-        CreateMap<DiscountHistory, DiscountVersion>().ReverseMap();
+        // CreateMap<DiscountHistory, DiscountVersion>().ReverseMap();
     }
 }

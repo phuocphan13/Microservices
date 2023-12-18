@@ -8,9 +8,9 @@ namespace Discount.Domain.Repositories.Common;
 
 public interface IBaseRepository
 {
+    Task<bool> AnyAsync<TEntity>(string query) where TEntity : ExtendEntity, new();
     Task<TEntity?> QueryFirstOrDefaultAsync<TEntity>(string query, object param) where TEntity : ExtendEntity, new();
     Task<TEntity> CreateEntityAsync<TEntity>(TEntity entity) where TEntity : ExtendEntity, new();
-
     Task<TEntity> UpdateEntityAsync<TEntity>(TEntity entity) where TEntity : ExtendEntity, new();
     Task<bool> DeleteEntityAsync<TEntity>(int id) where TEntity : ExtendEntity, new();
 }
@@ -31,11 +31,23 @@ public class BaseRepository : IBaseRepository
         return connection;
     }
 
+    public async Task<bool> AnyAsync<TEntity>(string query)
+        where TEntity : ExtendEntity, new()
+    {
+        using var connection = InitializaCollection();
+        var tableName = typeof(TEntity).Name;
+        string sql = $"SELECT count(Id) FROM {tableName} WHERE " + query;
+
+        var count = await connection.ExecuteAsync(sql);
+        return count > 0;
+    }
+
     public async Task<TEntity?> QueryFirstOrDefaultAsync<TEntity>(string query, object param)
         where TEntity: ExtendEntity, new()
     {
         using var connection = InitializaCollection();
-        string sql = "SELECT * FROM Coupon WHERE " + query;
+        var tableName = typeof(TEntity).Name;
+        string sql = $"SELECT * FROM {tableName} WHERE " + query;
 
         var entity = await connection.QueryFirstOrDefaultAsync<TEntity>(sql, param);
 
@@ -53,6 +65,7 @@ public class BaseRepository : IBaseRepository
 
         entity.CreatedBy = "Admin Created";
         entity.CreatedDate = DateTime.Now;
+        entity.IsActive = true;
         
         await connection.ExecuteAsync(sql, entity);
 

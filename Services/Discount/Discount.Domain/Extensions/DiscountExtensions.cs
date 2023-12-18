@@ -3,9 +3,9 @@ using Discount.Domain.Entities;
 
 namespace Discount.Domain.Extensions;
 
-public static class DiscountVersionExtensions
+public static class DiscountExtensions
 {
-    public static DiscountDetail ToDetail(this DiscountVersion entity)
+    public static DiscountDetail ToDetail(this Entities.Discount entity)
     {
         return new DiscountDetail()
         {
@@ -13,9 +13,9 @@ public static class DiscountVersionExtensions
         };
     }
     
-    public static DiscountVersion ToCreateDiscountVersion(this CreateDiscountRequestBody body, string couponId)
+    public static Entities.Discount ToCreateDiscountVersion(this CreateDiscountRequestBody body, string couponId)
     {
-        return new DiscountVersion()
+        return new Entities.Discount()
         {
             CouponId = couponId,
             FromDate = body.FromDate,

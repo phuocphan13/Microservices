@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Discount.Domain.Entities;
 
-public class DiscountEntity : ExtendEntity
+public class Discount : ExtendEntity
 {
     [Required] 
     public DateTime FromDate { get; set; }
