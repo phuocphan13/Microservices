@@ -1,4 +1,4 @@
-namespace ApiClient.Catalog.Models;
+namespace ApiClient.Catalog.Models.Product;
 
 public class UpdateProductRequestBody : BaseProductRequestBody
 {

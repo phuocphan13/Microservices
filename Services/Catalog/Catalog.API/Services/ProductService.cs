@@ -1,9 +1,10 @@
-using ApiClient.Catalog.Models;
+using ApiClient.Catalog.Models.Product;
 using ApiClient.Common;
 using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
+//using static Catalog.API.Common.Consts.ResponseMessages;
 
 namespace Catalog.API.Services;
 

@@ -1,5 +1,5 @@
 using ApiClient.Catalog.ApiClient;
-using ApiClient.Catalog.Models;
+using ApiClient.Catalog.Models.Product;
 using ApiClient.Common;
 
 namespace AngularClient.Services;
