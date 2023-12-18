@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ApiClient.Discount.Models.Coupon;
-using Discount.Domain.Entities;
+using ApiClient.Discount.Models.Discount;
 using Discount.Domain.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Discount.API.Controllers;
 
@@ -10,39 +9,40 @@ namespace Discount.API.Controllers;
 public class DiscountController : ControllerBase
 {
     private readonly IDiscountService _discountService;
-    private readonly ILogger<DiscountController> _logger;
 
-    public DiscountController(ILogger<DiscountController> logger, IDiscountService discountService)
+    public DiscountController(IDiscountService discountService)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _discountService = discountService ?? throw new ArgumentNullException(nameof(discountService));
     }
 
-    [HttpGet]
-    public async Task<ActionResult<Coupon>> GetDiscount([FromQuery] string searchText, [FromQuery] CatalogType type)
-    {
-        var coupon = await _discountService.GetDiscountByTextAsync(searchText, type);
-        return Ok(coupon);
-    }
-
     [HttpPost]
-    public async Task<ActionResult<CouponDetail>> CreateDiscount([FromBody] CreateCouponRequestBody requestBody)
+    public async Task<IActionResult> CreateDiscount([FromBody] CreateDiscountRequestBody requestBody)
     {
-        var coupon = await _discountService.CreateDiscountAsync(requestBody);
-        return Ok(coupon);
+        if (requestBody is null)
+        {
+            return BadRequest("RequestBody is not allowed null.");
+        }
+
+        var result = await _discountService.CreateDiscountVersionAsync(requestBody);
+
+        if (result is null)
+        {
+            return BadRequest($"Cannot create Discount with CouponId: {requestBody.CouponId}");
+        }
+        
+        return Ok(result);
     }
 
-    [HttpPut]
-    public async Task<ActionResult<CouponDetail>> UpdateDiscount([FromBody] UpdateCouponRequestBody requestBody)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> InactiveDiscount(int? id)
     {
-        var coupon = await _discountService.UpdateDiscountAsync(requestBody);
-        return Ok(coupon);
-    }
-    
-    [HttpDelete("{id:int}")]
-    public async Task<ActionResult<bool>> DeleteDiscount(int id)
-    {
-        var result = await _discountService.DeleteDiscountAsync(id);
+        if (id is null || id == 0)
+        {
+            return BadRequest("Id is not allowed null or O.");
+        }
+
+        var result = await _discountService.InactiveDiscountAsync(id.Value);
+
         return Ok(result);
     }
 }

@@ -1,5 +1,4 @@
-using ApiClient.Catalog.ApiClient.Catalog.Category;
-using ApiClient.Catalog.ApiClient.Catalog.Product;
+using ApiClient.Catalog.ApiClient.Catalog;
 using ApiClient.Common;
 using Microsoft.Extensions.DependencyInjection;
 

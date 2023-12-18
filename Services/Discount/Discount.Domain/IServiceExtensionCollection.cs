@@ -10,9 +10,13 @@ public static class IServiceExtensionCollection
     public static void AddDiscountCommonServices(this IServiceCollection services)
     {
         // services.AddScoped(typeof(IValidationResult<>), typeof(ValidationResult<>));
+        services.AddScoped<ICouponRepository, CouponRepository>();
         services.AddScoped<IBaseRepository, BaseRepository>();
-        services.AddScoped<IDiscountRepository, DiscountRepository>();
+        services.AddScoped<IDiscountEntityRepository, DiscountEntityRepository>();
 
         services.AddScoped<IDiscountService, DiscountService>();
+        services.AddScoped<ICouponService, CouponService>();
+
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     }
 }

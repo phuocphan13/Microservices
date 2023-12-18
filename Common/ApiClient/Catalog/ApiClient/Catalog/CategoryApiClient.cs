@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace ApiClient.Catalog.ApiClient.Catalog.Category;
 
@@ -38,8 +39,7 @@ public class CategoryApiClient : CommonApiClient, ICategoryApiClient
     public async Task<ApiDataResult<CategorySummary>> GetCategoryByIdAsync(string id, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetCategoryById}";
-
-        url = url.AddQueryStringParameter("id", id, true);
+        url = url.AddDataInUrl(nameof(id), id);
 
         var result = await GetAsync<CategorySummary>(url, cancellationToken);
 
@@ -78,6 +78,8 @@ public class CategoryApiClient : CommonApiClient, ICategoryApiClient
     public async Task<ApiStatusResult> DeleteCategoryAsync(string id, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.DeleteCategory}";
+
+        url = url.AddDataInUrl(nameof(id), id);
 
         var result = await DeleteAsync(url, cancellationToken);
 

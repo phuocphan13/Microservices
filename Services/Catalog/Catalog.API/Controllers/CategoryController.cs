@@ -28,7 +28,7 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{name}", Name = "GetCategoryByName")]
+    [HttpGet("{name}")]
     public async Task<IActionResult> GetCategoryByName(string name, CancellationToken cancellationToken)
     {
         var result = await _categoryService.GetCategoryByNameAsync(name, cancellationToken);
@@ -41,7 +41,7 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{id}", Name = "GetCategoryById")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetCategoryById(string id, CancellationToken cancellationToken)
     {
         var result = await _categoryService.GetCategoryByIdAsync(id, cancellationToken);
@@ -103,20 +103,20 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteCategory(string categoryId, CancellationToken cancellationToken)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteCategory( string id, CancellationToken cancellationToken)
     {
 
-        if (string.IsNullOrWhiteSpace(categoryId) || categoryId == "")
+        if (string.IsNullOrWhiteSpace(id) || id == "")
         {
             return BadRequest("Category Id is not allowed null.");
         }
 
-        var result = await _categoryService.DeleteCategoryAsync(categoryId, cancellationToken);
+        var result = await _categoryService.DeleteCategoryAsync(id, cancellationToken);
 
         if (result is null)
         {
-            return Problem($"Cannot delete category with id: {categoryId}");
+            return Problem($"Cannot delete category with id: {id}");
         }
 
         return Ok(result);

@@ -127,7 +127,7 @@
       "UpstreamHttpMethod": [ "PUT" ]
     },
     {
-      "DownstreamPathTemplate": "/api/v1/Category/DeleteCategory",
+      "DownstreamPathTemplate": "/api/v1/Category/DeleteCategory/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -135,7 +135,7 @@
           "Port": 5000
         }
       ],
-      "UpstreamPathTemplate": "/Category/DeleteCategory",
+      "UpstreamPathTemplate": "/Category/DeleteCategory/{id}",
       "UpstreamHttpMethod": [ "DELETE" ]
     },
     //Basket API
