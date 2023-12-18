@@ -18,7 +18,7 @@ public static class ApiUrlConstants
 
     public const string GetCategoryById = "/Category/GetCategoryById/{id}";
 
-    public const string GetCategoryByName = "/Category/GetCategoryById/{name}";
+    public const string GetCategoryByName = "/Category/GetCategoryByName/{name}";
 
     public const string CreateCategory = "/Category/CreateCategory";
 

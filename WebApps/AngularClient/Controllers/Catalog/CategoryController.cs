@@ -32,6 +32,7 @@ public class CategoryController : ControllerBase
     public async Task<IActionResult> GetCategoryById(string id, CancellationToken cancellationToken)
     {
         var result = await _categoryService.GetCategoryByIdAsync(id, cancellationToken);
+
         if (result is null)
         {
             return NotFound();
