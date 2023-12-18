@@ -1,16 +1,16 @@
 using AngularClient.Services;
-using ApiClient.Catalog.Models.Product;
+using ApiClient.Catalog.Product.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AngularClient.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class CatalogController : ControllerBase
+public class ProductController : ControllerBase
 {
-    private readonly ICatalogService _catalogService;
+    private readonly IProductService _catalogService;
 
-    public CatalogController(ICatalogService catalogService)
+    public ProductController(IProductService catalogService)
     {
         _catalogService = catalogService;
     }

@@ -12,7 +12,7 @@ public static class IServiceExtensionCollection
         // services.AddScoped(typeof(IValidationResult<>), typeof(ValidationResult<>));
         services.AddScoped<ICouponRepository, CouponRepository>();
         services.AddScoped<IBaseRepository, BaseRepository>();
-        services.AddScoped<IDiscountEntityRepository, DiscountEntityRepository>();
+        services.AddScoped<IDiscountRepository, DiscountRepository>();
 
         services.AddScoped<IDiscountService, DiscountService>();
         services.AddScoped<ICouponService, CouponService>();

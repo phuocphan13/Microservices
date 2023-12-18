@@ -10,7 +10,8 @@ builder.Services.AddCors();
 builder.Services.AddHttpClient();
 builder.Services.AddCommonServices();
 builder.Services.AddCatalogServices();
-builder.Services.AddScoped<ICatalogService, CatalogService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 

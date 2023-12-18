@@ -1,10 +1,10 @@
-using ApiClient.Catalog.Models.Product;
+using ApiClient.Catalog.Product.Models;
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
 
-namespace ApiClient.Catalog.ApiClient;
+namespace ApiClient.Catalog.Product;
 
-public interface ICatalogApiClient
+public interface IProductApiClient
 {
     Task<ApiDataResult<List<ProductSummary>>> GetProducts(CancellationToken cancellationToken = default);
     Task<ApiDataResult<ProductDetail>> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
@@ -14,9 +14,9 @@ public interface ICatalogApiClient
     Task<ApiStatusResult> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
 }
 
-public class CatalogApiClient : CommonApiClient, ICatalogApiClient
+public class ProductApiClient : CommonApiClient, IProductApiClient
 {
-    public CatalogApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+    public ProductApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         : base(httpClientFactory, configuration)
     {
     }
@@ -55,7 +55,6 @@ public class CatalogApiClient : CommonApiClient, ICatalogApiClient
     public async Task<ApiDataResult<ProductDetail>> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.CreateProduct}";
-
 
         var result = await PostAsync<CreateProductRequestBody, ProductDetail>(url, requestBody, cancellationToken);
 

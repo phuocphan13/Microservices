@@ -14,12 +14,12 @@ public interface IDiscountService
 
 public class DiscountService : IDiscountService
 {
-    private readonly IDiscountEntityRepository _discountEntityRepository;
+    private readonly IDiscountRepository _discountRepository;
     private readonly IMapper _mapper;
 
-    public DiscountService(IDiscountEntityRepository discountEntityRepository, IMapper mapper)
+    public DiscountService(IDiscountRepository discountRepository, IMapper mapper)
     {
-        _discountEntityRepository = discountEntityRepository ?? throw new ArgumentNullException(nameof(discountEntityRepository));
+        _discountRepository = discountRepository ?? throw new ArgumentNullException(nameof(discountRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
@@ -33,24 +33,33 @@ public class DiscountService : IDiscountService
 
         var version = requestBody.ToCreateDiscountVersion(requestBody.CouponId);
 
-        var entity = await _discountEntityRepository.CreateDiscountAsync(version);
+        var entity = await _discountRepository.CreateDiscountAsync(version);
 
         return entity.ToDetail();
     }
 
     public async Task<DiscountDetail?> InactiveDiscountAsync(int id)
     {
-        var discountCurrentVersion = await _discountEntityRepository.GetDiscountAsync<DiscountVersion>(id.ToString());
+        var discount = await _discountRepository.GetDiscountAsync(id.ToString());
 
-        if (discountCurrentVersion is null)
+        if (discount is null)
         {
             return null;
         }
 
-        var history = _mapper.Map<DiscountHistory>(discountCurrentVersion);
-        await _discountEntityRepository.CreateDiscountAsync(history);
-        await _discountEntityRepository.DeleteDiscountAsync<DiscountVersion>(discountCurrentVersion.Id);
+        discount.IsActive = false;
+        discount = await _discountRepository.UpdateDiscountAsync(discount);
 
-        return discountCurrentVersion.ToDetail();
+        return discount.ToDetail();
     }
+
+    #region Internal Function
+
+    // private async Task<bool> ValidationDateAsync<T>(T requestBody)
+    //     where T : BaseDiscountRequestBody
+    // {
+    //     var isValid = await _discountRepository.
+    // }
+
+    #endregion
 }

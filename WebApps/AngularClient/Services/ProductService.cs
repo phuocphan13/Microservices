@@ -1,10 +1,10 @@
-using ApiClient.Catalog.ApiClient;
-using ApiClient.Catalog.Models.Product;
+using ApiClient.Catalog.Product;
+using ApiClient.Catalog.Product.Models;
 using ApiClient.Common;
 
 namespace AngularClient.Services;
 
-public interface ICatalogService
+public interface IProductService
 {
     Task<List<ProductSummary>?> GetProductsAsync(CancellationToken cancellationToken = default);
     Task<ProductDetail?> GetProductById(string id, CancellationToken cancellationToken = default);
@@ -14,18 +14,18 @@ public interface ICatalogService
     Task<ApiStatusResult> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
 }
 
-public class CatalogService : ICatalogService
+public class ProductService : IProductService
 {
-    private readonly ICatalogApiClient _catalogApiClient;
+    private readonly IProductApiClient _productApiClient;
 
-    public CatalogService(ICatalogApiClient catalogApiClient)
+    public ProductService(IProductApiClient productApiClient)
     {
-        _catalogApiClient = catalogApiClient;
+        _productApiClient = productApiClient;
     }
 
     public async Task<List<ProductSummary>?> GetProductsAsync(CancellationToken cancellationToken)
     {
-        var result = await _catalogApiClient.GetProducts(cancellationToken);
+        var result = await _productApiClient.GetProducts(cancellationToken);
 
         if (result.IsSuccessCode && result.Data is not null)
         {
@@ -37,8 +37,8 @@ public class CatalogService : ICatalogService
 
     public async Task<ProductDetail?> GetProductById(string id, CancellationToken cancellationToken)
     {
-        var result = await _catalogApiClient.GetProductByIdAsync(id, cancellationToken);
-        
+        var result = await _productApiClient.GetProductByIdAsync(id, cancellationToken);
+
         if (result.IsSuccessCode && result.Data is not null)
         {
             return result.Data;
@@ -49,8 +49,8 @@ public class CatalogService : ICatalogService
 
     public async Task<List<ProductSummary>?> GetProductByCategoryAsync(string category, CancellationToken cancellationToken)
     {
-        var result = await _catalogApiClient.GetProductByCategoryAsync(category, cancellationToken);
-        
+        var result = await _productApiClient.GetProductByCategoryAsync(category, cancellationToken);
+
         if (result.IsSuccessCode && result.Data is not null)
         {
             return result.Data;
@@ -61,8 +61,8 @@ public class CatalogService : ICatalogService
 
     public async Task<ProductDetail?> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
-        var result = await _catalogApiClient.CreateProductAsync(requestBody, cancellationToken);
-        
+        var result = await _productApiClient.CreateProductAsync(requestBody, cancellationToken);
+
         if (result.IsSuccessCode && result.Data is not null)
         {
             return result.Data;
@@ -71,21 +71,21 @@ public class CatalogService : ICatalogService
         return null;
     }
 
-    public async Task<ProductDetail?> UpdateProductAsync (UpdateProductRequestBody requestBody, CancellationToken cancellationToken)
+    public async Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
-        var result = await _catalogApiClient.UpdateProductAsync(requestBody, cancellationToken);
-        
-        if(result.IsSuccessCode && result.Data is not null)
+        var result = await _productApiClient.UpdateProductAsync(requestBody, cancellationToken);
+
+        if (result.IsSuccessCode && result.Data is not null)
         {
             return result.Data;
         }
-        
+
         return null;
     }
 
     public async Task<ApiStatusResult> DeleteProductAsync(string id, CancellationToken cancellationToken)
     {
-        var result = await _catalogApiClient.DeleteProductAsync(id, cancellationToken);
+        var result = await _productApiClient.DeleteProductAsync(id, cancellationToken);
 
         return result;
     }
