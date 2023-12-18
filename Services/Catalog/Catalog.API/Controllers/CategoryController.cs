@@ -28,7 +28,7 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{name}", Name = "GetCategoryByName")]
+    [HttpGet("{name}")]
     public async Task<IActionResult> GetCategoryByName(string name, CancellationToken cancellationToken)
     {
         var result = await _categoryService.GetCategoryByNameAsync(name, cancellationToken);
@@ -41,7 +41,7 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{id:length(24)}", Name = "GetCategoryById")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetCategoryById(string id, CancellationToken cancellationToken)
     {
         var result = await _categoryService.GetCategoryByIdAsync(id, cancellationToken);
@@ -103,7 +103,7 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpDelete("{id:length(24)}", Name = "DeleteCategory")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategory( string id, CancellationToken cancellationToken)
     {
 
