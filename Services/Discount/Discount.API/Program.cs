@@ -1,4 +1,3 @@
-using Discount.API.Extensions;
 using Discount.Domain;
 using Discount.Domain.Common.InitializeDB;
 
@@ -14,8 +13,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDiscountCommonServices();
 
 var app = builder.Build();
-
-app.MigrateDatabase<Program>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

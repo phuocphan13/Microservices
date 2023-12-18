@@ -8,20 +8,20 @@ namespace Discount.Grpc.Services;
 
 public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
 {
-    private readonly IDiscountService _discountService;
+    private readonly ICouponService _couponService;
     private readonly ILogger<DiscountService> _logger;
     private readonly IMapper _mapper;
 
-    public DiscountService(IDiscountService discountService, ILogger<DiscountService> logger, IMapper mapper)
+    public DiscountService(ICouponService couponService, ILogger<DiscountService> logger, IMapper mapper)
     {
-        _discountService = discountService ?? throw new ArgumentNullException(nameof(discountService));
+        _couponService = couponService ?? throw new ArgumentNullException(nameof(couponService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public override async Task<CouponDetailModel> GetDiscount(GetDiscountRequest request, ServerCallContext context)
     {
-        var coupon = await _discountService.GetDiscountByTextAsync(request.SearchText, (CatalogType)request.Type);
+        var coupon = await _couponService.GetDiscountByTextAsync(request.SearchText, (CatalogType)request.Type);
     
         if (coupon is null)
         {
@@ -37,7 +37,7 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     public override async Task<CouponDetailModel> CreateDiscount(CreateCouponRequest request, ServerCallContext context)
     {
         var requestBody = _mapper.Map<CreateCouponRequestBody>(request);
-        var result = await _discountService.CreateDiscountAsync(requestBody);
+        var result = await _couponService.CreateDiscountAsync(requestBody);
         
         if (result is null)
         {
@@ -54,7 +54,7 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     {
         var requestBody = _mapper.Map<UpdateCouponRequestBody>(request);
         
-        var result = await _discountService.UpdateDiscountAsync(requestBody);
+        var result = await _couponService.UpdateDiscountAsync(requestBody);
         
         if (result is null)
         {
@@ -69,7 +69,7 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     
     public override async Task<DeleteDiscountResponse> DeleteDiscount(DeleteDiscountRequest request, ServerCallContext context)
     {
-        var result = await _discountService.DeleteDiscountAsync(request.Id);
+        var result = await _couponService.DeleteDiscountAsync(request.Id);
         if (!result)
         {
             _logger.LogError("Discount is failed deleted.");

@@ -3,7 +3,7 @@ using Discount.Domain.Repositories.Common;
 
 namespace Discount.Domain.Repositories;
 
-public interface IDiscountRepository
+public interface ICouponRepository
 {
     Task<Coupon?> GetDiscountAsync(string value, CatalogType type);
     Task<Coupon> CreateDiscountAsync(Coupon coupon);
@@ -11,11 +11,11 @@ public interface IDiscountRepository
     Task<bool> DeleteDiscountAsync(int id);
 }
 
-public class DiscountRepository : IDiscountRepository
+public class CouponRepository : ICouponRepository
 {
     private readonly IBaseRepository _baseRepository;
 
-    public DiscountRepository(IBaseRepository baseRepository)
+    public CouponRepository(IBaseRepository baseRepository)
     {
         _baseRepository = baseRepository ?? throw new ArgumentNullException(nameof(baseRepository));
     }
@@ -47,21 +47,4 @@ public class DiscountRepository : IDiscountRepository
 
         return result;
     }
-
-    // public async Task<bool> UpdateDiscount(Coupon coupon)
-    // {
-    //     using var connection = InitializaCollection();
-    //     var affected = await connection.ExecuteAsync("UPDATE Coupon SET ProductName = @ProductName, Description = @Description, Amount = @Amount WHERE Id = @Id",
-    //         new { coupon.Id, coupon.ProductName, coupon.Description, coupon.Amount });
-    //
-    //     return affected > 0;
-    // }
-    //
-    // public async Task<bool> DeleteDiscount(string productName)
-    // {
-    //     using var connection = InitializaCollection();
-    //     var affected = await connection.ExecuteAsync("DELETE FROM Coupon WHERE ProductName = @ProductName", new { ProductName = productName });
-    //
-    //     return affected > 0;
-    // }
 }

@@ -1,4 +1,5 @@
 using Dapper;
+using Discount.Domain.Entities;
 using Discount.Domain.Extensions;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -7,11 +8,11 @@ namespace Discount.Domain.Repositories.Common;
 
 public interface IBaseRepository
 {
-    Task<TEntity?> QueryFirstOrDefaultAsync<TEntity>(string query, object param);
-    Task<TEntity> CreateEntityAsync<TEntity>(TEntity entity) where TEntity : new();
+    Task<TEntity?> QueryFirstOrDefaultAsync<TEntity>(string query, object param) where TEntity : ExtendEntity, new();
+    Task<TEntity> CreateEntityAsync<TEntity>(TEntity entity) where TEntity : ExtendEntity, new();
 
-    Task<TEntity> UpdateEntityAsync<TEntity>(TEntity entity) where TEntity : new();
-    Task<bool> DeleteEntityAsync<TEntity>(int id);
+    Task<TEntity> UpdateEntityAsync<TEntity>(TEntity entity) where TEntity : ExtendEntity, new();
+    Task<bool> DeleteEntityAsync<TEntity>(int id) where TEntity : ExtendEntity, new();
 }
 
 public class BaseRepository : IBaseRepository
@@ -31,6 +32,7 @@ public class BaseRepository : IBaseRepository
     }
 
     public async Task<TEntity?> QueryFirstOrDefaultAsync<TEntity>(string query, object param)
+        where TEntity: ExtendEntity, new()
     {
         using var connection = InitializaCollection();
         string sql = "SELECT * FROM Coupon WHERE " + query;
@@ -41,7 +43,7 @@ public class BaseRepository : IBaseRepository
     }
 
     public async Task<TEntity> CreateEntityAsync<TEntity>(TEntity entity)
-        where TEntity : new()
+        where TEntity : ExtendEntity, new()
     {
         using var connection = InitializaCollection();
         var tableProperty = QueryBuilderExtensions.CreateQueryBuilder<TEntity>(false);
@@ -49,18 +51,24 @@ public class BaseRepository : IBaseRepository
 
         string sql = $"INSERT INTO {nameof(entity)} ({tableProperty}) VALUES ({valProperty})";
 
+        entity.CreatedBy = "Admin Created";
+        entity.CreatedDate = DateTime.Now;
+        
         await connection.ExecuteAsync(sql, entity);
 
         return entity;
     }
 
     public async Task<TEntity> UpdateEntityAsync<TEntity>(TEntity entity)
-        where TEntity : new()
+        where TEntity : ExtendEntity, new()
     {
         using var connection = InitializaCollection();
         var tableProperty = QueryBuilderExtensions.UpdateQueryBuilder<TEntity>();
 
         string sql = $"UPDATE {nameof(entity)} SET ({tableProperty}) WHERE Id = @Id";
+
+        entity.UpdatedBy = "Admin Created";
+        entity.UpdatedDate = DateTime.Now;
 
         await connection.ExecuteAsync(sql, entity);
 
@@ -68,6 +76,7 @@ public class BaseRepository : IBaseRepository
     }
 
     public async Task<bool> DeleteEntityAsync<TEntity>(int id)
+        where TEntity : ExtendEntity, new()
     {
         using var connection = InitializaCollection();
 
