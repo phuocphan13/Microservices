@@ -35,7 +35,7 @@ public class CategoryService : ICategoryService
 
         var entities = await _categoryRepository.GetEntitiesAsync(cancellationToken);
 
-        if(entities == null)
+        if(entities is null)
         {
             categoryList.Message = ResponseMessages.Category.NotFound;
             return categoryList;

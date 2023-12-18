@@ -1,4 +1,5 @@
 using ApiClient.Catalog.ApiClient.Catalog;
+using ApiClient.Catalog.ApiClient.Catalog.Product;
 using ApiClient.Catalog.Models.Catalog.Product;
 using ApiClient.Common;
 
