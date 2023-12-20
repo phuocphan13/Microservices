@@ -9,6 +9,7 @@ public interface IDiscountRepository
     Task<Entities.Discount> CreateDiscountAsync(Entities.Discount Discount);
     Task<Entities.Discount> UpdateDiscountAsync(Entities.Discount Discount);
     Task<bool> DeleteDiscountAsync(int id);
+    Task<bool> AnyDateAsync(DateTime? fromDate, DateTime? toDate);
 }
 
 public class DiscountRepository : IDiscountRepository
@@ -20,7 +21,20 @@ public class DiscountRepository : IDiscountRepository
         _baseRepository = baseRepository ?? throw new ArgumentNullException(nameof(baseRepository));
     }
 
-    // public async Task<Entities.Discount> AnyDateAsync(DateTime)
+    public async Task<bool> AnyDateAsync(DateTime? fromDate, DateTime? toDate)
+    {
+        //ToDo Will implement for null DateTime later
+        if (fromDate is null || toDate is null)
+        {
+            return true;
+        }
+
+        const string query = $"@fromDate <= ToDate or @toDate >= FromDate";
+        object param = new { fromDate, toDate };
+        var isOverlap = await _baseRepository.AnyAsync<Entities.Discount>(query, param);
+
+        return isOverlap;
+    }
     
     public async Task<Entities.Discount?> GetDiscountAsync(string id) 
     {

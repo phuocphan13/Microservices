@@ -1,6 +1,5 @@
 using ApiClient.Discount.Models.Discount;
 using AutoMapper;
-using Discount.Domain.Entities;
 using Discount.Domain.Extensions;
 using Discount.Domain.Repositories;
 
@@ -27,6 +26,13 @@ public class DiscountService : IDiscountService
     {
         //ToDo: Check null and Add Message
         if (string.IsNullOrWhiteSpace(requestBody.CouponId))
+        {
+            return null;
+        }
+
+        var isOverlap = await _discountRepository.AnyDateAsync(requestBody.FromDate, requestBody.ToDate);
+
+        if (isOverlap)
         {
             return null;
         }
