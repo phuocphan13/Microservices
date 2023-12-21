@@ -8,11 +8,11 @@ namespace Catalog.API.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]/[action]")]
-public class SubCatagoryController : ControllerBase
+public class SubCategoryController : ControllerBase
 {
     private readonly ISubCategoryService _subCategory;
 
-    public SubCatagoryController(ISubCategoryService subCategory)
+    public SubCategoryController(ISubCategoryService subCategory)
     {
         _subCategory = subCategory;
     }
