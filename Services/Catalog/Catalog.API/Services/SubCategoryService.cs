@@ -1,4 +1,4 @@
-﻿using ApiClient.Catalog.Models.SubCategory;
+﻿using ApiClient.Catalog.SubCategory.Models;
 using ApiClient.Common;
 using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
@@ -183,6 +183,13 @@ namespace Catalog.API.Services
             var apiDataResult = new ApiDataResult<SubCategorySummary>();
 
             var subCategory = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == body.Id , cancellationToken);
+
+            if (subCategory is null)
+            {
+                apiDataResult.Message = ResponseMessages.SubCategory.NotFound;
+                return apiDataResult;
+            }
+
             var isExisted = await _subCategoryRepository.AnyAsync(x => (x.Name == body.Name || x.SubCategoryCode == body.SubCategoryCode) && x.Id != body.Id, cancellationToken);
             if (isExisted)
             {

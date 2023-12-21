@@ -12,6 +12,7 @@ builder.Services.AddCommonServices();
 builder.Services.AddCatalogServices();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ISubCategoryService,SubCategoryService>();
 
 var app = builder.Build();
 

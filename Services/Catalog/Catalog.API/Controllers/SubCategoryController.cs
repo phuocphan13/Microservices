@@ -1,4 +1,4 @@
-﻿using ApiClient.Catalog.Models.SubCategory;
+﻿using ApiClient.Catalog.SubCategory.Models;
 using ApiClient.Common;
 using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +18,10 @@ public class SubCatagoryController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetSubCategory(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSubCategories(CancellationToken cancellationToken)
     {
         var result = await _subCategory.GetSubCategoriesAsync(cancellationToken);
-        if(result == null)
-        {
-            return NotFound();
-        }        
+           
 
         return Ok(result);
     }

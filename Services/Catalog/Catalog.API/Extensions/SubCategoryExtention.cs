@@ -1,5 +1,4 @@
-﻿
-using ApiClient.Catalog.Models.SubCategory;
+﻿using ApiClient.Catalog.SubCategory.Models;
 using Catalog.API.Common.Helpers;
 using Catalog.API.Entities;
 using static Catalog.API.Common.Consts.ResponseMessages;

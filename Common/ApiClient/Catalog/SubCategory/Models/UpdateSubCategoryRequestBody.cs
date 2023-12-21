@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApiClient.Catalog.Models.SubCategory
+namespace ApiClient.Catalog.SubCategory.Models
 {
     public class UpdateSubCategoryRequestBody : BaseSubCategoryResquestBody
     {

@@ -25,4 +25,21 @@ public static class ApiUrlConstants
     public const string UpdateCategory = "/Category/UpdateCategory";
 
     public const string DeleteCategory = "/Category/DeleteCategory/{id}";
+
+    //Url for SubCategory
+
+    public const string GetSubCategories = "/SubCategory/GetSubCategories";
+
+    public const string GetSubCategoryById = "/SubCategory/GetSubCategoryById/{id}";
+
+    public const string GetSubCategoryByName = "/SubCategory/GetSubCategoryByName/{name}";
+
+    public const string GetSubCategoryByCategoryId = "/SubCategory/GetSubCategoriesByCategoryId/{categoryId}";
+
+    public const string CreateSubCategory = "/SubCategory/CreateSubCategory";
+
+    public const string UpdateSubCategory = "/SubCategory/UpdateSubCategory";
+
+    public const string DeleteSubCategory = "/SubCategory/DeleteSubCategory/{id}";
+
 }
