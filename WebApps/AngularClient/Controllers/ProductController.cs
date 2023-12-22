@@ -1,8 +1,8 @@
-using AngularClient.Services.Catalog;
-using ApiClient.Catalog.Models.Catalog.Product;
+using AngularClient.Services;
+using ApiClient.Catalog.Product.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AngularClient.Controllers.Catalog;
+namespace AngularClient.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]

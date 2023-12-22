@@ -29,4 +29,24 @@ public static class ResponseMessages
 
         public const string UpdateFailed = "Update Has Failed.";
     }
+
+    public static class SubCategory
+    {
+        public static string NotFound = "SubCategory not found.";
+        public static string SubCategoryExisted => $"SubCategory is existed.";
+        public static string CategoryIdNotFound(string? CategoryId) => $"Category's ID '{CategoryId}' does not existed.";
+
+        public const string CreateSubCategoryFailed = "Created SubCategory Has Failed.";
+
+        public const string UpdateSubCategoryFailed = "Updated SubCategory Has Failed.";
+
+        public const string SubCategoryCodeExisted = "SubCategory Name ";
+    }
+
+    public static class Delete
+    {
+        public static string NotFound = "Product not found.";
+        public static string DeleteFailed = "Delete failed.";
+        public static string DeleteSuccess = "Delete successfully.";
+    }
 }

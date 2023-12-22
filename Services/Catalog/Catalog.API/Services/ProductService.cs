@@ -1,4 +1,4 @@
-﻿using ApiClient.Catalog.Models.Catalog.Product;
+﻿using ApiClient.Catalog.Product.Models;
 using ApiClient.Common;
 using Catalog.API.Common.Consts;
 using Catalog.API.Entities;

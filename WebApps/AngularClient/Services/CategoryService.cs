@@ -1,8 +1,8 @@
-﻿using ApiClient.Catalog.ApiClient.Catalog.Category;
+﻿using ApiClient.Catalog.Category;
 using ApiClient.Catalog.Models.Catalog.Category;
 using ApiClient.Common;
 
-namespace AngularClient.Services.Catalog;
+namespace AngularClient.Services;
 
 public interface ICategoryService
 {

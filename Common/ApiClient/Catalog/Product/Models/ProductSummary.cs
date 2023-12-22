@@ -1,4 +1,4 @@
-namespace ApiClient.Catalog.Models.Catalog.Product;
+namespace ApiClient.Catalog.Product.Models;
 
 public class ProductSummary
 {

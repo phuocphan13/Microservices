@@ -1,8 +1,8 @@
-using ApiClient.Catalog.Models.Catalog.Product;
+using ApiClient.Catalog.Product.Models;
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
 
-namespace ApiClient.Catalog.ApiClient.Catalog.Product;
+namespace ApiClient.Catalog.Product;
 
 public interface IProductApiClient
 {

@@ -2,7 +2,7 @@
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
 
-namespace ApiClient.Catalog.ApiClient.Catalog.Category;
+namespace ApiClient.Catalog.Category;
 
 public interface ICategoryApiClient
 {

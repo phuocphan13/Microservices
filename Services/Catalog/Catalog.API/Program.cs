@@ -1,4 +1,3 @@
-using ApiClient.Catalog.ApiClient.Catalog.Category;
 using Catalog.API.Common.Extensions;
 using Catalog.API.Repositories;
 using Catalog.API.Services;
@@ -22,6 +21,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 //Services
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 
 var app = builder.Build();
 

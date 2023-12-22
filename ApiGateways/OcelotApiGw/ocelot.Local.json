@@ -138,6 +138,91 @@
       "UpstreamPathTemplate": "/Category/DeleteCategory/{id}",
       "UpstreamHttpMethod": [ "DELETE" ]
     },
+    //Catalog : SubCategory
+    {
+      "DownstreamPathTemplate": "/api/v1/SubCategory/GetSubCategories", //Link call to Call to "Catalog.API => Controller"
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/SubCategory/GetSubCategories", //Link Call From "Angular Client"
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/SubCategory/GetSubCategoryByName/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/SubCategory/GetSubCategoryByName/{name}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/SubCategory/GetSubCategoryByCategoryId/{categoryId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/SubCategory/GetSubCategoryByCategoryId/{categoryId}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/SubCategory/GetSubCategoryById/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/SubCategory/GetSubCategoryById/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/SubCategorySubCategory/CreateSubCategory",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/SubCategory/CreateSubCategory",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/SubCategory/UpdateSubCategory",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/SubCategory/UpdateSubCategory",
+      "UpstreamHttpMethod": [ "PUT" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/SubCategory/DeleteSubCategory/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/SubCategory/DeleteSubCategory/{id}",
+      "UpstreamHttpMethod": [ "DELETE" ]
+    },
     //Basket API
     {
       "DownstreamPathTemplate": "/api/v1/Basket/{userName}",

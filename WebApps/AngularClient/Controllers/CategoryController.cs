@@ -1,4 +1,4 @@
-﻿using AngularClient.Services.Catalog;
+﻿using AngularClient.Services;
 using ApiClient.Catalog.Models.Catalog.Category;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,6 +31,10 @@ public class CategoryController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCategoryById(string id, CancellationToken cancellationToken)
     {
+        if(string.IsNullOrWhiteSpace(id))
+        {
+            return BadRequest("The Id field cannot be null");
+        }
         var result = await _categoryService.GetCategoryByIdAsync(id, cancellationToken);
 
         if (result is null)
@@ -44,6 +48,11 @@ public class CategoryController : ControllerBase
     [HttpGet("{name}")]
     public async Task<IActionResult> GetCategoryByName(string name, CancellationToken cancellationToken)
     {
+        if(string.IsNullOrWhiteSpace(name))
+        {
+            return BadRequest("The Name field cannot be null");
+        }
+
         var result = await _categoryService.GetCategoryByNameAsync(name, cancellationToken);
 
         if (result is null)
@@ -57,8 +66,13 @@ public class CategoryController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
+        if(requestBody is null || string.IsNullOrWhiteSpace(requestBody.Name) || string.IsNullOrWhiteSpace(requestBody.CategoryCode))
+        {
+            return BadRequest("RequestBody, Name field or CategoryCode field cannot be null");
+        }
+
         var result = await _categoryService.CreateCategoryAsync(requestBody, cancellationToken);
-        
+
         if (result is null)
         {
             return NotFound();
@@ -70,7 +84,13 @@ public class CategoryController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
+        if (requestBody is null || string.IsNullOrWhiteSpace(requestBody.Name) || string.IsNullOrWhiteSpace(requestBody.CategoryCode))
+        {
+            return BadRequest("RequestBody, Name field or CategoryCode field cannot be null");
+        }
+
         var result = await _categoryService.UpdateCategoryAsync(requestBody, cancellationToken);
+
         if (result is null)
         {
             return NotFound();
@@ -82,6 +102,11 @@ public class CategoryController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategory(string id, CancellationToken cancellationToken)
     {
+        if(string.IsNullOrWhiteSpace(id))
+        {
+            return BadRequest("The Id field cannot be null");
+        }
+
         var result = await _categoryService.DeleteCategoryAsync(id, cancellationToken);
         
         if (result is null)
