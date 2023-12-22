@@ -31,6 +31,11 @@ public class CategoryController : ControllerBase
     [HttpGet("{name}")]
     public async Task<IActionResult> GetCategoryByName(string name, CancellationToken cancellationToken)
     {
+        if(string.IsNullOrWhiteSpace(name))
+        {
+            return BadRequest("The Name field cannot be null");
+        }
+
         var result = await _categoryService.GetCategoryByNameAsync(name, cancellationToken);
 
         if (result is null)
@@ -44,6 +49,11 @@ public class CategoryController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCategoryById(string id, CancellationToken cancellationToken)
     {
+        if(string.IsNullOrWhiteSpace(id))
+        {
+            return BadRequest("The Id filed cannot be null");
+        }    
+
         var result = await _categoryService.GetCategoryByIdAsync(id, cancellationToken);
 
         if (result is null)
@@ -60,6 +70,16 @@ public class CategoryController : ControllerBase
         if (requestBody is null)
         {
             return BadRequest("RequestBody is not allowed null.");
+        }
+
+        if (string.IsNullOrWhiteSpace(requestBody.Name))
+        {
+            return BadRequest("Category Name is not allowed null.");
+        }
+
+        if (string.IsNullOrWhiteSpace(requestBody.CategoryCode))
+        {
+            return BadRequest("Category Code is not allowed null.");
         }
 
         var result = await _categoryService.CreateCategoryAsync(requestBody, cancellationToken);
@@ -91,6 +111,11 @@ public class CategoryController : ControllerBase
         if (string.IsNullOrWhiteSpace(requestBody.Name))
         {
             return BadRequest("Category Name is not allowed null.");
+        }
+
+        if (string.IsNullOrWhiteSpace(requestBody.CategoryCode))
+        {
+            return BadRequest("Category Code is not allowed null.");
         }
 
         var result = await _categoryService.UpdateCategoryAsync(requestBody, cancellationToken);
