@@ -55,7 +55,19 @@ public class ProductController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetProductByCategory(string category, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(category))
+        {
+            return BadRequest("Missing Category.");
+        }
+        
         var result = await _productService.GetProductsByCategoryAsync(category, cancellationToken);
+        
+        if (result is null)
+        {
+            _logger.LogError($"Product with category: {category}, not found.");
+            return NotFound();
+        }
+        
         return Ok(result);
     }
 
@@ -101,10 +113,24 @@ public class ProductController : ControllerBase
 
         var result = await _productService.UpdateProductAsync(requestBody, cancellationToken);
 
-        if (result is null)
+        if (!result.IsSuccessCode)
         {
-            return Problem($"Cannot update product with name: {requestBody.Name}");
+            if (result.InternalErrorCode == 404)
+            {
+                return NotFound(result.Message);
+            }
+
+            if (result.InternalErrorCode == 500)
+            {
+
+                return Problem(result.Message);
+            }
         }
+
+        // if (result is null)
+        // {
+        //     return Problem($"Cannot update product with name: {requestBody.Name}");
+        // }
             
         return Ok(result);
     }
