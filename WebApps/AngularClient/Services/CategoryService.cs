@@ -1,4 +1,4 @@
-﻿using ApiClient.Catalog.Category;
+﻿using ApiClient.Catalog.ApiClient.Catalog.Category;
 using ApiClient.Catalog.Models.Catalog.Category;
 using ApiClient.Common;
 
