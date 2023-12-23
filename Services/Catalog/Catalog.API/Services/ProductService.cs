@@ -28,9 +28,9 @@ public class ProductService : IProductService
         IRepository<Category> categoryRepository,
         IRepository<SubCategory> subCategoryRepository)
     {
-        _productRepository = productRepository;
-        _categoryRepository = categoryRepository;
-        _subCategoryRepository = subCategoryRepository;
+        _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
+        _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+        _subCategoryRepository = subCategoryRepository ?? throw new ArgumentNullException(nameof(subCategoryRepository));
     }
 
     public async Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken)

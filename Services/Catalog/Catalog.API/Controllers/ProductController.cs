@@ -90,7 +90,6 @@ public class ProductController : ControllerBase
             
             if (result.InternalErrorCode == 500)
             {
-
                 return Problem(result.Message); 
             }
         }

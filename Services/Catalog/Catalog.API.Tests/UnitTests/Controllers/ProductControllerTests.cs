@@ -1,5 +1,5 @@
 using System.Net;
-using ApiClient.Catalog.Models.Catalog.Product;
+using ApiClient.Catalog.Product.Models;
 using ApiClient.Common;
 using Catalog.API.Controllers;
 using Catalog.API.Extensions;
@@ -7,7 +7,6 @@ using Catalog.API.Services;
 using Microsoft.Extensions.Logging;
 using Catalog.API.Tests.Common;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 using UnitTest.Common.Helpers;
 
 namespace Catalog.API.Tests.UnitTests.Controllers;
@@ -229,10 +228,10 @@ public class ProductControllerTests
 
     #region CreateProduct
 
-    [Theory]
-    [InlineData(null)]
-    public async Task CreateProduct_InvalidParams_BadRequest(CreateProductRequestBody requestBody)
+    [Fact]
+    public async Task CreateProduct_InvalidParams_BadRequest()
     {
+        CreateProductRequestBody requestBody = null!;
         var productService = new Mock<IProductService>();
 
         var logger = new Mock<ILogger<ProductController>>();
