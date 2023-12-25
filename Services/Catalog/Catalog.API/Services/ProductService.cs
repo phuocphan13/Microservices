@@ -71,8 +71,9 @@ public class ProductService : IProductService
         if (isExisted)
         {
             apiDataResult.Message = ResponseMessages.Product.ProductExisted(requestBody.Name);
+            return apiDataResult;
         }
-
+        
         var product = requestBody.ToCreateProduct();
 
         await MappingProductInternalAsync(product, requestBody, cancellationToken);
@@ -89,7 +90,7 @@ public class ProductService : IProductService
             return apiDataResult;
         }
 
-        await _productRepository.CreateEntityAsync(product, cancellationToken);
+        product = await _productRepository.CreateEntityAsync(product, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(product.Id))
         {

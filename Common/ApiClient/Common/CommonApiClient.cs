@@ -33,7 +33,7 @@ public class CommonApiClient
     }
 
     protected async Task<ApiDataResult<TResult>> PostAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
-        where TRequestBody : BaseRequestBody, new()
+        where TRequestBody : new()
         where TResult : class, new()
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url);
@@ -45,7 +45,6 @@ public class CommonApiClient
     }
 
     protected async Task<ApiDataResult<TResult>> PutAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
-        where TRequestBody : BaseRequestBody
         where TResult : class, new()
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, url);

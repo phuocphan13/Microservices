@@ -137,7 +137,7 @@ public class ProductControllerTests
         var productDetail = ModelHelpers.Product.GenerateProductDetail(id);
         
         var productService = new Mock<IProductService>();
-        productService.Setup(x => x.GetProductByIdAsync(id, default)).ReturnsAsync(productDetail);
+        productService.Setup(x => x.GetProductByIdAsync(It.IsAny<string>(), default)).ReturnsAsync(productDetail);
 
         var logger = new Mock<ILogger<ProductController>>();
 

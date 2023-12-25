@@ -14,7 +14,7 @@ public interface IRepository<TEntity>
     Task<TEntity> GetEntityFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     Task<List<TEntity>> GetEntitiesQueryAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
-    Task CreateEntityAsync(TEntity product, CancellationToken cancellationToken = default);
+    Task<TEntity> CreateEntityAsync(TEntity product, CancellationToken cancellationToken = default);
     Task<bool> UpdateEntityAsync(TEntity product, CancellationToken cancellationToken = default);
     Task<bool> DeleteEntityAsync(string id, CancellationToken cancellationToken = default);
 }
@@ -66,7 +66,7 @@ public class Repository<TEntity> : IRepository<TEntity>
         return isExisted;
     }
 
-    public async Task CreateEntityAsync(TEntity product, CancellationToken cancellationToken)
+    public async Task<TEntity> CreateEntityAsync(TEntity product, CancellationToken cancellationToken)
     {
         var options = new InsertOneOptions()
         {
@@ -74,6 +74,8 @@ public class Repository<TEntity> : IRepository<TEntity>
         };
 
         await _collection.InsertOneAsync(product, options, cancellationToken);
+
+        return product;
     }
 
     public async Task<bool> UpdateEntityAsync(TEntity product, CancellationToken cancellationToken)

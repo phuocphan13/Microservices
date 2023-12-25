@@ -16,10 +16,10 @@ public static class ModelHelpers
             subCategoryName = string.IsNullOrWhiteSpace(subCategoryName) ? CommonHelpers.GenerateRandomString() : subCategoryName;
 
             var summaries = new List<ProductSummary>();
-            
+
             for (int i = 0; i < number; i++)
             {
-                summaries.Add(GenerateProductEntity().ToSummary(categoryName, subCategoryName));   
+                summaries.Add(GenerateProductEntity().ToSummary(categoryName, subCategoryName));
             }
 
             return summaries;
@@ -30,28 +30,30 @@ public static class ModelHelpers
             return GenerateProductEntity(id).ToDetail();
         }
 
-        private static BaseProductRequestBody GenerateBaseRequestBody()
+        private static TRequestBody GenerateBaseRequestBody<TRequestBody>(string category = null!, string subCategory = null!)
+            where TRequestBody : BaseProductRequestBody, new()
         {
-            return new BaseProductRequestBody()
+            return new TRequestBody()
             {
-                Category = CommonHelpers.GenerateRandomString(),
                 Description = CommonHelpers.GenerateRandomString(),
                 ImageFile = CommonHelpers.GenerateRandomString(),
                 Name = CommonHelpers.GenerateRandomString(),
-                SubCategory = CommonHelpers.GenerateRandomString(),
                 Price = CommonHelpers.GenerateRandomDecimal(),
                 Summary = CommonHelpers.GenerateRandomString(),
+                Category = string.IsNullOrWhiteSpace(category) ? CommonHelpers.GenerateRandomString() : category,
+                SubCategory = string.IsNullOrWhiteSpace(subCategory) ? CommonHelpers.GenerateRandomString() : subCategory,
             };
         }
 
-        public static CreateProductRequestBody GenerateCreateRequestBody()
+        public static CreateProductRequestBody? GenerateCreateRequestBody(string category = null!, string subCategory = null!)
         {
-            return (CreateProductRequestBody)GenerateBaseRequestBody();
+            var requestBody = GenerateBaseRequestBody<CreateProductRequestBody>(category, subCategory);
+            return requestBody;
         }
 
         public static UpdateProductRequestBody GenerateUpdateRequestBody(string id = null!, string name = null!)
-        { 
-            var requestBody = (UpdateProductRequestBody)GenerateBaseRequestBody();
+        {
+            var requestBody = GenerateBaseRequestBody<UpdateProductRequestBody>();
             requestBody.Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id;
             requestBody.Name = string.IsNullOrWhiteSpace(name) ? CommonHelpers.GenerateRandomString() : name;
 
@@ -64,7 +66,7 @@ public static class ModelHelpers
 
             categoryId = string.IsNullOrWhiteSpace(categoryId) ? CommonHelpers.GenerateRandomString() : categoryId;
             subCategoryId = string.IsNullOrWhiteSpace(subCategoryId) ? CommonHelpers.GenerateRandomString() : subCategoryId;
-            
+
             for (int i = 0; i < number; i++)
             {
                 products.Add(GenerateProductEntity(categoryId, subCategoryId));
@@ -72,7 +74,7 @@ public static class ModelHelpers
 
             return products;
         }
-        
+
         public static Entities.Product GenerateProductEntity(string id = null!, string categoryId = null!, string subCategoryId = null!)
         {
             return new Entities.Product()
@@ -89,7 +91,7 @@ public static class ModelHelpers
             };
         }
     }
-    
+
     public static class Category
     {
         public static List<CategorySummary> GenerateCategorySummaries(int number = 2)
@@ -103,11 +105,11 @@ public static class ModelHelpers
 
             return summaries;
         }
-        
+
         public static List<Entities.Category> GenerateCategories(int number = 2)
         {
             var categories = new List<Entities.Category>();
-            
+
             for (int i = 0; i < number; i++)
             {
                 categories.Add(GenerateCategory());
@@ -115,7 +117,7 @@ public static class ModelHelpers
 
             return categories;
         }
-        
+
         public static Entities.Category GenerateCategory(string id = null!)
         {
             return new Entities.Category()

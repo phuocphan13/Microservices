@@ -2,7 +2,7 @@ using ApiClient.Common.Models;
 
 namespace ApiClient.Catalog.Product.Models;
 
-public class BaseProductRequestBody : BaseRequestBody
+public class BaseProductRequestBody 
 {
     public string? Name { get; set; }
 
