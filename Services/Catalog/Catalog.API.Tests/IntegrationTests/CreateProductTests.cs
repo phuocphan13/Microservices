@@ -10,6 +10,7 @@ using Core.Common.Helpers;
 using IntegrationTest.Common.Configurations;
 using FluentAssertions;
 using IntegrationTest.Common.Common;
+using IntegrationTest.Common.Helpers;
 using Newtonsoft.Json;
 
 namespace Catalog.API.Tests.IntegrationTests;
@@ -20,6 +21,7 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
     private readonly HttpClient _client;
     private readonly Category _category;
     private readonly SubCategory _subCategory;
+    private const string Url = "/api/v1/Product";
 
     public CreateProductTests(TestWebApplicationFactory<Program> factory)
     {
@@ -56,7 +58,7 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
             x.SubCategory = _subCategory.Name;
         });
 
-        var response = await SendRequestAsync(requestBody);
+        var response = await TestHttpRequestHelper.SendRequestAsync(requestBody, _client, Url);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -81,7 +83,7 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
         var expectedMessage = ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
         
         // Act
-        var response = await SendRequestAsync(requestBody);
+        var response = await TestHttpRequestHelper.SendRequestAsync(requestBody, _client, Url);
 
         Assert.NotNull(response);
         Assert.False(response.IsSuccessStatusCode);
@@ -103,7 +105,7 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
         var expectedMessage = ResponseMessages.Product.PropertyNotExisted("SubCategory", requestBody.SubCategory);
 
         // Act
-        var response = await SendRequestAsync(requestBody);
+        var response = await TestHttpRequestHelper.SendRequestAsync(requestBody, _client, Url);
 
         Assert.NotNull(response);
         Assert.False(response.IsSuccessStatusCode);
@@ -112,15 +114,5 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
 
         Assert.NotNull(result);
         result.Message.Should().Be(expectedMessage);
-    }
-
-    private async Task<HttpResponseMessage> SendRequestAsync(CreateProductRequestBody requestBody)
-    {
-        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/Product");
-        httpRequestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody), System.Text.Encoding.UTF8, "application/json");
-        // Act
-        var response = await _client.SendAsync(httpRequestMessage, default);
-
-        return response;
     }
 }
