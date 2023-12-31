@@ -60,7 +60,8 @@ public class ProductService : IProductService
     {
         var entity = await _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
-        return entity.ToDetail();
+        var product = await MappingProductDetailInternalAsync(entity, cancellationToken);
+        return product;
     }
 
     public async Task<ApiDataResult<ProductDetail>> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken)
@@ -73,20 +74,14 @@ public class ProductService : IProductService
             apiDataResult.Message = ResponseMessages.Product.ProductExisted(requestBody.Name);
             return apiDataResult;
         }
-        
+
         var product = requestBody.ToCreateProduct();
 
-        await MappingProductInternalAsync(product, requestBody, cancellationToken);
+        var errorMessage = await MappingProductInternalAsync(product, requestBody, cancellationToken);
 
-        if (string.IsNullOrWhiteSpace(product.CategoryId))
+        if (!string.IsNullOrWhiteSpace(errorMessage))
         {
-            apiDataResult.Message = ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
-            return apiDataResult;
-        }
-
-        if (string.IsNullOrWhiteSpace(product.SubCategoryId))
-        {
-            apiDataResult.Message = ResponseMessages.Product.PropertyNotExisted("SubCategory", requestBody.SubCategory);
+            apiDataResult.Message = errorMessage;
             return apiDataResult;
         }
 
@@ -98,7 +93,7 @@ public class ProductService : IProductService
             return apiDataResult;
         }
 
-        apiDataResult.Data = product.ToDetail();
+        apiDataResult.Data = await MappingProductDetailInternalAsync(product, cancellationToken);
         return apiDataResult;
     }
 
@@ -114,17 +109,11 @@ public class ProductService : IProductService
         }
 
         product.ToUpdateProduct(requestBody);
-        await MappingProductInternalAsync(product, requestBody, cancellationToken);
+        var errorMessage = await MappingProductInternalAsync(product, requestBody, cancellationToken);
 
-        if (string.IsNullOrWhiteSpace(product.CategoryId))
+        if (!string.IsNullOrWhiteSpace(errorMessage))
         {
-            apiDataResult.Message = ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
-            return apiDataResult;
-        }
-
-        if (string.IsNullOrWhiteSpace(product.SubCategoryId))
-        {
-            apiDataResult.Message = ResponseMessages.Product.PropertyNotExisted("SubCategory", requestBody.SubCategory);
+            apiDataResult.Message = errorMessage;
             return apiDataResult;
         }
 
@@ -136,7 +125,7 @@ public class ProductService : IProductService
             return apiDataResult;
         }
 
-        apiDataResult.Data = product.ToDetail();
+        apiDataResult.Data = await MappingProductDetailInternalAsync(product, cancellationToken);
         return apiDataResult;
     }
 
@@ -156,6 +145,7 @@ public class ProductService : IProductService
     }
 
     #region Internal Functions
+
     private async Task<List<ProductSummary>> GetProductSummariesInternalAsync(List<Product> entities, CancellationToken cancellationToken)
     {
         var categoryIds = entities.Select(x => x.CategoryId);
@@ -177,25 +167,42 @@ public class ProductService : IProductService
         return summaries;
     }
 
-    private async Task MappingProductInternalAsync<TRequestBody>(Product entity, TRequestBody requestBody, CancellationToken cancellationToken)
+    private async Task<ProductDetail> MappingProductDetailInternalAsync(Product entity, CancellationToken cancellationToken)
+    {
+        var product = entity.ToDetail();
+
+        var category = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == entity.CategoryId, cancellationToken);
+        var subCategory = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == entity.SubCategoryId, cancellationToken);
+
+        product.Category = category is null ? string.Empty : category.Name;
+        product.SubCategory = subCategory is null ? string.Empty : subCategory.Name;
+
+        return product;
+    }
+
+    private async Task<string> MappingProductInternalAsync<TRequestBody>(Product entity, TRequestBody requestBody, CancellationToken cancellationToken)
         where TRequestBody : BaseProductRequestBody
     {
         var category = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => string.Equals(x.Name, requestBody.Category), cancellationToken);
 
         if (category is null)
         {
-            return;
+            return ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
         }
+
 
         var subCategory = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.CategoryId == category.Id && string.Equals(x.Name, requestBody.SubCategory), cancellationToken);
 
         if (subCategory is null)
         {
-            return;
+            return ResponseMessages.Product.PropertyNotExisted("SubCategory", requestBody.SubCategory);
         }
 
         entity.CategoryId = category.Id;
         entity.SubCategoryId = subCategory.Id;
+
+        return string.Empty;
     }
+
     #endregion
 }

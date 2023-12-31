@@ -27,7 +27,7 @@ public class ProductController : ControllerBase
         {
             return NotFound();
         }
-
+        
         return Ok(result);
     }
 
@@ -125,11 +125,6 @@ public class ProductController : ControllerBase
                 return Problem(result.Message);
             }
         }
-
-        // if (result is null)
-        // {
-        //     return Problem($"Cannot update product with name: {requestBody.Name}");
-        // }
             
         return Ok(result);
     }

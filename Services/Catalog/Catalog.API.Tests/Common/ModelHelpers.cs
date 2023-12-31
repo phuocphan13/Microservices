@@ -10,7 +10,7 @@ public static class ModelHelpers
 {
     public static class Product
     {
-        public static List<ProductSummary> GenerateProductSummaries(int number = 2, string categoryName = null!, string subCategoryName = null!)
+        public static List<ProductSummary> GenerateProductSummaries(int number = 2, string categoryName = null!, string subCategoryName = null!, Action<ProductSummary>? initAction = default)
         {
             categoryName = string.IsNullOrWhiteSpace(categoryName) ? CommonHelpers.GenerateRandomString() : categoryName;
             subCategoryName = string.IsNullOrWhiteSpace(subCategoryName) ? CommonHelpers.GenerateRandomString() : subCategoryName;
@@ -19,15 +19,23 @@ public static class ModelHelpers
 
             for (int i = 0; i < number; i++)
             {
-                summaries.Add(GenerateProductEntity().ToSummary(categoryName, subCategoryName));
+                var summary = GenerateProductEntity().ToSummary(categoryName, subCategoryName);
+                
+                initAction?.Invoke(summary);
+                
+                summaries.Add(summary);
             }
 
             return summaries;
         }
 
-        public static ProductDetail GenerateProductDetail(string id = null!)
+        public static ProductDetail GenerateProductDetail(string id = null!, Action<ProductDetail>? initAction = default)
         {
-            return GenerateProductEntity(id).ToDetail();
+            var detail = GenerateProductEntity(id).ToDetail();
+
+            initAction?.Invoke(detail);
+            
+            return detail;
         }
 
         private static TRequestBody GenerateBaseRequestBody<TRequestBody>(string category = null!, string subCategory = null!)
@@ -45,17 +53,22 @@ public static class ModelHelpers
             };
         }
 
-        public static CreateProductRequestBody? GenerateCreateRequestBody(string category = null!, string subCategory = null!)
+        public static CreateProductRequestBody GenerateCreateRequestBody(string category = null!, string subCategory = null!, Action<CreateProductRequestBody>? initAction = default)
         {
             var requestBody = GenerateBaseRequestBody<CreateProductRequestBody>(category, subCategory);
+
+            initAction?.Invoke(requestBody);
+            
             return requestBody;
         }
 
-        public static UpdateProductRequestBody GenerateUpdateRequestBody(string id = null!, string name = null!)
+        public static UpdateProductRequestBody GenerateUpdateRequestBody(string id = null!, string name = null!, Action<UpdateProductRequestBody>? initAction = default)
         {
             var requestBody = GenerateBaseRequestBody<UpdateProductRequestBody>();
             requestBody.Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id;
             requestBody.Name = string.IsNullOrWhiteSpace(name) ? CommonHelpers.GenerateRandomString() : name;
+
+            initAction?.Invoke(requestBody);
 
             return requestBody;
         }
@@ -75,9 +88,9 @@ public static class ModelHelpers
             return products;
         }
 
-        public static Entities.Product GenerateProductEntity(string id = null!, string categoryId = null!, string subCategoryId = null!)
+        public static Entities.Product GenerateProductEntity(string id = null!, string categoryId = null!, string subCategoryId = null!, Action<Entities.Product>? initAction = default)
         {
-            return new Entities.Product()
+            var entity = new Entities.Product()
             {
                 Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id,
                 ProductCode = CommonHelpers.GenerateRandomString(),
@@ -89,6 +102,10 @@ public static class ModelHelpers
                 CategoryId = string.IsNullOrWhiteSpace(categoryId) ? CommonHelpers.GenerateBsonId() : categoryId,
                 SubCategoryId = string.IsNullOrWhiteSpace(subCategoryId) ? CommonHelpers.GenerateBsonId() : subCategoryId,
             };
+            
+            initAction?.Invoke(entity);
+
+            return entity;
         }
     }
 

@@ -39,3 +39,10 @@ app.MapControllers();
 await app.InitializePlatformDbContextsAsync(builder.Configuration, isRebuildSchema);
 
 await app.RunAsync();
+
+public partial class Program
+{
+    protected Program()
+    {
+    }
+}
