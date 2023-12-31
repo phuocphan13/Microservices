@@ -85,7 +85,7 @@ public class ProductController : ControllerBase
         {
             if (result.InternalErrorCode == 404)
             {
-                return NotFound(result.Message);
+                return NotFound(result);
             }
             
             if (result.InternalErrorCode == 500)

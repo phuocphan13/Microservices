@@ -1,6 +1,7 @@
 using System.Net;
 using ApiClient.Catalog.Product.Models;
 using ApiClient.Common;
+using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Tests.Common;
 using Catalog.API.Tests.Extensions;
@@ -55,10 +56,7 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
             x.SubCategory = _subCategory.Name;
         });
 
-        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/Product");
-        httpRequestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody), System.Text.Encoding.UTF8, "application/json");
-        // Act
-        var response = await _client.SendAsync(httpRequestMessage);
+        var response = await SendRequestAsync(requestBody);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -74,5 +72,55 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
         result.Data.Name.Should().Be(requestBody.Name);
         result.Data.Category.Should().Be(_category.Name);
         result.Data.SubCategory.Should().Be(_subCategory.Name);
+    }
+
+    [Fact]
+    public async Task CreateProduct_NotFoundCategory()
+    {
+        var requestBody = ModelHelpers.Product.GenerateCreateRequestBody();
+        var expectedMessage = ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
+        
+        // Act
+        var response = await SendRequestAsync(requestBody);
+
+        Assert.NotNull(response);
+        Assert.False(response.IsSuccessStatusCode);
+
+        var result = await HttpResponseHelpers.TransformResponseToData<ApiDataResult<ProductDetail>>(response, default);
+
+        Assert.NotNull(result);
+        result.Message.Should().Be(expectedMessage);
+    }
+
+    [Fact]
+    public async Task CreateProduct_NotFoundSubCategory()
+    {
+        var requestBody = ModelHelpers.Product.GenerateCreateRequestBody(initAction: x =>
+        {
+            x.Category = _category.Name;
+        });
+        
+        var expectedMessage = ResponseMessages.Product.PropertyNotExisted("SubCategory", requestBody.SubCategory);
+
+        // Act
+        var response = await SendRequestAsync(requestBody);
+
+        Assert.NotNull(response);
+        Assert.False(response.IsSuccessStatusCode);
+
+        var result = await HttpResponseHelpers.TransformResponseToData<ApiDataResult<ProductDetail>>(response, default);
+
+        Assert.NotNull(result);
+        result.Message.Should().Be(expectedMessage);
+    }
+
+    private async Task<HttpResponseMessage> SendRequestAsync(CreateProductRequestBody requestBody)
+    {
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/Product");
+        httpRequestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody), System.Text.Encoding.UTF8, "application/json");
+        // Act
+        var response = await _client.SendAsync(httpRequestMessage, default);
+
+        return response;
     }
 }
