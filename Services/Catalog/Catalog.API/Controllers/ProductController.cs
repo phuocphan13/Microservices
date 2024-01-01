@@ -32,7 +32,6 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("{id:length(24)}", Name = "GetProductById")]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetProductById(string id, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -62,7 +61,7 @@ public class ProductController : ControllerBase
         
         var result = await _productService.GetProductsByCategoryAsync(category, cancellationToken);
         
-        if (result is null)
+        if (result is null || !result.Any())
         {
             _logger.LogError($"Product with category: {category}, not found.");
             return NotFound();
@@ -116,7 +115,7 @@ public class ProductController : ControllerBase
         {
             if (result.InternalErrorCode == 404)
             {
-                return NotFound(result.Message);
+                return NotFound(result);
             }
 
             if (result.InternalErrorCode == 500)

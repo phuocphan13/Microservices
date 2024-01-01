@@ -4,6 +4,13 @@ namespace IntegrationTest.Common.Helpers;
 
 public static class TestHttpRequestHelper
 {
+    public static async Task<HttpResponseMessage> GetAsync(HttpClient client, string url)
+    {
+        var response = await client.GetAsync(url, cancellationToken: default);
+
+        return response;
+    }
+    
     public static async Task<HttpResponseMessage> PostAsync<T>(T requestBody, HttpClient client, string url)
         where T : class, new()
     {
@@ -15,9 +22,20 @@ public static class TestHttpRequestHelper
         return response;
     }
 
-    public static async Task<HttpResponseMessage> GetAsync(HttpClient client, string url)
+    public static async Task<HttpResponseMessage> PutAsync<T>(T requestBody, HttpClient client, string url)
+        where T : class, new()
     {
-        var response = await client.GetAsync(url, cancellationToken: default);
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, url);
+        httpRequestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody), System.Text.Encoding.UTF8, "application/json");
+        // Act
+        var response = await client.SendAsync(httpRequestMessage, default);
+
+        return response;
+    }
+
+    public static async Task<HttpResponseMessage> DeleteAsync(HttpClient client, string url)
+    {
+        var response = await client.DeleteAsync(url, cancellationToken: default);
 
         return response;
     }

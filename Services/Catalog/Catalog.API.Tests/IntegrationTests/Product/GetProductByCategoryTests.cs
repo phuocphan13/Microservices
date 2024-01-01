@@ -7,31 +7,35 @@ using Core.Common.Helpers;
 using FluentAssertions;
 using IntegrationTest.Common.Configurations;
 using IntegrationTest.Common.Helpers;
+using UnitTest.Common.Helpers;
 
 namespace Catalog.API.Tests.IntegrationTests.Product;
 
-public class GetProductsTest : IClassFixture<TestWebApplicationFactory<Program>>, IAsyncLifetime
+public class GetProductByCategoryTests : IClassFixture<TestWebApplicationFactory<Program>>, IAsyncLifetime
 {
     private readonly TestWebApplicationFactory<Program> _factory;
     private readonly List<Entities.Product> _products;
     private readonly Category _category;
     private readonly SubCategory _subCategory;
-    private const string Url = "/api/v1/Product";
+    private readonly string Url;
 
-    public GetProductsTest(TestWebApplicationFactory<Program> factory)
+    public GetProductByCategoryTests(TestWebApplicationFactory<Program> factory)
     {
         _factory = factory.WithMongoDbContainer();
-        
+
         _category = ModelHelpers.Category.GenerateCategory();
         _subCategory = ModelHelpers.SubCategory.GenerateSubCategory(categoryId: _category.Id);
         _products = ModelHelpers.Product.GenerateProductEntities(3, categoryId: _category.Id, subCategoryId: _subCategory.Id);
-    } 
-    
+
+        Url = $"/api/v1/Product/GetProductByCategory/{_category.Name}";
+    }
+
     #region Configurations
 
     public async Task InitializeAsync()
     {
         await _factory.StartContainersAsync();
+        await EnsureDataAsync();
     }
 
     public async Task DisposeAsync()
@@ -49,12 +53,11 @@ public class GetProductsTest : IClassFixture<TestWebApplicationFactory<Program>>
     #endregion
 
     [Fact]
-    public async Task GetProducts_Success()
+    public async Task GetProductByCategory_Ok()
     {
-        await EnsureDataAsync();
         var client = _factory.CreateClient();
         var response = await TestHttpRequestHelper.GetAsync(client, Url);
-        
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         Assert.NotNull(response);
@@ -63,27 +66,18 @@ public class GetProductsTest : IClassFixture<TestWebApplicationFactory<Program>>
         var summaries = await HttpResponseHelpers.TransformResponseToData<List<ProductSummary>>(response, default);
 
         Assert.NotNull(summaries);
-        Assert.True(summaries.Any());
-
-        summaries.Count.Should().Be(_products.Count);
         
-        summaries.Should().Contain(x => x.Category == _category.Name);
-        summaries.Should().Contain(x => x.SubCategory == _subCategory.Name);
+        summaries.Count.Should().Be(_products.Count);
     }
 
     [Fact]
-    public async Task GetProducts_Empty_Ok()
+    public async Task GetProductByCategory_NotFound()
     {
+        string urlTemp = $"/api/v1/Product/GetProductByCategory/{CommonHelpers.GenerateBsonId()}";
+
         var client = _factory.CreateClient();
-        var response = await TestHttpRequestHelper.GetAsync(client, Url);
+        var response = await TestHttpRequestHelper.GetAsync(client, urlTemp);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var summaries = await HttpResponseHelpers.TransformResponseToData<List<ProductSummary>>(response, default);
-
-        Assert.NotNull(summaries);
-        Assert.False(summaries.Any());
-
-        summaries.Count.Should().Be(0);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }

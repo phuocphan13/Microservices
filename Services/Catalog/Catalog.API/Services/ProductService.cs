@@ -10,7 +10,7 @@ namespace Catalog.API.Services;
 public interface IProductService
 {
     Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken = default);
-    Task<ProductDetail> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
+    Task<ProductDetail?> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<List<ProductSummary>> GetProductsByCategoryAsync(string category, CancellationToken cancellationToken = default);
     Task<ApiDataResult<ProductDetail>> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<ApiDataResult<ProductDetail>> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
@@ -56,10 +56,15 @@ public class ProductService : IProductService
         return new List<ProductSummary>();
     }
 
-    public async Task<ProductDetail> GetProductByIdAsync(string id, CancellationToken cancellationToken)
+    public async Task<ProductDetail?> GetProductByIdAsync(string id, CancellationToken cancellationToken)
     {
         var entity = await _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
+        if (entity is null)
+        {
+            return null;
+        }
+        
         var product = await MappingProductDetailInternalAsync(entity, cancellationToken);
         return product;
     }
