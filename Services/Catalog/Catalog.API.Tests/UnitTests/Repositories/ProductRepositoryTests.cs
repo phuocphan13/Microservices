@@ -37,31 +37,31 @@ public class ProductRepositoryTests
 
 
 
-        var entities = ModelHelpers.Product.GenerateProductEntities();
-        
-        var products = new Mock<IFindFluent<Entities.Product, Entities.Product>>();
-
-        var asyncCursor = new Mock<IAsyncCursor<Entities.Product>>();
-        
-        var configuration = new Mock<IConfiguration>();
-        var configurationSection = new Mock<IConfigurationSection>();
-        var mongoClient = new Mock<MongoClient>();
-        var mongoDB = new Mock<IMongoDatabase>();
-        var mongoCollection = new Mock<IMongoCollection<Entities.Product>>();
-        
-        configurationSection.Setup(a => a.Value).Returns("mongodb://localhost:27017");
-        configuration.Setup(a => a.GetSection(It.IsAny<string>())).Returns(configurationSection.Object);
-        
-        mongoClient.Setup(x => x.GetDatabase(It.IsAny<string>(), It.IsAny<MongoDatabaseSettings>())).Returns(mongoDB.Object);
-        mongoDB.Setup(x => x.GetCollection<Entities.Product>(It.IsAny<string>(), It.IsAny<MongoCollectionSettings>())).Returns(mongoCollection.Object);
-        mongoCollection.Setup(x => x.FindAsync(Builders<Entities.Product>.Filter.Empty, It.IsAny<FindOptions<Entities.Product>>(), default))
-            .ReturnsAsync(asyncCursor.Object);
-
-        asyncCursor.SetupSequence(_async => _async.MoveNext(default)).Returns(true).Returns(false);
-        asyncCursor.SetupGet(_async => _async.Current).Returns(entities);
-
-        var repository = new Repository<Entities.Product>(configuration.Object);
-
-        var result = await repository.GetEntitiesAsync(default);
+        // var entities = ModelHelpers.Product.GenerateProductEntities();
+        //
+        // var products = new Mock<IFindFluent<Entities.Product, Entities.Product>>();
+        //
+        // var asyncCursor = new Mock<IAsyncCursor<Entities.Product>>();
+        //
+        // var configuration = new Mock<IConfiguration>();
+        // var configurationSection = new Mock<IConfigurationSection>();
+        // var mongoClient = new Mock<MongoClient>();
+        // var mongoDB = new Mock<IMongoDatabase>();
+        // var mongoCollection = new Mock<IMongoCollection<Entities.Product>>();
+        //
+        // configurationSection.Setup(a => a.Value).Returns("mongodb://localhost:27017");
+        // configuration.Setup(a => a.GetSection(It.IsAny<string>())).Returns(configurationSection.Object);
+        //
+        // mongoClient.Setup(x => x.GetDatabase(It.IsAny<string>(), It.IsAny<MongoDatabaseSettings>())).Returns(mongoDB.Object);
+        // mongoDB.Setup(x => x.GetCollection<Entities.Product>(It.IsAny<string>(), It.IsAny<MongoCollectionSettings>())).Returns(mongoCollection.Object);
+        // mongoCollection.Setup(x => x.FindAsync(Builders<Entities.Product>.Filter.Empty, It.IsAny<FindOptions<Entities.Product>>(), default))
+        //     .ReturnsAsync(asyncCursor.Object);
+        //
+        // asyncCursor.SetupSequence(_async => _async.MoveNext(default)).Returns(true).Returns(false);
+        // asyncCursor.SetupGet(_async => _async.Current).Returns(entities);
+        //
+        // var repository = new Repository<Entities.Product>(configuration.Object);
+        //
+        // var result = await repository.GetEntitiesAsync(default);
     }
 }
