@@ -1,3 +1,4 @@
+using Catalog.API.Common.Consts;
 using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using IntegrationTest.Common.Extensions;
@@ -48,7 +49,8 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
             switch (container)
             {
                 case MongoDbContainer dbContainer:
-                    builder.UseSetting("ConnectionStrings:Db", dbContainer.GetConnectionString());
+                    builder.UseSetting(DatabaseConst.CollectionName.ConnectionString, dbContainer.GetConnectionString());
+                    // builder.UseSetting("ConnectionStrings:Db", dbContainer.GetConnectionString());
                     break;
                 // case PostgreSqlContainer dbContainer:
                 //     builder.UseSetting("ConnectionStrings:Db", dbContainer.GetConnectionString());

@@ -5,20 +5,16 @@ using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Tests.Common;
 using Catalog.API.Tests.Extensions;
-using Core.Common.Api;
 using Core.Common.Helpers;
 using IntegrationTest.Common.Configurations;
 using FluentAssertions;
-using IntegrationTest.Common.Common;
 using IntegrationTest.Common.Helpers;
-using Newtonsoft.Json;
 
-namespace Catalog.API.Tests.IntegrationTests;
+namespace Catalog.API.Tests.IntegrationTests.Product;
 
 public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Program>>, IAsyncLifetime
 {
     private readonly TestWebApplicationFactory<Program> _factory;
-    private readonly HttpClient _client;
     private readonly Category _category;
     private readonly SubCategory _subCategory;
     private const string Url = "/api/v1/Product";
@@ -26,7 +22,6 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
     public CreateProductTests(TestWebApplicationFactory<Program> factory)
     {
         _factory = factory.WithMongoDbContainer();
-        _client = _factory.CreateClient(ConfigConst.ConfigFactoryClientOptions(ConfigurationConst.CatalogApiName));
 
         _category = ModelHelpers.Category.GenerateCategory();
         _subCategory = ModelHelpers.SubCategory.GenerateSubCategory(categoryId: _category.Id);
@@ -58,7 +53,8 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
             x.SubCategory = _subCategory.Name;
         });
 
-        var response = await TestHttpRequestHelper.SendRequestAsync(requestBody, _client, Url);
+        var client = _factory.CreateClient();
+        var response = await TestHttpRequestHelper.PostAsync(requestBody, client, Url);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -81,9 +77,10 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
     {
         var requestBody = ModelHelpers.Product.GenerateCreateRequestBody();
         var expectedMessage = ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
-        
+
         // Act
-        var response = await TestHttpRequestHelper.SendRequestAsync(requestBody, _client, Url);
+        var client = _factory.CreateClient();
+        var response = await TestHttpRequestHelper.PostAsync(requestBody, client, Url);
 
         Assert.NotNull(response);
         Assert.False(response.IsSuccessStatusCode);
@@ -105,7 +102,8 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
         var expectedMessage = ResponseMessages.Product.PropertyNotExisted("SubCategory", requestBody.SubCategory);
 
         // Act
-        var response = await TestHttpRequestHelper.SendRequestAsync(requestBody, _client, Url);
+        var client = _factory.CreateClient();
+        var response = await TestHttpRequestHelper.PostAsync(requestBody, client, Url);
 
         Assert.NotNull(response);
         Assert.False(response.IsSuccessStatusCode);

@@ -313,7 +313,7 @@ public class ProductControllerTests
 
     [Theory]
     [InlineData(null!)]
-    public async Task UpdateProduct_InvalidParams_BadRequest(UpdateProductRequestBody requestBody)
+    public async Task UpdateProduct_InvalidParams_BadRequest(UpdateProductRequestBody? requestBody)
     {
         var productService = new Mock<IProductService>();
 
@@ -322,7 +322,7 @@ public class ProductControllerTests
         //Run testing
         var controller = new ProductController(productService.Object, logger.Object);
 
-        var result = await controller.UpdateProduct(requestBody, default);
+        var result = await controller.UpdateProduct(requestBody!, default);
         Assert.IsType<BadRequestObjectResult>(result);
     }
 

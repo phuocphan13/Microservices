@@ -20,4 +20,8 @@
       <ProjectReference Include="..\..\Services\Catalog\Catalog.API\Catalog.API.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Common\" />
+    </ItemGroup>
+
 </Project>

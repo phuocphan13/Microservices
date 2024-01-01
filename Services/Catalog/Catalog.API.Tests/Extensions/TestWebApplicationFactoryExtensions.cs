@@ -14,7 +14,7 @@ public static class TestWebApplicationFactoryExtensions
     public static async Task EnsureCreatedAsync<T>(this TestWebApplicationFactory<T> factory, CancellationToken cancellationToken = default) where T : class
     {
         await using var scope = factory.Instance.Services.CreateAsyncScope();
-        factory.EnsureMongoDbCreated(scope, cancellationToken);
+        EnsureMongoDbCreated(scope, cancellationToken);
     }
 
     public static async Task EnsureCreatedAndPopulateSingleDataAsync<TProgram, TEntity>(this TestWebApplicationFactory<TProgram> factory, TEntity entity, CancellationToken cancellationToken = default)
@@ -22,7 +22,7 @@ public static class TestWebApplicationFactoryExtensions
         where TEntity : BaseEntity
     {
         await using var scope = factory.Instance.Services.CreateAsyncScope();
-        factory.EnsureMongoDbCreated(scope, cancellationToken);
+        EnsureMongoDbCreated(scope, cancellationToken);
 
         var repository = scope.ServiceProvider.GetRequiredService<IRepository<TEntity>>();
 
@@ -34,18 +34,18 @@ public static class TestWebApplicationFactoryExtensions
         where TEntity : BaseEntity
     {
         await using var scope = factory.Instance.Services.CreateAsyncScope();
-        factory.EnsureMongoDbCreated(scope, cancellationToken);
+        EnsureMongoDbCreated(scope, cancellationToken);
         
         var repository = scope.ServiceProvider.GetRequiredService<IRepository<TEntity>>();
 
         await repository.CreateEntitiesAsync(entities, cancellationToken);
     }
 
-    private static void EnsureMongoDbCreated<TProgram>(this TestWebApplicationFactory<TProgram> factory, AsyncServiceScope scope, CancellationToken cancellationToken = default) 
-        where TProgram : class
+    private static void EnsureMongoDbCreated(AsyncServiceScope scope, CancellationToken cancellationToken = default) 
     {
         var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-        var database = new MongoClient(configuration.GetValue<string>(DatabaseConst.CollectionName.ConnectionString)).GetDatabase(configuration.GetValue<string>(DatabaseConst.CollectionName.DatabaseName));
+        var database = new MongoClient(configuration.GetValue<string>(DatabaseConst.CollectionName.ConnectionString))
+            .GetDatabase(configuration.GetValue<string>(DatabaseConst.CollectionName.DatabaseName));
 
         database.RunCommandAsync((Command<BsonDocument>)"{ping:1}", cancellationToken: cancellationToken)
             .Wait(cancellationToken);

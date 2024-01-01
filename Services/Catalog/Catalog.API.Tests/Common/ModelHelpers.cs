@@ -82,7 +82,7 @@ public static class ModelHelpers
 
             for (int i = 0; i < number; i++)
             {
-                products.Add(GenerateProductEntity(categoryId, subCategoryId));
+                products.Add(GenerateProductEntity(categoryId: categoryId, subCategoryId: subCategoryId));
             }
 
             return products;
