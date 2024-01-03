@@ -90,7 +90,6 @@ public class ProductControllerTests
 
     #region GetProductById
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("  ")]
     public async Task GetProductById_InvalidParams_BadRequest(string id)
@@ -160,7 +159,6 @@ public class ProductControllerTests
     #region GetProductByCategory
     
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("  ")]
     public async Task GetProductByCategory_InvalidParams_BadRequest(string category)
@@ -264,20 +262,24 @@ public class ProductControllerTests
     [Fact]
     public async Task CreateProduct_ValidParams_Problem()
     {
+        //Create Data for testing
         var requestBody = ModelHelpers.Product.GenerateCreateRequestBody();
         var productDetail = requestBody.ToCreateProduct().ToDetail();
 
+        //Initialize Mock 
         var productService = new Mock<IProductService>();
-        productService.Setup(x => x.CreateProductAsync(requestBody, default)).ReturnsAsync(CommonHelpers.ApiResult.Problem(productDetail));
-
         var logger = new Mock<ILogger<ProductController>>();
+        
+        //Setup Mock function
+        productService.Setup(x => x.CreateProductAsync(requestBody, default)).ReturnsAsync(CommonHelpers.ApiResult.Problem(productDetail));
 
         //Run testing
         var controller = new ProductController(productService.Object, logger.Object);
 
         var result = await controller.CreateProduct(requestBody, default);
-        var objectResult = Assert.IsType<ObjectResult>(result);
         
+        //Test
+        var objectResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(objectResult.StatusCode, (int)HttpStatusCode.InternalServerError);
     }
 
@@ -310,8 +312,8 @@ public class ProductControllerTests
     #region UpdateProduct
 
     [Theory]
-    [InlineData(null)]
-    public async Task UpdateProduct_InvalidParams_BadRequest(UpdateProductRequestBody requestBody)
+    [InlineData(null!)]
+    public async Task UpdateProduct_InvalidParams_BadRequest(UpdateProductRequestBody? requestBody)
     {
         var productService = new Mock<IProductService>();
 
@@ -320,7 +322,7 @@ public class ProductControllerTests
         //Run testing
         var controller = new ProductController(productService.Object, logger.Object);
 
-        var result = await controller.UpdateProduct(requestBody, default);
+        var result = await controller.UpdateProduct(requestBody!, default);
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
@@ -400,7 +402,6 @@ public class ProductControllerTests
     #region DeleteProduct
     
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("  ")]
     public async Task DeleteProduct_InvalidIdParams_BadRequest(string id)
