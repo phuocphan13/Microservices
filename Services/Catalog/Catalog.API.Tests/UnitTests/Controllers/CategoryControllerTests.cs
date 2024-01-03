@@ -1,10 +1,16 @@
 ﻿using ApiClient.Catalog.Category.Models;
 using ApiClient.Catalog.Models.Catalog.Category;
+using ApiClient.Catalog.Product.Models;
 using ApiClient.Common;
 using Catalog.API.Controllers;
 using Catalog.API.Extensions;
 using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
+using System.Net;
+using System.Runtime.CompilerServices;
+using UnitTest.Common.Helpers;
 using ModelHelpers = Catalog.API.Tests.Common.ModelHelpers;
 
 namespace Catalog.API.Tests.UnitTests.Controllers;
@@ -19,8 +25,7 @@ public class CategoryControllerTests
         var categorySummarise = ModelHelpers.Category.GenerateCategorySummaries();
 
         var categoryService = new Mock<ICategoryService>();
-        categoryService.Setup(x => x.GetCategoriesAsync(default)).ReturnsAsync(new ApiDataResult<List<CategorySummary>>() { Data = categorySummarise });
-
+        categoryService.Setup(x => x.GetCategoriesAsync(default)).ReturnsAsync(CommonHelpers.ApiResult.Ok(categorySummarise));
         var controller = new CategoryController(categoryService.Object);
 
         var result = await controller.GetCategories(default);
@@ -54,7 +59,7 @@ public class CategoryControllerTests
         var categoryDetail = ModelHelpers.Category.GenerateCategory().ToDetail();
 
         var categoryService = new Mock<ICategoryService>();
-        categoryService.Setup(x => x.GetCategoryByIdAsync(categoryDetail.Id!, default)).ReturnsAsync(new ApiDataResult<CategoryDetail>() { Data = categoryDetail });
+        categoryService.Setup(x => x.GetCategoryByIdAsync(categoryDetail.Id!, default)).ReturnsAsync(CommonHelpers.ApiResult.Ok(categoryDetail));
 
         var controller = new CategoryController(categoryService.Object);
 
@@ -67,14 +72,16 @@ public class CategoryControllerTests
         Assert.NotNull(data);
     }
 
-    [Fact]
-    public async Task GetCategoryById_ValidParams_BadRequest()
+    [Theory]
+    [InlineData("")]
+    [InlineData("  ")]
+    public async Task GetCategoryById_InvalidParams_BadRequest(string id)
     {
         var categoryService = new Mock<ICategoryService>();
 
         var controller = new CategoryController(categoryService.Object);
 
-        var result = await controller.GetCategoryById(null!, default);
+        var result = await controller.GetCategoryById(id, default);
 
         Assert.True(result is BadRequestResult || result is BadRequestObjectResult);
     }
@@ -82,13 +89,15 @@ public class CategoryControllerTests
     [Fact]
     public async Task GetCategoryById_ValidParams_NotFound()
     {
+        var id = CommonHelpers.GenerateBsonId();
+
         var categoryService = new Mock<ICategoryService>();
 
-        categoryService.Setup(x => x.GetCategoryByIdAsync("id", default)).ReturnsAsync((ApiDataResult<CategoryDetail>)null!);
+        categoryService.Setup(x => x.GetCategoryByIdAsync(id, default)).ReturnsAsync((ApiDataResult<CategoryDetail>)null!);
 
         var controller = new CategoryController(categoryService.Object);
 
-        var result = await controller.GetCategoryById("id", default);
+        var result = await controller.GetCategoryById(id, default);
 
         Assert.True(result is NotFoundResult || result is NotFoundObjectResult);
     }
@@ -101,7 +110,7 @@ public class CategoryControllerTests
         var categoryDetail = ModelHelpers.Category.GenerateCategory().ToDetail();
 
         var categoryService = new Mock<ICategoryService>();
-        categoryService.Setup(x => x.GetCategoryByNameAsync(categoryDetail.Id!, default)).ReturnsAsync(new ApiDataResult<CategoryDetail>() { Data = categoryDetail });
+        categoryService.Setup(x => x.GetCategoryByNameAsync(categoryDetail.Id!, default)).ReturnsAsync(CommonHelpers.ApiResult.Ok(categoryDetail));
 
         var controller = new CategoryController(categoryService.Object);
 
@@ -114,14 +123,16 @@ public class CategoryControllerTests
         Assert.NotNull(data);
     }
 
-    [Fact]
-    public async Task GetCategoryByName_InvalidParams_BadRequest()
+    [Theory]
+    [InlineData("")]
+    [InlineData("  ")]
+    public async Task GetCategoryByName_InvalidParams_BadRequest(string name)
     {
         var categoryService = new Mock<ICategoryService>();
 
         var controller = new CategoryController(categoryService.Object);
 
-        var result = await controller.GetCategoryByName(null!, default);
+        var result = await controller.GetCategoryByName(name, default);
 
         Assert.True(result is BadRequestResult || result is BadRequestObjectResult);
     }
@@ -129,15 +140,41 @@ public class CategoryControllerTests
     [Fact]
     public async Task GetCategoryByName_ValidParams_NotFound()
     {
+        var name = CommonHelpers.GenerateRandomString();
+
         var categoryService = new Mock<ICategoryService>();
 
-        categoryService.Setup(x => x.GetCategoryByNameAsync("name", default)).ReturnsAsync((ApiDataResult<CategoryDetail>)null!);
+        categoryService.Setup(x => x.GetCategoryByNameAsync(name, default)).ReturnsAsync((ApiDataResult<CategoryDetail>)null!);
 
         var controller = new CategoryController(categoryService.Object);
 
-        var result = await controller.GetCategoryByName("name", default);
+        var result = await controller.GetCategoryByName(name, default);
 
         Assert.True(result is NotFoundResult || result is NotFoundObjectResult);
+    }
+    #endregion
+    //CreateCategory
+    #region
+    [Fact]
+    public async Task CreateCategory_ValidParams_ExpectedResult()
+    {
+        var requestBody = ModelHelpers.Category.GenerateCreateRequestBody();
+        var categoryDetail = requestBody.ToCreateCategory().ToDetail();
+
+        var categoryService = new Mock<ICategoryService>();
+
+        categoryService.Setup(x => x.CreateCategoryAsync(requestBody, default)).ReturnsAsync(CommonHelpers.ApiResult.Ok(categoryDetail));
+
+        var controller = new CategoryController(categoryService.Object);
+
+        var result = await controller.CreateCategory(requestBody, default);
+        OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
+
+        var data = Assert.IsType<ApiDataResult<CategoryDetail>>(okResult.Value);
+
+        Assert.NotNull(data);
+        Assert.NotNull(data.Data);
+        Assert.Equal(data.Data.Name, requestBody.Name);
     }
     #endregion
     //DeleteCategory
@@ -145,16 +182,53 @@ public class CategoryControllerTests
     [Fact]
     public async Task DeleteCategory_ValidParams_ExpectedResult()
     {
+        var id = CommonHelpers.GenerateBsonId();
+
         var categoryService = new Mock<ICategoryService>();
 
-        categoryService.Setup(x => x.DeleteCategoryAsync("id", default)).ReturnsAsync(new ApiStatusResult());
+        categoryService.Setup(x => x.DeleteCategoryAsync(id, default)).ReturnsAsync(new ApiStatusResult());
 
         var controller = new CategoryController(categoryService.Object);
 
-        var result = await controller.DeleteCategory("id", default);
+        var result = await controller.DeleteCategory(id, default);
 
-        Assert.IsType<ApiStatusResult>(result);
         Assert.IsType<OkObjectResult>(result);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("  ")]
+    public async Task DeleteCategory_InvalidParams_BadRequest(string id)
+    {
+        var categoryService = new Mock<ICategoryService>();
+
+        var controller = new CategoryController(categoryService.Object);
+
+        var result = await controller.DeleteCategory(id, default);
+
+        Assert.True(result is BadRequestResult || result is BadRequestObjectResult);
+    }
+
+    [Fact]
+    public async Task DeleteCategory_ValidParams_Problem()
+    {
+        var id = CommonHelpers.GenerateBsonId();
+
+        var categoryService = new Mock<ICategoryService>();
+
+        categoryService.Setup(x => x.DeleteCategoryAsync(id, default)).ReturnsAsync((ApiStatusResult)null!);
+
+        var controller = new CategoryController(categoryService.Object);
+
+        var result = await controller.DeleteCategory(id, default);
+
+        var objectResult = (ObjectResult)result;
+
+        Assert.IsType<ProblemDetails>(objectResult.Value);
+
+        var problemDetails = (ProblemDetails)objectResult.Value;
+
+        Assert.Equal($"Cannot delete category with id: {id}", problemDetails.Detail);
     }
     #endregion
 }

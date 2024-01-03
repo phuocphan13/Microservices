@@ -159,7 +159,7 @@ public class CategoryService : ICategoryService
 
         if (!result)
         {
-            apiDataResult.Message = ResponseMessages.Category.UpdateFailed;
+            apiDataResult.Message = ResponseMessages.Category.DeleteFailed;
             return apiDataResult;
         }
 

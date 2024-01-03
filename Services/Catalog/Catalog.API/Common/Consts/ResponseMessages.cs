@@ -28,6 +28,8 @@ public static class ResponseMessages
         public const string NotFound = "Not Found.";
 
         public const string UpdateFailed = "Update Has Failed.";
+
+        public const string DeleteFailed = "Delete Has Failed.";
     }
 
     public static class SubCategory
