@@ -1,14 +1,10 @@
 ﻿using ApiClient.Catalog.Category.Models;
 using ApiClient.Catalog.Models.Catalog.Category;
-using ApiClient.Catalog.Product.Models;
 using ApiClient.Common;
 using Catalog.API.Controllers;
 using Catalog.API.Extensions;
 using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using System.Runtime.CompilerServices;
-using Xunit;
 using ModelHelpers = Catalog.API.Tests.Common.ModelHelpers;
 
 namespace Catalog.API.Tests.UnitTests.Controllers;
@@ -142,6 +138,23 @@ public class CategoryControllerTests
         var result = await controller.GetCategoryByName("name", default);
 
         Assert.True(result is NotFoundResult || result is NotFoundObjectResult);
+    }
+    #endregion
+    //DeleteCategory
+    #region
+    [Fact]
+    public async Task DeleteCategory_ValidParams_ExpectedResult()
+    {
+        var categoryService = new Mock<ICategoryService>();
+
+        categoryService.Setup(x => x.DeleteCategoryAsync("id", default)).ReturnsAsync(new ApiStatusResult());
+
+        var controller = new CategoryController(categoryService.Object);
+
+        var result = await controller.DeleteCategory("id", default);
+
+        Assert.IsType<ApiStatusResult>(result);
+        Assert.IsType<OkObjectResult>(result);
     }
     #endregion
 }
