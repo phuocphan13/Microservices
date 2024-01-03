@@ -176,6 +176,19 @@ public static class ModelHelpers
 
             return requestBody;
         }
+        public static Entities.Category GenerateCategoryEntity(string id = null!, Action<Entities.Category>? initAction = default)
+        {
+            var entity = new Entities.Category()
+            {
+                Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id,
+                Description = CommonHelpers.GenerateRandomString(),
+                Name = CommonHelpers.GenerateRandomString(),
+            };
+
+            initAction?.Invoke(entity);
+
+            return entity;
+        }
     }
 
     public static class SubCategory

@@ -25,7 +25,7 @@ public static class ResponseMessages
 
         public const string CreateFailed = "Created Category Has Failed.";
 
-        public const string NotFound = "Not Found.";
+        public const string NotFound = "not existed.";
 
         public const string UpdateFailed = "Update Has Failed.";
 
