@@ -1,5 +1,6 @@
 using System.Text.Json;
 using ApiClient.Common.Models;
+using Core.Common.Helpers;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -29,11 +30,11 @@ public class CommonApiClient
         var httpClient = _httpClientFactory.CreateClient();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
         
-        return await TransferResponseMessageToDataAsync<TResult>(httpResponseMessage, cancellationToken);
+        return await HttpResponseHelpers.TransformResponseToData<ApiDataResult<TResult>>(httpResponseMessage, cancellationToken);
     }
 
     protected async Task<ApiDataResult<TResult>> PostAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
-        where TRequestBody : BaseRequestBody, new()
+        where TRequestBody : new()
         where TResult : class, new()
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url);
@@ -41,11 +42,10 @@ public class CommonApiClient
         var httpClient = _httpClientFactory.CreateClient();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
-        return await TransferResponseMessageToDataAsync<TResult>(httpResponseMessage, cancellationToken);
+        return await HttpResponseHelpers.TransformResponseToData<ApiDataResult<TResult>>(httpResponseMessage, cancellationToken);
     }
 
     protected async Task<ApiDataResult<TResult>> PutAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
-        where TRequestBody : BaseRequestBody
         where TResult : class, new()
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, url);
@@ -53,7 +53,7 @@ public class CommonApiClient
         var httpClient = _httpClientFactory.CreateClient();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
-        return await TransferResponseMessageToDataAsync<TResult>(httpResponseMessage, cancellationToken);
+        return await HttpResponseHelpers.TransformResponseToData<ApiDataResult<TResult>>(httpResponseMessage, cancellationToken);
     }
 
     protected async Task<ApiStatusResult> DeleteAsync(string url, CancellationToken cancellationToken)
@@ -75,42 +75,6 @@ public class CommonApiClient
 
             return result;
         }
-
-        return result;
-    }
-
-    private async Task<ApiDataResult<TResult>> TransferResponseMessageToDataAsync<TResult>(HttpResponseMessage? httpResponseMessage, CancellationToken cancellationToken)
-        where TResult : class, new()
-    {
-        var result = new ApiDataResult<TResult>();
-        if (httpResponseMessage is null)
-        {
-            //Todo
-            result.HttpErrorCode = -1;
-
-            return result;
-        }
-
-        if (httpResponseMessage.IsSuccessStatusCode)
-        {
-            using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
-            
-            var options = new JsonSerializerOptions()
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            
-            var deserialize = await JsonSerializer.DeserializeAsync<ApiDataResult<TResult>>(contentStream, options, cancellationToken: cancellationToken);
-            
-            if (deserialize is not null)
-            {
-                result = deserialize;
-            }
-            
-            return result;
-        }
-
-        result.HttpErrorCode = (int)httpResponseMessage.StatusCode;
 
         return result;
     }

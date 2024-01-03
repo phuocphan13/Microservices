@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
-using Catalog.API.Common;
 using Catalog.API.Common.Consts;
-using Catalog.API.Common.Helpers;
+using Catalog.API.Common.Extensions;
 using Catalog.API.Entities;
 using MongoDB.Driver;
 
@@ -14,7 +13,8 @@ public interface IRepository<TEntity>
     Task<TEntity> GetEntityFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     Task<List<TEntity>> GetEntitiesQueryAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
-    Task CreateEntityAsync(TEntity product, CancellationToken cancellationToken = default);
+    Task<TEntity> CreateEntityAsync(TEntity product, CancellationToken cancellationToken = default);
+    Task<IEnumerable<TEntity>> CreateEntitiesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
     Task<bool> UpdateEntityAsync(TEntity product, CancellationToken cancellationToken = default);
     Task<bool> DeleteEntityAsync(string id, CancellationToken cancellationToken = default);
 }
@@ -27,15 +27,7 @@ public class Repository<TEntity> : IRepository<TEntity>
     public Repository(IConfiguration configuration)
     {
         var database = new MongoClient(configuration.GetValue<string>(DatabaseConst.CollectionName.ConnectionString)).GetDatabase(configuration.GetValue<string>(DatabaseConst.CollectionName.DatabaseName));
-        _collection = database.GetCollection<TEntity>(GetCollectionName(typeof(TEntity)));
-    }
-
-    private protected string GetCollectionName(Type documentType)
-    {
-        return ((BsonCollectionAttribute)documentType.GetCustomAttributes(
-                typeof(BsonCollectionAttribute),
-                true)
-            .First()).CollectionName;
+        _collection = database.GetCollection<TEntity>(DatabaseExtensions.GetCollectionName(typeof(TEntity)));
     }
 
     public async Task<List<TEntity>> GetEntitiesAsync(CancellationToken cancellationToken)
@@ -66,14 +58,28 @@ public class Repository<TEntity> : IRepository<TEntity>
         return isExisted;
     }
 
-    public async Task CreateEntityAsync(TEntity product, CancellationToken cancellationToken)
+    public async Task<TEntity> CreateEntityAsync(TEntity entity, CancellationToken cancellationToken)
     {
         var options = new InsertOneOptions()
         {
             BypassDocumentValidation = false
         };
 
-        await _collection.InsertOneAsync(product, options, cancellationToken);
+        await _collection.InsertOneAsync(entity, options, cancellationToken);
+
+        return entity;
+    }
+
+    public async Task<IEnumerable<TEntity>> CreateEntitiesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
+    {
+        var options = new InsertManyOptions()
+        {
+            BypassDocumentValidation = false
+        };
+
+        await _collection.InsertManyAsync(entities, options, cancellationToken);
+
+        return entities;
     }
 
     public async Task<bool> UpdateEntityAsync(TEntity product, CancellationToken cancellationToken)

@@ -10,50 +10,65 @@ public static class ModelHelpers
 {
     public static class Product
     {
-        public static List<ProductSummary> GenerateProductSummaries(int number = 2, string categoryName = null!, string subCategoryName = null!)
+        public static List<ProductSummary> GenerateProductSummaries(int number = 2, string categoryName = null!, string subCategoryName = null!, Action<ProductSummary>? initAction = default)
         {
             categoryName = string.IsNullOrWhiteSpace(categoryName) ? CommonHelpers.GenerateRandomString() : categoryName;
             subCategoryName = string.IsNullOrWhiteSpace(subCategoryName) ? CommonHelpers.GenerateRandomString() : subCategoryName;
 
             var summaries = new List<ProductSummary>();
-            
+
             for (int i = 0; i < number; i++)
             {
-                summaries.Add(GenerateProductEntity().ToSummary(categoryName, subCategoryName));   
+                var summary = GenerateProductEntity().ToSummary(categoryName, subCategoryName);
+                
+                initAction?.Invoke(summary);
+                
+                summaries.Add(summary);
             }
 
             return summaries;
         }
 
-        public static ProductDetail GenerateProductDetail(string id = null!)
+        public static ProductDetail GenerateProductDetail(string id = null!, Action<ProductDetail>? initAction = default)
         {
-            return GenerateProductEntity(id).ToDetail();
+            var detail = GenerateProductEntity(id).ToDetail();
+
+            initAction?.Invoke(detail);
+            
+            return detail;
         }
 
-        private static BaseProductRequestBody GenerateBaseRequestBody()
+        private static TRequestBody GenerateBaseRequestBody<TRequestBody>(string category = null!, string subCategory = null!)
+            where TRequestBody : BaseProductRequestBody, new()
         {
-            return new BaseProductRequestBody()
+            return new TRequestBody()
             {
-                Category = CommonHelpers.GenerateRandomString(),
                 Description = CommonHelpers.GenerateRandomString(),
                 ImageFile = CommonHelpers.GenerateRandomString(),
                 Name = CommonHelpers.GenerateRandomString(),
-                SubCategory = CommonHelpers.GenerateRandomString(),
                 Price = CommonHelpers.GenerateRandomDecimal(),
                 Summary = CommonHelpers.GenerateRandomString(),
+                Category = string.IsNullOrWhiteSpace(category) ? CommonHelpers.GenerateRandomString() : category,
+                SubCategory = string.IsNullOrWhiteSpace(subCategory) ? CommonHelpers.GenerateRandomString() : subCategory,
             };
         }
 
-        public static CreateProductRequestBody GenerateCreateRequestBody()
+        public static CreateProductRequestBody GenerateCreateRequestBody(string category = null!, string subCategory = null!, Action<CreateProductRequestBody>? initAction = default)
         {
-            return (CreateProductRequestBody)GenerateBaseRequestBody();
+            var requestBody = GenerateBaseRequestBody<CreateProductRequestBody>(category, subCategory);
+
+            initAction?.Invoke(requestBody);
+            
+            return requestBody;
         }
 
-        public static UpdateProductRequestBody GenerateUpdateRequestBody(string id = null!, string name = null!)
-        { 
-            var requestBody = (UpdateProductRequestBody)GenerateBaseRequestBody();
+        public static UpdateProductRequestBody GenerateUpdateRequestBody(string id = null!, string name = null!, Action<UpdateProductRequestBody>? initAction = default)
+        {
+            var requestBody = GenerateBaseRequestBody<UpdateProductRequestBody>();
             requestBody.Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id;
             requestBody.Name = string.IsNullOrWhiteSpace(name) ? CommonHelpers.GenerateRandomString() : name;
+
+            initAction?.Invoke(requestBody);
 
             return requestBody;
         }
@@ -64,18 +79,18 @@ public static class ModelHelpers
 
             categoryId = string.IsNullOrWhiteSpace(categoryId) ? CommonHelpers.GenerateRandomString() : categoryId;
             subCategoryId = string.IsNullOrWhiteSpace(subCategoryId) ? CommonHelpers.GenerateRandomString() : subCategoryId;
-            
+
             for (int i = 0; i < number; i++)
             {
-                products.Add(GenerateProductEntity(categoryId, subCategoryId));
+                products.Add(GenerateProductEntity(categoryId: categoryId, subCategoryId: subCategoryId));
             }
 
             return products;
         }
-        
-        public static Entities.Product GenerateProductEntity(string id = null!, string categoryId = null!, string subCategoryId = null!)
+
+        public static Entities.Product GenerateProductEntity(string id = null!, string categoryId = null!, string subCategoryId = null!, Action<Entities.Product>? initAction = default)
         {
-            return new Entities.Product()
+            var entity = new Entities.Product()
             {
                 Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id,
                 ProductCode = CommonHelpers.GenerateRandomString(),
@@ -87,9 +102,13 @@ public static class ModelHelpers
                 CategoryId = string.IsNullOrWhiteSpace(categoryId) ? CommonHelpers.GenerateBsonId() : categoryId,
                 SubCategoryId = string.IsNullOrWhiteSpace(subCategoryId) ? CommonHelpers.GenerateBsonId() : subCategoryId,
             };
+            
+            initAction?.Invoke(entity);
+
+            return entity;
         }
     }
-    
+
     public static class Category
     {
         public static List<CategorySummary> GenerateCategorySummaries(int number = 2)
@@ -103,11 +122,11 @@ public static class ModelHelpers
 
             return summaries;
         }
-        
+
         public static List<Entities.Category> GenerateCategories(int number = 2)
         {
             var categories = new List<Entities.Category>();
-            
+
             for (int i = 0; i < number; i++)
             {
                 categories.Add(GenerateCategory());
@@ -115,7 +134,7 @@ public static class ModelHelpers
 
             return categories;
         }
-        
+
         public static Entities.Category GenerateCategory(string id = null!)
         {
             return new Entities.Category()

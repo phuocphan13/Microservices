@@ -5,6 +5,8 @@ using Platform;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// builder.Services.AddHealthChecks();
+
 var isRebuildSchema = builder.Configuration.GetValue<bool>(Platform.Constants.DatabaseConst.CollectionName.IsRebuildSchema);
 
 // Add services to the container.
@@ -25,6 +27,9 @@ builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 
 var app = builder.Build();
 
+//Todo adding healthcheck later
+// app.MapHealthChecks("/healthz");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -39,3 +44,10 @@ app.MapControllers();
 await app.InitializePlatformDbContextsAsync(builder.Configuration, isRebuildSchema);
 
 await app.RunAsync();
+
+public partial class Program
+{
+    protected Program()
+    {
+    }
+}

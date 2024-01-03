@@ -25,7 +25,6 @@ public static class ProductExtension
         {
             Id = product.Id,
             Name = product.Name,
-            // Category = product.Category,
             Description = product.Description,
             Price = product.Price,
             Summary = product.Summary,

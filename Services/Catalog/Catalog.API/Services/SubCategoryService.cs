@@ -1,12 +1,8 @@
 ﻿using ApiClient.Catalog.SubCategory.Models;
 using ApiClient.Common;
 using Catalog.API.Common.Consts;
-using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
-using System.Threading;
-using static Catalog.API.Common.Consts.ResponseMessages;
-using Category = Catalog.API.Entities.Category;
 using SubCategory = Catalog.API.Entities.SubCategory;
 
 namespace Catalog.API.Services

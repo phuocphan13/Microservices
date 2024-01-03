@@ -6,4 +6,22 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FluentAssertions" Version="6.12.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.25" />
+      <PackageReference Include="Polly" Version="6.1.2" />
+      <PackageReference Include="Testcontainers" Version="3.6.0" />
+      <PackageReference Include="Testcontainers.MongoDb" Version="3.6.0" />
+      <PackageReference Include="xunit" Version="2.6.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Common\Core.Common\Core.Common.csproj" />
+      <ProjectReference Include="..\..\Services\Catalog\Catalog.API\Catalog.API.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Common\" />
+    </ItemGroup>
+
 </Project>
