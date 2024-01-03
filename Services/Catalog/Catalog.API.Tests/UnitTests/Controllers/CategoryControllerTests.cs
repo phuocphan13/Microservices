@@ -156,7 +156,7 @@ public class CategoryControllerTests
     //CreateCategory
     #region
     [Fact]
-    public async Task CreateCategory_ValidParams_ExpectedResult()
+    public async Task CreateCategory_ValidRequestBody_ExpectedResult()
     {
         var requestBody = ModelHelpers.Category.GenerateCreateRequestBody();
         var categoryDetail = requestBody.ToCreateCategory().ToDetail();
@@ -175,6 +175,43 @@ public class CategoryControllerTests
         Assert.NotNull(data);
         Assert.NotNull(data.Data);
         Assert.Equal(data.Data.Name, requestBody.Name);
+    }
+
+    [Fact]
+    public async Task CreateCategory_ValidRequestBody_NotFound()
+    {
+        var requestBody = ModelHelpers.Category.GenerateCreateRequestBody();
+        var categoryDetail = requestBody.ToCreateCategory().ToDetail();
+
+        var categoryService = new Mock<ICategoryService>();
+        categoryService.Setup(x => x.CreateCategoryAsync(requestBody, default)).ReturnsAsync(CommonHelpers.ApiResult.NotFound(categoryDetail));
+
+        var controller = new CategoryController(categoryService.Object);
+
+        var result = await controller.CreateCategory(requestBody, default);
+        Assert.IsType<NotFoundObjectResult>(result);
+    }
+
+    [Theory]
+    [InlineData(null, null, "RequestBody is not allowed null.")]
+    [InlineData("CategoryName", null, "Category Code is not allowed null.")]
+    [InlineData(null, "CategoryCode", "Category Name is not allowed null.")]
+    public async Task CreateCategory_InvalidRequestBody_BadRequest(string? name, string? categoryCode, string expectedErrorMessage)
+    {
+        var categoryService = new Mock<ICategoryService>();
+        var controller = new CategoryController(categoryService.Object);
+
+        var requestBody = new CreateCategoryRequestBody
+        {
+            Name = name,
+            CategoryCode = categoryCode
+        };
+
+        var result = await controller.CreateCategory(requestBody, CancellationToken.None);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+        var badRequestResult = (BadRequestObjectResult)result;
+        Assert.Equal(expectedErrorMessage, badRequestResult.Value);
     }
     #endregion
     //DeleteCategory
