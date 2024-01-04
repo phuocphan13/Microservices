@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using ApiClient.Catalog.Product.Models;
 using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
@@ -148,7 +147,6 @@ public class ProductServiceTests
     public async Task CreateProductAsync_ValidParams_CategoryNotFound()
     {
         var requestBody = ModelHelpers.Product.GenerateCreateRequestBody();
-        var subCategory = ModelHelpers.SubCategory.GenerateSubCategory();
         var expectedMessage = ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
 
         var productRepository = new Mock<IRepository<Product>>();
@@ -157,7 +155,6 @@ public class ProductServiceTests
 
         productRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Product, bool>>>(), default)).ReturnsAsync(false);
         categoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<Category, bool>>>(), default)).ReturnsAsync((Category)null!);
-        subCategoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<SubCategory, bool>>>(), default)).ReturnsAsync(subCategory);
         
         IProductService service = new ProductService(productRepository.Object, categoryRepository.Object, subCategoryRepository.Object);
         var result = await service.CreateProductAsync(requestBody);
@@ -290,10 +287,7 @@ public class ProductServiceTests
         var categoryRepository = new Mock<IRepository<Category>>();
         var subCategoryRepository = new Mock<IRepository<SubCategory>>();
         
-        var entity = ModelHelpers.Product.GenerateProductEntity(initAction: x =>
-        {
-            x.Id = requestBody.Id!;
-        });
+        var entity = ModelHelpers.Product.GenerateProductEntity(id: requestBody.Id!);
 
         productRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<Product, bool>>>(), default)).ReturnsAsync(entity);
         categoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<Category, bool>>>(), default)).ReturnsAsync((Category)null!);
@@ -401,7 +395,7 @@ public class ProductServiceTests
 
     #endregion
 
-    #region DeleteProductAsync[Fact]
+    #region DeleteProductAsync
 
     [Fact]
     public async Task DeleteProductAsync_ValidParams_NotFound()

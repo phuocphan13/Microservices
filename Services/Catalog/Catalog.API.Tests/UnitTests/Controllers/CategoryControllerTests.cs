@@ -1,19 +1,16 @@
 ﻿using ApiClient.Catalog.Category.Models;
 using ApiClient.Catalog.Models.Catalog.Category;
-using ApiClient.Catalog.Product.Models;
 using ApiClient.Common;
 using Catalog.API.Controllers;
 using Catalog.API.Extensions;
 using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Moq;
 using System.Net;
-using System.Runtime.CompilerServices;
 using UnitTest.Common.Helpers;
 using ModelHelpers = Catalog.API.Tests.Common.ModelHelpers;
 
 namespace Catalog.API.Tests.UnitTests.Controllers;
+
 [Collection("CategoryControllerTests")]
 public class CategoryControllerTests
 {
@@ -202,8 +199,8 @@ public class CategoryControllerTests
 
             var result = await controller.CreateCategory(requestBody, default);
 
-            Assert.IsType<BadRequestObjectResult>(result);
-            var badRequestResult = (BadRequestObjectResult)result;
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.NotNull(badRequestResult);
             Assert.Equal(expectedErrorMessage, badRequestResult.Value);
         }
 
@@ -259,8 +256,8 @@ public class CategoryControllerTests
 
             var result = await controller.CreateCategory(requestBody, default);
 
-            Assert.IsType<BadRequestObjectResult>(result);
-            var badRequestResult = (BadRequestObjectResult)result;
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.NotNull(badRequestResult);
             Assert.Equal(expectedErrorMessage, badRequestResult.Value);
         }
 
