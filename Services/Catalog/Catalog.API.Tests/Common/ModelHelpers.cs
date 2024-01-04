@@ -145,6 +145,50 @@ public static class ModelHelpers
                 Name = CommonHelpers.GenerateRandomString(),
             };
         }
+
+        private static TRequestBody GenerateBaseRequestBody<TRequestBody>()
+            where TRequestBody : BaseCategoryRequestBody, new()
+        {
+            return new TRequestBody()
+            {
+                Description = CommonHelpers.GenerateRandomString(),
+                Name = CommonHelpers.GenerateRandomString(),
+                CategoryCode = CommonHelpers.GenerateRandomString(),
+            };
+        }
+
+        public static CreateCategoryRequestBody GenerateCreateRequestBody(Action<CreateCategoryRequestBody>? initAction = default)
+        {
+            var requestBody = GenerateBaseRequestBody<CreateCategoryRequestBody>();
+
+            initAction?.Invoke(requestBody);
+
+            return requestBody;
+        }
+
+        public static UpdateCategoryRequestBody GenerateUpdateRequestBody(string id = null!, string name = null!, Action<UpdateCategoryRequestBody>? initAction = default)
+        {
+            var requestBody = GenerateBaseRequestBody<UpdateCategoryRequestBody>();
+            requestBody.Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id;
+            requestBody.Name = string.IsNullOrWhiteSpace(name) ? CommonHelpers.GenerateRandomString() : name;
+
+            initAction?.Invoke(requestBody);
+
+            return requestBody;
+        }
+        public static Entities.Category GenerateCategoryEntity(string id = null!, Action<Entities.Category>? initAction = default)
+        {
+            var entity = new Entities.Category()
+            {
+                Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id,
+                Description = CommonHelpers.GenerateRandomString(),
+                Name = CommonHelpers.GenerateRandomString(),
+            };
+
+            initAction?.Invoke(entity);
+
+            return entity;
+        }
     }
 
     public static class SubCategory

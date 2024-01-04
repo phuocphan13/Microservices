@@ -1,4 +1,5 @@
-﻿using ApiClient.Catalog.Models.Catalog.Category;
+﻿using ApiClient.Catalog.Category.Models;
+using ApiClient.Catalog.Models.Catalog.Category;
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
 
@@ -7,10 +8,10 @@ namespace ApiClient.Catalog.Category;
 public interface ICategoryApiClient
 {
     Task<ApiDataResult<List<CategorySummary>>> GetCategoriesAsync(CancellationToken cancellationToken = default);
-    Task<ApiDataResult<CategorySummary>> GetCategoryByIdAsync(string id, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<CategorySummary>> GetCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<CategorySummary>> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<CategorySummary>> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<CategoryDetail>> GetCategoryByIdAsync(string id, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<CategoryDetail>> GetCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<CategoryDetail>> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<CategoryDetail>> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<ApiStatusResult> DeleteCategoryAsync(string id, CancellationToken cancellationToken = default);
 }
 public class CategoryApiClient : CommonApiClient, ICategoryApiClient
@@ -29,41 +30,41 @@ public class CategoryApiClient : CommonApiClient, ICategoryApiClient
         return result;
     }
 
-    public async Task<ApiDataResult<CategorySummary>> GetCategoryByIdAsync(string id, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<CategoryDetail>> GetCategoryByIdAsync(string id, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetCategoryById}";
         url = url.AddDataInUrl(nameof(id), id);
 
-        var result = await GetAsync<CategorySummary>(url, cancellationToken);
+        var result = await GetAsync<CategoryDetail>(url, cancellationToken);
 
         return result;
     }
 
-    public async Task<ApiDataResult<CategorySummary>> GetCategoryByNameAsync(string name, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<CategoryDetail>> GetCategoryByNameAsync(string name, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetCategoryByName}";
 
         url = url.AddDataInUrl(nameof(name), name);
 
-        var result = await GetAsync<CategorySummary>(url, cancellationToken);
+        var result = await GetAsync<CategoryDetail>(url, cancellationToken);
 
         return result;
     }
 
-    public async Task<ApiDataResult<CategorySummary>> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<CategoryDetail>> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.CreateCategory}";
 
-        var result = await PostAsync<CreateCategoryRequestBody, CategorySummary>(url,requestBody,cancellationToken);
+        var result = await PostAsync<CreateCategoryRequestBody, CategoryDetail>(url,requestBody,cancellationToken);
 
         return result;
     }
 
-    public async Task<ApiDataResult<CategorySummary>> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<CategoryDetail>> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.UpdateCategory}";
 
-        var result = await PutAsync<UpdateCategoryRequestBody, CategorySummary>(url, requestBody, cancellationToken);
+        var result = await PutAsync<UpdateCategoryRequestBody, CategoryDetail>(url, requestBody, cancellationToken);
 
         return result;
     }

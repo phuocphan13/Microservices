@@ -1,4 +1,5 @@
-﻿using ApiClient.Catalog.Models.Catalog.Category;
+﻿using ApiClient.Catalog.Category.Models;
+using ApiClient.Catalog.Models.Catalog.Category;
 using ApiClient.Common;
 using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
@@ -10,10 +11,10 @@ namespace Catalog.API.Services;
 public interface ICategoryService
 {
     Task<ApiDataResult<List<CategorySummary>>> GetCategoriesAsync(CancellationToken cancellationToken = default);
-    Task<ApiDataResult<CategorySummary>> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<CategorySummary>> GetCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<CategorySummary>> GetCategoryByIdAsync(string id, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<CategorySummary>> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<CategoryDetail>> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<CategoryDetail>> GetCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<CategoryDetail>> GetCategoryByIdAsync(string id, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<CategoryDetail>> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<ApiStatusResult> DeleteCategoryAsync(string id, CancellationToken cancellationToken = default);
 }
 
@@ -49,9 +50,9 @@ public class CategoryService : ICategoryService
         return categoryList;
     }
 
-    public async Task<ApiDataResult<CategorySummary>> GetCategoryByNameAsync(string name, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<CategoryDetail>> GetCategoryByNameAsync(string name, CancellationToken cancellationToken)
     {
-        var result = new ApiDataResult<CategorySummary>();
+        var result = new ApiDataResult<CategoryDetail>();
 
         var entity = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
@@ -61,14 +62,14 @@ public class CategoryService : ICategoryService
             return result;
         }
 
-        result.Data = entity.ToSummary();
+        result.Data = entity.ToDetail();
 
         return result;
     }
 
-    public async Task<ApiDataResult<CategorySummary>> GetCategoryByIdAsync(string id, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<CategoryDetail>> GetCategoryByIdAsync(string id, CancellationToken cancellationToken)
     {
-        var result = new ApiDataResult<CategorySummary>();
+        var result = new ApiDataResult<CategoryDetail>();
 
         var entity = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
@@ -78,14 +79,14 @@ public class CategoryService : ICategoryService
             return result;
         }
 
-        result.Data = entity.ToSummary();
+        result.Data = entity.ToDetail();
 
         return result;
     }
 
-    public async Task<ApiDataResult<CategorySummary>> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<CategoryDetail>> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
-        var apiDataResult = new ApiDataResult<CategorySummary>();
+        var apiDataResult = new ApiDataResult<CategoryDetail>();
 
         var isExisted = await _categoryRepository.AnyAsync(x => x.Name == requestBody.Name || x.CategoryCode == requestBody.CategoryCode, cancellationToken);
 
@@ -105,13 +106,13 @@ public class CategoryService : ICategoryService
             return apiDataResult;
         }
 
-        apiDataResult.Data = category.ToSummary();
+        apiDataResult.Data = category.ToDetail();
         return apiDataResult;
     }
 
-    public async Task<ApiDataResult<CategorySummary>> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<CategoryDetail>> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
-        var apiDataResult = new ApiDataResult<CategorySummary>();
+        var apiDataResult = new ApiDataResult<CategoryDetail>();
         var category = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == requestBody.Id, cancellationToken);
 
         if (category is null)
@@ -138,7 +139,7 @@ public class CategoryService : ICategoryService
             return apiDataResult;
         }
 
-        apiDataResult.Data = category.ToSummary();
+        apiDataResult.Data = category.ToDetail();
         
         return apiDataResult;
     }
@@ -158,7 +159,7 @@ public class CategoryService : ICategoryService
 
         if (!result)
         {
-            apiDataResult.Message = ResponseMessages.Category.UpdateFailed;
+            apiDataResult.Message = ResponseMessages.Category.DeleteFailed;
             return apiDataResult;
         }
 

@@ -1,4 +1,5 @@
-﻿using ApiClient.Catalog.Models.Catalog.Category;
+﻿using ApiClient.Catalog.Category.Models;
+using ApiClient.Catalog.Models.Catalog.Category;
 using Catalog.API.Entities;
 
 namespace Catalog.API.Extensions;
@@ -25,6 +26,17 @@ public static class CategoryExtension
     public static CategorySummary ToSummary(this Category category)
     {
         return new CategorySummary()
+        {
+            Id = category.Id,
+            Name = category.Name,
+            Description = category.Description,
+            CategoryCode = category.CategoryCode,
+        };
+    }
+
+    public static CategoryDetail ToDetail(this Category category)
+    {
+        return new CategoryDetail()
         {
             Id = category.Id,
             Name = category.Name,

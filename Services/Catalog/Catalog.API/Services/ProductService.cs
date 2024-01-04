@@ -195,7 +195,6 @@ public class ProductService : IProductService
             return ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
         }
 
-
         var subCategory = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.CategoryId == category.Id && string.Equals(x.Name, requestBody.SubCategory), cancellationToken);
 
         if (subCategory is null)
