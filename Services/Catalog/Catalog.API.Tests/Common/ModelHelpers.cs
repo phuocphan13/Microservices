@@ -149,6 +149,35 @@ public static class ModelHelpers
 
     public static class SubCategory
     {
+        private static TRequestBody GenerateBaseRequestBody<TRequestBody>()
+            where TRequestBody : BaseSubCategoryResquestBody, new()
+        {
+            return new TRequestBody()
+            {
+                Description = CommonHelpers.GenerateRandomString(),
+                SubCategoryCode = CommonHelpers.GenerateRandomString(),
+                Name = CommonHelpers.GenerateRandomString(),
+                CategoryId = CommonHelpers.GenerateRandomString()            
+            };
+        }
+
+        public static CreateSubCategoryRequestBody GenerateCreateRequestBody ( Action<CreateSubCategoryRequestBody>? initAction = default)
+        {
+            var requestBody = GenerateBaseRequestBody<CreateSubCategoryRequestBody>();
+
+            initAction?.Invoke(requestBody);
+
+            return requestBody;
+        }
+
+        public static UpdateSubCategoryRequestBody GenerateUpdateRequestBody(Action<UpdateSubCategoryRequestBody>? initAction = default)
+        {
+            var requestBody = GenerateBaseRequestBody<UpdateSubCategoryRequestBody>();
+
+            initAction?.Invoke(requestBody);
+
+            return requestBody;
+        }
         public static List<SubCategorySummary> GenerateSubCategorySummaries(int number = 2)
         {
             var summaries = new List<SubCategorySummary>();

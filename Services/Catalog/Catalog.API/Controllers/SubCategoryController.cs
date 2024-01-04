@@ -21,7 +21,11 @@ public class SubCategoryController : ControllerBase
     public async Task<IActionResult> GetSubCategories(CancellationToken cancellationToken)
     {
         var result = await _subCategory.GetSubCategoriesAsync(cancellationToken);
-           
+        
+        if(result == null)
+        {
+            return NotFound();
+        }
 
         return Ok(result);
     }
@@ -64,6 +68,14 @@ public class SubCategoryController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateSubCategory([FromBody] CreateSubCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
+        if(requestBody.Name == null || requestBody.SubCategoryCode == null || requestBody.CategoryId == null)
+        {
+            return BadRequest("Name, SubCategoryCode or CategoryId is null.");
+        }
+        else if (requestBody is null)
+        {
+            return BadRequest("requestBody is null.");
+        }
         var result = await _subCategory.CreateSubCategoryAsync(requestBody, cancellationToken);
 
         if (!result.IsSuccessCode)
@@ -117,6 +129,10 @@ public class SubCategoryController : ControllerBase
             return BadRequest("Missing CategoryId");
         }
         var result = await  _subCategory.GetSubCategoriesByCategoryIdAsync(categoryId, cancellationToken);
+        if (result is null)
+        {
+            return NotFound();
+        }
 
         return Ok(result);
     }
