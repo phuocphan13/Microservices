@@ -6,14 +6,21 @@ namespace Discount.Domain.Common.InitializeDB;
 
 public static class ConfigureDB
 {
-    public static void DropTable<TEntity>(NpgsqlConnection connection)
+    public static async Task DropTable<TEntity>(NpgsqlConnection connection)
     {
-        var tableName = typeof(TEntity).Name;
-        string query = $"Drop Table {tableName}";
-        connection.ExecuteAsync(query);
+        var tableName = typeof(TEntity).Name.ToLower();
+        var existedQuery = $"SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename  = '{tableName}');";
+
+        var isExisted = await connection.QueryFirstOrDefaultAsync<bool>(existedQuery);
+
+        if (isExisted)
+        {
+            string query = $"Drop Table {tableName}";
+            await connection.ExecuteAsync(query);
+        }
     }
 
-    public static void CreateTable<TEntity>(NpgsqlConnection connection)
+    public static async Task CreateTable<TEntity>(NpgsqlConnection connection)
         where TEntity : new()
     {
         var entity = new TEntity();
@@ -28,7 +35,7 @@ public static class ConfigureDB
         var tableName = typeof(TEntity).Name;
         string query = $"Create table {tableName} ({properties})";
 
-        connection.ExecuteAsync(query);
+        await connection.ExecuteAsync(query);
     }
 
     public static async Task InsertTable<TEntity>(NpgsqlConnection connection, List<TEntity> entities)
@@ -42,7 +49,7 @@ public static class ConfigureDB
         
         foreach (var coupon in entities)
         {
-            var affected = await connection.ExecuteAsync(sql, coupon);
+            await connection.ExecuteAsync(sql, coupon);
         }
     }
 }

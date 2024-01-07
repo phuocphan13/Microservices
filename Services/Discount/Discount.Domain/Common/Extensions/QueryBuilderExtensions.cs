@@ -114,6 +114,21 @@ public static class QueryBuilderExtensions
             return "INT NOT NULL";
         }
 
+        if (type == typeof(bool))
+        {
+            return "BOOLEAN";
+        }
+
+        if (type == typeof(DateTime))
+        {
+            return "DATE NOT NULL";
+        }
+
+        if (type == typeof(DateTime?))
+        {
+            return "DATE";
+        }
+
         return "";
     }
 

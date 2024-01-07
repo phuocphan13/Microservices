@@ -223,6 +223,21 @@
       "UpstreamPathTemplate": "/SubCategory/DeleteSubCategory/{id}",
       "UpstreamHttpMethod": [ "DELETE" ]
     },
+    //Catalog: Validation
+    {
+      "DownstreamPathTemplate": "/api/v1/Validation/ValidateCatalogCode",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/Validation/ValidateCatalogCode",
+      "UpstreamHttpMethod": [
+        "GET"
+      ]
+    },
     //Basket API
     {
       "DownstreamPathTemplate": "/api/v1/Basket/{userName}",
