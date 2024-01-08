@@ -6,8 +6,13 @@ public static class ApiUrlBuilder
     {
         if (isFirst)
         {
+            url += "?";
+        }
+        else
+        {
             url += "&";
         }
+        
 
         url += $"{key}={value}";
 

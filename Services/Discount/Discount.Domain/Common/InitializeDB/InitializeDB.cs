@@ -16,9 +16,13 @@ public static class InitializeDB
         {
             var connection = new NpgsqlConnection(configuration["DatabaseSettings:ConnectionString"]);
             
-            ConfigureDB.DropTable<Coupon>(connection);
-            ConfigureDB.CreateTable<Coupon>(connection);
+            await ConfigureDB.DropTable<Coupon>(connection);
+            await ConfigureDB.CreateTable<Coupon>(connection);
             await ConfigureDB.InsertTable(connection, GenerateCoupons());
+
+            await ConfigureDB.DropTable<Entities.Discount>(connection);
+            await ConfigureDB.CreateTable<Entities.Discount>(connection);
+            await ConfigureDB.InsertTable(connection, GenerateDiscounts());
         }
     }
 
@@ -31,15 +35,28 @@ public static class InitializeDB
                 Amount = 200,
                 Code = "SamSung 10",
                 Description = "SamSung 10 Description",
-                Type = CatalogType.Product 
+                Type = CatalogType.Product,
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
             }
         };
     }
-    
-    // public static void Initlize(IConfiguration configuration)
-    // {
-    //     var connection = new NpgsqlConnection(configuration["DatabaseSettings:ConnectionString"]);
-    //     ConfigureDB.DropTable<Coupon>(connection);
-    //     ConfigureDB.CreateTable<Coupon>(connection);
-    // }
+
+    private static List<Entities.Discount> GenerateDiscounts()
+    {
+        return new List<Entities.Discount>()
+        {
+            new()
+            {
+                Amount = 200,
+                Description = "SamSung 10 Description",
+                Type = DiscountEnum.Product,
+                CatalogCode = "IPX-APL",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            }
+        };
+    }
 }

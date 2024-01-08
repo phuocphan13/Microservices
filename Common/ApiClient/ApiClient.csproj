@@ -13,10 +13,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Discount\Enum\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Core.Common\Core.Common.csproj" />
     </ItemGroup>
 </Project>
