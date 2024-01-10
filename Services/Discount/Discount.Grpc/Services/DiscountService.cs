@@ -38,6 +38,26 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
         var couponModel = _mapper.Map<DiscountDetailModel>(discount);
         return couponModel;
     }
+
+    public override async Task<DiscountDetailModel?> GetDiscountByCatalogCode(GetDiscountByCatalogCodeRequest request, ServerCallContext context)
+    {
+        if (string.IsNullOrWhiteSpace(request.CatalogCode))
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Id cannot be null."));
+        }
+
+        var discount = await _discountService.GetDiscountByCatalogCodeAsync(request.Type, request.CatalogCode);
+
+        if (discount is null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, $"Discount with Product Code = {request.CatalogCode} is not existed"));
+        }
+
+        _logger.LogInformation($"Discount is retrieved for Catalog Code: {discount.CatalogCode} with Amount {discount.Amount}");
+
+        var couponModel = _mapper.Map<DiscountDetailModel>(discount);
+        return couponModel;
+    }
     
     public override async Task<DiscountDetailModel> CreateDiscount(CreateCouponRequest request, ServerCallContext context)
     {

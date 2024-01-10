@@ -7,6 +7,7 @@ namespace Catalog.API.Services.Grpc;
 public interface IDiscountGrpcService
 {
     Task<DiscountDetail> GetDiscount(string productName);
+    Task<DiscountDetail> GetDiscountByCatalogCode(DiscountEnum type, string catalogCode);
 }
 
 public class DiscountGrpcService : IDiscountGrpcService
@@ -26,6 +27,19 @@ public class DiscountGrpcService : IDiscountGrpcService
         };
 
         var couponModel = await _discountGrpcService.GetDiscountAsync(discountRequest);
+
+        return couponModel.ToDetail();
+    }
+
+    public async Task<DiscountDetail> GetDiscountByCatalogCode(DiscountEnum type, string catalogCode)
+    {
+        var discountRequest = new GetDiscountByCatalogCodeRequest()
+        {
+            Type = (int)type,
+            CatalogCode = catalogCode
+        };
+
+        var couponModel = await _discountGrpcService.GetDiscountByCatalogCodeAsync(discountRequest);
 
         return couponModel.ToDetail();
     }

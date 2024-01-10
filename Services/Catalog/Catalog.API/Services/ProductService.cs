@@ -39,7 +39,7 @@ public class ProductService : IProductService
 
     public async Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken)
     {
-        var a = await _discountGrpcService.GetDiscount("abc");
+        // var a = await _discountGrpcService.GetDiscountByCatalogCode(DiscountEnum.Product, "IPX-APL");
         
         var entities = await _productRepository.GetEntitiesAsync(cancellationToken);
 

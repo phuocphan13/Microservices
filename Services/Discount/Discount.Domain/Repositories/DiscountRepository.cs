@@ -6,6 +6,7 @@ namespace Discount.Domain.Repositories;
 public interface IDiscountRepository
 {
     Task<Entities.Discount?> GetDiscountAsync(string id);
+    Task<Entities.Discount?> GetDiscountByCatalogCodeAsync(DiscountEnum type, string catalogCode);
     Task<Entities.Discount> CreateDiscountAsync(Entities.Discount Discount);
     Task<Entities.Discount> UpdateDiscountAsync(Entities.Discount Discount);
     Task<bool> DeleteDiscountAsync(int id);
@@ -34,6 +35,16 @@ public class DiscountRepository : IDiscountRepository
         var isOverlap = await _baseRepository.AnyAsync<Entities.Discount>(query, param);
 
         return isOverlap;
+    }
+    
+    public async Task<Entities.Discount?> GetDiscountByCatalogCodeAsync(DiscountEnum type, string catalogCode)
+    {
+        const string query = "CatalogCode = @CatalogCode and Type = @Type";
+        object param = new { CatalogCode = catalogCode, Type = (int)type };
+
+        var entity = await _baseRepository.QueryFirstOrDefaultAsync<Entities.Discount>(query, param);
+
+        return entity;
     }
 
     public async Task<Entities.Discount?> GetDiscountAsync(string id)
