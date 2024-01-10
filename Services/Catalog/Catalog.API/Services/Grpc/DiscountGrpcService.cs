@@ -1,12 +1,12 @@
-﻿using ApiClient.Discount.Models.Coupon;
-using Basket.API.GrpcServices.Extensions;
+using ApiClient.Discount.Models.Discount;
+using Catalog.API.Extensions.Grpc;
 using Discount.Grpc.Protos;
 
-namespace Basket.API.GrpcServices;
+namespace Catalog.API.Services.Grpc;
 
 public interface IDiscountGrpcService
 {
-    Task<CouponDetail> GetDiscount(string productName);
+    Task<DiscountDetail> GetDiscount(string productName);
 }
 
 public class DiscountGrpcService : IDiscountGrpcService
@@ -18,10 +18,10 @@ public class DiscountGrpcService : IDiscountGrpcService
         _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
     }
 
-    public async Task<CouponDetail> GetDiscount(string productName)
+    public async Task<DiscountDetail> GetDiscount(string productName)
     {
         var discountRequest = new GetDiscountRequest()
-        { 
+        {
             Id = productName
         };
 

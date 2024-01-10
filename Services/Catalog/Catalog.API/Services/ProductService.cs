@@ -4,6 +4,7 @@ using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
+using Catalog.API.Services.Grpc;
 
 namespace Catalog.API.Services;
 
@@ -22,19 +23,24 @@ public class ProductService : IProductService
     private readonly IRepository<Product> _productRepository;
     private readonly IRepository<Category> _categoryRepository;
     private readonly IRepository<SubCategory> _subCategoryRepository;
+    private readonly IDiscountGrpcService _discountGrpcService;
 
     public ProductService(
         IRepository<Product> productRepository,
         IRepository<Category> categoryRepository,
-        IRepository<SubCategory> subCategoryRepository)
+        IRepository<SubCategory> subCategoryRepository, 
+        IDiscountGrpcService discountGrpcService)
     {
         _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
         _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
         _subCategoryRepository = subCategoryRepository ?? throw new ArgumentNullException(nameof(subCategoryRepository));
+        _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
     }
 
     public async Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken)
     {
+        var a = await _discountGrpcService.GetDiscount("abc");
+        
         var entities = await _productRepository.GetEntitiesAsync(cancellationToken);
 
         var summaries = await GetProductSummariesInternalAsync(entities, cancellationToken);

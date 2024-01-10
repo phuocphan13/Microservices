@@ -7,6 +7,7 @@ namespace Discount.Domain.Services;
 
 public interface IDiscountService
 {
+    Task<DiscountDetail?> GetDiscountAsync(string id);
     Task<DiscountDetail?> CreateDiscountAsync(CreateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> UpdateDiscountAsync(UpdateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> InactiveDiscountAsync(int id);
@@ -21,6 +22,18 @@ public class DiscountService : IDiscountService
     {
         _discountRepository = discountRepository ?? throw new ArgumentNullException(nameof(discountRepository));
         _catalogService = catalogService ?? throw new ArgumentNullException(nameof(catalogService));
+    }
+
+    public async Task<DiscountDetail?> GetDiscountAsync(string id)
+    {
+        var discount = await _discountRepository.GetDiscountAsync(id);
+
+        if (discount is null)
+        {
+            return null;
+        }
+
+        return discount.ToDetail();
     }
 
     public async Task<DiscountDetail?> CreateDiscountAsync(CreateDiscountRequestBody requestBody, CancellationToken cancellationToken)
