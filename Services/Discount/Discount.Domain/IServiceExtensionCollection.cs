@@ -1,6 +1,7 @@
 using Discount.Domain.Repositories;
 using Discount.Domain.Repositories.Common;
 using Discount.Domain.Services;
+using Discount.Domain.Services.Externals;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Discount.Domain;
@@ -16,6 +17,8 @@ public static class IServiceExtensionCollection
 
         services.AddScoped<IDiscountService, DiscountService>();
         services.AddScoped<ICouponService, CouponService>();
+
+        services.AddScoped<ICatalogService, CatalogService>();
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     }

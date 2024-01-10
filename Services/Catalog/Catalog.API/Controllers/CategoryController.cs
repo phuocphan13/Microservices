@@ -86,11 +86,6 @@ public class CategoryController : ControllerBase
 
         if (!result.IsSuccessCode)
         {
-            if (result.InternalErrorCode == 404)
-            {
-                return NotFound(result.Message);
-            }
-
             if (result.InternalErrorCode == 500)
             {
                 return Problem(result.Message);
@@ -119,10 +114,18 @@ public class CategoryController : ControllerBase
         }
 
         var result = await _categoryService.UpdateCategoryAsync(requestBody, cancellationToken);
-
-        if (result is null)
+        if (!result.IsSuccessCode)
         {
-            return Problem($"Cannot update category with name: {requestBody.Name}");
+            if (result.InternalErrorCode == 404)
+            {
+                return NotFound(result);
+            }
+
+            if (result.InternalErrorCode == 500)
+            {
+
+                return Problem(result.Message);
+            }
         }
 
         return Ok(result);

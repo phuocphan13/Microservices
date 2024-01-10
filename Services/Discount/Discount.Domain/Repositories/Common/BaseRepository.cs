@@ -35,18 +35,18 @@ public class BaseRepository : IBaseRepository
         where TEntity : ExtendEntity, new()
     {
         using var connection = InitializaCollection();
-        var tableName = typeof(TEntity).Name;
-        string sql = $"SELECT count(Id) FROM {tableName} WHERE " + query;
+        var tableName = typeof(TEntity).Name.ToLower();
+        string sql = $"SELECT Id FROM {tableName} WHERE " + query + " LIMIT 1";
 
-        var count = await connection.ExecuteAsync(sql, param);
-        return count > 0;
+        var rows = await connection.QueryAsync(sql, param);
+        return rows.Any();
     }
 
     public async Task<TEntity?> QueryFirstOrDefaultAsync<TEntity>(string query, object param)
         where TEntity: ExtendEntity, new()
     {
         using var connection = InitializaCollection();
-        var tableName = typeof(TEntity).Name;
+        var tableName = typeof(TEntity).Name.ToLower();
         string sql = $"SELECT * FROM {tableName} WHERE " + query;
 
         var entity = await connection.QueryFirstOrDefaultAsync<TEntity>(sql, param);
@@ -58,10 +58,11 @@ public class BaseRepository : IBaseRepository
         where TEntity : ExtendEntity, new()
     {
         using var connection = InitializaCollection();
+        var tableName = typeof(TEntity).Name.ToLower();
         var tableProperty = QueryBuilderExtensions.CreateQueryBuilder<TEntity>(false);
         var valProperty = QueryBuilderExtensions.CreateQueryBuilder<TEntity>(true);
 
-        string sql = $"INSERT INTO {nameof(entity)} ({tableProperty}) VALUES ({valProperty})";
+        string sql = $"INSERT INTO {tableName} ({tableProperty}) VALUES ({valProperty})";
 
         entity.CreatedBy = "Admin Created";
         entity.CreatedDate = DateTime.Now;
@@ -76,9 +77,10 @@ public class BaseRepository : IBaseRepository
         where TEntity : ExtendEntity, new()
     {
         using var connection = InitializaCollection();
+        var tableName = typeof(TEntity).Name.ToLower();
         var tableProperty = QueryBuilderExtensions.UpdateQueryBuilder<TEntity>();
 
-        string sql = $"UPDATE {nameof(entity)} SET ({tableProperty}) WHERE Id = @Id";
+        string sql = $"UPDATE {tableName} SET ({tableProperty}) WHERE Id = @Id";
 
         entity.UpdatedBy = "Admin Created";
         entity.UpdatedDate = DateTime.Now;
@@ -93,7 +95,7 @@ public class BaseRepository : IBaseRepository
     {
         using var connection = InitializaCollection();
 
-        var tableName = typeof(TEntity).Name;
+        var tableName = typeof(TEntity).Name.ToLower();
         string sql = $"DELETE FROM {tableName} WHERE id = @id";
 
         var affected = await connection.ExecuteAsync(sql, new { Id = id });

@@ -98,7 +98,7 @@ public class CategoryService : ICategoryService
 
         var category = requestBody.ToCreateCategory();
 
-        await _categoryRepository.CreateEntityAsync(category, cancellationToken);
+        category = await _categoryRepository.CreateEntityAsync(category, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(category.Id))
         {
@@ -159,7 +159,7 @@ public class CategoryService : ICategoryService
 
         if (!result)
         {
-            apiDataResult.Message = ResponseMessages.Category.UpdateFailed;
+            apiDataResult.Message = ResponseMessages.Category.DeleteFailed;
             return apiDataResult;
         }
 

@@ -16,18 +16,18 @@ public class DiscountController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateDiscount([FromBody] CreateDiscountRequestBody requestBody)
+    public async Task<IActionResult> CreateDiscount([FromBody] CreateDiscountRequestBody requestBody, CancellationToken cancellationToken)
     {
         if (requestBody is null)
         {
             return BadRequest("RequestBody is not allowed null.");
         }
 
-        var result = await _discountService.CreateDiscountVersionAsync(requestBody);
+        var result = await _discountService.CreateDiscountAsync(requestBody, cancellationToken);
 
         if (result is null)
         {
-            return BadRequest($"Cannot create Discount with CouponId: {requestBody.CouponId}");
+            return BadRequest($"Cannot create Discount with CatalogCode: {requestBody.CatalogCode}");
         }
         
         return Ok(result);

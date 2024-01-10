@@ -15,7 +15,8 @@ public static class ProductExtension
             SubCategory = subCategoryName,
             Description = product.Description,
             ImageFile = product.ImageFile,
-            Price =product.Price,
+            Price = product.Price,
+            Code = product.ProductCode
         };
     }
 
