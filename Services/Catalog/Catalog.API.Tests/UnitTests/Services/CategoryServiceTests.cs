@@ -326,7 +326,7 @@ public class CategoryServiceTests
         [Fact]
         public async Task DeleteCategoryAsync_ValidParams_SaveFailure()
         {
-            var categoryId = "existingCategoryId";
+            var categoryId = "id";
             var categoryRepository = new Mock<IRepository<Category>>();
             var categoryService = new CategoryService(categoryRepository.Object);
 
