@@ -2,6 +2,7 @@ using ApiClient.Catalog.Models.Catalog.Category;
 using ApiClient.Catalog.Product.Models;
 using ApiClient.Catalog.SubCategory.Models;
 using Catalog.API.Extensions;
+using System.Xml.Linq;
 using UnitTest.Common.Helpers;
 
 namespace Catalog.API.Tests.Common;
@@ -170,9 +171,11 @@ public static class ModelHelpers
             return requestBody;
         }
 
-        public static UpdateSubCategoryRequestBody GenerateUpdateRequestBody(Action<UpdateSubCategoryRequestBody>? initAction = default)
+        public static UpdateSubCategoryRequestBody GenerateUpdateRequestBody(string id = null!, string name = null!,Action<UpdateSubCategoryRequestBody>? initAction = default)
         {
             var requestBody = GenerateBaseRequestBody<UpdateSubCategoryRequestBody>();
+            requestBody.Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id;
+            requestBody.Name = string.IsNullOrWhiteSpace(name) ? CommonHelpers.GenerateRandomString() : name;
 
             initAction?.Invoke(requestBody);
 
@@ -213,5 +216,35 @@ public static class ModelHelpers
                 CategoryId = string.IsNullOrWhiteSpace(categoryId) ? CommonHelpers.GenerateBsonId() : categoryId
             };
         }
+
+        public static Entities.SubCategory GenerateSubCategoryEntity(string id = null!, string categoryId = null!, Action<Entities.Product>? initAction = default)
+        {
+            return new Entities.SubCategory()
+            {
+                Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id,
+                SubCategoryCode = CommonHelpers.GenerateRandomString(),
+                Description = CommonHelpers.GenerateRandomString(),
+                Name = CommonHelpers.GenerateRandomString(),
+                CategoryId = string.IsNullOrWhiteSpace(categoryId) ? CommonHelpers.GenerateBsonId() : categoryId
+            };
+        }
+        //public static Entities.Product GenerateSubCategoryEntity(string id = null!, string categoryId = null!, Action<Entities.Product>? initAction = default)//??????????????????????????
+        //{
+        //    var entity = new Entities.Product()
+        //    {
+        //        Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id,
+        //        ProductCode = CommonHelpers.GenerateRandomString(),
+        //        Description = CommonHelpers.GenerateRandomString(),
+        //        ImageFile = CommonHelpers.GenerateRandomString(),
+        //        Name = CommonHelpers.GenerateRandomString(),
+        //        Price = CommonHelpers.GenerateRandomDecimal(),
+        //        Summary = CommonHelpers.GenerateRandomString(),
+        //        CategoryId = string.IsNullOrWhiteSpace(categoryId) ? CommonHelpers.GenerateBsonId() : categoryId,
+        //    };
+
+        //    initAction?.Invoke(entity);
+
+        //    return entity;
+        //}
     }
 }

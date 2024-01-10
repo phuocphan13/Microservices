@@ -68,14 +68,24 @@ public class SubCategoryController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateSubCategory([FromBody] CreateSubCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
-        if(requestBody.Name == null || requestBody.SubCategoryCode == null || requestBody.CategoryId == null)
-        {
-            return BadRequest("Name, SubCategoryCode or CategoryId is null.");
-        }
-        else if (requestBody is null)
+        
+        if (requestBody is null)
         {
             return BadRequest("requestBody is null.");
         }
+        else if (string.IsNullOrWhiteSpace(requestBody.Name) )
+        {
+            return BadRequest("Name is null.");
+        }
+        else if(string.IsNullOrWhiteSpace(requestBody.SubCategoryCode) )
+        {
+            return BadRequest("SubCategoryCode is null.");
+        }
+        else if (string.IsNullOrWhiteSpace(requestBody.CategoryId))
+        {
+            return BadRequest("CategoryId is null.");
+        }
+
         var result = await _subCategory.CreateSubCategoryAsync(requestBody, cancellationToken);
 
         if (!result.IsSuccessCode)
@@ -98,11 +108,28 @@ public class SubCategoryController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateSubCategory([FromBody] UpdateSubCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
+        if (requestBody is null)
+        {
+            return BadRequest("requestBody is null.");
+        }
+        else if (string.IsNullOrWhiteSpace(requestBody.Id))
+        {
+            return BadRequest("Id is null.");
+        }
+
         var result = await _subCategory.UpdateSubCategoryAsync(requestBody, cancellationToken);
 
-        if (result is null)
+        if (!result.IsSuccessCode)
         {
-            return Problem($"Cannot update product with name: {requestBody.Name}");
+            if(result.InternalErrorCode == 404)
+            {
+                return NotFound(result);
+            }  
+            
+            if(result.InternalErrorCode == 500)
+            {
+                return Problem(result.Message);
+            }    
         }
 
         return Ok(result);
