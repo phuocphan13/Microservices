@@ -420,4 +420,38 @@ public class SubCategoryControllerTests
     }
 
     #endregion
+
+    //Delete SubCategory
+    #region
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    public async Task DeleteSubCategory_InvalidParams_BadRequest(string id)
+    {
+       
+        var subCategoryService = new Mock<ISubCategoryService>();
+
+        var controller = new SubCategoryController(subCategoryService.Object);
+
+        var result = await controller.DeleteSubCategory(id, default);
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task DeleteSubCategory_ValidParams_ExpectedResult()
+    {
+        string id = CommonHelpers.GenerateBsonId();
+
+        var subCategoryService = new Mock<ISubCategoryService>();
+        subCategoryService.Setup(x => x.DeleteSubCategoryAsync(id, default)).ReturnsAsync(new ApiStatusResult());
+
+        var logger = new Mock<ILogger<ProductController>>();
+
+        var controller = new SubCategoryController(subCategoryService.Object);
+
+        var result = await controller.DeleteSubCategory(id, default);
+
+        Assert.IsType<OkObjectResult>(result);
+    }
+    #endregion
 }
