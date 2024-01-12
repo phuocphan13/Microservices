@@ -1,16 +1,10 @@
-﻿using ApiClient.Catalog.Category.Models;
-using ApiClient.Catalog.Product.Models;
-using ApiClient.Catalog.SubCategory.Models;
+﻿using ApiClient.Catalog.SubCategory.Models;
 using ApiClient.Common;
 using Catalog.API.Controllers;
-using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Services;
 using Catalog.API.Tests.Common;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Moq;
-using System.Collections.Generic;
 using System.Net;
 using UnitTest.Common.Helpers;
 
@@ -18,8 +12,20 @@ namespace Catalog.API.Tests.UnitTests.Controllers;
 
 public class SubCategoryControllerTests
 {
-    //GetSubCategory
-    #region
+    [Fact]
+    public void Constructor_NullProductServiceParams_ThrowException()
+    {
+        ISubCategoryService subCategoryService = null!;
+
+        Assert.Throws<ArgumentNullException>(
+            nameof(subCategoryService),
+            () =>
+            {
+                _ = new SubCategoryController(subCategoryService);
+            });
+    }
+    
+    #region GetSubCategory
     [Fact]
     public async Task GetSubCategory_ValidParams_NotFound()
     {
@@ -45,7 +51,6 @@ public class SubCategoryControllerTests
         var subCategorySummarise = ModelHelpers.SubCategory.GenerateSubCategorySummaries();
 
         subCategoryService.Setup(x => x.GetSubCategoriesAsync(default)).ReturnsAsync(CommonHelpers.ApiResult.Ok(subCategorySummarise));
-        //subCategoryService.Setup(x => x.GetSubCategoriesAsync(default)).ReturnsAsync(new ApiDataResult<List<SubCategorySummary>>() { Data = subCategorySummarise});
 
         var controller = new SubCategoryController(subCategoryService.Object);
 
@@ -57,12 +62,11 @@ public class SubCategoryControllerTests
 
         Assert.NotNull(data.Data);
         Assert.Equal(data.Data.Count, subCategorySummarise.Count);
-
     }
 
     #endregion
-    //GetSubCategoryById
-    #region
+    
+    #region GetSubCategoryById
     [Theory]
     [InlineData("")]
     [InlineData("  ")]
@@ -89,7 +93,7 @@ public class SubCategoryControllerTests
 
         var result = await controller.GetSubCategoryById(id, default);
 
-        Assert.IsType<NotFoundResult>(result); // WHY? tai sao o tren truyen vao Object ma ko tra ra type NotFoundOjectResult?
+        Assert.IsType<NotFoundResult>(result);
     }
 
     [Fact]
@@ -112,8 +116,7 @@ public class SubCategoryControllerTests
     }
     #endregion
 
-    //GetSubCategoryByName
-    #region
+    #region GetSubCategoryByName
     [Theory]
     [InlineData("")]
     [InlineData("  ")]
@@ -163,8 +166,7 @@ public class SubCategoryControllerTests
     }
     #endregion
 
-    //GetSubCategoryByCategoryId
-    #region
+    #region GetSubCategoryByCategoryId
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
@@ -216,8 +218,7 @@ public class SubCategoryControllerTests
     }
     #endregion
 
-    //CreateSubCategory
-    #region
+    #region CreateSubCategory
     [Fact]
     public async Task CreateSubCategory_ValidParams_NotFound()
     {
@@ -252,7 +253,6 @@ public class SubCategoryControllerTests
 
     }
 
-            //lam 4 Unit Test cho 4 truong hop BadRequest: requestBody null, Name null, SubCategoryCode null, CategoryId null
     [Fact] 
     public async Task CreateSubCategory_InvalidParams_BadRequest_RequestBodyNull()
     {
@@ -300,7 +300,7 @@ public class SubCategoryControllerTests
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
-    public async Task CreateSubCategory_InvalidParams_BadRequest_CategoryIdCodeNull(string categoryId)
+    public async Task CreateSubCategory_NullCategoryIdCodeParams_BadRequest(string categoryId)
     {
         var requestBody = ModelHelpers.SubCategory.GenerateCreateRequestBody();
         requestBody.CategoryId = categoryId;
@@ -332,10 +332,9 @@ public class SubCategoryControllerTests
     }
     #endregion
 
-    //UpdateSubCategory
-    #region
+    #region UpdateSubCategory
     [Fact]
-    public async Task UpdateSubCategory_InvalidParams_BadRequest_RequestBodyNull()
+    public async Task UpdateSubCategory_InvalidNullRequestBodyParams_BadRequest()
     {
         UpdateSubCategoryRequestBody requestBody = null!;
         var subCategoryService = new Mock<ISubCategoryService>();
@@ -421,8 +420,7 @@ public class SubCategoryControllerTests
 
     #endregion
 
-    //Delete SubCategory
-    #region
+    #region DeleteSubCategory
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
@@ -444,8 +442,6 @@ public class SubCategoryControllerTests
 
         var subCategoryService = new Mock<ISubCategoryService>();
         subCategoryService.Setup(x => x.DeleteSubCategoryAsync(id, default)).ReturnsAsync(new ApiStatusResult());
-
-        var logger = new Mock<ILogger<ProductController>>();
 
         var controller = new SubCategoryController(subCategoryService.Object);
 

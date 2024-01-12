@@ -1,19 +1,10 @@
-﻿using ApiClient.Catalog.Category.Models;
-using ApiClient.Catalog.Models.Catalog.Category;
-using ApiClient.Catalog.Product.Models;
-using ApiClient.Common;
-using Catalog.API.Common.Consts;
+﻿using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
 using Catalog.API.Services;
 using Catalog.API.Tests.Common;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using SharpCompress.Common;
 using System.Linq.Expressions;
-using System.Net;
 using UnitTest.Common.Helpers;
 
 namespace Catalog.API.Tests.UnitTests.Services;
@@ -107,7 +98,7 @@ public class CategoryServiceTests
 
             categoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<Category, bool>>>(), default)).ReturnsAsync(entity);
 
-            var result = await categoryService.GetCategoryByNameAsync(entity.Id!, default);
+            var result = await categoryService.GetCategoryByNameAsync(entity.Id, default);
 
             Assert.NotNull(result.Data);
             Assert.Equal(categoryDetail.Name, result.Data.Name);
