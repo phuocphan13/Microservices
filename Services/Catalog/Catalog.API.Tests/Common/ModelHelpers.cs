@@ -20,9 +20,9 @@ public static class ModelHelpers
             for (int i = 0; i < number; i++)
             {
                 var summary = GenerateProductEntity().ToSummary(categoryName, subCategoryName);
-                
+
                 initAction?.Invoke(summary);
-                
+
                 summaries.Add(summary);
             }
 
@@ -34,7 +34,7 @@ public static class ModelHelpers
             var detail = GenerateProductEntity(id).ToDetail();
 
             initAction?.Invoke(detail);
-            
+
             return detail;
         }
 
@@ -58,7 +58,7 @@ public static class ModelHelpers
             var requestBody = GenerateBaseRequestBody<CreateProductRequestBody>(category, subCategory);
 
             initAction?.Invoke(requestBody);
-            
+
             return requestBody;
         }
 
@@ -102,7 +102,7 @@ public static class ModelHelpers
                 CategoryId = string.IsNullOrWhiteSpace(categoryId) ? CommonHelpers.GenerateBsonId() : categoryId,
                 SubCategoryId = string.IsNullOrWhiteSpace(subCategoryId) ? CommonHelpers.GenerateBsonId() : subCategoryId,
             };
-            
+
             initAction?.Invoke(entity);
 
             return entity;
@@ -176,6 +176,7 @@ public static class ModelHelpers
 
             return requestBody;
         }
+
         public static Entities.Category GenerateCategoryEntity(string id = null!, Action<Entities.Category>? initAction = default)
         {
             var entity = new Entities.Category()
@@ -193,6 +194,38 @@ public static class ModelHelpers
 
     public static class SubCategory
     {
+        private static TRequestBody GenerateBaseRequestBody<TRequestBody>()
+            where TRequestBody : BaseSubCategoryResquestBody, new()
+        {
+            return new TRequestBody()
+            {
+                Description = CommonHelpers.GenerateRandomString(),
+                SubCategoryCode = CommonHelpers.GenerateRandomString(),
+                Name = CommonHelpers.GenerateRandomString(),
+                CategoryId = CommonHelpers.GenerateRandomString()
+            };
+        }
+
+        public static CreateSubCategoryRequestBody GenerateCreateRequestBody(Action<CreateSubCategoryRequestBody>? initAction = default)
+        {
+            var requestBody = GenerateBaseRequestBody<CreateSubCategoryRequestBody>();
+
+            initAction?.Invoke(requestBody);
+
+            return requestBody;
+        }
+
+        public static UpdateSubCategoryRequestBody GenerateUpdateRequestBody(string id = null!, string name = null!, Action<UpdateSubCategoryRequestBody>? initAction = default)
+        {
+            var requestBody = GenerateBaseRequestBody<UpdateSubCategoryRequestBody>();
+            requestBody.Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id;
+            requestBody.Name = string.IsNullOrWhiteSpace(name) ? CommonHelpers.GenerateRandomString() : name;
+
+            initAction?.Invoke(requestBody);
+
+            return requestBody;
+        }
+
         public static List<SubCategorySummary> GenerateSubCategorySummaries(int number = 2)
         {
             var summaries = new List<SubCategorySummary>();
@@ -218,6 +251,18 @@ public static class ModelHelpers
         }
 
         public static Entities.SubCategory GenerateSubCategory(string id = null!, string categoryId = null!)
+        {
+            return new Entities.SubCategory()
+            {
+                Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id,
+                SubCategoryCode = CommonHelpers.GenerateRandomString(),
+                Description = CommonHelpers.GenerateRandomString(),
+                Name = CommonHelpers.GenerateRandomString(),
+                CategoryId = string.IsNullOrWhiteSpace(categoryId) ? CommonHelpers.GenerateBsonId() : categoryId
+            };
+        }
+
+        public static Entities.SubCategory GenerateSubCategoryEntity(string id = null!, string categoryId = null!, Action<Entities.Product>? initAction = default)
         {
             return new Entities.SubCategory()
             {

@@ -22,9 +22,7 @@ public class DiscountGrpcService : IDiscountGrpcService
     {
         var discountRequest = new GetDiscountRequest()
         { 
-            SearchText = productName,
-            Type = Discount.Grpc.Protos.CatalogType.Product
-            
+            Id = productName
         };
 
         var couponModel = await _discountGrpcService.GetDiscountAsync(discountRequest);

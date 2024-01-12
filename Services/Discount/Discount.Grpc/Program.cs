@@ -1,3 +1,4 @@
+using ApiClient;
 using Discount.Domain;
 using Discount.Grpc.Services;
 
@@ -8,9 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddGrpc();
+builder.Services.AddHttpClient();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDiscountCommonServices();
+builder.Services.AddCatalogServices();
 
 var app = builder.Build();
 

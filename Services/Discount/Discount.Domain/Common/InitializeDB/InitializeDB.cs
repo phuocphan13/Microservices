@@ -33,9 +33,8 @@ public static class InitializeDB
             new()
             {
                 Amount = 200,
-                Code = "SamSung 10",
+                Name = "SamSung 10",
                 Description = "SamSung 10 Description",
-                Type = CatalogType.Product,
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
                 IsActive = true,

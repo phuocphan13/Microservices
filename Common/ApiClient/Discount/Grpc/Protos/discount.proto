@@ -3,11 +3,11 @@ syntax = "proto3";
 option csharp_namespace = "Discount.Grpc.Protos";
 
 service DiscountProtoService {
-  rpc GetDiscount (GetDiscountRequest) returns (CouponDetailModel);
-
-  rpc CreateDiscount (CreateCouponRequest) returns (CouponDetailModel);
-  rpc UpdateDiscount (UpdateCouponRequest) returns (CouponDetailModel);
-  rpc DeleteDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
+  rpc GetDiscount (GetDiscountRequest) returns (DiscountDetailModel);
+  rpc GetDiscountByCatalogCode (GetDiscountByCatalogCodeRequest) returns (DiscountDetailModel);
+  rpc CreateDiscount (CreateCouponRequest) returns (DiscountDetailModel);
+  rpc UpdateDiscount (UpdateCouponRequest) returns (DiscountDetailModel);
+  rpc InactiveDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
 }
 
 enum CatalogType
@@ -19,8 +19,12 @@ enum CatalogType
 }
 
 message GetDiscountRequest {
-  string searchText = 1;
-  CatalogType type = 2;
+  string id = 1;
+}
+
+message GetDiscountByCatalogCodeRequest {
+  int32 type = 1;
+  string catalogCode = 2;
 }
 
 message CreateCouponRequest {
@@ -46,7 +50,7 @@ message DeleteDiscountResponse{
   bool success = 1;
 }
 
-message CouponDetailModel {
+message DiscountDetailModel {
   int32 id = 1;
   string CatalogName = 2;
   CatalogType Type = 3;

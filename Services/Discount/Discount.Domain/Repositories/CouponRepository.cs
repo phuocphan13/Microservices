@@ -5,10 +5,10 @@ namespace Discount.Domain.Repositories;
 
 public interface ICouponRepository
 {
-    Task<Coupon?> GetDiscountAsync(string value, CatalogType type);
-    Task<Coupon> CreateDiscountAsync(Coupon coupon);
-    Task<Coupon> UpdateDiscountAsync(Coupon coupon);
-    Task<bool> DeleteDiscountAsync(int id);
+    Task<Coupon?> GetCouponAsync(string value, CatalogType type);
+    Task<Coupon> CreateCouponAsync(Coupon coupon);
+    Task<Coupon> UpdateCouponAsync(Coupon coupon);
+    Task<bool> DeleteCouponAsync(int id);
 }
 
 public class CouponRepository : ICouponRepository
@@ -20,7 +20,7 @@ public class CouponRepository : ICouponRepository
         _baseRepository = baseRepository ?? throw new ArgumentNullException(nameof(baseRepository));
     }
 
-    public async Task<Coupon?> GetDiscountAsync(string value, CatalogType type)
+    public async Task<Coupon?> GetCouponAsync(string value, CatalogType type)
     {
         const string query = "Code = @Code and @Type = Type";
 
@@ -29,19 +29,19 @@ public class CouponRepository : ICouponRepository
         return coupon;
     }
 
-    public async Task<Coupon> CreateDiscountAsync(Coupon coupon)
+    public async Task<Coupon> CreateCouponAsync(Coupon coupon)
     {
         var entity = await _baseRepository.CreateEntityAsync(coupon);
         return entity;
     }
 
-    public async Task<Coupon> UpdateDiscountAsync(Coupon coupon)
+    public async Task<Coupon> UpdateCouponAsync(Coupon coupon)
     {
         var entity = await _baseRepository.UpdateEntityAsync(coupon);
         return entity;
     }
 
-    public async Task<bool> DeleteDiscountAsync(int id)
+    public async Task<bool> DeleteCouponAsync(int id)
     {
         var result = await _baseRepository.DeleteEntityAsync<Coupon>(id);
 
