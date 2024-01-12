@@ -7,9 +7,9 @@ namespace Catalog.API.Tests.UnitTests.Repositories;
 
 public class ProductRepositoryTests
 {
-    [Fact]
-    public async Task GetEntitiesAsync_ExpectedResult()
-    {
+    // [Fact]
+    // public async Task GetEntitiesAsync_ExpectedResult()
+    // {
         //Todo Update Unit Test later after figure out the the way
         // Mock<IConfigurationSection> mockSection = new Mock<IConfigurationSection>();
         // mockSection.Setup(x => x.Key).Returns("DatabaseSettings:ConnectionString");
@@ -63,5 +63,5 @@ public class ProductRepositoryTests
         // var repository = new Repository<Entities.Product>(configuration.Object);
         //
         // var result = await repository.GetEntitiesAsync(default);
-    }
+    // }
 }

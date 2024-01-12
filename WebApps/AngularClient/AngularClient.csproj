@@ -26,6 +26,11 @@
       <ProjectReference Include="..\..\Common\ApiClient\ApiClient.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="ClientApp\src\app\core\shared\grids\" />
+      <Folder Include="ClientApp\src\app\core\shared\modals\" />
+    </ItemGroup>
+
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
         <!-- Ensure Node.js is installed -->
         <Exec Command="node --version" ContinueOnError="true">

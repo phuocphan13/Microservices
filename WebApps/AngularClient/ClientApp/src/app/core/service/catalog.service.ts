@@ -2,8 +2,8 @@ import {HttpParams} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {environment} from "src/environments/environment";
 import {ApiService} from "./api.service";
-import { ProductDetail } from "../models/product-detail.model";
-import { ProductSummary } from "../models/product-summary.model";
+import {ProductSummary} from "../models/catalog/product-models/product-summary.model";
+import {ProductDetail} from "../models/catalog/product-models/product-detail.model";
 
 @Injectable()
 export class CatalogService {
