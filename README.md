@@ -45,4 +45,4 @@ If you are having problems, please let me know by contacting me in [Linkedin](ht
 
 ## License
 
-This project is licensed with the [MIT license](LICENSE).
+This project is licensed with the [MIT license](LICENSE.txt).
