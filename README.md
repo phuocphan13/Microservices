@@ -25,7 +25,7 @@ And I also apply Integration test with [testcontainers](https://testcontainers.c
 ## Getting Started
 
 Firstly, you have to clone this project in your local environment.
-And install the Docker Desktop.
+And install the [Docker Desktop](https://www.docker.com/products/docker-desktop/).
 
 Access in `./docker-compose.dcproj` by terminal and run the command
 
