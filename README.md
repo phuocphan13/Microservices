@@ -1,4 +1,4 @@
-# Basic Ecommmerce project is built based on Microservices architecture.
+# Basic Ecommerce project is built based on Microservices architecture.
 
 This project is my self-learning project. 
 I based on [this course](https://www.udemy.com/course/microservices-architecture-and-implementation-on-dotnet/) in Udemy of [Mehmet Ozkaya](https://github.com/mehmetozkaya).
