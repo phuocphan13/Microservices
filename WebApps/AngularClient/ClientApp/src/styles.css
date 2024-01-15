@@ -163,14 +163,28 @@ option:hover {
 
 /*Basic Grid*/
 
-table.basic-table {
-
+table.table {
 }
 
-table.basic-table thead tr th.header {
-
+table.table tbody tr td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
 }
 
-table.basic-table tbody tr td.label {
+table.table tbody tr td i{
+  color: #006dff;
+}
 
+table.table thead tr th.table-action{
+  text-align: end;
+}
+
+table.table tbody tr td.table-action{
+  text-align: end;
+}
+
+table.table thead{
+  border-bottom-color: #006dff;
 }

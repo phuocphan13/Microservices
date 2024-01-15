@@ -19,6 +19,29 @@
 </select>
 </div>
 
-<i class="fa-solid fa-pen-to-square"></i>
-
-
+<div class="container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Description</th>
+        <th class="table-action">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of data">
+        <td>{{ row.column1 }}</td>
+        <td>{{ row.column2 }}</td>
+        <td>{{ row.column3 }}</td>
+        <td>{{ row.column4 }}</td>
+        <td class="table-action">
+          <i class="fa-solid fa-eye"></i>&nbsp;
+          <i class="fa-solid fa-pen-to-square"></i>&nbsp;
+          <i class="fa-regular fa-trash-can"></i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
