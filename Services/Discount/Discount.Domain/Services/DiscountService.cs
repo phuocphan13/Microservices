@@ -8,6 +8,7 @@ namespace Discount.Domain.Services;
 public interface IDiscountService
 {
     Task<DiscountDetail?> GetDiscountAsync(string id);
+    Task<List<DiscountDetail>?> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, List<string> catalogCodes);
     Task<DiscountDetail?> GetDiscountByCatalogCodeAsync(int type, string catalogCode);
     Task<DiscountDetail?> CreateDiscountAsync(CreateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> UpdateDiscountAsync(UpdateDiscountRequestBody requestBody, CancellationToken cancellationToken);
@@ -35,6 +36,18 @@ public class DiscountService : IDiscountService
         }
 
         return discount.ToDetail();
+    }
+
+    public async Task<List<DiscountDetail>?> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, List<string> catalogCodes)
+    {
+        var discounts = await _discountRepository.GetListDiscountsByCatalogCodeAsync(type, catalogCodes);
+
+        if (discounts is null)
+        {
+            return null;
+        }
+        
+        return discounts.Select(x => x.ToDetail()).ToList();
     }
 
     public async Task<DiscountDetail?> GetDiscountByCatalogCodeAsync(int type, string catalogCode)

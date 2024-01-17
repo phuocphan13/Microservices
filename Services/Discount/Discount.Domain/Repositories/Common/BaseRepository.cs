@@ -9,6 +9,7 @@ namespace Discount.Domain.Repositories.Common;
 public interface IBaseRepository
 {
     Task<bool> AnyAsync<TEntity>(string query, object param) where TEntity : ExtendEntity, new();
+    Task<List<TEntity>?> QueryAsync<TEntity>(string query, object param);
     Task<TEntity?> QueryFirstOrDefaultAsync<TEntity>(string query, object param) where TEntity : ExtendEntity, new();
     Task<TEntity> CreateEntityAsync<TEntity>(TEntity entity) where TEntity : ExtendEntity, new();
     Task<TEntity> UpdateEntityAsync<TEntity>(TEntity entity) where TEntity : ExtendEntity, new();
@@ -40,6 +41,17 @@ public class BaseRepository : IBaseRepository
 
         var rows = await connection.QueryAsync(sql, param);
         return rows.Any();
+    }
+
+    public async Task<List<TEntity>?> QueryAsync<TEntity>(string query, object param)
+    {
+        using var connection = InitializaCollection();
+        var tableName = typeof(TEntity).Name.ToLower();
+        string sql = $"SELECT * FROM {tableName} WHERE " + query;
+
+        var entity = await connection.QueryAsync<TEntity>(sql, param);
+
+        return entity?.ToList();
     }
 
     public async Task<TEntity?> QueryFirstOrDefaultAsync<TEntity>(string query, object param)

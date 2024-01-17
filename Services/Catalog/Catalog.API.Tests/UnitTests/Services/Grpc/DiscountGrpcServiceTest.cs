@@ -1,0 +1,68 @@
+using Catalog.API.Services.Grpc;
+using Discount.Grpc.Protos;
+using UnitTest.Common.Helpers;
+
+namespace Catalog.API.Tests.UnitTests.Services.Grpc;
+
+public class DiscountGrpcServiceTest
+{
+    [Fact]
+    public void Constructor_NullParams_ThrowException()
+    {
+        DiscountProtoService.DiscountProtoServiceClient discountGrpcService = null!;
+        Assert.Throws<ArgumentNullException>(
+            nameof(discountGrpcService),
+            () =>
+            {
+                _ = new DiscountGrpcService(discountGrpcService);
+            });
+    }
+
+    #region GetDiscount
+
+    [Fact]
+    public async Task GetDiscount_ValidParams_ExpectedResult()
+    {
+        string productName = CommonHelpers.GenerateRandomString();
+        var response = new DiscountDetailModel { CatalogName = productName };
+
+        var call = GrpcHelpers.BuildAsyncUnaryCall(response);
+
+        var discountGrpcService = new Mock<DiscountProtoService.DiscountProtoServiceClient>();
+
+        discountGrpcService.Setup(x => x.GetDiscountAsync(It.IsAny<GetDiscountRequest?>(), null, null, default)).Returns(call);
+
+        var service = new DiscountGrpcService(discountGrpcService.Object);
+
+        var detail = await service.GetDiscount(productName);
+
+        Assert.NotNull(detail);
+        Assert.Equal(detail.CatalogCode, productName);
+    }
+
+    #endregion
+
+    #region GetDiscountByCatalogCode
+
+    [Fact]
+    public async Task GetDiscountByCatalogCode_ValidParams_ExpectedResult()
+    {
+        string productName = CommonHelpers.GenerateRandomString();
+        var response = new DiscountDetailModel { CatalogName = productName, Type = Discount.Grpc.Protos.CatalogType.Product};
+
+        var call = GrpcHelpers.BuildAsyncUnaryCall(response);
+
+        var discountGrpcService = new Mock<DiscountProtoService.DiscountProtoServiceClient>();
+
+        discountGrpcService.Setup(x => x.GetDiscountByCatalogCodeAsync(It.IsAny<GetDiscountByCatalogCodeRequest?>(), null, null, default)).Returns(call);
+
+        var service = new DiscountGrpcService(discountGrpcService.Object);
+
+        var detail = await service.GetDiscountByCatalogCode(DiscountEnum.Product, productName);
+
+        Assert.NotNull(detail);
+        Assert.Equal(detail.CatalogCode, productName);
+    }
+
+    #endregion
+}

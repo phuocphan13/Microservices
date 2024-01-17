@@ -161,9 +161,12 @@ public class ProductService : IProductService
     {
         var categoryIds = entities.Select(x => x.CategoryId);
         var subCategoryIds = entities.Select(x => x.SubCategoryId);
+        var productCodes = entities.Select(x => x.ProductCode!);
+
 
         var categories = await _categoryRepository.GetEntitiesQueryAsync(x => categoryIds.Contains(x.Id), cancellationToken);
         var subCategories = await _subCategoryRepository.GetEntitiesQueryAsync(x => subCategoryIds.Contains(x.Id), cancellationToken);
+        var discounts = await _discountGrpcService.GetListDiscountsByCatalogCodeAsync(DiscountEnum.Product, productCodes);
 
         var summaries = new List<ProductSummary>();
 
@@ -171,6 +174,12 @@ public class ProductService : IProductService
         {
             var cate = categories.FirstOrDefault(x => x.Id == entity.CategoryId)?.Name;
             var subCate = subCategories.FirstOrDefault(x => x.Id == entity.SubCategoryId)?.Name;
+            var discount = discounts?.FirstOrDefault(x => x.CatalogCode == entity.ProductCode);
+
+            if (discount is not null)
+            {
+                entity.Price -= discount.Amount;
+            }
 
             summaries.Add(entity.ToSummary(cate, subCate));
         }

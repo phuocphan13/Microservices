@@ -4,6 +4,7 @@ option csharp_namespace = "Discount.Grpc.Protos";
 
 service DiscountProtoService {
   rpc GetDiscount (GetDiscountRequest) returns (DiscountDetailModel);
+  rpc GetListDiscounts (GetListDiscountRequest) returns (ListDetailsModel);
   rpc GetDiscountByCatalogCode (GetDiscountByCatalogCodeRequest) returns (DiscountDetailModel);
   rpc CreateDiscount (CreateCouponRequest) returns (DiscountDetailModel);
   rpc UpdateDiscount (UpdateCouponRequest) returns (DiscountDetailModel);
@@ -20,6 +21,11 @@ enum CatalogType
 
 message GetDiscountRequest {
   string id = 1;
+}
+
+message GetListDiscountRequest{
+  int32 type = 1;
+  repeated string catalogCodes = 2;
 }
 
 message GetDiscountByCatalogCodeRequest {
@@ -48,6 +54,10 @@ message DeleteDiscountRequest {
 
 message DeleteDiscountResponse{
   bool success = 1;
+}
+
+message ListDetailsModel{
+  repeated DiscountDetailModel items = 1;
 }
 
 message DiscountDetailModel {

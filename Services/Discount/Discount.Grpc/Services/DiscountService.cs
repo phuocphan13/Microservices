@@ -2,6 +2,7 @@
 using AutoMapper;
 using Discount.Domain.Services;
 using Discount.Grpc.Protos;
+using Google.Protobuf.Collections;
 using Grpc.Core;
 
 namespace Discount.Grpc.Services;
@@ -37,6 +38,36 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     
         var couponModel = _mapper.Map<DiscountDetailModel>(discount);
         return couponModel;
+    }
+
+    public override async Task<ListDetailsModel> GetListDiscounts(GetListDiscountRequest request, ServerCallContext context)
+    {
+        if (request.Type == 0)
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Type cannot be null."));
+        }
+
+        if (!request.CatalogCodes.Any())
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Catalog Code cannot be null."));
+        }
+
+        var discounts = await _discountService.GetListDiscountsByCatalogCodeAsync((DiscountEnum)request.Type, request.CatalogCodes.ToList());
+
+        if (discounts is null || !discounts.Any())
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, $"Discount with Product Type = {request.Type} is not existed"));
+        }
+
+        var model = new ListDetailsModel();
+
+        foreach (var dc in discounts)
+        {
+            var discountModel = _mapper.Map<DiscountDetailModel>(dc);
+            model.Items.Add(discountModel);
+        }
+        
+        return model;
     }
 
     public override async Task<DiscountDetailModel?> GetDiscountByCatalogCode(GetDiscountByCatalogCodeRequest request, ServerCallContext context)

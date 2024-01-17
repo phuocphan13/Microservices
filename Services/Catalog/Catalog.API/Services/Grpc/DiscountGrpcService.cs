@@ -8,6 +8,7 @@ public interface IDiscountGrpcService
 {
     Task<DiscountDetail> GetDiscount(string productName);
     Task<DiscountDetail> GetDiscountByCatalogCode(DiscountEnum type, string catalogCode);
+    Task<List<DiscountDetail>?> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, IEnumerable<string> catalogCodes);
 }
 
 public class DiscountGrpcService : IDiscountGrpcService
@@ -42,5 +43,34 @@ public class DiscountGrpcService : IDiscountGrpcService
         var couponModel = await _discountGrpcService.GetDiscountByCatalogCodeAsync(discountRequest);
 
         return couponModel.ToDetail();
+    }
+
+    public async Task<List<DiscountDetail>?> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, IEnumerable<string> catalogCodes)
+    {
+        var request = new GetListDiscountRequest()
+        {
+            Type = (int)type,
+        };
+
+        foreach (var code in catalogCodes)
+        {
+            request.CatalogCodes.Add(code);
+        }
+
+        var result = await _discountGrpcService.GetListDiscountsAsync(request);
+
+        if(result is null)
+        {
+            return null;
+        }
+
+        var discounts = result.Items.Select(x => new DiscountDetail()
+        {
+            CatalogCode = x.CatalogName,
+            Description = x.Description,
+            Amount = x.Amount,
+        }).ToList();
+        
+        return discounts;
     }
 }

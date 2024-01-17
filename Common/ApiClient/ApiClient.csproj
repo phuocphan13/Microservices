@@ -15,7 +15,7 @@
 
     <ItemGroup>
         <Protobuf Include="Discount\Grpc\Protos\discount.proto">
-            <Link>Protos\discount.proto</Link>
+            <Link>Discount\Protos\discount.proto</Link>
         </Protobuf>
     </ItemGroup>
 
