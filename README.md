@@ -1,4 +1,4 @@
-# Basic Ecommmerce project is built based on Microservices architecture.
+# Basic Ecommerce project is built based on Microservices architecture.
 
 This project is my self-learning project. 
 I based on [this course](https://www.udemy.com/course/microservices-architecture-and-implementation-on-dotnet/) in Udemy of [Mehmet Ozkaya](https://github.com/mehmetozkaya).
@@ -25,7 +25,7 @@ And I also apply Integration test with [testcontainers](https://testcontainers.c
 ## Getting Started
 
 Firstly, you have to clone this project in your local environment.
-And install the Docker Desktop.
+And install the [Docker Desktop](https://www.docker.com/products/docker-desktop/).
 
 Access in `./docker-compose.dcproj` by terminal and run the command
 
@@ -45,4 +45,4 @@ If you are having problems, please let me know by contacting me in [Linkedin](ht
 
 ## License
 
-This project is licensed with the [MIT license](LICENSE).
+This project is licensed with the [MIT license](LICENSE.txt).
