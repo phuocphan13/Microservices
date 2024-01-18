@@ -164,6 +164,7 @@ option:hover {
 /*Basic Grid*/
 
 table.table {
+  font-family: 'Roboto';
 }
 
 table.table tbody tr td {
@@ -174,17 +175,22 @@ table.table tbody tr td {
 }
 
 table.table tbody tr td i{
-  color: #006dff;
+  color: rgb(24, 49, 83);
 }
 
 table.table thead tr th.table-action{
-  text-align: end;
+  text-align: center;
 }
 
 table.table tbody tr td.table-action{
-  text-align: end;
+  text-align: center;
 }
 
 table.table thead{
   border-bottom-color: #006dff;
+}
+
+.action-click {
+  cursor: pointer;
+  padding: 10px;
 }

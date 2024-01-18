@@ -34,4 +34,17 @@ export class HomeComponent {
       }
     })
   }
+
+  onClickAction(actionType: string) {
+    switch (actionType) {
+      case 'view':
+        break;
+      case 'edit':
+        break;
+      case 'delete':
+        break;
+      default:
+        break;
+    }
+  }
 }
