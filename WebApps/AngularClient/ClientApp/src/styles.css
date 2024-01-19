@@ -63,6 +63,14 @@ code {
   background-color: #f3f3f3;
 }
 
+.btn-create {
+  border-radius: 5px;
+  width: 15%;
+  background-color: rgb(24, 49, 83);
+  color: #ffff;
+  font-family: "Roboto";
+}
+
 .input-editable {
   color: black;
   background-color: white;
@@ -174,19 +182,19 @@ table.table tbody tr td {
   max-width: 100px;
 }
 
-table.table tbody tr td i{
+table.table tbody tr td i {
   color: rgb(24, 49, 83);
 }
 
-table.table thead tr th.table-action{
+table.table thead tr th.table-action {
   text-align: center;
 }
 
-table.table tbody tr td.table-action{
+table.table tbody tr td.table-action {
   text-align: center;
 }
 
-table.table thead{
+table.table thead {
   border-bottom-color: #006dff;
 }
 

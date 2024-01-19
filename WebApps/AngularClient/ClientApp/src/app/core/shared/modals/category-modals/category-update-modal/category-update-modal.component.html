@@ -1,0 +1,20 @@
+<div class="modal-header">
+    <p>CẬP NHẬT</p>
+</div>
+<div class="modal-body">
+    <form (ngSubmit)="onSubmit()">
+        <label for="name">Tên:</label>
+        <input id="name" [(ngModel)]="modalData.column2" name="name" class="form-control" required>
+        
+        <label for="code">Mã:</label>
+        <input id="code" [(ngModel)]="modalData.column3" name="code" class="form-control" required>
+        
+        <label for="description">Mô tả:</label>
+        <textarea id="description" [(ngModel)]="modalData.column4" name="description" class="form-control" required></textarea>
+        
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn-create" (click)="onClickClose()">Đóng</button>
+</div>

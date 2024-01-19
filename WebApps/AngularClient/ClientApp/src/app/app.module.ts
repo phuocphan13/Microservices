@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -18,6 +17,14 @@ import { CatalogService } from './core/service/catalog.service';
 import { ApiService } from './core/service/api.service';
 import {BasicGridComponent} from "./core/shared/grids/basic-grid/basic-grid.component";
 import {NgbAlertModule, NgbModule, NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
+import { CatalogAdminComponent } from './catalog-admin/catalog-admin.component';
+import { CategoryAdminComponent } from './catalog-admin/category-admin/category-admin.component';
+import { ProductAdminComponent } from './catalog-admin/product-admin/product-admin.component';
+import { RouterModule } from '@angular/router';
+import { CategoryViewModalComponent } from './core/shared/modals/category-modals/category-view-modal/category-view-modal.component';
+import { CategoryCreateModalComponent } from './core/shared/modals/category-modals/category-create-modal/category-create-modal.component';
+import { CategoryUpdateModalComponent } from './core/shared/modals/category-modals/category-update-modal/category-update-modal.component';
+import { CategoryDeleteModalComponent } from './core/shared/modals/category-modals/category-delete-modal/category-delete-modal.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +37,13 @@ import {NgbAlertModule, NgbModule, NgbPaginationModule} from '@ng-bootstrap/ng-b
     ProductListComponent,
     ProductComponent,
     SearchMenuComponent,
+    CatalogAdminComponent,
+    ProductAdminComponent,
+    CategoryAdminComponent,
+    CategoryCreateModalComponent,
+    CategoryViewModalComponent,
+    CategoryUpdateModalComponent,
+    CategoryDeleteModalComponent,
 
     BasicGridComponent
   ],
@@ -40,7 +54,8 @@ import {NgbAlertModule, NgbModule, NgbPaginationModule} from '@ng-bootstrap/ng-b
     AppRoutingModule,
     NgbModule,
     NgbPaginationModule,
-    NgbAlertModule
+    NgbAlertModule,
+    RouterModule,
   ],
   providers: [
     CatalogService,

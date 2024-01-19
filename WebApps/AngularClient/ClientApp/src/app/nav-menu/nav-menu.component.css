@@ -12,13 +12,11 @@
 .navigation-menu-items {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
 }
 
 .navigation-menu-items button{
   border-radius: 7px;
   padding: 10px;
-  align-items: center;
   width: 100%;
   background-color: transparent;
   border: none;
@@ -34,4 +32,12 @@
   overflow: auto;
   width: 85%;
   margin-left: 2%;
+}
+
+button{
+  text-align: start;
+}
+
+.buttons {
+  list-style-type: none;
 }

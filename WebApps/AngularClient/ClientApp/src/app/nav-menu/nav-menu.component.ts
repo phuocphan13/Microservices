@@ -9,17 +9,15 @@ import { Router } from '@angular/router';
 export class NavMenuComponent {
   isExpanded = false;
 
+  showCatalogAdminButtons = false;
+
   constructor(private router: Router) {}
 
   navigateTo(page: string) {
     this.router.navigate([page]);
   }
   
-  collapse() {
-    this.isExpanded = false;
-  }
-
-  toggle() {
-    this.isExpanded = !this.isExpanded;
+  onClickCatalogAdmin(): void {
+    this.showCatalogAdminButtons = !this.showCatalogAdminButtons;
   }
 }

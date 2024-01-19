@@ -1,18 +1,27 @@
 <div class="container">
 
   <div class="navigation-menu">
-      <div class="navigation-menu-items">
-        <button (click)="navigateTo('/')">Home</button>
-        <button (click)="navigateTo('/counter')">Counter</button>
-        <button (click)="navigateTo('/fetch-data')">Fetch Data</button>
-        <button (click)="navigateTo('/catalog/product-list')">Catalog</button>
-      </div>
+    <div class="navigation-menu-items">
+      <button (click)="navigateTo('/')">Home</button>
+      <button (click)="navigateTo('/counter')">Counter</button>
+      <button (click)="navigateTo('/fetch-data')">Fetch Data</button>
+      <button (click)="navigateTo('/catalog/product-list')">Catalog</button>
+      <button (click)="onClickCatalogAdmin()">Catalog Admin</button>
+      <ul *ngIf="showCatalogAdminButtons" class="buttons">
+        <li>
+          <button (click)="navigateTo('/catalog-admin/product-admin')"><i class="fas fa-angle-right"></i> Product Admin</button>
+        </li>
+        <li>
+          <button (click)="navigateTo('/catalog-admin/category-admin')"><i class="fas fa-angle-right"></i> Category Admin</button>
+        </li>
+      </ul>
+    </div>
   </div>
 
   <div class="content">
-      <div>
-          <router-outlet></router-outlet>
-      </div>
+    <div>
+      <router-outlet></router-outlet>
+    </div>
   </div>
 
 </div>
