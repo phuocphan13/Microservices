@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-category-delete-modal',
@@ -7,4 +8,15 @@ import { Component } from '@angular/core';
 })
 export class CategoryDeleteModalComponent {
 
+  @Input() modalData: any;
+
+  constructor(public activeModal: NgbActiveModal) {
+  }
+
+  onClickDelete(){
+    this.activeModal.close();
+  }
+  onClickClose() {
+    this.activeModal.close();
+  }
 }

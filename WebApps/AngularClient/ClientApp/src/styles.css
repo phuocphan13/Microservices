@@ -65,7 +65,7 @@ code {
 
 .btn-create {
   border-radius: 5px;
-  width: 15%;
+  width: 16%;
   background-color: rgb(24, 49, 83);
   color: #ffff;
   font-family: "Roboto";
@@ -201,4 +201,36 @@ table.table thead {
 .action-click {
   cursor: pointer;
   padding: 10px;
+}
+
+.header{
+  text-align: center;
+  font-size: xx-large;
+  font-weight: bolder;
+  font-family: 'Roboto';
+  color: rgb(24, 49, 83);
+}
+
+.label{
+  font-weight: bolder;
+  font-family: 'Roboto';
+  color:rgb(24, 49, 83) ;
+}
+
+.value{
+  font-family: 'Roboto';
+}
+
+.modal-header{
+  align-items: center;
+  font-family: 'Roboto';
+  font-weight: bolder;
+  justify-content: space-around;
+  font-size: xx-large;
+}
+
+.modal-footer{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }

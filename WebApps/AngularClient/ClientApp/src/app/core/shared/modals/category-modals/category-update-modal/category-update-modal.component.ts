@@ -7,22 +7,15 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./category-update-modal.component.css']
 })
 export class CategoryUpdateModalComponent {
-
+  
   @Input() modalData: any;
-  @Output() closeModal = new EventEmitter<void>();
-  @Output() updateData = new EventEmitter<any>(); 
-
+  
   constructor(public activeModal: NgbActiveModal) {
   }
 
-  onCloseModal(): void {
-    this.closeModal.emit();
-  }
-
-  onSubmit(): void {
-    this.updateData.emit(this.modalData);
-
-    this.onCloseModal();
+  onSubmit(){
+    //call API
+    this.activeModal.close();
   }
   onClickClose() {
     this.activeModal.close();

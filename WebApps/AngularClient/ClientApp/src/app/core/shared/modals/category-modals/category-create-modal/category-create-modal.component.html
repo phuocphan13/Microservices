@@ -1,1 +1,25 @@
-<p>category-create-modal works!</p>
+<div class="modal-header">
+    <p>CREATE</p>
+</div>
+<div class="modal-body">
+    <form (ngSubmit)="onSubmit()" [formGroup]="createForm">
+        <div class="form-group">
+            <div class="modal-contents">
+                <label class="label" for="name">Name:</label>
+                <input type="text" class="form-control value" formControlName="name">
+            </div>
+            <div class="modal-contents">
+                <label class="label" for="code">Code:</label>
+                <input type="text" class="form-control value" formControlName="code">
+            </div>
+            <div class="modal-contents">
+                <label class="label" for="description">Description:</label>
+                <textarea class="form-control value" formControlName="description"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn-create">Create</button>
+            <button class="btn-create" (click)="onClickClose()">Close</button>
+        </div>
+    </form>
+</div>

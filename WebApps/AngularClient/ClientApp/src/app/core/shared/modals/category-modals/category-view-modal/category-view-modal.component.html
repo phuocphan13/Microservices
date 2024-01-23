@@ -2,10 +2,18 @@
     <p>DETAILS</p>
 </div>
 <div class="modal-body">
-    <p><strong>#:</strong> {{ modalData?.column1 }}</p>
-    <p><strong>Name:</strong> {{ modalData?.column2 }}</p>
-    <p><strong>Code:</strong> {{ modalData?.column3 }}</p>
-    <p><strong>Description:</strong> {{ modalData?.column4 }}</p>
+    <p>
+        <span class="label">Name:</span> 
+        <span class="value">{{ modalData?.name }}</span>
+    </p>
+    <p>
+        <span class="label">Code:</span> 
+        <span class="value">{{ modalData?.code }}</span>
+    </p>
+    <p>
+        <span class="label">Description:</span> 
+        <span class="value">{{ modalData?.description }}</span>
+    </p>
 </div>
 <div class="modal-footer">
     <button class="btn-create" (click)="onClickClose()">Close</button>
