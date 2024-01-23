@@ -67,7 +67,7 @@ public class CategoryControllerTests
 
             OkObjectResult okObjectResult = Assert.IsType<OkObjectResult>(result);
 
-            var data = Assert.IsType<ApiDataResult<CategoryDetail>>(okObjectResult.Value);
+            var data = Assert.IsType<ApiDataResult<SubCategoryDetail>>(okObjectResult.Value);
 
             Assert.NotNull(data);
         }
@@ -93,7 +93,7 @@ public class CategoryControllerTests
 
             var categoryService = new Mock<ICategoryService>();
 
-            categoryService.Setup(x => x.GetCategoryByIdAsync(id, default)).ReturnsAsync((ApiDataResult<CategoryDetail>)null!);
+            categoryService.Setup(x => x.GetCategoryByIdAsync(id, default)).ReturnsAsync((ApiDataResult<SubCategoryDetail>)null!);
 
             var controller = new CategoryController(categoryService.Object);
 
@@ -120,7 +120,7 @@ public class CategoryControllerTests
 
             OkObjectResult okObjectResult = Assert.IsType<OkObjectResult>(result);
 
-            var data = Assert.IsType<ApiDataResult<CategoryDetail>>(okObjectResult.Value);
+            var data = Assert.IsType<ApiDataResult<SubCategoryDetail>>(okObjectResult.Value);
 
             Assert.NotNull(data);
         }
@@ -146,7 +146,7 @@ public class CategoryControllerTests
 
             var categoryService = new Mock<ICategoryService>();
 
-            categoryService.Setup(x => x.GetCategoryByNameAsync(name, default)).ReturnsAsync((ApiDataResult<CategoryDetail>)null!);
+            categoryService.Setup(x => x.GetCategoryByNameAsync(name, default)).ReturnsAsync((ApiDataResult<SubCategoryDetail>)null!);
 
             var controller = new CategoryController(categoryService.Object);
 
@@ -174,7 +174,7 @@ public class CategoryControllerTests
             var result = await controller.CreateCategory(requestBody, default);
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
 
-            var data = Assert.IsType<ApiDataResult<CategoryDetail>>(okResult.Value);
+            var data = Assert.IsType<ApiDataResult<SubCategoryDetail>>(okResult.Value);
 
             Assert.NotNull(data);
             Assert.NotNull(data.Data);
@@ -327,7 +327,7 @@ public class CategoryControllerTests
             var result = await controller.UpdateCategory(requestBody, default);
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
 
-            var data = Assert.IsType<ApiDataResult<CategoryDetail>>(okResult.Value);
+            var data = Assert.IsType<ApiDataResult<SubCategoryDetail>>(okResult.Value);
 
             Assert.NotNull(data);
             Assert.NotNull(data.Data);

@@ -243,7 +243,7 @@ public static class ModelHelpers
 
             for (int i = 0; i < number; i++)
             {
-                categories.Add(GenerateSubCategory());
+                categories.Add(GenerateSubCategory(null!,"123456"));
             }
 
             return categories;
