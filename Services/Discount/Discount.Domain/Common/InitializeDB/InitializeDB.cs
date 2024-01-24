@@ -2,6 +2,7 @@ using Discount.Domain.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using Platform.Constants;
 
 namespace Discount.Domain.Common.InitializeDB;
 
@@ -14,7 +15,7 @@ public static class InitializeDB
     {
         if (isRebuildSchema)
         {
-            var connection = new NpgsqlConnection(configuration["DatabaseSettings:ConnectionString"]);
+            var connection = new NpgsqlConnection(configuration[DatabaseConst.ConnectionSetting.Postgres.ConnectionString]);
             
             await ConfigureDB.DropTable<Coupon>(connection);
             await ConfigureDB.CreateTable<Coupon>(connection);

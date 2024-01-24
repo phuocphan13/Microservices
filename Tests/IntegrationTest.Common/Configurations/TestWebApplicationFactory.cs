@@ -1,17 +1,23 @@
 using Catalog.API.Common.Consts;
+using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Networks;
 using IntegrationTest.Common.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Platform.Constants;
 using Testcontainers.MongoDb;
+using Testcontainers.PostgreSql;
 
 namespace IntegrationTest.Common.Configurations;
 
 public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IAsyncLifetime where TProgram : class
 {
+    private readonly INetwork _networkBuilder = new NetworkBuilder().Build();
+    
     public readonly List<IContainer> _containers = new();
     
     public WebApplicationFactory<TProgram> Instance { get; private set; } = default!;
@@ -28,7 +34,7 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
         {
             TestcontainersSettings.Logger = new NullLogger<ILoggerFactory>();
         }
-
+            
         return Task.CompletedTask;
     }
 
@@ -49,16 +55,18 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
             switch (container)
             {
                 case MongoDbContainer dbContainer:
-                    builder.UseSetting(DatabaseConst.CollectionName.ConnectionString, dbContainer.GetConnectionString());
+                    builder.UseSetting(DatabaseConst.ConnectionSetting.MongoDB.ConnectionString, dbContainer.GetConnectionString());
                     // builder.UseSetting("ConnectionStrings:Db", dbContainer.GetConnectionString());
                     break;
-                // case PostgreSqlContainer dbContainer:
-                //     builder.UseSetting("ConnectionStrings:Db", dbContainer.GetConnectionString());
-                //     break;
-                //
-                // case RedisContainer cacheContainer:
-                //     builder.UseSetting("ConnectionStrings:Cache", cacheContainer.GetConnectionString());
-                //     break;
+                case PostgreSqlContainer dbContainer:
+                    builder.UseSetting(DatabaseConst.ConnectionSetting.Postgres.ConnectionString, dbContainer.GetConnectionString());
+                    break;
+                case DockerContainer discountContainer:
+                {
+                    var url = $"http://{discountContainer.Hostname}:{discountContainer.GetMappedPublicPort(5003)}";
+                    builder.UseSetting(ApplicationConst.Discount.Url, url);
+                    break;
+                }
             }
         }));
     }
@@ -68,6 +76,36 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
         _containers.Add(new MongoDbBuilder()
             .WithName($"test_mongodb_{Guid.NewGuid()}")
             .WithImage("mongo")
+            .WithNetwork(_networkBuilder)
+            .WithCleanUp(true)
+            .Build());
+
+        return this;
+    }
+
+    public TestWebApplicationFactory<TProgram> WithPostgresContainer()
+    {
+        _containers.Add(new PostgreSqlBuilder()
+            .WithName($"test_postgres_{Guid.NewGuid()}")
+            .WithUsername("admin")
+            .WithPassword("admin1234")
+            .WithImage("postgres")
+            .WithNetwork(_networkBuilder)
+            .WithCleanUp(true)
+            .Build());
+
+        return this;
+    }
+
+    public TestWebApplicationFactory<TProgram> WithDiscountContainer()
+    {
+        _containers.Add(new ContainerBuilder()
+            .WithName($"test_discount_{Guid.NewGuid()}")
+            .WithImage("docker.io/discountgrpc")
+            .WithNetwork(_networkBuilder)
+            .WithExposedPort(5003)
+            .WithPortBinding(5003, true)
+            .WithResourceMapping(new FileInfo("appsettings.json"), "/app/")
             .WithCleanUp(true)
             .Build());
 

@@ -2,6 +2,7 @@ using Catalog.API.Common.Consts;
 using Catalog.API.Common.Helpers;
 using Catalog.API.Entities;
 using MongoDB.Driver;
+using Platform.Constants;
 
 namespace Catalog.API.Common.Extensions;
 
@@ -23,20 +24,20 @@ public static class InitializeDB
         ConfigurationManager configuration,
         bool isRebuildSchema = false)
     {
-        var client = new MongoClient(configuration.GetValue<string>(DatabaseConst.CollectionName.ConnectionString));
-        var database = client.GetDatabase(configuration.GetValue<string>(DatabaseConst.CollectionName.DatabaseName));
+        var client = new MongoClient(configuration.GetValue<string>(DatabaseConst.ConnectionSetting.MongoDB.ConnectionString));
+        var database = client.GetDatabase(configuration.GetValue<string>(DatabaseConst.ConnectionSetting.MongoDB.DatabaseName));
 
         if (isRebuildSchema)
         {
-            var cateCollection = database.GetCollection<Category>(DatabaseConst.CollectionName.Category);
+            var cateCollection = database.GetCollection<Category>(DatabaseConst.ConnectionSetting.MongoDB.CollectionName.Category);
             cateCollection.DeleteMany(Builders<Category>.Filter.Empty);
             await cateCollection.InsertManyAsync(GetPreconfiguratedCategories());
 
-            var subCateCollection = database.GetCollection<SubCategory>(DatabaseConst.CollectionName.SubCategory);
+            var subCateCollection = database.GetCollection<SubCategory>(DatabaseConst.ConnectionSetting.MongoDB.CollectionName.SubCategory);
             subCateCollection.DeleteMany(Builders<SubCategory>.Filter.Empty);
             await subCateCollection.InsertManyAsync(GetPreconfiguratedSubCategories());
 
-            var productCollection = database.GetCollection<Product>(DatabaseConst.CollectionName.Product);
+            var productCollection = database.GetCollection<Product>(DatabaseConst.ConnectionSetting.MongoDB.CollectionName.Product);
             productCollection.DeleteMany(Builders<Product>.Filter.Empty);
             await productCollection.InsertManyAsync(GetPreconfiguratedProducts());
         }

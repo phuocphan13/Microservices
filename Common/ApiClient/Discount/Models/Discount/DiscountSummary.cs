@@ -8,7 +8,7 @@ public class DiscountSummary
 
     public int Amount { get; set; }
 
-    public string? Type { get; set; }
+    public DiscountEnum? Type { get; set; }
 
     public string? CatalogCode { get; set; }
 

@@ -12,7 +12,8 @@ public static class DiscountGrpcExtensions
             Amount = model.Amount,
             Description = model.Description,
             Id = model.Id,
-            CatalogCode = model.CatalogName
+            CatalogCode = model.CatalogName,
+            Type = (DiscountEnum)model.Type
         };
     }
 }

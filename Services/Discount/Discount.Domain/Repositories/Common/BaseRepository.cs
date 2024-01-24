@@ -3,6 +3,7 @@ using Discount.Domain.Entities;
 using Discount.Domain.Extensions;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using Platform.Constants;
 
 namespace Discount.Domain.Repositories.Common;
 
@@ -27,7 +28,7 @@ public class BaseRepository : IBaseRepository
 
     private NpgsqlConnection InitializaCollection()
     {
-        var connection = new NpgsqlConnection(_configuration["DatabaseSettings:ConnectionString"]);
+        var connection = new NpgsqlConnection(_configuration[DatabaseConst.ConnectionSetting.Postgres.ConnectionString]);
 
         return connection;
     }

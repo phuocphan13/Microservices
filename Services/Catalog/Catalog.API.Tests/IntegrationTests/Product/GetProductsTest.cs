@@ -20,15 +20,17 @@ public class GetProductsTest : IClassFixture<TestWebApplicationFactory<Program>>
 
     public GetProductsTest(TestWebApplicationFactory<Program> factory)
     {
-        _factory = factory.WithMongoDbContainer();
-        
+        _factory = factory
+            .WithMongoDbContainer()
+            .WithPostgresContainer()
+            .WithDiscountContainer();
+
         _category = ModelHelpers.Category.GenerateCategory();
         _subCategory = ModelHelpers.SubCategory.GenerateSubCategory(categoryId: _category.Id);
         _products = ModelHelpers.Product.GenerateProductEntities(3, categoryId: _category.Id, subCategoryId: _subCategory.Id);
-    } 
-    
-    #region Configurations
+    }
 
+    #region Configurations
     public async Task InitializeAsync()
     {
         await _factory.StartContainersAsync();
@@ -45,7 +47,6 @@ public class GetProductsTest : IClassFixture<TestWebApplicationFactory<Program>>
         await _factory.EnsureCreatedAndPopulateSingleDataAsync(_subCategory);
         await _factory.EnsureCreatedAndPopulateDataAsync(_products);
     }
-
     #endregion
 
     [Fact]
@@ -54,7 +55,7 @@ public class GetProductsTest : IClassFixture<TestWebApplicationFactory<Program>>
         await EnsureDataAsync();
         var client = _factory.CreateClient();
         var response = await TestHttpRequestHelper.GetAsync(client, Url);
-        
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         Assert.NotNull(response);
@@ -66,7 +67,7 @@ public class GetProductsTest : IClassFixture<TestWebApplicationFactory<Program>>
         Assert.True(summaries.Any());
 
         summaries.Count.Should().Be(_products.Count);
-        
+
         summaries.Should().Contain(x => x.Category == _category.Name);
         summaries.Should().Contain(x => x.SubCategory == _subCategory.Name);
     }

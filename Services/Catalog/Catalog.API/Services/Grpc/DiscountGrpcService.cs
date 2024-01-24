@@ -59,7 +59,7 @@ public class DiscountGrpcService : IDiscountGrpcService
 
         var result = await _discountGrpcService.GetListDiscountsAsync(request);
 
-        if(result is null)
+        if (result is null || !result.Items.Any())
         {
             return null;
         }
@@ -70,7 +70,7 @@ public class DiscountGrpcService : IDiscountGrpcService
             Description = x.Description,
             Amount = x.Amount,
         }).ToList();
-        
+
         return discounts;
     }
 }

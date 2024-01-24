@@ -163,7 +163,6 @@ public class ProductService : IProductService
         var subCategoryIds = entities.Select(x => x.SubCategoryId);
         var productCodes = entities.Select(x => x.ProductCode!);
 
-
         var categories = await _categoryRepository.GetEntitiesQueryAsync(x => categoryIds.Contains(x.Id), cancellationToken);
         var subCategories = await _subCategoryRepository.GetEntitiesQueryAsync(x => subCategoryIds.Contains(x.Id), cancellationToken);
         var discounts = await _discountGrpcService.GetListDiscountsByCatalogCodeAsync(DiscountEnum.Product, productCodes);

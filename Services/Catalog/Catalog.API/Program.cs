@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // builder.Services.AddHealthChecks();
 
-var isRebuildSchema = builder.Configuration.GetValue<bool>(Platform.Constants.DatabaseConst.CollectionName.IsRebuildSchema);
+var isRebuildSchema = builder.Configuration.GetValue<bool>(Platform.Constants.DatabaseConst.ConnectionSetting.MongoDB.IsRebuildSchema);
 
 // Add services to the container.
 

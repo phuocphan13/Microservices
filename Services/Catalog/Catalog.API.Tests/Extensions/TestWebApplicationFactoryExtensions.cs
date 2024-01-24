@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Platform.Constants;
 
 namespace Catalog.API.Tests.Extensions;
 
@@ -44,8 +45,8 @@ public static class TestWebApplicationFactoryExtensions
     private static void EnsureMongoDbCreated(AsyncServiceScope scope, CancellationToken cancellationToken = default) 
     {
         var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-        var database = new MongoClient(configuration.GetValue<string>(DatabaseConst.CollectionName.ConnectionString))
-            .GetDatabase(configuration.GetValue<string>(DatabaseConst.CollectionName.DatabaseName));
+        var database = new MongoClient(configuration.GetValue<string>(DatabaseConst.ConnectionSetting.MongoDB.ConnectionString))
+            .GetDatabase(configuration.GetValue<string>(DatabaseConst.ConnectionSetting.MongoDB.DatabaseName));
 
         database.RunCommandAsync((Command<BsonDocument>)"{ping:1}", cancellationToken: cancellationToken)
             .Wait(cancellationToken);

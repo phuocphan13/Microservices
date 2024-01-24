@@ -1,10 +1,10 @@
 using Catalog.API.Common;
-using Catalog.API.Common.Consts;
 using MongoDB.Bson.Serialization.Attributes;
+using Platform.Constants;
 
 namespace Catalog.API.Entities;
 
-[BsonCollection(DatabaseConst.CollectionName.Category)]
+[BsonCollection(DatabaseConst.ConnectionSetting.MongoDB.CollectionName.Category)]
 public class Category : BaseEntity
 {
     [BsonElement("Name")] 

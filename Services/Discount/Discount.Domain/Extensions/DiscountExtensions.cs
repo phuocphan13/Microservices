@@ -1,6 +1,4 @@
 using ApiClient.Discount.Models.Discount;
-using Discount.Domain.Entities;
-using Platform.Extensions;
 
 namespace Discount.Domain.Extensions;
 
@@ -12,7 +10,7 @@ public static class DiscountExtensions
         {
             Id = entity.Id,
             Amount = entity.Amount,
-            Type = entity.Type.GetEnumDescription(),
+            Type = entity.Type,
             CatalogCode = entity.CatalogCode,
             Description = entity.Description,
             FromDate = entity.FromDate,
