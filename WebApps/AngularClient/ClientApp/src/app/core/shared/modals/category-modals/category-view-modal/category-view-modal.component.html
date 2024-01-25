@@ -2,19 +2,23 @@
     <p>DETAILS</p>
 </div>
 <div class="modal-body">
-    <p>
-        <span class="label">Name:</span> 
-        <span class="value">{{ modalData?.name }}</span>
-    </p>
-    <p>
-        <span class="label">Code:</span> 
-        <span class="value">{{ modalData?.code }}</span>
-    </p>
-    <p>
-        <span class="label">Description:</span> 
-        <span class="value">{{ modalData?.description }}</span>
-    </p>
-</div>
-<div class="modal-footer">
-    <button class="btn-create" (click)="onClickClose()">Close</button>
+    <form>
+        <div class="form-group">
+            <div class="modal-contents">
+                <label class="label" for="name">Name</label>
+                <input type="text" class="form-control value" [value]="modalData?.name" readonly>
+            </div>
+            <div class="modal-contents">
+                <label class="label" for="code">Code</label>
+                <input type="text" class="form-control value" [value]="modalData?.code" readonly>
+            </div>
+            <div class="modal-contents">
+                <label class="label" for="description">Description</label>
+                <textarea class="form-control value" readonly>{{modalData?.description}}</textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-transparent" (click)="onClickClose()">Close</button>
+        </div>
+    </form>
 </div>

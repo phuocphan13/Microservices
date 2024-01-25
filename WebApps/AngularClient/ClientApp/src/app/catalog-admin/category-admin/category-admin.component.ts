@@ -13,6 +13,7 @@ import { CategoryViewModalComponent } from 'src/app/core/shared/modals/category-
 export class CategoryAdminComponent {
 
   constructor(private modalService: NgbModal) {
+    
   }
 
   data = [
@@ -49,7 +50,7 @@ export class CategoryAdminComponent {
 
         break;
       }
-      case 'edit': {
+      case 'update': {
         let ngbModalOptions: NgbModalOptions = {
           backdrop: 'static',
           keyboard: false,
@@ -57,7 +58,9 @@ export class CategoryAdminComponent {
   
         let modal = this.modalService.open(CategoryUpdateModalComponent, ngbModalOptions);
   
-        modal.componentInstance.modalData = { ...rowData };
+        modal.componentInstance.modalData = { name: rowData.name,
+          code: rowData.code,
+          description: rowData.description };
         modal.componentInstance.isView = false;
   
         break;

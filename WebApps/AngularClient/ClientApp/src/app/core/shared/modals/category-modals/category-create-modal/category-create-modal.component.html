@@ -2,24 +2,24 @@
     <p>CREATE</p>
 </div>
 <div class="modal-body">
-    <form (ngSubmit)="onSubmit()" [formGroup]="createForm">
+    <form (ngSubmit)="onSubmit()">
         <div class="form-group">
             <div class="modal-contents">
-                <label class="label" for="name">Name:</label>
-                <input type="text" class="form-control value" formControlName="name">
+                <label class="label" for="name">Name</label>
+                <input type="text" class="form-control value" [(ngModel)]="name" name="name">
             </div>
             <div class="modal-contents">
-                <label class="label" for="code">Code:</label>
-                <input type="text" class="form-control value" formControlName="code">
+                <label class="label" for="code">Code</label>
+                <input type="text" class="form-control value" [(ngModel)]="code" name="code">
             </div>
             <div class="modal-contents">
-                <label class="label" for="description">Description:</label>
-                <textarea class="form-control value" formControlName="description"></textarea>
+                <label class="label" for="description">Description</label>
+                <textarea class="form-control value" [(ngModel)]="description" name="description"></textarea>
             </div>
         </div>
         <div class="modal-footer">
-            <button type="submit" class="btn-create">Create</button>
-            <button class="btn-create" (click)="onClickClose()">Close</button>
+            <button type="submit" class="btn-primary">Create</button>
+            <button class="btn-transparent" (click)="onClickClose()">Close</button>
         </div>
     </form>
 </div>

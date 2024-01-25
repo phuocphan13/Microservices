@@ -9,14 +9,12 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class CategoryCreateModalComponent {
 
-  createForm: FormGroup;
-
-  constructor(private formBuilder: FormBuilder, public activeModal: NgbActiveModal) {
-    this.createForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      code: ['', Validators.required],
-      description: ['']
-    });
+  name: string = '';
+  code: string = '';
+  description: string = '';
+  
+  constructor( public activeModal: NgbActiveModal) {
+   
   }
 
   onSubmit(){

@@ -14,6 +14,7 @@ export class CategoryDeleteModalComponent {
   }
 
   onClickDelete(){
+    //call API
     this.activeModal.close();
   }
   onClickClose() {
