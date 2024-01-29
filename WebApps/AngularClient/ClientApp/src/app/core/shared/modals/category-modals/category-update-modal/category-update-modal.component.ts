@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { CategoryService } from 'src/app/core/service/catalog/category.service';
 
 @Component({
   selector: 'app-category-update-modal',
@@ -9,13 +11,24 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class CategoryUpdateModalComponent {
   
   @Input() modalData: any;
-  
-  constructor(public activeModal: NgbActiveModal) {
+  updateForm = this.formBuilder.group({
+    name: ['', [Validators.required]],
+    code: ['', [Validators.required]],
+    description: ['']
+  });
+
+  constructor(public activeModal: NgbActiveModal,private categoryService: CategoryService, private formBuilder: FormBuilder) {
+    this.updateForm.patchValue(this.modalData);
   }
 
-  onSubmit(){
-    //call API
-    this.activeModal.close();
+  async onSubmit(){
+    if (this.updateForm.valid) {
+      const categoryDetail = this.updateForm.value;
+      await this.categoryService.updateCategoryAsync(categoryDetail);
+      this.activeModal.close();
+    } else {
+      //error message
+    }
   }
   onClickClose() {
     this.activeModal.close();

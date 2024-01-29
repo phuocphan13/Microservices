@@ -1,6 +1,6 @@
 import {NgModule} from "@angular/core";
 import {ApiService} from "./api.service";
-import {CatalogService} from "./catalog.service";
+import {CatalogService} from "./catalog/catalog.service";
 
 @NgModule({
   declarations: [],

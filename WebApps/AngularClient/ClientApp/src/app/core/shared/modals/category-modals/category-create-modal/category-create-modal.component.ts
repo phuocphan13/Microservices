@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { CategoryService } from 'src/app/core/service/catalog/category.service';
 
 @Component({
   selector: 'app-category-create-modal',
@@ -9,17 +10,25 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class CategoryCreateModalComponent {
 
-  name: string = '';
-  code: string = '';
-  description: string = '';
+  createForm: FormGroup;
   
-  constructor( public activeModal: NgbActiveModal) {
-   
+  constructor( public activeModal: NgbActiveModal, private formBuilder: FormBuilder, private categoryService: CategoryService) {
+    this.createForm = this.formBuilder.group({
+      name: ['', [Validators.required]],
+      code: ['', [Validators.required]],
+      description: ['']
+    });
   }
 
-  onSubmit(){
-    //call API
-    this.activeModal.close();
+  async onSubmit(){
+    if(this.createForm.valid){
+      const categoryDetail = this.createForm.value;
+      await this.categoryService.createCategoryAsync(categoryDetail);
+      this.activeModal.close();
+    }
+    else{
+      //error message
+    }
   }
   onClickClose() {
     this.activeModal.close();

@@ -13,7 +13,7 @@ import { ProductListComponent } from './catalog/product-list/product-list.compon
 import { ProductComponent } from './catalog/product/product.component';
 import { AppRoutingModule } from './app-routing.module';
 import { SearchMenuComponent } from './search-menu/search-menu.component';
-import { CatalogService } from './core/service/catalog.service';
+import { CatalogService } from './core/service/catalog/catalog.service';
 import { ApiService } from './core/service/api.service';
 import {BasicGridComponent} from "./core/shared/grids/basic-grid/basic-grid.component";
 import {NgbAlertModule, NgbModule, NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
@@ -25,6 +25,7 @@ import { CategoryViewModalComponent } from './core/shared/modals/category-modals
 import { CategoryCreateModalComponent } from './core/shared/modals/category-modals/category-create-modal/category-create-modal.component';
 import { CategoryUpdateModalComponent } from './core/shared/modals/category-modals/category-update-modal/category-update-modal.component';
 import { CategoryDeleteModalComponent } from './core/shared/modals/category-modals/category-delete-modal/category-delete-modal.component';
+import { CategoryService } from './core/service/catalog/category.service';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { CategoryDeleteModalComponent } from './core/shared/modals/category-moda
   ],
   providers: [
     CatalogService,
+    CategoryService,
     ApiService,
   ],
   bootstrap: [AppComponent]

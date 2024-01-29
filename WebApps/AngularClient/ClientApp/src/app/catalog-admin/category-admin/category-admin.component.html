@@ -4,9 +4,8 @@
   </div>
   <div>
     <div class="content-button">
-      <button (click)="onClickCreate()" class="btn-primary">Create</button>
+      <button (click)="onClickCreate()" class="btn-create">Create</button>
     </div>
-
     <div class="container">
       <table class="table">
         <thead>
@@ -19,15 +18,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let row of data">
-            <td>{{ row.id }}</td>
-            <td>{{ row.name }}</td>
-            <td>{{ row.code }}</td>
-            <td>{{ row.description }}</td>
+          <tr *ngFor="let category of categories; let i = index">
+            <td>{{ i+1}}</td>
+            <td>{{ category.name }}</td>
+            <td>{{ category.categoryCode }}</td>
+            <td>{{ category.description }}</td>
             <td class="table-action">
-              <a (click)="onClickAction('view', row)" class="action-click"><i class="far fa-eye"></i></a>
-              <a (click)="onClickAction('update', row)" class="action-click"><i class="far fa-edit"></i></a>
-              <a (click)="onClickAction('delete', row)" class="action-click"><i class="fas fa-trash"></i></a>
+              <a (click)="onClickAction('view', category)" class="action-click"><i class="far fa-eye"></i></a>
+              <a (click)="onClickAction('edit', category)" class="action-click"><i class="far fa-edit"></i></a>
+              <a (click)="onClickAction('delete', category)" class="action-click"><i class="fas fa-trash"></i></a>
             </td>
           </tr>
         </tbody>
