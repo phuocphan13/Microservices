@@ -3,6 +3,7 @@ using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
+using Grpc.Net.ClientFactory;
 using IntegrationTest.Common.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -21,7 +22,7 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
     public readonly List<IContainer> _containers = new();
     
     public WebApplicationFactory<TProgram> Instance { get; private set; } = default!;
-    
+
     public new HttpClient CreateClient() => Instance.CreateClient();
     
     public Task InitializeAsync()
@@ -63,7 +64,7 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
                     break;
                 case DockerContainer discountContainer:
                 {
-                    var url = $"http://{discountContainer.Hostname}:{discountContainer.GetMappedPublicPort(5003)}";
+                    var url = $"https://{discountContainer.Hostname}:{discountContainer.GetMappedPublicPort(443)}";
                     builder.UseSetting(ApplicationConst.Discount.Url, url);
                     break;
                 }
@@ -102,10 +103,14 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
         _containers.Add(new ContainerBuilder()
             .WithName($"test_discount_{Guid.NewGuid()}")
             .WithImage("docker.io/discountgrpc")
-            .WithNetwork(_networkBuilder)
-            .WithExposedPort(5003)
-            .WithPortBinding(5003, true)
-            .WithResourceMapping(new FileInfo("appsettings.json"), "/app/")
+            // .WithNetwork(_networkBuilder)
+            .WithExposedPort(443)
+            .WithPortBinding(443, true)
+            // .WithResourceMapping(new FileInfo("appsettings.json"), "/app/")
+            // .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "aspnetapp.pfx")
+            // .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", "13Lucifer")
+            // .WithEnvironment("ASPNETCORE_URLS", "https://+:443")
+            // .WithResourceMapping("../../../../../../Lucifer/.aspnet/https/aspnetapp.pfx", "/app/")
             .WithCleanUp(true)
             .Build());
 

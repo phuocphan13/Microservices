@@ -71,10 +71,15 @@ services:
       - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
       - "DatabaseSettings:DatabaseName=ProductDb"
       - "DatabaseSettings:IsRebuildSchema=false"
+      - ASPNETCORE_URLS=https://+:443
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=13Lucifer
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     depends_on:
       - catalogdb
     ports:
-      - "8000:80"
+      - "8000:443"
+    volumes:
+      - ~/.aspnet/https:/https:ro
 
   basket.api:
     container_name: basket.api
@@ -109,10 +114,16 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "DatabaseSettings:Postgres:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=13Lucifer
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_URLS=https://+:443
     depends_on:
       - discountdb
     ports:
-      - "8003:80"
+#      - "8003:80"
+      - "8003:443"
+    volumes:
+      - ~/.aspnet/https:/https:ro
 
   ordering.api:
     container_name: ordering.api
