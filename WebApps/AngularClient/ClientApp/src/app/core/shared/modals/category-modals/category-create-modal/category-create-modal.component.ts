@@ -15,7 +15,7 @@ export class CategoryCreateModalComponent {
   constructor( public activeModal: NgbActiveModal, private formBuilder: FormBuilder, private categoryService: CategoryService) {
     this.createForm = this.formBuilder.group({
       name: ['', [Validators.required]],
-      code: ['', [Validators.required]],
+      categoryCode: ['', [Validators.required]],
       description: ['']
     });
   }

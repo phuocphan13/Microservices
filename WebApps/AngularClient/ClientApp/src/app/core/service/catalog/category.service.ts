@@ -26,14 +26,14 @@ export class CategoryService {
   }
 
   async createCategoryAsync(categoryDetail: any): Promise<CategoryDetail> {
-    return this.apiService.postAsync(`${environment.baseApiUrl}/${this.apiName}/CreateCategory`, categoryDetail, new HttpParams());
+    return await this.apiService.postAsync(`${environment.baseApiUrl}/${this.apiName}/CreateCategory`, categoryDetail, new HttpParams());
   }
 
   async updateCategoryAsync(categoryDetail: any): Promise<CategoryDetail> {
-    return this.apiService.postAsync(`${environment.baseApiUrl}/${this.apiName}/UpdateCategory`, categoryDetail, new HttpParams());
+    return await this.apiService.putAsync(`${environment.baseApiUrl}/${this.apiName}/UpdateCategory`, categoryDetail, new HttpParams());
   }
 
   async deleteCategoryAsync(id: string): Promise<boolean> {
-    return await this.apiService.postAsync(`${environment.baseApiUrl}/${this.apiName}/DeleteCategory`, id, new HttpParams());
+    return await this.apiService.deleteAsync(`${environment.baseApiUrl}/${this.apiName}/DeleteCategory/${id}`, new HttpParams());
   }
 }

@@ -11,25 +11,19 @@ import { CategoryService } from 'src/app/core/service/catalog/category.service';
 export class CategoryUpdateModalComponent {
   
   @Input() modalData: any;
-  updateForm = this.formBuilder.group({
-    name: ['', [Validators.required]],
-    code: ['', [Validators.required]],
-    description: ['']
-  });
 
-  constructor(public activeModal: NgbActiveModal,private categoryService: CategoryService, private formBuilder: FormBuilder) {
-    this.updateForm.patchValue(this.modalData);
+  constructor(public activeModal: NgbActiveModal,private categoryService: CategoryService) {
   }
 
-  async onSubmit(){
-    if (this.updateForm.valid) {
-      const categoryDetail = this.updateForm.value;
-      await this.categoryService.updateCategoryAsync(categoryDetail);
+  async onSubmit() {
+    if (this.modalData) {
+      await this.categoryService.updateCategoryAsync(this.modalData);
       this.activeModal.close();
     } else {
-      //error message
+      // báo lỗi
     }
   }
+
   onClickClose() {
     this.activeModal.close();
   }

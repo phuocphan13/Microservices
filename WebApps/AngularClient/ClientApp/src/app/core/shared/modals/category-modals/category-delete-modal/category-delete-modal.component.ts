@@ -14,12 +14,16 @@ export class CategoryDeleteModalComponent {
   constructor(public activeModal: NgbActiveModal, private categoryService: CategoryService) {
   }
 
-  onClickDelete(){
-    this.categoryService.deleteCategoryAsync(this.modalData.id).then(() => {
-         this.activeModal.close(this.modalData.id);
-       });
+  async onClickDelete(){
+    if (this.modalData) {
+      await this.categoryService.deleteCategoryAsync(this.modalData.id);
       this.activeModal.close(this.modalData.id);
+    }
+      else{
+        // báo lỗi
+      }
   }
+
   onClickClose() {
     this.activeModal.close();
   }
