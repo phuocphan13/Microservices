@@ -1,11 +1,11 @@
-﻿using ApiClient.Catalog.Category.Models;
-using ApiClient.Catalog.Models.Catalog.Category;
+﻿using ApiClient.Catalog.Models.Catalog.Category;
 using ApiClient.Common;
 using Catalog.API.Controllers;
 using Catalog.API.Extensions;
 using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using ApiClient.Catalog.Category.Models;
 using UnitTest.Common.Helpers;
 using ModelHelpers = Catalog.API.Tests.Common.ModelHelpers;
 

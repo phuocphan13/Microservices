@@ -1,6 +1,7 @@
 ﻿using ApiClient.Catalog.SubCategory.Models;
 using ApiClient.Common;
 using Catalog.API.Common.Consts;
+using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
 using SubCategory = Catalog.API.Entities.SubCategory;
@@ -20,10 +21,12 @@ namespace Catalog.API.Services
     public class SubCategoryService : ISubCategoryService
     {
         private readonly IRepository<SubCategory> _subCategoryRepository;
+        private readonly IRepository<Category> _categoryRepository;
 
-        public SubCategoryService(IRepository<SubCategory> subCategoryRepository)
+        public SubCategoryService(IRepository<SubCategory> subCategoryRepository, IRepository<Category> categoryRepository)
         {
             _subCategoryRepository = subCategoryRepository;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<ApiDataResult<List<SubCategorySummary>>> GetSubCategoriesAsync(CancellationToken cancellationToken)
@@ -89,14 +92,6 @@ namespace Catalog.API.Services
             {
                 Data = new List<SubCategorySummary>()
             };
-            //check CategoryID trong Category
-
-            //var isExisted = await _category.AnyAsync(x => x.Id == categoryId, cancellationToken);
-            //if(!isExisted)
-            //{
-            //    apiDataResult.Message = ResponseMessages.SubCategory.NotFound;
-            //    return apiDataResult;
-            //}   
             
             var entities = await _subCategoryRepository.GetEntitiesQueryAsync(x => x.CategoryId == categoryId, cancellationToken);
             if (entities is null)
@@ -152,7 +147,7 @@ namespace Catalog.API.Services
                 return apiDataResult;
             } 
 
-            var isCategoryIdAvailable = await _subCategoryRepository.AnyAsync(x => x.CategoryId == requestBody.CategoryId, cancellationToken);
+            var isCategoryIdAvailable = await _categoryRepository.AnyAsync(x => x.Id == requestBody.CategoryId, cancellationToken);
             
             if(!isCategoryIdAvailable)
             {
