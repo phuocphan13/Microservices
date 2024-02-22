@@ -237,16 +237,17 @@ public static class ModelHelpers
             return summaries;
         }
 
-        public static List<Entities.SubCategory> GenerateSubCategories(int number = 2)
+        public static List<Entities.SubCategory> GenerateSubCategories(int number = 2, Action<Entities.SubCategory>? initAction = default )
         {
-            var categories = new List<Entities.SubCategory>();
+            var subCategories = new List<Entities.SubCategory>();  
 
             for (int i = 0; i < number; i++)
             {
-                categories.Add(GenerateSubCategory(null!,"123456"));
+                var subCategory = GenerateSubCategory();
+                initAction?.Invoke(subCategory);
+                subCategories.Add(subCategory);
             }
-
-            return categories;
+            return subCategories;
         }
 
         public static Entities.SubCategory GenerateSubCategory(string id = null!, string categoryId = null!)
