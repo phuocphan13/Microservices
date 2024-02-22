@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ApiClient.Catalog.Category.Models
+﻿namespace ApiClient.Catalog.Category.Models
 {
-    public class SubCategoryDetail:BaseCategory
+    public class CategoryDetail : BaseCategory
     {
     }
 }

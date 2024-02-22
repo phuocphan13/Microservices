@@ -34,9 +34,9 @@ public static class CategoryExtension
         };
     }
 
-    public static SubCategoryDetail ToDetail(this Category category)
+    public static CategoryDetail ToDetail(this Category category)
     {
-        return new SubCategoryDetail()
+        return new CategoryDetail()
         {
             Id = category.Id,
             Name = category.Name,

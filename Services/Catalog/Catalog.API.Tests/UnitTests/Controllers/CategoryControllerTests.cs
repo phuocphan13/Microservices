@@ -1,11 +1,11 @@
-﻿using ApiClient.Catalog.Category.Models;
-using ApiClient.Catalog.Models.Catalog.Category;
+﻿using ApiClient.Catalog.Models.Catalog.Category;
 using ApiClient.Common;
 using Catalog.API.Controllers;
 using Catalog.API.Extensions;
 using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using ApiClient.Catalog.Category.Models;
 using UnitTest.Common.Helpers;
 using ModelHelpers = Catalog.API.Tests.Common.ModelHelpers;
 
@@ -67,7 +67,7 @@ public class CategoryControllerTests
 
             OkObjectResult okObjectResult = Assert.IsType<OkObjectResult>(result);
 
-            var data = Assert.IsType<ApiDataResult<SubCategoryDetail>>(okObjectResult.Value);
+            var data = Assert.IsType<ApiDataResult<CategoryDetail>>(okObjectResult.Value);
 
             Assert.NotNull(data);
         }
@@ -93,7 +93,7 @@ public class CategoryControllerTests
 
             var categoryService = new Mock<ICategoryService>();
 
-            categoryService.Setup(x => x.GetCategoryByIdAsync(id, default)).ReturnsAsync((ApiDataResult<SubCategoryDetail>)null!);
+            categoryService.Setup(x => x.GetCategoryByIdAsync(id, default)).ReturnsAsync((ApiDataResult<CategoryDetail>)null!);
 
             var controller = new CategoryController(categoryService.Object);
 
@@ -120,7 +120,7 @@ public class CategoryControllerTests
 
             OkObjectResult okObjectResult = Assert.IsType<OkObjectResult>(result);
 
-            var data = Assert.IsType<ApiDataResult<SubCategoryDetail>>(okObjectResult.Value);
+            var data = Assert.IsType<ApiDataResult<CategoryDetail>>(okObjectResult.Value);
 
             Assert.NotNull(data);
         }
@@ -146,7 +146,7 @@ public class CategoryControllerTests
 
             var categoryService = new Mock<ICategoryService>();
 
-            categoryService.Setup(x => x.GetCategoryByNameAsync(name, default)).ReturnsAsync((ApiDataResult<SubCategoryDetail>)null!);
+            categoryService.Setup(x => x.GetCategoryByNameAsync(name, default)).ReturnsAsync((ApiDataResult<CategoryDetail>)null!);
 
             var controller = new CategoryController(categoryService.Object);
 
@@ -174,7 +174,7 @@ public class CategoryControllerTests
             var result = await controller.CreateCategory(requestBody, default);
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
 
-            var data = Assert.IsType<ApiDataResult<SubCategoryDetail>>(okResult.Value);
+            var data = Assert.IsType<ApiDataResult<CategoryDetail>>(okResult.Value);
 
             Assert.NotNull(data);
             Assert.NotNull(data.Data);
@@ -327,7 +327,7 @@ public class CategoryControllerTests
             var result = await controller.UpdateCategory(requestBody, default);
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
 
-            var data = Assert.IsType<ApiDataResult<SubCategoryDetail>>(okResult.Value);
+            var data = Assert.IsType<ApiDataResult<CategoryDetail>>(okResult.Value);
 
             Assert.NotNull(data);
             Assert.NotNull(data.Data);
