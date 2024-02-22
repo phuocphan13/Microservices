@@ -1,19 +1,14 @@
-﻿
-using Catalog.API.Common.Consts;
+﻿using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
 using Catalog.API.Services;
 using Catalog.API.Tests.Common;
-using Moq;
 using System.Linq.Expressions;
 using UnitTest.Common.Helpers;
 
-
-//using UnitTest.Common.Helpers;
-
-
 namespace Catalog.API.Tests.UnitTests.Services;
+
 public class SubCategoryServiceTests
 {
     #region GetSubCategoryAsync
@@ -64,7 +59,7 @@ public class SubCategoryServiceTests
 
         subCategoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<SubCategory, bool>>>(), default)).ReturnsAsync(entity);
 
-        var result = await subCategoryService.GetSubCategoryByNameAsync(entity.Name, default);
+        var result = await subCategoryService.GetSubCategoryByNameAsync(entity.Name!, default);
 
         Assert.NotNull(result.Data);
         Assert.Equal(subCategoryDetail.Name, result.Data.Name);
@@ -91,7 +86,7 @@ public class SubCategoryServiceTests
     }
     #endregion
 
-    #region SubCategoryByID
+    #region SubCategoryById
     [Fact]
     public async Task GetSubCategoryByIdAsync_ValidParams_ExpectedResult()
     {
@@ -134,17 +129,12 @@ public class SubCategoryServiceTests
     [Fact]
     public async Task GetSubCategoriesByCategoryIdAsync_ValidParams_ExpectedResult()
     {
-        // Data cua subcategories 
-        // categoryId
-        // 
         var categoryId = CommonHelpers.GenerateBsonId();
 
-
-        var category = ModelHelpers.Category.GenerateCategory(categoryId);
         var subCategories = ModelHelpers.SubCategory.GenerateSubCategories(initAction: x =>
-         {
-             x.CategoryId = categoryId;
-         });
+        {
+            x.CategoryId = categoryId;
+        });
 
         var subCategoryRepository = new Mock<IRepository<SubCategory>>();
         var categoryRepository = new Mock<IRepository<Category>>();
@@ -154,7 +144,6 @@ public class SubCategoryServiceTests
 
         var result = await subCategoryService.GetSubCategoriesByCategoryIdAsync(categoryId, default);
 
-
         Assert.NotNull(result.Data);
         Assert.Null(result.Message);
     }
@@ -162,7 +151,6 @@ public class SubCategoryServiceTests
     [Fact]
     public async Task GetSubCategoriesByCategoryIdAsync_InvalidParams_NotFound()
     {
-        var subCategories = ModelHelpers.SubCategory.GenerateSubCategories();
         var subCategoryRepository = new Mock<IRepository<SubCategory>>();
         var categoryRepository = new Mock<IRepository<Category>>();
         var subCategoryService = new SubCategoryService(subCategoryRepository.Object, categoryRepository.Object);
@@ -208,11 +196,11 @@ public class SubCategoryServiceTests
 
         Assert.NotNull(result);
     }
+
     [Fact]
     public async Task CreateSubCategoryAsync_ValidParams_CategoryIdNotFound()
     {
         var categoryId = CommonHelpers.GenerateBsonId();
-        var category = ModelHelpers.Category.GenerateCategory(categoryId);
         var categoryRepository = new Mock<IRepository<Category>>();
 
         var requestBody = ModelHelpers.SubCategory.GenerateCreateRequestBody(initAction: x =>
@@ -233,7 +221,6 @@ public class SubCategoryServiceTests
     #endregion
 
     #region UpdateSupcatergory
-
     [Fact]
     public async Task UpdateSupcatergory_ValidParams_Existed()
     {
@@ -245,7 +232,6 @@ public class SubCategoryServiceTests
         var subCategoryService = new SubCategoryService(subCategoryRepository.Object, categoryRepository.Object);
 
         subCategoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<SubCategory, bool>>>(), default)).ReturnsAsync(entity);
-
         subCategoryRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<SubCategory, bool>>>(), default)).ReturnsAsync((true));
 
         var result = await subCategoryService.UpdateSubCategoryAsync(requestBody, default);
@@ -284,9 +270,7 @@ public class SubCategoryServiceTests
         var subCategoryService = new SubCategoryService(subCategoryRepository.Object, categoryRepository.Object);
 
         subCategoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<SubCategory, bool>>>(), default)).ReturnsAsync(entity);
-
         subCategoryRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<SubCategory, bool>>>(), default)).ReturnsAsync((false));
-
         subCategoryRepository.Setup(x => x.UpdateEntityAsync(It.IsAny<SubCategory>(), default)).ReturnsAsync((false));
 
         var result = await subCategoryService.UpdateSubCategoryAsync(requestBody, default);
@@ -308,9 +292,7 @@ public class SubCategoryServiceTests
         var subCategoryService = new SubCategoryService(subCategoryRepository.Object, categoryRepository.Object);
 
         subCategoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<SubCategory, bool>>>(), default)).ReturnsAsync(entity);
-
         subCategoryRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<SubCategory, bool>>>(), default)).ReturnsAsync((false));
-
         subCategoryRepository.Setup(x => x.UpdateEntityAsync(It.IsAny<SubCategory>(), default)).ReturnsAsync((false));
 
         var result = await subCategoryService.UpdateSubCategoryAsync(requestBody, default);
