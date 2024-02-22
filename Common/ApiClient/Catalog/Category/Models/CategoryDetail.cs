@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ApiClient.Catalog.Category.Models
 {
-    public class CategoryDetail:BaseCategory
+    public class SubCategoryDetail:BaseCategory
     {
     }
 }

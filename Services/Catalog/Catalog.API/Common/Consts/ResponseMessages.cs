@@ -35,7 +35,7 @@ public static class ResponseMessages
     public static class SubCategory
     {
         public static string NotFound = "SubCategory not found.";
-        public static string SubCategoryExisted => $"SubCategory is existed.";
+        public static string SubCategoryExisted => "SubCategory is existed.";
         public static string CategoryIdNotFound(string? CategoryId) => $"Category's ID '{CategoryId}' does not existed.";
 
         public const string CreateSubCategoryFailed = "Created SubCategory Has Failed.";

@@ -18,7 +18,6 @@ public static class SubCategoryExtention
             SubCategoryCode = subCategory.SubCategoryCode,
             Description = subCategory.Description,
             CategoryId = subCategory.CategoryId,
-
         };
     }
 
@@ -40,4 +39,16 @@ public static class SubCategoryExtention
         subCategory.SubCategoryCode = requestBody.SubCategoryCode;
         subCategory.CategoryId = requestBody.CategoryId;
     }
+
+    public static SubCategoryDetail ToDetail(this SubCategory subCategory)
+    {
+        return new SubCategoryDetail()
+        {
+            Id = subCategory.Id,
+            Name = subCategory.Name,
+            SubCategoryCode = subCategory.SubCategoryCode,
+            Description = subCategory.Description,
+            CategoryId = subCategory.CategoryId,
+        };  
+    }    
 }
