@@ -1,14 +1,12 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {HomeComponent} from './home/home.component';
-import {CounterComponent} from './counter/counter.component';
-import {FetchDataComponent} from './fetch-data/fetch-data.component';
-import {CatalogComponent} from './catalog/catalog.component';
-import {ProductListComponent} from './catalog/product-list/product-list.component';
-import {ProductComponent} from './catalog/product/product.component';
-import { CatalogAdminComponent } from './catalog-admin/catalog-admin.component';
-import { CategoryAdminComponent } from './catalog-admin/category-admin/category-admin.component';
-import { ProductAdminComponent } from './catalog-admin/product-admin/product-admin.component';
+import {CatalogComponent} from "./pages/client-pages/catalog/catalog.component";
+import {ProductListComponent} from "./pages/client-pages/catalog/product-list/product-list.component";
+import {ProductComponent} from "./pages/client-pages/catalog/product/product.component";
+import {CatalogAdminComponent} from "./pages/admin-pages/catalog-admin/catalog-admin.component";
+import {ProductAdminComponent} from "./pages/admin-pages/catalog-admin/product-admin/product-admin.component";
+import {CategoryAdminComponent} from "./pages/admin-pages/catalog-admin/category-admin/category-admin.component";
 
 const appRouter: Routes = [
   {
@@ -16,12 +14,6 @@ const appRouter: Routes = [
   },
   {
     path: 'home', component: HomeComponent
-  },
-  {
-    path: 'counter', component: CounterComponent
-  },
-  {
-    path: 'fetch-data', component: FetchDataComponent
   },
   {
     path: 'catalog', component: CatalogComponent,

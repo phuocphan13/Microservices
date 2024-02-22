@@ -1,0 +1,25 @@
+<div class="modal-header">
+  <p>CREATE</p>
+</div>
+<div class="modal-body">
+  <form (ngSubmit)="onSubmit()" [formGroup]="createForm">
+    <div class="form-group">
+      <div class="modal-contents">
+        <label class="label" for="name">Name:</label>
+        <input type="text" class="form-control value" formControlName="name" [readOnly]="isView" [disabled]="isView">
+      </div>
+      <div class="modal-contents">
+        <label class="label" for="categoryCode">Code:</label>
+        <input type="text" class="form-control value" formControlName="categoryCode" [readOnly]="isView" [disabled]="isView">
+      </div>
+      <div class="modal-contents">
+        <label class="label" for="description">Description:</label>
+        <textarea class="form-control value" formControlName="description" [readOnly]="isView" [disabled]="isView"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn-primary" [disabled]="createForm.invalid">Create</button>
+      <button class="btn-transparent" (click)="onClickClose()">Close</button>
+    </div>
+  </form>
+</div>
