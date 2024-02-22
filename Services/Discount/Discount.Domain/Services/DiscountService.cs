@@ -7,6 +7,9 @@ namespace Discount.Domain.Services;
 
 public interface IDiscountService
 {
+    Task<DiscountDetail?> GetDiscountAsync(string id);
+    Task<List<DiscountDetail>?> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, List<string> catalogCodes);
+    Task<DiscountDetail?> GetDiscountByCatalogCodeAsync(int type, string catalogCode);
     Task<DiscountDetail?> CreateDiscountAsync(CreateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> UpdateDiscountAsync(UpdateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> InactiveDiscountAsync(int id);
@@ -21,6 +24,42 @@ public class DiscountService : IDiscountService
     {
         _discountRepository = discountRepository ?? throw new ArgumentNullException(nameof(discountRepository));
         _catalogService = catalogService ?? throw new ArgumentNullException(nameof(catalogService));
+    }
+
+    public async Task<DiscountDetail?> GetDiscountAsync(string id)
+    {
+        var discount = await _discountRepository.GetDiscountAsync(id);
+
+        if (discount is null)
+        {
+            return null;
+        }
+
+        return discount.ToDetail();
+    }
+
+    public async Task<List<DiscountDetail>?> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, List<string> catalogCodes)
+    {
+        var discounts = await _discountRepository.GetListDiscountsByCatalogCodeAsync(type, catalogCodes);
+
+        if (discounts is null)
+        {
+            return null;
+        }
+        
+        return discounts.Select(x => x.ToDetail()).ToList();
+    }
+
+    public async Task<DiscountDetail?> GetDiscountByCatalogCodeAsync(int type, string catalogCode)
+    {
+        var discount = await _discountRepository.GetDiscountByCatalogCodeAsync((DiscountEnum)type, catalogCode);
+
+        if (discount is null)
+        {
+            return null;
+        }
+
+        return discount.ToDetail();
     }
 
     public async Task<DiscountDetail?> CreateDiscountAsync(CreateDiscountRequestBody requestBody, CancellationToken cancellationToken)

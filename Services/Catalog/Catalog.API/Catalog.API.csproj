@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <UserSecretsId>b4ecc16b-be4a-4ad3-a19e-b3d32ce8badf</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +16,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\ApiClient\ApiClient.csproj" />
     <ProjectReference Include="..\..\..\Common\Platform\Platform.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Protobuf Include="..\..\..\Common\ApiClient\Discount\Grpc\Protos\discount.proto" GrpcServices="Client">
+      <Link>Protos\discount.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
   <ItemGroup>

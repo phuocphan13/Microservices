@@ -21,28 +21,28 @@ public class CouponController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<Coupon>> GetDiscount([FromQuery] string searchText, [FromQuery] CatalogType type)
     {
-        var coupon = await _couponService.GetDiscountByTextAsync(searchText, type);
+        var coupon = await _couponService.GetCouponByTextAsync(searchText, type);
         return Ok(coupon);
     }
 
     [HttpPost]
     public async Task<ActionResult<CouponDetail>> CreateDiscount([FromBody] CreateCouponRequestBody requestBody)
     {
-        var coupon = await _couponService.CreateDiscountAsync(requestBody);
+        var coupon = await _couponService.CreateCouponAsync(requestBody);
         return Ok(coupon);
     }
 
     [HttpPut]
     public async Task<ActionResult<CouponDetail>> UpdateDiscount([FromBody] UpdateCouponRequestBody requestBody)
     {
-        var coupon = await _couponService.UpdateDiscountAsync(requestBody);
+        var coupon = await _couponService.UpdateCouponAsync(requestBody);
         return Ok(coupon);
     }
     
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<bool>> DeleteDiscount(int id)
     {
-        var result = await _couponService.DeleteDiscountAsync(id);
+        var result = await _couponService.DeleteCouponAsync(id);
         return Ok(result);
     }
 }

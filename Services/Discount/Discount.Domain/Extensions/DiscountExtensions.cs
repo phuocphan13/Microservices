@@ -1,5 +1,4 @@
 using ApiClient.Discount.Models.Discount;
-using Discount.Domain.Entities;
 
 namespace Discount.Domain.Extensions;
 
@@ -9,7 +8,13 @@ public static class DiscountExtensions
     {
         return new DiscountDetail()
         {
-            Id = entity.Id
+            Id = entity.Id,
+            Amount = entity.Amount,
+            Type = entity.Type,
+            CatalogCode = entity.CatalogCode,
+            Description = entity.Description,
+            FromDate = entity.FromDate,
+            ToDate = entity.ToDate
         };
     }
     

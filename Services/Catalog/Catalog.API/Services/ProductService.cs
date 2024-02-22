@@ -4,6 +4,7 @@ using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
+using Catalog.API.Services.Grpc;
 
 namespace Catalog.API.Services;
 
@@ -22,19 +23,24 @@ public class ProductService : IProductService
     private readonly IRepository<Product> _productRepository;
     private readonly IRepository<Category> _categoryRepository;
     private readonly IRepository<SubCategory> _subCategoryRepository;
+    private readonly IDiscountGrpcService _discountGrpcService;
 
     public ProductService(
         IRepository<Product> productRepository,
         IRepository<Category> categoryRepository,
-        IRepository<SubCategory> subCategoryRepository)
+        IRepository<SubCategory> subCategoryRepository, 
+        IDiscountGrpcService discountGrpcService)
     {
         _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
         _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
         _subCategoryRepository = subCategoryRepository ?? throw new ArgumentNullException(nameof(subCategoryRepository));
+        _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
     }
 
     public async Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken)
     {
+        // var a = await _discountGrpcService.GetDiscountByCatalogCode(DiscountEnum.Product, "IPX-APL");
+        
         var entities = await _productRepository.GetEntitiesAsync(cancellationToken);
 
         var summaries = await GetProductSummariesInternalAsync(entities, cancellationToken);
@@ -155,9 +161,11 @@ public class ProductService : IProductService
     {
         var categoryIds = entities.Select(x => x.CategoryId);
         var subCategoryIds = entities.Select(x => x.SubCategoryId);
+        var productCodes = entities.Select(x => x.ProductCode!);
 
         var categories = await _categoryRepository.GetEntitiesQueryAsync(x => categoryIds.Contains(x.Id), cancellationToken);
         var subCategories = await _subCategoryRepository.GetEntitiesQueryAsync(x => subCategoryIds.Contains(x.Id), cancellationToken);
+        var discounts = await _discountGrpcService.GetListDiscountsByCatalogCodeAsync(DiscountEnum.Product, productCodes);
 
         var summaries = new List<ProductSummary>();
 
@@ -165,6 +173,12 @@ public class ProductService : IProductService
         {
             var cate = categories.FirstOrDefault(x => x.Id == entity.CategoryId)?.Name;
             var subCate = subCategories.FirstOrDefault(x => x.Id == entity.SubCategoryId)?.Name;
+            var discount = discounts?.FirstOrDefault(x => x.CatalogCode == entity.ProductCode);
+
+            if (discount is not null)
+            {
+                entity.Price -= discount.Amount;
+            }
 
             summaries.Add(entity.ToSummary(cate, subCate));
         }

@@ -19,10 +19,11 @@ public static class CouponExtensions
     {
         return new Coupon()
         {
-            Code = requestBody.Code,
+            Name = requestBody.Name,
             Description = requestBody.Description,
-            Type = requestBody.Type,
-            Amount = requestBody.Amount
+            Amount = requestBody.Amount,
+            FromDate = requestBody.FromDate,
+            ToDate = requestBody.ToDate,
         };
     }
 
@@ -31,10 +32,11 @@ public static class CouponExtensions
         return new Coupon()
         {
             Id = requestBody.Id!.Value,
-            Code = requestBody.Code,
+            Name = requestBody.Name,
             Description = requestBody.Description,
-            Type = requestBody.Type,
-            Amount = requestBody.Amount
+            Amount = requestBody.Amount,
+            FromDate = requestBody.FromDate,
+            ToDate = requestBody.ToDate,
         };
     }
 }

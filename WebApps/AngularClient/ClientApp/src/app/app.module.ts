@@ -16,6 +16,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { SearchMenuComponent } from './search-menu/search-menu.component';
 import { CatalogService } from './core/service/catalog.service';
 import { ApiService } from './core/service/api.service';
+import {BasicGridComponent} from "./core/shared/grids/basic-grid/basic-grid.component";
+import {NgbAlertModule, NgbModule, NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -27,13 +29,18 @@ import { ApiService } from './core/service/api.service';
     CatalogComponent,
     ProductListComponent,
     ProductComponent,
-    SearchMenuComponent
+    SearchMenuComponent,
+
+    BasicGridComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
     AppRoutingModule,
+    NgbModule,
+    NgbPaginationModule,
+    NgbAlertModule
   ],
   providers: [
     CatalogService,

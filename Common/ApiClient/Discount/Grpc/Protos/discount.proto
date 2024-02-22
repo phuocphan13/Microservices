@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+option csharp_namespace = "Discount.Grpc.Protos";
+
+service DiscountProtoService {
+  rpc GetDiscount (GetDiscountRequest) returns (DiscountDetailModel);
+  rpc GetListDiscounts (GetListDiscountRequest) returns (ListDetailsModel);
+  rpc GetDiscountByCatalogCode (GetDiscountByCatalogCodeRequest) returns (DiscountDetailModel);
+  rpc CreateDiscount (CreateCouponRequest) returns (DiscountDetailModel);
+  rpc UpdateDiscount (UpdateCouponRequest) returns (DiscountDetailModel);
+  rpc InactiveDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
+}
+
+enum CatalogType
+{
+  Default = 0;
+  Category = 1;
+  SubCategory = 2;
+  Product = 3;
+}
+
+message GetDiscountRequest {
+  string id = 1;
+}
+
+message GetListDiscountRequest{
+  int32 type = 1;
+  repeated string catalogCodes = 2;
+}
+
+message GetDiscountByCatalogCodeRequest {
+  int32 type = 1;
+  string catalogCode = 2;
+}
+
+message CreateCouponRequest {
+  string code = 1;
+  CatalogType type = 2;
+  string description = 3;
+  int32 amount = 4;
+}
+
+message UpdateCouponRequest {
+  string id = 1;
+  string code = 2;
+  CatalogType type = 3;
+  string description = 4;
+  int32 amount = 5;
+}
+
+message DeleteDiscountRequest {
+  int32 id = 1;
+}
+
+message DeleteDiscountResponse{
+  bool success = 1;
+}
+
+message ListDetailsModel{
+  repeated DiscountDetailModel items = 1;
+}
+
+message DiscountDetailModel {
+  int32 id = 1;
+  string CatalogName = 2;
+  CatalogType Type = 3;
+  string Description = 4;
+  int32 Amount = 5;
+}

@@ -3,6 +3,7 @@ using Catalog.API.Common.Consts;
 using Catalog.API.Common.Extensions;
 using Catalog.API.Entities;
 using MongoDB.Driver;
+using Platform.Constants;
 
 namespace Catalog.API.Repositories;
 
@@ -26,7 +27,7 @@ public class Repository<TEntity> : IRepository<TEntity>
 
     public Repository(IConfiguration configuration)
     {
-        var database = new MongoClient(configuration.GetValue<string>(DatabaseConst.CollectionName.ConnectionString)).GetDatabase(configuration.GetValue<string>(DatabaseConst.CollectionName.DatabaseName));
+        var database = new MongoClient(configuration.GetValue<string>(DatabaseConst.ConnectionSetting.MongoDB.ConnectionString)).GetDatabase(configuration.GetValue<string>(DatabaseConst.ConnectionSetting.MongoDB.DatabaseName));
         _collection = database.GetCollection<TEntity>(DatabaseExtensions.GetCollectionName(typeof(TEntity)));
     }
 

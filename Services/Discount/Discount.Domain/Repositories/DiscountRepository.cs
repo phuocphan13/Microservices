@@ -1,4 +1,3 @@
-using Discount.Domain.Entities;
 using Discount.Domain.Repositories.Common;
 
 namespace Discount.Domain.Repositories;
@@ -6,6 +5,8 @@ namespace Discount.Domain.Repositories;
 public interface IDiscountRepository
 {
     Task<Entities.Discount?> GetDiscountAsync(string id);
+    Task<List<Entities.Discount>?> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, List<string> catalogCodes);
+    Task<Entities.Discount?> GetDiscountByCatalogCodeAsync(DiscountEnum type, string catalogCode);
     Task<Entities.Discount> CreateDiscountAsync(Entities.Discount Discount);
     Task<Entities.Discount> UpdateDiscountAsync(Entities.Discount Discount);
     Task<bool> DeleteDiscountAsync(int id);
@@ -36,11 +37,31 @@ public class DiscountRepository : IDiscountRepository
         return isOverlap;
     }
 
+    public async Task<Entities.Discount?> GetDiscountByCatalogCodeAsync(DiscountEnum type, string catalogCode)
+    {
+        const string query = "CatalogCode = @CatalogCode and Type = @Type";
+        object param = new { CatalogCode = catalogCode, Type = (int)type };
+
+        var entity = await _baseRepository.QueryFirstOrDefaultAsync<Entities.Discount>(query, param);
+
+        return entity;
+    }
+
     public async Task<Entities.Discount?> GetDiscountAsync(string id)
     {
         const string query = "Id = @Id";
 
         var entity = await _baseRepository.QueryFirstOrDefaultAsync<Entities.Discount>(query, new { Id = id });
+
+        return entity;
+    }
+
+    public async Task<List<Entities.Discount>?> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, List<string> catalogCodes)
+    {
+        const string query = "CatalogCode IN (@CatalogCodes) and Type = @Type";
+        object param = new { CatalogCodes = string.Join(",", catalogCodes), Type = (int)type };
+
+        var entity = await _baseRepository.QueryAsync<Entities.Discount>(query, param);
 
         return entity;
     }

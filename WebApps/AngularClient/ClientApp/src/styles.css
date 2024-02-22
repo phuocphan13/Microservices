@@ -20,13 +20,13 @@ code {
   width: 100px;
   padding: 5px;
   font-size: 18px;
-  font-weight:normal;
+  font-weight: normal;
   text-align: center;
   border-radius: 5px;
   border-color: transparent;
 }
 
-.btn-primary:hover{
+.btn-primary:hover {
   background-color: #0c51c7;
 }
 
@@ -42,7 +42,7 @@ code {
   border-radius: 5px;
 }
 
-.btn-transparent:hover{
+.btn-transparent:hover {
   background-color: #cee1ff;
 }
 
@@ -54,46 +54,46 @@ code {
   width: 100px;
   padding: 5px;
   font-size: 18px;
-  font-weight:bold;
+  font-weight: bold;
   text-align: center;
   border-radius: 5px;
 }
 
-.btn-secondary:hover{
+.btn-secondary:hover {
   background-color: #f3f3f3;
 }
 
-.input-editable{
+.input-editable {
   color: black;
   background-color: white;
   height: 40px;
   width: 200px;
   padding: 5px;
   font-size: 18px;
-  font-weight:lighter;
+  font-weight: lighter;
   text-align: center;
   border-radius: 5px;
   border-width: thin;
 }
 
-.input-editable:focus{
+.input-editable:focus {
   outline: none;
 }
 
-.input-readonly{
+.input-readonly {
   color: black;
   background-color: rgb(226, 225, 225);
   height: 40px;
   width: 200px;
   padding: 5px;
   font-size: 18px;
-  font-weight:lighter;
+  font-weight: lighter;
   text-align: center;
   border-radius: 5px;
   border-width: thin;
 }
 
-.input-readonly:focus{
+.input-readonly:focus {
   outline: none;
 }
 
@@ -119,7 +119,7 @@ code {
   position: absolute;
   background-color: #f1f1f1;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 }
 
 .dropdown-content a {
@@ -129,11 +129,17 @@ code {
   display: block;
 }
 
-.dropdown-content a:hover {background-color: #ddd;}
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
 
-.dropdown:hover .dropdown-content {display: block;}
+.dropdown:hover .dropdown-content {
+  display: block;
+}
 
-.dropdown:hover .dropbtn {background-color: #3e8e41;}
+.dropdown:hover .dropbtn {
+  background-color: #3e8e41;
+}
 
 select {
   width: 200px;
@@ -143,7 +149,7 @@ select {
   border-radius: 5px;
 }
 
-select:focus{
+select:focus {
   outline: none;
 }
 
@@ -153,4 +159,18 @@ option {
 
 option:hover {
   background-color: #eee;
+}
+
+/*Basic Grid*/
+
+table.basic-table {
+
+}
+
+table.basic-table thead tr th.header {
+
+}
+
+table.basic-table tbody tr td.label {
+
 }

@@ -3,7 +3,7 @@ using Discount.Domain;
 using Discount.Domain.Common.InitializeDB;
 
 var builder = WebApplication.CreateBuilder(args);
-var isRebuildSchema = builder.Configuration.GetValue<bool>(Platform.Constants.DatabaseConst.CollectionName.IsRebuildSchema);
+var isRebuildSchema = builder.Configuration.GetValue<bool>(Platform.Constants.DatabaseConst.ConnectionSetting.Postgres.IsRebuildSchema);
 // Add services to the container.
 
 builder.Services.AddControllers();
