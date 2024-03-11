@@ -1,6 +1,4 @@
-﻿using ApiClient.Catalog.Category.Models;
-
-namespace ApiClient.Catalog.Models.Catalog.Category;
+﻿namespace ApiClient.Catalog.Category.Models;
 
 public class CategorySummary : BaseCategory
 {

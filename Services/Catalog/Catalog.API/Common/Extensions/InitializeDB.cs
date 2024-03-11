@@ -1,4 +1,3 @@
-using Catalog.API.Common.Consts;
 using Catalog.API.Common.Helpers;
 using Catalog.API.Entities;
 using MongoDB.Driver;

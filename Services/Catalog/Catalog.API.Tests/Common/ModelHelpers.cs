@@ -1,3 +1,4 @@
+using ApiClient.Catalog.Category.Models;
 using ApiClient.Catalog.Models.Catalog.Category;
 using ApiClient.Catalog.Product.Models;
 using ApiClient.Catalog.SubCategory.Models;

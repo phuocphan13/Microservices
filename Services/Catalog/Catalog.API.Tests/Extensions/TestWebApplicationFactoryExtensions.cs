@@ -1,4 +1,3 @@
-using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Repositories;
 using IntegrationTest.Common.Configurations;

@@ -47,8 +47,8 @@ public static class ResponseMessages
 
     public static class Delete
     {
-        public static string NotFound = "Product not found.";
-        public static string DeleteFailed = "Delete failed.";
-        public static string DeleteSuccess = "Delete successfully.";
+        public const string NotFound = "Product not found.";
+        public const string DeleteFailed = "Delete failed.";
+        public const string DeleteSuccess = "Delete successfully.";
     }
 }
