@@ -38,8 +38,13 @@ export class CategoryAdminComponent implements OnInit {
     }
 
     let modal = this.modalService.open(CategoryModalComponent, this.ngbModalOptions);
-    modal.componentInstance.isView = isView;
-    modal.componentInstance.modalData = rowData;
+    modal.componentInstance.formData = rowData;
+    modal.componentInstance.type = actionType;
+    modal.componentInstance.successEvent.subscribe((success: boolean) => {
+      if (success) {
+        this.getCategoriesAsync();
+      }
+    });
   }
 
   onClickAction(actionType: string, rowData: any) {
@@ -60,5 +65,15 @@ export class CategoryAdminComponent implements OnInit {
     } else {
       this.modifyAction(actionType, rowData);
     }
+  }
+
+  onClickCreate(actionType:string){
+    let modal = this.modalService.open(CategoryModalComponent, this.ngbModalOptions);
+    modal.componentInstance.type = actionType;
+    modal.componentInstance.successEvent.subscribe((success: boolean) => {
+      if (success) {
+        this.getCategoriesAsync();
+      }
+    });
   }
 }

@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { Action } from "../../../../../common/const";
 import { CategoryService } from "../../../../service/catalog/category.service";
+import { CategorySummary } from 'src/app/core/models/catalog/category-models/category-summary.model';
 
 @Component({
   selector: 'app-category-modal',
@@ -10,40 +10,43 @@ import { CategoryService } from "../../../../service/catalog/category.service";
   styleUrls: ['./category-modal.component.css']
 })
 export class CategoryModalComponent implements OnInit {
-  createForm: FormGroup;
   @Input() modalData: any;
   @Input() type: string = Action.View;
-  isView: boolean = false;
-  isEdit: boolean = false; //Incase of Edit for not allow to edit Name
+  title: string ="";
+  isDisabled: boolean = false;
+  formData: any = {};
+  @Output() successEvent = new EventEmitter<boolean>();
 
-  constructor(public activeModal: NgbActiveModal, private formBuilder: FormBuilder, private categoryService: CategoryService) {
-    this.createForm = this.formBuilder.group({
-      name: ['', [Validators.required]],
-      categoryCode: ['', [Validators.required]],
-      description: ['']
-    });
-
-    this.isView = this.type === Action.View;
-    this.isEdit = this.type === Action.Edit;
-  }
+  constructor(public activeModal: NgbActiveModal, private categoryService: CategoryService) {}
 
   ngOnInit(): void {
+    this.setTitle();
+    this.setDisabledState();
+  }
+
+  setTitle() {
+    if (this.type == 'edit') {
+      this.title = 'Edit Category';
+    } else if (this.type == 'create') {
+      this.title = 'Create New Category';
+    } else if (this.type == 'view') {
+      this.title = 'View Category';
+    } else {
+      this.title = '';
+    }
   }
 
   async onSubmit() {
+    let result;
     if (this.type === Action.Edit) {
-      //Todo: handle validation with formGroup
-      if (this.createForm.valid) {
-        let result = await this.categoryService.updateCategoryAsync(this.modalData);
-        this.handleResponse(result);
-      }
+      result = await this.categoryService.updateCategoryAsync(this.formData);
     } else if (this.type == Action.Create) {
-      //Todo: handle validation with formGroup
-      if (this.createForm.valid) {
-        const categoryDetail = this.createForm.value;
-        let result = await this.categoryService.createCategoryAsync(categoryDetail);
-        this.handleResponse(result);
-      }
+      result = await this.categoryService.createCategoryAsync(this.formData);
+    }
+
+    if (result) {
+      this.handleResponse(result);
+      this.successEvent.emit(true); // Load lại danh sách nếu thành công
     }
   }
 
@@ -51,11 +54,15 @@ export class CategoryModalComponent implements OnInit {
     if (response) {
       this.activeModal.close();
     } else {
-      // báo lỗi
+      // Báo lỗi
     }
   }
 
   onClickClose() {
     this.activeModal.close();
+  }
+
+  setDisabledState() {
+    this.isDisabled = this.type === 'view';
   }
 }

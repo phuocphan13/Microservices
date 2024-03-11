@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {NgbModal, NgbModalOptions} from "@ng-bootstrap/ng-bootstrap";
-import {ProductModalComponent} from "../core/shared/modals/product-modal/product-modal.component";
+import { ProductModalComponent } from '../core/shared/modals/catalog-modals/product-modal/product-modal.component';
 
 @Component({
   selector: 'app-home',
