@@ -14,7 +14,7 @@ My idea of this project is about applying some technologies that I want to learn
 
 This project is running in .NET 6.
 
-Here is the structure of project that I capture from the course (I mentioned above).
+Here is the structure of project that I captured from the course (I mentioned above).
 ![image](https://github.com/phuocphan13/Microservices/assets/44283172/54edd605-8afc-44f5-a665-4db7d1ea1bf0)
 
 I applied Unit Test with xUnit (Catalog.API) and NUnit (Will implement soon).
