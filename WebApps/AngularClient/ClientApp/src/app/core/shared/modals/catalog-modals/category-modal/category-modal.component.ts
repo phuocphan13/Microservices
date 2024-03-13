@@ -38,16 +38,19 @@ export class CategoryModalComponent implements OnInit {
 
   async onSubmit() {
     let result;
+    if (this.isValidForm())
+    {
     if (this.type === Action.Edit) {
-      result = await this.categoryService.updateCategoryAsync(this.formData);
+      this.categoryService.updateCategoryAsync(this.formData).then(result => this.handleResponse(result));
     } else if (this.type == Action.Create) {
-      result = await this.categoryService.createCategoryAsync(this.formData);
+      this.categoryService.createCategoryAsync(this.formData).then(result => this.handleResponse(result));
     }
 
     if (result) {
       this.handleResponse(result);
       this.successEvent.emit(true); // Load lại danh sách nếu thành công
     }
+  }
   }
 
   private handleResponse(response: any) {
@@ -64,5 +67,21 @@ export class CategoryModalComponent implements OnInit {
 
   setDisabledState() {
     this.isDisabled = this.type === 'view';
+  }
+
+  isValidName(name: string): boolean {
+    return !!name && /^[a-zA-Z0-9\s]*$/.test(name);
+  }
+
+  isValidCode(code: string): boolean {
+    return !!code && /^[a-zA-Z0-9]*$/.test(code);
+  }
+
+  isValidDescription(description: string): boolean {
+    return /^[a-zA-Z0-9\s]*$/.test(description);
+  }
+
+  isValidForm(): boolean {
+    return this.isValidName(this.formData.name) && this.isValidCode(this.formData.categoryCode) && this.isValidDescription(this.formData.description);
   }
 }
