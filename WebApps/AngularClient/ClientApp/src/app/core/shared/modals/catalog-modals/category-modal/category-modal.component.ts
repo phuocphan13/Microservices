@@ -39,12 +39,14 @@ export class CategoryModalComponent implements OnInit {
   async onSubmit() {
     let result;
     if (this.isValidForm())
-    {
-    if (this.type === Action.Edit) {
-      this.categoryService.updateCategoryAsync(this.formData).then(result => this.handleResponse(result));
-    } else if (this.type == Action.Create) {
-      this.categoryService.createCategoryAsync(this.formData).then(result => this.handleResponse(result));
-    }
+    {if (this.type === Action.Edit || this.type === Action.Create) {
+        this.successEvent.emit(this.formData);
+      }
+    // if (this.type === Action.Edit) {
+    //   this.categoryService.updateCategoryAsync(this.formData).then(result => this.handleResponse(result));
+    // } else if (this.type == Action.Create) {
+    //   this.categoryService.createCategoryAsync(this.formData).then(result => this.handleResponse(result));
+    // }
 
     if (result) {
       this.handleResponse(result);
