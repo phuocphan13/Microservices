@@ -12,16 +12,25 @@ import { CategorySummary } from 'src/app/core/models/catalog/category-models/cat
 export class CategoryModalComponent implements OnInit {
   @Input() modalData: any;
   @Input() type: string = Action.View;
-  title: string ="";
-  isDisabled: boolean = false;
-  formData: any = {};
   @Output() successEvent = new EventEmitter<boolean>();
 
-  constructor(public activeModal: NgbActiveModal, private categoryService: CategoryService) {}
+  title: string ="";
+  isDisabled: boolean = false;
+
+  formData: any = {};
+  tempFormData: any = {};
+  isDirty: Record<string, boolean> = {
+    name: false,
+    categoryCode: false,
+    description: false
+  };
+
+  constructor(public activeModal: NgbActiveModal) {}
 
   ngOnInit(): void {
     this.setTitle();
     this.setDisabledState();
+    this.tempFormData = { ...this.formData };
   }
 
   setTitle() {
@@ -38,21 +47,16 @@ export class CategoryModalComponent implements OnInit {
 
   async onSubmit() {
     let result;
-    if (this.isValidForm())
-    {if (this.type === Action.Edit || this.type === Action.Create) {
-        this.successEvent.emit(this.formData);
+    if (this.type === Action.Edit || this.type === Action.Create) {
+        this.successEvent.emit(this.tempFormData);
+        this.activeModal.close();
       }
-    // if (this.type === Action.Edit) {
-    //   this.categoryService.updateCategoryAsync(this.formData).then(result => this.handleResponse(result));
-    // } else if (this.type == Action.Create) {
-    //   this.categoryService.createCategoryAsync(this.formData).then(result => this.handleResponse(result));
-    // }
 
     if (result) {
       this.handleResponse(result);
-      this.successEvent.emit(true); // Load lại danh sách nếu thành công
+      this.successEvent.emit(true);
     }
-  }
+  
   }
 
   private handleResponse(response: any) {
@@ -71,6 +75,28 @@ export class CategoryModalComponent implements OnInit {
     this.isDisabled = this.type === 'view';
   }
 
+  markAsDirty(fieldName: string) {
+    const value = this.tempFormData[fieldName];
+    if (value && this.isValidField(fieldName, value)) {
+      this.isDirty[fieldName] = true;
+    } else {
+      this.isDirty[fieldName] = false;
+    }
+  }
+
+  isValidField(fieldName: string, value: string): boolean {
+    switch (fieldName) {
+      case 'name':
+        return this.isValidName(value);
+      case 'categoryCode':
+        return this.isValidCode(value);
+      case 'description':
+        return this.isValidDescription(value);
+      default:
+        return false;
+    }
+  }
+
   isValidName(name: string): boolean {
     return !!name && /^[a-zA-Z0-9\s]*$/.test(name);
   }
@@ -80,10 +106,6 @@ export class CategoryModalComponent implements OnInit {
   }
 
   isValidDescription(description: string): boolean {
-    return /^[a-zA-Z0-9\s]*$/.test(description);
-  }
-
-  isValidForm(): boolean {
-    return this.isValidName(this.formData.name) && this.isValidCode(this.formData.categoryCode) && this.isValidDescription(this.formData.description);
+    return !/[@#$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/.test(description);
   }
 }
