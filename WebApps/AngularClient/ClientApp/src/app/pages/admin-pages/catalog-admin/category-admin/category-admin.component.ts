@@ -47,12 +47,6 @@ export class CategoryAdminComponent implements OnInit {
             this.getCategoriesAsync();
           }
         });
-      } else if (actionType === Action.Create) {
-        await this.categoryService.createCategoryAsync(formData).then(result => {
-          if (result) {
-            this.getCategoriesAsync();
-          }
-        });
       }
     });
   }

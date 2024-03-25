@@ -50,13 +50,12 @@ export class CategoryModalComponent implements OnInit {
     if (this.type === Action.Edit || this.type === Action.Create) {
         this.successEvent.emit(this.tempFormData);
         this.activeModal.close();
-      }
+    }
 
     if (result) {
       this.handleResponse(result);
       this.successEvent.emit(true);
     }
-  
   }
 
   private handleResponse(response: any) {
@@ -76,15 +75,11 @@ export class CategoryModalComponent implements OnInit {
   }
 
   markAsDirty(fieldName: string) {
-    const value = this.tempFormData[fieldName];
-    if (value && this.isValidField(fieldName, value)) {
-      this.isDirty[fieldName] = true;
-    } else {
-      this.isDirty[fieldName] = false;
-    }
+    this.isDirty[fieldName] = true;
   }
 
-  isValidField(fieldName: string, value: string): boolean {
+  isValidField(fieldName: string): boolean {
+    const value = this.tempFormData[fieldName];
     switch (fieldName) {
       case 'name':
         return this.isValidName(value);
