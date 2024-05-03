@@ -1,7 +1,5 @@
 ﻿using ApiClient.Catalog.Category.Models;
 using ApiClient.Catalog.Models.Catalog.Category;
-using ApiClient.Common;
-using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
@@ -10,12 +8,12 @@ namespace Catalog.API.Services;
 
 public interface ICategoryService
 {
-    Task<ApiDataResult<List<CategorySummary>>> GetCategoriesAsync(CancellationToken cancellationToken = default);
-    Task<ApiDataResult<CategoryDetail>> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<CategoryDetail>> GetCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<CategoryDetail>> GetCategoryByIdAsync(string id, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<CategoryDetail>> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
-    Task<ApiStatusResult> DeleteCategoryAsync(string id, CancellationToken cancellationToken = default);
+    Task<bool> CheckExistingAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
+    Task<CategoryDetail?> GetCategoryBySeachAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
+    Task<List<CategorySummary>> GetCategoriesAsync(CancellationToken cancellationToken = default);
+    Task<CategoryDetail?> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<CategoryDetail?> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<bool> DeleteCategoryAsync(string id, CancellationToken cancellationToken = default);
 }
 
 public class CategoryService : ICategoryService
@@ -27,107 +25,61 @@ public class CategoryService : ICategoryService
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<ApiDataResult<List<CategorySummary>>> GetCategoriesAsync(CancellationToken cancellationToken)
+    public async Task<bool> CheckExistingAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
     {
-        var categoryList = new ApiDataResult<List<CategorySummary>>
+        bool result = propertyName switch
         {
-            Data = new List<CategorySummary>()
+            PropertyName.Id => await _categoryRepository.AnyAsync(x => x.Id == search, cancellationToken),
+            PropertyName.Name => await _categoryRepository.AnyAsync(x => x.Name == search, cancellationToken),
+            PropertyName.Code => await _categoryRepository.AnyAsync(x => x.CategoryCode == search, cancellationToken),
+            _ => false
         };
 
+        return result;
+    }
+
+    public async Task<CategoryDetail?> GetCategoryBySeachAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
+    {
+        Category? data = propertyName switch
+        {
+            PropertyName.Id => await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == search, cancellationToken),
+            PropertyName.Name => await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == search, cancellationToken),
+            PropertyName.Code => await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.CategoryCode == search, cancellationToken),
+            _ => null
+        };
+
+        if (data is null)
+        {
+            return null;
+        }
+
+        return data.ToDetail();
+    }
+
+    public async Task<List<CategorySummary>> GetCategoriesAsync(CancellationToken cancellationToken)
+    {
         var entities = await _categoryRepository.GetEntitiesAsync(cancellationToken);
 
-        if (entities is null)
-        {
-            categoryList.Message = ResponseMessages.Category.NotFound;
-            return categoryList;
-        }
-
-        foreach (var entity in entities)
-        {
-            categoryList.Data.Add(entity.ToSummary());
-        }
-
-        return categoryList;
+        return entities.Select(x => x.ToSummary()).ToList();
     }
 
-    public async Task<ApiDataResult<CategoryDetail>> GetCategoryByNameAsync(string name, CancellationToken cancellationToken)
+    public async Task<CategoryDetail?> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
-        var result = new ApiDataResult<CategoryDetail>();
-
-        var entity = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == name, cancellationToken);
-
-        if (entity is null)
-        {
-            result.Message = ResponseMessages.Category.NotFound;
-            return result;
-        }
-
-        result.Data = entity.ToDetail();
-
-        return result;
-    }
-
-    public async Task<ApiDataResult<CategoryDetail>> GetCategoryByIdAsync(string id, CancellationToken cancellationToken)
-    {
-        var result = new ApiDataResult<CategoryDetail>();
-
-        var entity = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-
-        if (entity is null)
-        {
-            result.Message = ResponseMessages.Category.NotFound;
-            return result;
-        }
-
-        result.Data = entity.ToDetail();
-
-        return result;
-    }
-
-    public async Task<ApiDataResult<CategoryDetail>> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken)
-    {
-        var apiDataResult = new ApiDataResult<CategoryDetail>();
-
-        var isExisted = await _categoryRepository.AnyAsync(x => x.Name == requestBody.Name || x.CategoryCode == requestBody.CategoryCode, cancellationToken);
-
-        if (isExisted)
-        {
-            apiDataResult.Message = ResponseMessages.Category.CategoryExisted(requestBody.Name, requestBody.CategoryCode);
-            return apiDataResult;
-        }
-
         var category = requestBody.ToCreateCategory();
 
         category = await _categoryRepository.CreateEntityAsync(category, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(category.Id))
         {
-            apiDataResult.Message = ResponseMessages.Category.CreateFailed;
-            return apiDataResult;
+            return null;
         }
-
-        apiDataResult.Data = category.ToDetail();
-        return apiDataResult;
+        
+        return category.ToDetail();
     }
 
-    public async Task<ApiDataResult<CategoryDetail>> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken)
+    public async Task<CategoryDetail?> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
-        var apiDataResult = new ApiDataResult<CategoryDetail>();
         var category = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == requestBody.Id, cancellationToken);
-
-        if (category is null)
-        {
-            apiDataResult.Message = ResponseMessages.Category.NotFound;
-            return apiDataResult;
-        }
-
-        var isExisted = await _categoryRepository.AnyAsync(x => (x.CategoryCode == requestBody.CategoryCode || x.Name == requestBody.Name) && x.Id != requestBody.Id, cancellationToken);
-
-        if (isExisted)
-        {
-            apiDataResult.Message = ResponseMessages.Category.CategoryExisted(requestBody.Name, requestBody.CategoryCode);
-            return apiDataResult;
-        }
 
         category.ToUpdateCategory(requestBody);
 
@@ -135,34 +87,16 @@ public class CategoryService : ICategoryService
 
         if (!updateItem)
         {
-            apiDataResult.Message = ResponseMessages.Category.UpdateFailed;
-            return apiDataResult;
+            return null;
         }
-
-        apiDataResult.Data = category.ToDetail();
         
-        return apiDataResult;
+        return category.ToDetail();
     }
 
-    public async Task<ApiStatusResult> DeleteCategoryAsync(string id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteCategoryAsync(string id, CancellationToken cancellationToken)
     {
-        var apiDataResult = new ApiStatusResult();
-        var isExisted = await _categoryRepository.AnyAsync(x => x.Id == id, cancellationToken);
-
-        if (!isExisted)
-        {
-            apiDataResult.Message = ResponseMessages.Category.NotFound;
-            return apiDataResult;
-        }
-
         var result = await _categoryRepository.DeleteEntityAsync(id, cancellationToken);
 
-        if (!result)
-        {
-            apiDataResult.Message = ResponseMessages.Category.DeleteFailed;
-            return apiDataResult;
-        }
-
-        return apiDataResult;
+        return result;
     }
 }

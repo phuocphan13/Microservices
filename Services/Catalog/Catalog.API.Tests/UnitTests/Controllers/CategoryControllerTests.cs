@@ -6,6 +6,7 @@ using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using ApiClient.Catalog.Category.Models;
+using Platform.ApiBuilder;
 using UnitTest.Common.Helpers;
 using ModelHelpers = Catalog.API.Tests.Common.ModelHelpers;
 
@@ -23,7 +24,7 @@ public class CategoryControllerTests
             var categorySummarise = ModelHelpers.Category.GenerateCategorySummaries();
 
             var categoryService = new Mock<ICategoryService>();
-            categoryService.Setup(x => x.GetCategoriesAsync(default)).ReturnsAsync(CommonHelpers.ApiResult.Ok(categorySummarise));
+            categoryService.Setup(x => x.GetCategoriesAsync(default)).ReturnsAsync(categorySummarise);
             var controller = new CategoryController(categoryService.Object);
 
             var result = await controller.GetCategories(default);
@@ -32,15 +33,15 @@ public class CategoryControllerTests
 
             var data = Assert.IsType<ApiDataResult<List<CategorySummary>>>(okResult.Value);
 
-            Assert.NotNull(data.Data);
-            Assert.Equal(data.Data.Count, categorySummarise.Count);
+            Assert.NotNull(data.Result);
+            Assert.Equal(data.Result.Count, categorySummarise.Count);
         }
 
         [Fact]
         public async Task GetCategories_ValidParams_NotFound()
         {
             var categoryService = new Mock<ICategoryService>();
-            categoryService.Setup(x => x.GetCategoriesAsync(default)).ReturnsAsync((ApiDataResult<List<CategorySummary>>)null!);
+            categoryService.Setup(x => x.GetCategoriesAsync(default)).ReturnsAsync((List<CategorySummary>)null!);
 
             var controller = new CategoryController(categoryService.Object);
 
@@ -59,7 +60,7 @@ public class CategoryControllerTests
             var categoryDetail = ModelHelpers.Category.GenerateCategory().ToDetail();
 
             var categoryService = new Mock<ICategoryService>();
-            categoryService.Setup(x => x.GetCategoryByIdAsync(categoryDetail.Id!, default)).ReturnsAsync(CommonHelpers.ApiResult.Ok(categoryDetail));
+            categoryService.Setup(x => x.GetCategoryBySeachAsync(categoryDetail.Id!, It.IsAny<PropertyName>(), default)).ReturnsAsync(categoryDetail);
 
             var controller = new CategoryController(categoryService.Object);
 
@@ -93,7 +94,7 @@ public class CategoryControllerTests
 
             var categoryService = new Mock<ICategoryService>();
 
-            categoryService.Setup(x => x.GetCategoryByIdAsync(id, default)).ReturnsAsync((ApiDataResult<CategoryDetail>)null!);
+            categoryService.Setup(x => x.GetCategoryBySeachAsync(id, It.IsAny<PropertyName>(), default)).ReturnsAsync((CategoryDetail)null!);
 
             var controller = new CategoryController(categoryService.Object);
 
@@ -112,7 +113,7 @@ public class CategoryControllerTests
             var categoryDetail = ModelHelpers.Category.GenerateCategory().ToDetail();
 
             var categoryService = new Mock<ICategoryService>();
-            categoryService.Setup(x => x.GetCategoryByNameAsync(categoryDetail.Name!, default)).ReturnsAsync(CommonHelpers.ApiResult.Ok(categoryDetail));
+            categoryService.Setup(x => x.GetCategoryBySeachAsync(categoryDetail.Name!, It.IsAny<PropertyName>(), default)).ReturnsAsync(categoryDetail);
 
             var controller = new CategoryController(categoryService.Object);
 

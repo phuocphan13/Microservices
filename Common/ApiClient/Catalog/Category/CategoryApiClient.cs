@@ -2,6 +2,7 @@
 using ApiClient.Catalog.Models.Catalog.Category;
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
+using Platform.ApiBuilder;
 
 namespace ApiClient.Catalog.Category;
 

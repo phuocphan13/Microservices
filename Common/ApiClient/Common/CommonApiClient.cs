@@ -1,9 +1,7 @@
-using System.Text.Json;
-using ApiClient.Common.Models;
-using Core.Common.Helpers;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using Platform.ApiBuilder;
+using Platform.ApiBuilder.Helpers;
 
 namespace ApiClient.Common;
 
@@ -23,18 +21,30 @@ public class CommonApiClient
         return _configuration["ApiServices:OcelotApiGw"];
     }
 
-    protected async Task<ApiDataResult<TResult>> GetAsync<TResult>(string url, CancellationToken cancellationToken)
+    protected async Task<ApiDataResult<TResult>> GetSingleAsync<TResult>(string url, CancellationToken cancellationToken)
         where TResult : class, new()
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
         var httpClient = _httpClientFactory.CreateClient();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
-        
-        return await HttpResponseHelpers.TransformResponseToData<ApiDataResult<TResult>>(httpResponseMessage, cancellationToken);
+
+        var result = await HttpResponseHelpers.TransformResponseToData<TResult>(httpResponseMessage, cancellationToken);
+
+        return new ApiDataResult<TResult>(result);
     }
 
-    protected async Task<ApiDataResult<TResult>> PostAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
-        where TRequestBody : new()
+    protected async Task<ApiCollectionResult<TResult>> GetCollectionAsync<TResult>(string url, CancellationToken cancellationToken)
+    {
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+        var httpClient = _httpClientFactory.CreateClient();
+        var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
+
+        var result = await HttpResponseHelpers.TransformResponseToData<List<TResult>>(httpResponseMessage, cancellationToken);
+
+        return new ApiCollectionResult<TResult>(result);
+    }
+
+    protected async Task<ApiDataResult<TResult>> PostAsync<TResult>(string url, object requestBody, CancellationToken cancellationToken)
         where TResult : class, new()
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url);
@@ -45,7 +55,7 @@ public class CommonApiClient
         return await HttpResponseHelpers.TransformResponseToData<ApiDataResult<TResult>>(httpResponseMessage, cancellationToken);
     }
 
-    protected async Task<ApiDataResult<TResult>> PutAsync<TRequestBody, TResult>(string url, TRequestBody requestBody, CancellationToken cancellationToken)
+    protected async Task<ApiDataResult<TResult>> PutAsync<TResult>(string url, object requestBody, CancellationToken cancellationToken)
         where TResult : class, new()
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, url);
@@ -71,7 +81,7 @@ public class CommonApiClient
         
         if (httpResponseMessage is null)
         {
-            result.HttpErrorCode = -1;
+            result.InternalErrorCode = -1;
 
             return result;
         }

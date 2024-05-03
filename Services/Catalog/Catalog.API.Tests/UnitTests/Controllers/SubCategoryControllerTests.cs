@@ -6,6 +6,7 @@ using Catalog.API.Services;
 using Catalog.API.Tests.Common;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Microsoft.Extensions.Logging;
 using UnitTest.Common.Helpers;
 
 namespace Catalog.API.Tests.UnitTests.Controllers;
@@ -16,12 +17,14 @@ public class SubCategoryControllerTests
     public void Constructor_NullProductServiceParams_ThrowException()
     {
         ISubCategoryService subCategoryService = null!;
-
+        ICategoryService categoryService = null!;
+        ILogger<SubCategoryController> logger = null!;
+        
         Assert.Throws<ArgumentNullException>(
             nameof(subCategoryService),
             () =>
             {
-                _ = new SubCategoryController(subCategoryService);
+                _ = new SubCategoryController(subCategoryService, categoryService, logger);
             });
     }
     
@@ -31,11 +34,13 @@ public class SubCategoryControllerTests
     {
         //Config mock data -- tao data ảo
         var subCategoryService = new Mock<ISubCategoryService>();
+        var categoryService = new Mock<ICategoryService>();
+        var logger = new Mock<Logger<SubCategoryController>>();
 
-        subCategoryService.Setup(x => x.GetSubCategoriesAsync(default)).ReturnsAsync((ApiDataResult<List<SubCategorySummary>>)null!);
+        subCategoryService.Setup(x => x.GetSubCategoriesAsync(default)).ReturnsAsync((List<SubCategorySummary>)null!);
 
         //Run test
-        var controller = new SubCategoryController(subCategoryService.Object);
+        var controller = new SubCategoryController(subCategoryService.Object, categoryService.Object, logger.Object);
 
         var result = await controller.GetSubCategories(default);
 

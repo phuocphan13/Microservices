@@ -1,4 +1,5 @@
 using ApiClient.Common;
+using Platform.ApiBuilder;
 
 namespace UnitTest.Common.Helpers;
 
@@ -36,18 +37,14 @@ public static class CommonHelpers
         public static ApiDataResult<T> Ok<T>(T data)
             where T: class, new()
         {
-            return new ApiDataResult<T>()
-            {
-                Data = data
-            };
+            return new ApiDataResult<T>(data);
         }
 
         public static ApiDataResult<T> NotFound<T>(T data)
             where T : class, new()
         {
-            return new ApiDataResult<T>()
+            return new ApiDataResult<T>(data)
             {
-                Data = data,
                 Message = "not existed"
             };
         }
@@ -55,9 +52,8 @@ public static class CommonHelpers
         public static ApiDataResult<T> Problem<T>(T data)
             where T : class, new()
         {
-            return new ApiDataResult<T>()
+            return new ApiDataResult<T>(data)
             {
-                Data = data,
                 Message = "Problem"
             };
         }

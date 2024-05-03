@@ -2,19 +2,22 @@
 using ApiClient.Common;
 using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Platform.ApiBuilder;
 using static Catalog.API.Common.Consts.ResponseMessages;
 
 namespace Catalog.API.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]/[action]")]
-public class SubCategoryController : ControllerBase
+public class SubCategoryController : ApiController
 {
     private readonly ISubCategoryService _subCategoryService;
+    private readonly ICategoryService _categoryService;
 
-    public SubCategoryController(ISubCategoryService subCategoryService)
+    public SubCategoryController(ISubCategoryService subCategoryService, ICategoryService categoryService, ILogger<SubCategoryController> logger) : base(logger)
     {
         _subCategoryService = subCategoryService ?? throw new ArgumentNullException(nameof(subCategoryService));
+        _categoryService = categoryService;
     }
 
     [HttpGet]
@@ -38,7 +41,7 @@ public class SubCategoryController : ControllerBase
             return BadRequest("Id cannot be empty.");
         }
 
-        var result = await _subCategoryService.GetSubCategoryByIdAsync(id, cancellationToken);
+        var result = await _subCategoryService.GetSubCategoryBySeachAsync(id, PropertyName.Id, cancellationToken);
 
         if (result is null)
         {
@@ -56,7 +59,7 @@ public class SubCategoryController : ControllerBase
             return BadRequest("Missing Name.");
         }
 
-        var result = await _subCategoryService.GetSubCategoryByNameAsync(name, cancellationToken);
+        var result = await _subCategoryService.GetSubCategoryBySeachAsync(name, PropertyName.Name, cancellationToken);
         if (result is null)
         {
             return NotFound();
@@ -82,25 +85,19 @@ public class SubCategoryController : ControllerBase
         {
             return BadRequest("SubCategoryCode is null.");
         }
-        
-        if (string.IsNullOrWhiteSpace(requestBody.CategoryId))
+
+        var validationMsg = await ValidationRequestBody(requestBody, cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(validationMsg))
         {
-            return BadRequest("CategoryId is null.");
+            return BadRequest(validationMsg);
         }
 
         var result = await _subCategoryService.CreateSubCategoryAsync(requestBody, cancellationToken);
 
-        if (!result.IsSuccessCode)
+        if (result is null)
         {
-            if (result.InternalErrorCode == 404)
-            {
-                return NotFound(result.Message);
-            }
-
-            if (result.InternalErrorCode == 500)
-            {
-                return Problem(result.Message);
-            }
+            return Problem("Create Subcategory failed");
         }
 
         return Ok(result);
@@ -119,19 +116,18 @@ public class SubCategoryController : ControllerBase
             return BadRequest("Id is null.");
         }
 
+        var validationMsg = await ValidationRequestBody(requestBody, cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(validationMsg))
+        {
+            return BadRequest(validationMsg);
+        }
+
         var result = await _subCategoryService.UpdateSubCategoryAsync(requestBody, cancellationToken);
 
-        if (!result.IsSuccessCode)
+        if (result is null)
         {
-            if (result.InternalErrorCode == 404)
-            {
-                return NotFound(result);
-            }
-
-            if (result.InternalErrorCode == 500)
-            {
-                return Problem(result.Message);
-            }
+            return Problem("Update Subcategory failed");
         }
 
         return Ok(result);
@@ -166,5 +162,23 @@ public class SubCategoryController : ControllerBase
         }
 
         return Ok(result);
+    }
+
+    private async Task<string> ValidationRequestBody<T>(T requestBody, CancellationToken cancellationToken)
+        where T : BaseSubCategoryResquestBody
+    {
+        if (string.IsNullOrWhiteSpace(requestBody.CategoryId))
+        {
+            return "Category Id is not allowed null.";
+        }
+
+        var isCatalogExist = await _categoryService.CheckExistingAsync(requestBody.CategoryId, PropertyName.Id, cancellationToken);
+
+        if (!isCatalogExist)
+        {
+            return "Category is not existed.";
+        }
+
+        return string.Empty;
     }
 }

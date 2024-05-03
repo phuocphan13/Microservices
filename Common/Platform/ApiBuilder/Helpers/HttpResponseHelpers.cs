@@ -1,13 +1,12 @@
 using System.Text.Json;
 
-namespace Core.Common.Helpers;
+namespace Platform.ApiBuilder.Helpers;
 
 public static class HttpResponseHelpers
 {
     public static async Task<TResult> TransformResponseToData<TResult>(HttpResponseMessage httpResponseMessage, CancellationToken cancellationToken)
-        where TResult : class, new()
     {
-        var result = new TResult();
+        TResult result = default!;
         using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
 
         var options = new JsonSerializerOptions()

@@ -1,9 +1,7 @@
 using System.Net;
-using ApiClient.Catalog.Product.Models;
 using Catalog.API.Entities;
 using Catalog.API.Tests.Common;
 using Catalog.API.Tests.Extensions;
-using Core.Common.Helpers;
 using FluentAssertions;
 using IntegrationTest.Common.Configurations;
 using IntegrationTest.Common.Helpers;

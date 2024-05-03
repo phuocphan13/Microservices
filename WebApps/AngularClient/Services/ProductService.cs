@@ -1,6 +1,6 @@
 using ApiClient.Catalog.Product;
 using ApiClient.Catalog.Product.Models;
-using ApiClient.Common;
+using Platform.ApiBuilder;
 
 namespace AngularClient.Services;
 
@@ -27,9 +27,9 @@ public class ProductService : IProductService
     {
         var result = await _productApiClient.GetProducts(cancellationToken);
 
-        if (result.IsSuccessCode && result.Data is not null)
+        if (result.IsSuccessStatusCode && result.Result is not null)
         {
-            return result.Data;
+            return result.Result.ToList();
         }
 
         return null;
@@ -39,9 +39,9 @@ public class ProductService : IProductService
     {
         var result = await _productApiClient.GetProductByIdAsync(id, cancellationToken);
 
-        if (result.IsSuccessCode && result.Data is not null)
+        if (result.IsSuccessStatusCode && result.Result is not null)
         {
-            return result.Data;
+            return result.Result;
         }
 
         return null;
@@ -51,9 +51,9 @@ public class ProductService : IProductService
     {
         var result = await _productApiClient.GetProductByCategoryAsync(category, cancellationToken);
 
-        if (result.IsSuccessCode && result.Data is not null)
+        if (result.IsSuccessStatusCode && result.Result is not null)
         {
-            return result.Data;
+            return result.Result.ToList();
         }
 
         return null;
@@ -63,9 +63,9 @@ public class ProductService : IProductService
     {
         var result = await _productApiClient.CreateProductAsync(requestBody, cancellationToken);
 
-        if (result.IsSuccessCode && result.Data is not null)
+        if (result.IsSuccessStatusCode && result.Result is not null)
         {
-            return result.Data;
+            return result.Result;
         }
 
         return null;
@@ -75,9 +75,9 @@ public class ProductService : IProductService
     {
         var result = await _productApiClient.UpdateProductAsync(requestBody, cancellationToken);
 
-        if (result.IsSuccessCode && result.Data is not null)
+        if (result.IsSuccessStatusCode && result.Result is not null)
         {
-            return result.Data;
+            return result.Result;
         }
 
         return null;

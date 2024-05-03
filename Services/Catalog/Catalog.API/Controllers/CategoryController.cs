@@ -36,7 +36,7 @@ public class CategoryController : ControllerBase
             return BadRequest("The Name field cannot be null");
         }
 
-        var result = await _categoryService.GetCategoryByNameAsync(name, cancellationToken);
+        var result = await _categoryService.GetCategoryBySeachAsync(name, PropertyName.Name, cancellationToken);
 
         if (result is null)
         {
@@ -54,7 +54,7 @@ public class CategoryController : ControllerBase
             return BadRequest("The Id filed cannot be null");
         }    
 
-        var result = await _categoryService.GetCategoryByIdAsync(id, cancellationToken);
+        var result = await _categoryService.GetCategoryBySeachAsync(id, PropertyName.Id, cancellationToken);
 
         if (result is null)
         {
@@ -84,12 +84,9 @@ public class CategoryController : ControllerBase
 
         var result = await _categoryService.CreateCategoryAsync(requestBody, cancellationToken);
 
-        if (!result.IsSuccessCode)
+        if (result is null)
         {
-            if (result.InternalErrorCode == 500)
-            {
-                return Problem(result.Message);
-            }
+            return Problem("Cannot create category.");
         }
 
         return Ok(result);
@@ -114,20 +111,12 @@ public class CategoryController : ControllerBase
         }
 
         var result = await _categoryService.UpdateCategoryAsync(requestBody, cancellationToken);
-        if (!result.IsSuccessCode)
+        
+        if (result is null)
         {
-            if (result.InternalErrorCode == 404)
-            {
-                return NotFound(result);
-            }
-
-            if (result.InternalErrorCode == 500)
-            {
-
-                return Problem(result.Message);
-            }
+            return Problem("Cannot update category.");
         }
-
+        
         return Ok(result);
     }
 
@@ -140,11 +129,6 @@ public class CategoryController : ControllerBase
         }
 
         var result = await _categoryService.DeleteCategoryAsync(id, cancellationToken);
-
-        if (result is null)
-        {
-            return Problem($"Cannot delete category with id: {id}");
-        }
 
         return Ok(result);
     }

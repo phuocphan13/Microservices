@@ -1,19 +1,13 @@
-﻿using ApiClient.Catalog.Models.Catalog.Category;
-using ApiClient.Catalog.SubCategory.Models;
+﻿using ApiClient.Catalog.SubCategory.Models;
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using Platform.ApiBuilder;
 
 namespace ApiClient.Catalog.SubCategory;
 
 public interface ISubCategoryApiClient
 {
-    Task<ApiDataResult<List<SubCategorySummary>>> GetSubCategories(CancellationToken cancellationToken = default);
+    Task<ApiCollectionResult<SubCategorySummary>> GetSubCategories(CancellationToken cancellationToken = default);
     Task<ApiDataResult<SubCategorySummary>> GetSubCategoryByName(string name, CancellationToken cancellationToken = default);
     Task<ApiDataResult<SubCategorySummary>> GetSubCategoryById(string id, CancellationToken cancellationToken = default);
     Task<ApiDataResult<List<SubCategorySummary>>> GetSubCategoriesByCategoryId(string categoryId, CancellationToken cancellationToken = default);
@@ -21,18 +15,19 @@ public interface ISubCategoryApiClient
     Task<ApiDataResult<SubCategorySummary>> CreateSubCategory(CreateSubCategoryRequestBody body, CancellationToken cancellationToken = default);
     Task<ApiDataResult<SubCategorySummary>> UpdateSubCategory(UpdateSubCategoryRequestBody body, CancellationToken cancellationToken = default);
 }
+
 public class SubCategoryApiClient : CommonApiClient, ISubCategoryApiClient
 {
     public SubCategoryApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
-    : base(httpClientFactory, configuration)
+        : base(httpClientFactory, configuration)
     {
     }
 
-    public async Task<ApiDataResult<List<SubCategorySummary>>> GetSubCategories(CancellationToken cancellationToken)
+    public async Task<ApiCollectionResult<SubCategorySummary>> GetSubCategories(CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetSubCategories}";
 
-        var result = await GetAsync<List<SubCategorySummary>>(url, cancellationToken);
+        var result = await GetCollectionAsync<SubCategorySummary>(url, cancellationToken);
 
         return result;
     }
@@ -40,7 +35,7 @@ public class SubCategoryApiClient : CommonApiClient, ISubCategoryApiClient
     public async Task<ApiDataResult<SubCategorySummary>> GetSubCategoryByName(string name, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetSubCategoryByName}";
-        url = url.AddDataInUrl(nameof(name), name) ;
+        url = url.AddDataInUrl(nameof(name), name);
 
         var result = await GetAsync<SubCategorySummary>(url, cancellationToken);
 
@@ -50,7 +45,7 @@ public class SubCategoryApiClient : CommonApiClient, ISubCategoryApiClient
     public async Task<ApiDataResult<SubCategorySummary>> GetSubCategoryById(string id, CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetSubCategoryById}";
-        url = url.AddDataInUrl(nameof(id), id) ;
+        url = url.AddDataInUrl(nameof(id), id);
 
         var result = await GetAsync<SubCategorySummary>(url, cancellationToken);
 
@@ -91,7 +86,7 @@ public class SubCategoryApiClient : CommonApiClient, ISubCategoryApiClient
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.UpdateSubCategory}";
 
-        var result = await PutAsync<UpdateSubCategoryRequestBody, SubCategorySummary> (url, body, cancellationToken);   
+        var result = await PutAsync<UpdateSubCategoryRequestBody, SubCategorySummary>(url, body, cancellationToken);
 
         return result;
     }

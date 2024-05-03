@@ -1,7 +1,4 @@
 ﻿using ApiClient.Catalog.SubCategory.Models;
-using ApiClient.Common;
-using Catalog.API.Common.Consts;
-using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
 using SubCategory = Catalog.API.Entities.SubCategory;
@@ -10,181 +7,110 @@ namespace Catalog.API.Services;
 
 public interface ISubCategoryService
 {
-    Task<ApiDataResult<List<SubCategorySummary>>> GetSubCategoriesAsync(CancellationToken cancellationToken = default);
-    Task<ApiDataResult<SubCategorySummary>> GetSubCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<SubCategorySummary>> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<List<SubCategorySummary>>> GetSubCategoriesByCategoryIdAsync(string categoryId, CancellationToken cancellationToken = default);
-    Task<ApiStatusResult> DeleteSubCategoryAsync(string id, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<SubCategorySummary>> CreateSubCategoryAsync(CreateSubCategoryRequestBody body, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<SubCategorySummary>> UpdateSubCategoryAsync(UpdateSubCategoryRequestBody body, CancellationToken cancellationToken = default);
+    Task<bool> CheckExistingAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
+    Task<SubCategoryDetail?> GetSubCategoryBySeachAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
+    Task<List<SubCategorySummary>> GetSubCategoriesAsync(CancellationToken cancellationToken = default);
+    Task<List<SubCategorySummary>> GetSubCategoriesByCategoryIdAsync(string categoryId, CancellationToken cancellationToken = default);
+    Task<bool> DeleteSubCategoryAsync(string id, CancellationToken cancellationToken = default);
+    Task<SubCategoryDetail?> CreateSubCategoryAsync(CreateSubCategoryRequestBody body, CancellationToken cancellationToken = default);
+    Task<SubCategoryDetail?> UpdateSubCategoryAsync(UpdateSubCategoryRequestBody body, CancellationToken cancellationToken = default);
 }
 
 public class SubCategoryService : ISubCategoryService
 {
     private readonly IRepository<SubCategory> _subCategoryRepository;
-    private readonly IRepository<Category> _categoryRepository;
 
-    public SubCategoryService(IRepository<SubCategory> subCategoryRepository, IRepository<Category> categoryRepository)
+    public SubCategoryService(IRepository<SubCategory> subCategoryRepository)
     {
         _subCategoryRepository = subCategoryRepository;
-        _categoryRepository = categoryRepository;
     }
 
-    public async Task<ApiDataResult<List<SubCategorySummary>>> GetSubCategoriesAsync(CancellationToken cancellationToken)
+    public async Task<bool> CheckExistingAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
     {
-        var apiDataResult = new ApiDataResult<List<SubCategorySummary>>()
+        bool result = propertyName switch
         {
-            Data = new List<SubCategorySummary>()
+            PropertyName.Id => await _subCategoryRepository.AnyAsync(x => x.Id == search, cancellationToken),
+            PropertyName.Name => await _subCategoryRepository.AnyAsync(x => x.Name == search, cancellationToken),
+            PropertyName.Code => await _subCategoryRepository.AnyAsync(x => x.SubCategoryCode == search, cancellationToken),
+            _ => false
         };
 
+        return result;
+    }
+
+    public async Task<SubCategoryDetail?> GetSubCategoryBySeachAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
+    {
+        SubCategory? data = propertyName switch
+        {
+            PropertyName.Id => await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == search, cancellationToken),
+            PropertyName.Name => await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == search, cancellationToken),
+            PropertyName.Code => await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.SubCategoryCode == search, cancellationToken),
+            _ => null
+        };
+
+        if (data is null)
+        {
+            return null;
+        }
+
+        return data.ToDetail();
+    }
+
+    public async Task<List<SubCategorySummary>> GetSubCategoriesAsync(CancellationToken cancellationToken)
+    {
         var entities = await _subCategoryRepository.GetEntitiesAsync(cancellationToken);
 
-        if (entities != null)
-        {
-            foreach (var entity in entities)
-            {
-                apiDataResult.Data.Add(entity.ToSummary());
-            }
-
-            return apiDataResult;
-        }
-
-        apiDataResult.Message = ResponseMessages.SubCategory.NotFound;
-        return apiDataResult;
-    }
-
-    public async Task<ApiDataResult<SubCategorySummary>> GetSubCategoryByNameAsync(string name, CancellationToken cancellationToken)
-    {
-        var apiDataResult = new ApiDataResult<SubCategorySummary>();
-
-        var subCategoryByName = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == name, cancellationToken);
-
-        if (subCategoryByName == null)
-        {
-            apiDataResult.Message = ResponseMessages.SubCategory.NotFound;
-            return apiDataResult;
-        }
-
-        apiDataResult.Data = subCategoryByName.ToSummary();
-
-        return apiDataResult;
-    }
-
-    public async Task<ApiDataResult<SubCategorySummary>> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken)
-    {
-        var apiDataResult = new ApiDataResult<SubCategorySummary>();
-
-        var subCategoryById = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-
-        if (subCategoryById == null)
-        {
-            apiDataResult.Message = ResponseMessages.SubCategory.NotFound;
-            return apiDataResult;
-        }
-
-        apiDataResult.Data = subCategoryById.ToSummary();
-
-        return apiDataResult;
-    }
-
-    public async Task<ApiDataResult<List<SubCategorySummary>>> GetSubCategoriesByCategoryIdAsync(string categoryId, CancellationToken cancellationToken)
-    {
-        var apiDataResult = new ApiDataResult<List<SubCategorySummary>>()
-        {
-            Data = new List<SubCategorySummary>()
-        };
-
-        var entities = await _subCategoryRepository.GetEntitiesQueryAsync(x => x.CategoryId == categoryId, cancellationToken);
         if (entities is null)
         {
-            apiDataResult.Message = ResponseMessages.SubCategory.NotFound;
-            return apiDataResult;
+            return new();
         }
-
-
-        foreach (var item in entities)
-        {
-            apiDataResult.Data.Add(item.ToSummary());
-        }
-
-        return apiDataResult;
+        
+        return entities.Select(x => x.ToSummary()).ToList();
     }
 
-    public async Task<ApiStatusResult> DeleteSubCategoryAsync(string id, CancellationToken cancellationToken)
+    public async Task<List<SubCategorySummary>> GetSubCategoriesByCategoryIdAsync(string categoryId, CancellationToken cancellationToken)
     {
-        var subcategory = _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-
-        var outcome = new ApiStatusResult();
-
-        if (subcategory is null)
+        var entities = await _subCategoryRepository.GetEntitiesQueryAsync(x => x.CategoryId == categoryId, cancellationToken);
+        
+        if (entities is null)
         {
-            outcome.Message = ResponseMessages.Delete.NotFound;
-
-            return outcome;
+            return new();
         }
 
+        return entities.Select(x => x.ToSummary()).ToList();
+    }
+
+    public async Task<bool> DeleteSubCategoryAsync(string id, CancellationToken cancellationToken)
+    {
         var result = await _subCategoryRepository.DeleteEntityAsync(id, cancellationToken);
 
-        if (result == false)
-        {
-            outcome.Message = ResponseMessages.Delete.DeleteFailed;
-        }
-
-        return outcome;
+        return result;
     }
 
-    public async Task<ApiDataResult<SubCategorySummary>> CreateSubCategoryAsync(CreateSubCategoryRequestBody requestBody, CancellationToken cancellationToken)
+    public async Task<SubCategoryDetail?> CreateSubCategoryAsync(CreateSubCategoryRequestBody requestBody, CancellationToken cancellationToken)
     {
-        var apiDataResult = new ApiDataResult<SubCategorySummary>();
-
-        var isExisted = await _subCategoryRepository.AnyAsync(x => x.Name == requestBody.Name || x.SubCategoryCode == requestBody.SubCategoryCode, cancellationToken);
-
-        if (isExisted)
-        {
-            apiDataResult.Message = ResponseMessages.SubCategory.SubCategoryExisted;
-            return apiDataResult;
-        }
-
-        var isCategoryIdAvailable = await _categoryRepository.AnyAsync(x => x.Id == requestBody.CategoryId, cancellationToken);
-
-        if (!isCategoryIdAvailable)
-        {
-            apiDataResult.Message = ResponseMessages.SubCategory.CategoryIdNotFound(requestBody.CategoryId);
-            return apiDataResult;
-        }
-
         var subcategory = requestBody.ToCreateSubCategory();
         await _subCategoryRepository.CreateEntityAsync(subcategory, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(subcategory.Id))
         {
-            apiDataResult.Message = ResponseMessages.SubCategory.CreateSubCategoryFailed;
+            return null;
         }
 
-        // add data
-        apiDataResult.Data = subcategory.ToSummary();
-
-        return apiDataResult;
+        return subcategory.ToDetail();
     }
 
-    public async Task<ApiDataResult<SubCategorySummary>> UpdateSubCategoryAsync(UpdateSubCategoryRequestBody body, CancellationToken cancellationToken)
+    public async Task<SubCategoryDetail?> UpdateSubCategoryAsync(UpdateSubCategoryRequestBody body, CancellationToken cancellationToken)
     {
-        var apiDataResult = new ApiDataResult<SubCategorySummary>();
-
         var subCategory = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == body.Id, cancellationToken);
-
-        if (subCategory is null)
-        {
-            apiDataResult.Message = ResponseMessages.SubCategory.NotFound;
-            return apiDataResult;
-        }
-
-        var isExisted = await _subCategoryRepository.AnyAsync(x => (x.Name == body.Name || x.SubCategoryCode == body.SubCategoryCode) && x.Id != body.Id, cancellationToken);
-        if (isExisted)
-        {
-            apiDataResult.Message = ResponseMessages.SubCategory.SubCategoryExisted;
-            return apiDataResult;
-        }
+        
+        //Todo: Move this logic to Controller
+        // var isExisted = await _subCategoryRepository.AnyAsync(x => (x.Name == body.Name || x.SubCategoryCode == body.SubCategoryCode) && x.Id != body.Id, cancellationToken);
+        // if (isExisted)
+        // {
+        //     apiDataResult.Message = ResponseMessages.SubCategory.SubCategoryExisted;
+        //     return apiDataResult;
+        // }
 
         subCategory.ToUpdateSubCategory(body);
 
@@ -192,11 +118,9 @@ public class SubCategoryService : ISubCategoryService
 
         if (!result)
         {
-            apiDataResult.Message = ResponseMessages.SubCategory.UpdateSubCategoryFailed;
-            return apiDataResult;
+            return null;
         }
 
-        apiDataResult.Data = subCategory.ToSummary();
-        return apiDataResult;
+        return subCategory.ToDetail();
     }
 }

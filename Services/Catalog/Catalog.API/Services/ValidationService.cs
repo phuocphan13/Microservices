@@ -1,6 +1,7 @@
 using ApiClient.Common;
 using Catalog.API.Entities;
 using Catalog.API.Repositories;
+using Platform.ApiBuilder;
 
 namespace Catalog.API.Services;
 

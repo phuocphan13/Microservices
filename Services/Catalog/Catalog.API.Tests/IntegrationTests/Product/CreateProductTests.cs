@@ -1,14 +1,14 @@
 using System.Net;
 using ApiClient.Catalog.Product.Models;
-using ApiClient.Common;
 using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Tests.Common;
 using Catalog.API.Tests.Extensions;
-using Core.Common.Helpers;
 using IntegrationTest.Common.Configurations;
 using FluentAssertions;
 using IntegrationTest.Common.Helpers;
+using Platform.ApiBuilder;
+using Platform.ApiBuilder.Helpers;
 
 namespace Catalog.API.Tests.IntegrationTests.Product;
 
@@ -49,8 +49,8 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
     {
         var requestBody = ModelHelpers.Product.GenerateCreateRequestBody(initAction: x =>
         {
-            x.Category = _category.Name;
-            x.SubCategory = _subCategory.Name;
+            x.CategoryId = _category.Id;
+            x.SubCategoryId = _subCategory.Id;
         });
 
         var client = _factory.CreateClient();
@@ -65,18 +65,18 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
         var result = await HttpResponseHelpers.TransformResponseToData<ApiDataResult<ProductDetail>>(response, default);
 
         Assert.NotNull(result);
-        Assert.NotNull(result.Data);
+        Assert.NotNull(result.Result);
 
-        result.Data.Name.Should().Be(requestBody.Name);
-        result.Data.Category.Should().Be(_category.Name);
-        result.Data.SubCategory.Should().Be(_subCategory.Name);
+        result.Result.Name.Should().Be(requestBody.Name);
+        result.Result.Category.Should().Be(_category.Name);
+        result.Result.SubCategory.Should().Be(_subCategory.Name);
     }
 
     [Fact]
     public async Task CreateProduct_NotFoundCategory()
     {
         var requestBody = ModelHelpers.Product.GenerateCreateRequestBody();
-        var expectedMessage = ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
+        var expectedMessage = ResponseMessages.Product.PropertyNotExisted("Category Id", requestBody.CategoryId);
 
         // Act
         var client = _factory.CreateClient();
@@ -96,10 +96,10 @@ public class CreateProductTests : IClassFixture<TestWebApplicationFactory<Progra
     {
         var requestBody = ModelHelpers.Product.GenerateCreateRequestBody(initAction: x =>
         {
-            x.Category = _category.Name;
+            x.CategoryId = _category.Id;
         });
         
-        var expectedMessage = ResponseMessages.Product.PropertyNotExisted("SubCategory", requestBody.SubCategory);
+        var expectedMessage = ResponseMessages.Product.PropertyNotExisted("SubCategory Id", requestBody.SubCategoryId);
 
         // Act
         var client = _factory.CreateClient();

@@ -1,5 +1,6 @@
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
+using Platform.ApiBuilder;
 
 namespace ApiClient.Catalog.Validation;
 

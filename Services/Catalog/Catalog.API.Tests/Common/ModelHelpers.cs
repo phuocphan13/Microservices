@@ -49,8 +49,8 @@ public static class ModelHelpers
                 Name = CommonHelpers.GenerateRandomString(),
                 Price = CommonHelpers.GenerateRandomDecimal(),
                 Summary = CommonHelpers.GenerateRandomString(),
-                Category = string.IsNullOrWhiteSpace(category) ? CommonHelpers.GenerateRandomString() : category,
-                SubCategory = string.IsNullOrWhiteSpace(subCategory) ? CommonHelpers.GenerateRandomString() : subCategory,
+                CategoryId = string.IsNullOrWhiteSpace(category) ? CommonHelpers.GenerateBsonId() : category,
+                SubCategoryId = string.IsNullOrWhiteSpace(subCategory) ? CommonHelpers.GenerateBsonId() : subCategory,
             };
         }
 

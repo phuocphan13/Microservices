@@ -187,73 +187,6 @@ public class ProductServiceTests
     #endregion
 
     #region CreateProductAsync
-    [Fact]
-    public async Task CreateProductAsync_ValidParams_Existed()
-    {
-        var requestBody = ModelHelpers.Product.GenerateCreateRequestBody();
-
-        var productRepository = new Mock<IRepository<Product>>();
-        var categoryRepository = new Mock<IRepository<Category>>();
-        var subCategoryRepository = new Mock<IRepository<SubCategory>>();
-        var discountGrpcService = new Mock<IDiscountGrpcService>();
-
-        productRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Product, bool>>>(), default)).ReturnsAsync(true);
-
-        IProductService service = new ProductService(productRepository.Object, categoryRepository.Object, subCategoryRepository.Object, discountGrpcService.Object);
-
-        var result = await service.CreateProductAsync(requestBody);
-
-        Assert.NotNull(result);
-        Assert.False(result.IsSuccessCode);
-        Assert.Contains("existed", result.Message);
-    }
-
-    [Fact]
-    public async Task CreateProductAsync_ValidParams_CategoryNotFound()
-    {
-        var requestBody = ModelHelpers.Product.GenerateCreateRequestBody();
-        var expectedMessage = ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
-
-        var productRepository = new Mock<IRepository<Product>>();
-        var categoryRepository = new Mock<IRepository<Category>>();
-        var subCategoryRepository = new Mock<IRepository<SubCategory>>();
-        var discountGrpcService = new Mock<IDiscountGrpcService>();
-
-        productRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Product, bool>>>(), default)).ReturnsAsync(false);
-        categoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<Category, bool>>>(), default)).ReturnsAsync((Category)null!);
-
-        IProductService service = new ProductService(productRepository.Object, categoryRepository.Object, subCategoryRepository.Object, discountGrpcService.Object);
-        var result = await service.CreateProductAsync(requestBody);
-
-        Assert.NotNull(result);
-        Assert.False(result.IsSuccessCode);
-        Assert.Contains(expectedMessage, result.Message);
-    }
-
-    [Fact]
-    public async Task CreateProductAsync_ValidParams_SubCategoryNotFound()
-    {
-        var category = ModelHelpers.Category.GenerateCategory();
-        var requestBody = ModelHelpers.Product.GenerateCreateRequestBody();
-
-        var expectedMessage = ResponseMessages.Product.PropertyNotExisted("SubCategory", requestBody.SubCategory);
-
-        var productRepository = new Mock<IRepository<Product>>();
-        var categoryRepository = new Mock<IRepository<Category>>();
-        var subCategoryRepository = new Mock<IRepository<SubCategory>>();
-        var discountGrpcService = new Mock<IDiscountGrpcService>();
-
-        productRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Product, bool>>>(), default)).ReturnsAsync(false);
-        categoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<Category, bool>>>(), default)).ReturnsAsync(category);
-        subCategoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<SubCategory, bool>>>(), default)).ReturnsAsync((SubCategory)null!);
-
-        IProductService service = new ProductService(productRepository.Object, categoryRepository.Object, subCategoryRepository.Object, discountGrpcService.Object);
-        var result = await service.CreateProductAsync(requestBody);
-
-        Assert.NotNull(result);
-        Assert.False(result.IsSuccessCode);
-        Assert.Contains(expectedMessage, result.Message);
-    }
 
     [Fact]
     public async Task CreateProductAsync_ValidParams_SaveFailure()
@@ -261,7 +194,6 @@ public class ProductServiceTests
         var category = ModelHelpers.Category.GenerateCategory();
         var subCategory = ModelHelpers.SubCategory.GenerateSubCategory(categoryId: category.Id);
         var requestBody = ModelHelpers.Product.GenerateCreateRequestBody(category.Name!, subCategory.Name!);
-        var expectedMessage = ResponseMessages.Product.CreatFailure;
 
         var entity = requestBody.ToCreateProduct();
         entity.CategoryId = category.Id;
@@ -281,9 +213,7 @@ public class ProductServiceTests
 
         var result = await service.CreateProductAsync(requestBody);
 
-        Assert.NotNull(result);
-        Assert.False(result.IsSuccessCode);
-        Assert.Contains(expectedMessage, result.Message);
+        Assert.Null(result);
     }
 
     [Fact]
@@ -313,92 +243,14 @@ public class ProductServiceTests
         var result = await service.CreateProductAsync(requestBody);
 
         Assert.NotNull(result);
-        Assert.True(result.IsSuccessCode);
-        Assert.NotNull(result.Data);
 
-        Assert.False(string.IsNullOrWhiteSpace(result.Data.Id));
-        Assert.Equal(result.Data.Category, category.Name);
-        Assert.Equal(result.Data.SubCategory, subCategory.Name);
+        Assert.False(string.IsNullOrWhiteSpace(result.Id));
+        Assert.Equal(result.Category, category.Name);
+        Assert.Equal(result.SubCategory, subCategory.Name);
     }
     #endregion
 
     #region UpdateProductAsync
-    [Fact]
-    public async Task UpdateProductAsync_ValidParams_Existed()
-    {
-        var requestBody = ModelHelpers.Product.GenerateUpdateRequestBody();
-
-        var productRepository = new Mock<IRepository<Product>>();
-        var categoryRepository = new Mock<IRepository<Category>>();
-        var subCategoryRepository = new Mock<IRepository<SubCategory>>();
-        var discountGrpcService = new Mock<IDiscountGrpcService>();
-
-        productRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<Product, bool>>>(), default)).ReturnsAsync((Product)null!);
-
-        IProductService service = new ProductService(productRepository.Object, categoryRepository.Object, subCategoryRepository.Object, discountGrpcService.Object);
-
-        var result = await service.UpdateProductAsync(requestBody);
-
-        Assert.NotNull(result);
-        Assert.False(result.IsSuccessCode);
-        Assert.Contains(ResponseMessages.Product.NotFound, result.Message);
-    }
-
-    [Fact]
-    public async Task UpdateProductAsync_ValidParams_CategoryNotFound()
-    {
-        var requestBody = ModelHelpers.Product.GenerateUpdateRequestBody();
-        var subCategory = ModelHelpers.SubCategory.GenerateSubCategory();
-        var expectedMessage = ResponseMessages.Product.PropertyNotExisted("Category", requestBody.Category);
-
-        var productRepository = new Mock<IRepository<Product>>();
-        var categoryRepository = new Mock<IRepository<Category>>();
-        var subCategoryRepository = new Mock<IRepository<SubCategory>>();
-        var discountGrpcService = new Mock<IDiscountGrpcService>();
-
-        var entity = ModelHelpers.Product.GenerateProductEntity(id: requestBody.Id!);
-
-        productRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<Product, bool>>>(), default)).ReturnsAsync(entity);
-        categoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<Category, bool>>>(), default)).ReturnsAsync((Category)null!);
-        subCategoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<SubCategory, bool>>>(), default)).ReturnsAsync(subCategory);
-
-        IProductService service = new ProductService(productRepository.Object, categoryRepository.Object, subCategoryRepository.Object, discountGrpcService.Object);
-        var result = await service.UpdateProductAsync(requestBody);
-
-        Assert.NotNull(result);
-        Assert.False(result.IsSuccessCode);
-        Assert.Contains(expectedMessage, result.Message);
-    }
-
-    [Fact]
-    public async Task UpdateProductAsync_ValidParams_SubCategoryNotFound()
-    {
-        var category = ModelHelpers.Category.GenerateCategory();
-        var requestBody = ModelHelpers.Product.GenerateUpdateRequestBody();
-        var expectedMessage = ResponseMessages.Product.PropertyNotExisted("SubCategory", requestBody.SubCategory);
-
-        var productRepository = new Mock<IRepository<Product>>();
-        var categoryRepository = new Mock<IRepository<Category>>();
-        var subCategoryRepository = new Mock<IRepository<SubCategory>>();
-        var discountGrpcService = new Mock<IDiscountGrpcService>();
-
-        var entity = ModelHelpers.Product.GenerateProductEntity(initAction: x =>
-        {
-            x.Id = requestBody.Id!;
-        });
-
-        productRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<Product, bool>>>(), default)).ReturnsAsync(entity);
-        categoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<Category, bool>>>(), default)).ReturnsAsync(category);
-        subCategoryRepository.Setup(x => x.GetEntityFirstOrDefaultAsync(It.IsAny<Expression<Func<SubCategory, bool>>>(), default)).ReturnsAsync((SubCategory)null!);
-
-        IProductService service = new ProductService(productRepository.Object, categoryRepository.Object, subCategoryRepository.Object, discountGrpcService.Object);
-        var result = await service.UpdateProductAsync(requestBody);
-
-        Assert.NotNull(result);
-        Assert.False(result.IsSuccessCode);
-        Assert.Contains(expectedMessage, result.Message);
-    }
-
     [Fact]
     public async Task UpdateProductAsync_ValidParams_SaveFailure()
     {
@@ -425,9 +277,7 @@ public class ProductServiceTests
 
         var result = await service.UpdateProductAsync(requestBody);
 
-        Assert.NotNull(result);
-        Assert.False(result.IsSuccessCode);
-        Assert.Contains(ResponseMessages.Product.UpdateFailed, result.Message);
+        Assert.Null(result);
     }
 
     [Fact]
@@ -457,12 +307,10 @@ public class ProductServiceTests
         var result = await service.UpdateProductAsync(requestBody);
 
         Assert.NotNull(result);
-        Assert.True(result.IsSuccessCode);
-        Assert.NotNull(result.Data);
 
-        Assert.False(string.IsNullOrWhiteSpace(result.Data.Id));
-        Assert.Equal(result.Data.Category, category.Name);
-        Assert.Equal(result.Data.SubCategory, subCategory.Name);
+        Assert.False(string.IsNullOrWhiteSpace(result.Id));
+        Assert.Equal(result.Category, category.Name);
+        Assert.Equal(result.SubCategory, subCategory.Name);
     }
     #endregion
 

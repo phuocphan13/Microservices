@@ -21,6 +21,6 @@ public class CatalogService : ICatalogService
     {
         var result = await _validationApiClient.ValidateCatalogCodeAsync(catalogCode, type, cancellationToken);
 
-        return result.IsSuccessCode;
+        return result.IsSuccessStatusCode;
     }
 }
