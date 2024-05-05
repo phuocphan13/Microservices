@@ -14,24 +14,21 @@ code {
 }
 
 .btn-primary {
-  color: #ffff;
-  background-color: #0c67ff;
-  height: 40px;
-  width: 100px;
-  padding: 5px;
-  font-size: 18px;
-  font-weight: normal;
-  text-align: center;
   border-radius: 5px;
-  border-color: transparent;
+  width: 83px;
+  height: 36px;
+  background-color: rgb(24, 49, 83);
+  color: #ffff;
+  font-family: "Roboto";
 }
 
 .btn-primary:hover {
-  background-color: #0c51c7;
+  background-color: rgb(19, 40, 68);
 }
 
 .btn-transparent {
-  color: #006dff;
+  color: rgb(24, 49, 83);
+  border-color: #ccc;
   background-color: transparent;
   height: 40px;
   width: 100px;
@@ -43,7 +40,7 @@ code {
 }
 
 .btn-transparent:hover {
-  background-color: #cee1ff;
+  background-color: #b9b6b6;
 }
 
 .btn-secondary {
@@ -163,14 +160,74 @@ option:hover {
 
 /*Basic Grid*/
 
-table.basic-table {
-
+table.table {
+  font-family: 'Roboto';
 }
 
-table.basic-table thead tr th.header {
-
+table.table tbody tr td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
 }
 
-table.basic-table tbody tr td.label {
+table.table tbody tr td i {
+  color: rgb(24, 49, 83);
+}
 
+table.table thead tr th.table-action {
+  max-width: 100px;
+  padding-left: 50px;
+}
+
+table.table tbody tr td.table-action {
+  max-width: 100px;
+  padding-left: 50px;
+}
+
+table.table thead {
+  border-bottom-color: #006dff;
+}
+
+.action-click {
+  cursor: pointer;
+  margin-right: 15px;
+}
+
+.header{
+  text-align: center;
+  font-size: xx-large;
+  font-weight: bolder;
+  font-family: 'Roboto';
+  color: rgb(24, 49, 83);
+}
+
+/*Modal*/
+
+.label{
+  font-weight: bolder;
+  font-family: 'Roboto';
+  color:rgb(24, 49, 83) ;
+}
+
+.value{
+  font-family: 'Roboto';
+}
+
+.modal-header{
+  align-items: center;
+  font-family: 'Roboto';
+  font-weight: bolder;
+  justify-content: space-around;
+  font-size: x-large;
+}
+
+.modal-footer{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.modal-contents{
+  padding:10px;
 }

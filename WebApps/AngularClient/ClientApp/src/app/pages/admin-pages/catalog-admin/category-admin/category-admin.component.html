@@ -1,0 +1,36 @@
+<div>
+  <div class="header">
+    CATEGORY
+  </div>
+  <div>
+    <div class="content-button">
+      <button (click)="onClickCreate('create')" class="btn-primary">Create</button>
+    </div>
+    <div class="container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Description</th>
+            <th class="table-action">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let category of categories; let i = index">
+            <td>{{ i+1}}</td>
+            <td>{{ category.name }}</td>
+            <td>{{ category.categoryCode }}</td>
+            <td>{{ category.description }}</td>
+            <td class="table-action">
+              <a (click)="onClickAction('view', category)" class="action-click"><i class="far fa-eye"></i></a>
+              <a (click)="onClickAction('edit', category)" class="action-click"><i class="far fa-edit"></i></a>
+              <a (click)="onClickAction('delete', category)" class="action-click"><i class="fas fa-trash"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

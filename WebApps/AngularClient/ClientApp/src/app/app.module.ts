@@ -1,51 +1,63 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
-import { CatalogComponent } from './catalog/catalog.component';
-import { ProductListComponent } from './catalog/product-list/product-list.component';
-import { ProductComponent } from './catalog/product/product.component';
 import { AppRoutingModule } from './app-routing.module';
-import { SearchMenuComponent } from './search-menu/search-menu.component';
-import { CatalogService } from './core/service/catalog.service';
+import { CatalogService } from './core/service/catalog/catalog.service';
 import { ApiService } from './core/service/api.service';
-import {BasicGridComponent} from "./core/shared/grids/basic-grid/basic-grid.component";
-import {NgbAlertModule, NgbModule, NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
+import { BasicGridComponent } from "./core/shared/grids/basic-grid/basic-grid.component";
+import { NgbAlertModule, NgbModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { RouterModule } from '@angular/router';
+import { CategoryService } from './core/service/catalog/category.service';
+import { CatalogAdminComponent } from './pages/admin-pages/catalog-admin/catalog-admin.component';
+import { NavMenuComponent } from "./core/components/nav-menu/nav-menu.component";
+import { CatalogComponent } from "./pages/client-pages/catalog/catalog.component";
+import { ProductListComponent } from "./pages/client-pages/catalog/product-list/product-list.component";
+import { ProductComponent } from "./pages/client-pages/catalog/product/product.component";
+import { SearchMenuComponent } from "./core/shared/items/search-menu/search-menu.component";
+import { ProductAdminComponent } from "./pages/admin-pages/catalog-admin/product-admin/product-admin.component";
+import { CategoryAdminComponent } from "./pages/admin-pages/catalog-admin/category-admin/category-admin.component";
+import { CategoryModalComponent } from "./core/shared/modals/catalog-modals/category-modal/category-modal.component";
+import { ConfirmationModalComponent } from "./core/shared/modals/common/confirmation-modal/confirmation-modal.component";
+import { UnsavedConfirmModalComponent } from "./core/shared/modals/common/unsaved-confirm-modal/unsaved-confirm-modal.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CounterComponent,
-    FetchDataComponent,
     CatalogComponent,
     ProductListComponent,
     ProductComponent,
     SearchMenuComponent,
-
-    BasicGridComponent
+    CatalogAdminComponent,
+    ProductAdminComponent,
+    CategoryAdminComponent,
+    CategoryModalComponent,
+    BasicGridComponent,
+    ConfirmationModalComponent,
+    UnsavedConfirmModalComponent
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+    BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
     HttpClientModule,
     FormsModule,
     AppRoutingModule,
     NgbModule,
     NgbPaginationModule,
-    NgbAlertModule
+    NgbAlertModule,
+    RouterModule,
+    ReactiveFormsModule,
   ],
   providers: [
     CatalogService,
+    CategoryService,
     ApiService,
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

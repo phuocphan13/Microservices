@@ -1,7 +1,7 @@
 import {Component, EventEmitter} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {ProductDetail} from "../../../models/catalog/product-models/product-detail.model";
+import { ProductDetail } from 'src/app/core/models/catalog/product-models/product-detail.model';
 
 @Component({
   selector: 'app-product-modal',

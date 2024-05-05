@@ -1,15 +1,11 @@
-import {Component} from '@angular/core';
-import {NgbModal, NgbModalOptions} from "@ng-bootstrap/ng-bootstrap";
-import { ProductModalComponent } from '../core/shared/modals/catalog-modals/product-modal/product-modal.component';
+import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  selector: 'app-product-admin',
+  templateUrl: './product-admin.component.html',
+  styleUrl: './product-admin.component.css'
 })
-export class HomeComponent {
-  constructor(private modalService: NgbModal) {
-  }
+export class ProductAdminComponent {
 
   data = [
     { column1: '1', column2: 'Data Name', column3: 'Data Code', column4: 'A mobile phone is a wireless handheld device that allows users to make and receive calls. While the earliest generation of mobile phones could only make and receive calls, todays mobile phones do a lot more, accommodating web browsers, games, cameras, video players and navigational systems.' },
@@ -18,22 +14,6 @@ export class HomeComponent {
     { column1: '4', column2: 'Data Name', column3: 'Data Code', column4: 'Most of these MMS-capable devices were also equipped with cameras, which allowed users to capture photos, add captions, and send them to friends and relatives who also had MMS-capable phones.' },
     { column1: '5', column2: 'Data Name', column3: 'Data Code', column4: 'Along with the texting and camera features, cell phones started to be made with a limited capability to access the Internet, known as “data services.” The earliest phone browsers were proprietary and only allowed for the use of a small subsection of the Internet, allowing users to access items like weather, news, and sports updates.' },
   ];
-
-  onClickOpenModal() {
-    let ngbModalOptions: NgbModalOptions = {
-      backdrop: 'static',
-      keyboard: false,
-    };
-
-    let modal = this.modalService.open(ProductModalComponent, ngbModalOptions)
-    modal.componentInstance.isView = true;
-
-    modal.result.then((result: any) => {
-      if (result) {
-        //call API
-      }
-    })
-  }
 
   onClickAction(actionType: string) {
     switch (actionType) {
