@@ -2,15 +2,17 @@ namespace ApiClient.Common;
 
 public static class ApiUrlBuilder
 {
-    public static string AddQueryStringParameter(this string url, string key, string value, bool isFirst = false)
+    public static string AddQueryStringParameter(this string url, string key, string value)
     {
-        if (isFirst)
+        var isSecond = url.Contains('?');
+
+        if (isSecond)
         {
-            url += "?";
+            url += "&";
         }
         else
         {
-            url += "&";
+            url += "?";
         }
         
 

@@ -283,8 +283,14 @@ public class ProductServiceTests
     [Fact]
     public async Task UpdateProductAsync_ValidParams_ExpectedResult()
     {
+        var categoryName = CommonHelpers.GenerateRandomString();
+        
         var category = ModelHelpers.Category.GenerateCategory();
-        var subCategory = ModelHelpers.SubCategory.GenerateSubCategory(categoryId: category.Id);
+        var subCategory = ModelHelpers.SubCategory.GenerateSubCategory(categoryId: category.Id, initAction: x =>
+        {
+            x.CategoryId = categoryName;
+        });
+        
         var requestBody = ModelHelpers.Product.GenerateUpdateRequestBody();
 
         var entity = ModelHelpers.Product.GenerateProductEntity(initAction: x =>

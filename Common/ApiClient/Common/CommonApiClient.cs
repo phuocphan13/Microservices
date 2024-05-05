@@ -20,6 +20,15 @@ public class CommonApiClient
     {
         return _configuration["ApiServices:OcelotApiGw"];
     }
+    
+    protected async Task<ApiStatusResult> GetStatusAsync(string url, CancellationToken cancellationToken)
+    {
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+        var httpClient = _httpClientFactory.CreateClient();
+        var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
+
+        return TransferResponseMessageToStatusAsync(httpResponseMessage);
+    }
 
     protected async Task<ApiDataResult<TResult>> GetSingleAsync<TResult>(string url, CancellationToken cancellationToken)
         where TResult : class, new()

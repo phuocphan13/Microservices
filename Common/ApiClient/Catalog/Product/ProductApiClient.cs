@@ -35,7 +35,7 @@ public class ProductApiClient : CommonApiClient, IProductApiClient
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetProductById}";
 
-        url = url.AddQueryStringParameter("id", id, true);
+        url = url.AddQueryStringParameter("id", id);
 
         var result = await GetSingleAsync<ProductDetail>(url, cancellationToken);
 

@@ -8,7 +8,7 @@ namespace ApiClient.Catalog.Category;
 
 public interface ICategoryApiClient
 {
-    Task<ApiDataResult<List<CategorySummary>>> GetCategoriesAsync(CancellationToken cancellationToken = default);
+    Task<ApiCollectionResult<CategorySummary>> GetCategoriesAsync(CancellationToken cancellationToken = default);
     Task<ApiDataResult<CategoryDetail>> GetCategoryByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<ApiDataResult<CategoryDetail>> GetCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
     Task<ApiDataResult<CategoryDetail>> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
@@ -22,11 +22,11 @@ public class CategoryApiClient : CommonApiClient, ICategoryApiClient
     {
     }
 
-    public async Task<ApiDataResult<List<CategorySummary>>> GetCategoriesAsync(CancellationToken cancellationToken)
+    public async Task<ApiCollectionResult<CategorySummary>> GetCategoriesAsync(CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetCategories}";
 
-        var result = await GetAsync<List<CategorySummary>>(url, cancellationToken);
+        var result = await GetCollectionAsync<CategorySummary>(url, cancellationToken);
 
         return result;
     }
@@ -36,7 +36,7 @@ public class CategoryApiClient : CommonApiClient, ICategoryApiClient
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetCategoryById}";
         url = url.AddDataInUrl(nameof(id), id);
 
-        var result = await GetAsync<CategoryDetail>(url, cancellationToken);
+        var result = await GetSingleAsync<CategoryDetail>(url, cancellationToken);
 
         return result;
     }
@@ -47,7 +47,7 @@ public class CategoryApiClient : CommonApiClient, ICategoryApiClient
 
         url = url.AddDataInUrl(nameof(name), name);
 
-        var result = await GetAsync<CategoryDetail>(url, cancellationToken);
+        var result = await GetSingleAsync<CategoryDetail>(url, cancellationToken);
 
         return result;
     }
@@ -56,7 +56,7 @@ public class CategoryApiClient : CommonApiClient, ICategoryApiClient
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.CreateCategory}";
 
-        var result = await PostAsync<CreateCategoryRequestBody, CategoryDetail>(url,requestBody,cancellationToken);
+        var result = await PostAsync<CategoryDetail>(url,requestBody,cancellationToken);
 
         return result;
     }
@@ -65,7 +65,7 @@ public class CategoryApiClient : CommonApiClient, ICategoryApiClient
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.UpdateCategory}";
 
-        var result = await PutAsync<UpdateCategoryRequestBody, CategoryDetail>(url, requestBody, cancellationToken);
+        var result = await PutAsync<CategoryDetail>(url, requestBody, cancellationToken);
 
         return result;
     }

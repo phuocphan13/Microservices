@@ -27,60 +27,60 @@ public class ProductService : IProductService
     {
         var result = await _productApiClient.GetProducts(cancellationToken);
 
-        if (result.IsSuccessStatusCode && result.Result is not null)
+        if (!result.IsSuccessStatusCode || result.Result is null)
         {
-            return result.Result.ToList();
+            return null;
         }
 
-        return null;
+        return result.Result.ToList();
     }
 
     public async Task<ProductDetail?> GetProductById(string id, CancellationToken cancellationToken)
     {
         var result = await _productApiClient.GetProductByIdAsync(id, cancellationToken);
 
-        if (result.IsSuccessStatusCode && result.Result is not null)
+        if (!result.IsSuccessStatusCode || result.Result is null)
         {
-            return result.Result;
+            return null;
         }
 
-        return null;
+        return result.Result;
     }
 
     public async Task<List<ProductSummary>?> GetProductByCategoryAsync(string category, CancellationToken cancellationToken)
     {
         var result = await _productApiClient.GetProductByCategoryAsync(category, cancellationToken);
 
-        if (result.IsSuccessStatusCode && result.Result is not null)
+        if (!result.IsSuccessStatusCode || result.Result is null)
         {
-            return result.Result.ToList();
+            return null;
         }
 
-        return null;
+        return result.Result.ToList();
     }
 
     public async Task<ProductDetail?> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
         var result = await _productApiClient.CreateProductAsync(requestBody, cancellationToken);
 
-        if (result.IsSuccessStatusCode && result.Result is not null)
+        if (!result.IsSuccessStatusCode || result.Result is null)
         {
-            return result.Result;
+            return null;
         }
 
-        return null;
+        return result.Result;
     }
 
     public async Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
         var result = await _productApiClient.UpdateProductAsync(requestBody, cancellationToken);
 
-        if (result.IsSuccessStatusCode && result.Result is not null)
+        if (!result.IsSuccessStatusCode || result.Result is null)
         {
-            return result.Result;
+            return null;
         }
 
-        return null;
+        return result.Result;
     }
 
     public async Task<ApiStatusResult> DeleteProductAsync(string id, CancellationToken cancellationToken)

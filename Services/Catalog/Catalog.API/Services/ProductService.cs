@@ -51,8 +51,6 @@ public class ProductService : IProductService
 
     public async Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken)
     {
-        // var a = await _discountGrpcService.GetDiscountByCatalogCode(DiscountEnum.Product, "IPX-APL");
-        
         var entities = await _productRepository.GetEntitiesAsync(cancellationToken);
 
         var summaries = await GetProductSummariesInternalAsync(entities, cancellationToken);
@@ -104,18 +102,20 @@ public class ProductService : IProductService
 
     public async Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
-        var product = await _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == requestBody.Id, cancellationToken);
+        var entity = await _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == requestBody.Id, cancellationToken);
 
-        product.ToUpdateProduct(requestBody);
+        entity.ToUpdateProduct(requestBody);
 
-        var result = await _productRepository.UpdateEntityAsync(product, cancellationToken);
+        var product = await _productRepository.UpdateEntityAsync(entity, cancellationToken);
 
-        if (!result)
+        if (!product)
         {
             return null;
         }
+
+        var result = await MappingProductDetailInternalAsync(entity, cancellationToken);
         
-        return product.ToDetail();
+        return result;
     }
 
     // --> ApiStatusResult

@@ -4,7 +4,7 @@ using ApiClient.Catalog.SubCategory;
 using ApiClient.Catalog.SubCategory.Models;
 using ApiClient.Common;
 using System.Xml.Linq;
-
+using Platform.ApiBuilder;
 
 
 namespace AngularClient.Services;
@@ -19,9 +19,11 @@ public interface ISubCategoryService
     Task<SubCategorySummary?> CreateSubCategoryAsync(CreateSubCategoryRequestBody body, CancellationToken cancellationToken = default);
     Task<SubCategorySummary?> UpdateSubCategoryAsync(UpdateSubCategoryRequestBody body, CancellationToken cancellationToken = default);
 }
+
 public class SubCategoryService : ISubCategoryService
 {
     private readonly ISubCategoryApiClient _subCategoryApiClient;
+
     public SubCategoryService(ISubCategoryApiClient subCategoryApiClient)
     {
         _subCategoryApiClient = subCategoryApiClient;
@@ -31,11 +33,12 @@ public class SubCategoryService : ISubCategoryService
     {
         var result = await _subCategoryApiClient.GetSubCategories(cancellationToken);
 
-        if (result is not null && result.IsSuccessCode)
-
-            if (result.IsSuccessCode && result.Data is not null)
+        if (result is not null && result.IsSuccessStatusCode)
         {
-            return result.Data;
+            if (result.IsSuccessStatusCode && result.Result is not null)
+            {
+                return result.Result.ToList();
+            }
         }
 
         return null;
@@ -45,9 +48,9 @@ public class SubCategoryService : ISubCategoryService
     {
         var result = await _subCategoryApiClient.GetSubCategoryByName(name, cancellationToken);
 
-        if (result.IsSuccessCode && result.Data is not null)
+        if (result.IsSuccessStatusCode && result.Result is not null)
         {
-            return result.Data;
+            return result.Result;
         }
 
         return null;
@@ -57,9 +60,9 @@ public class SubCategoryService : ISubCategoryService
     {
         var result = await _subCategoryApiClient.GetSubCategoryById(id, cancellationToken);
 
-        if (result.IsSuccessCode && result.Data is not null)
+        if (result.IsSuccessStatusCode && result.Result is not null)
         {
-            return result.Data;
+            return result.Result;
         }
 
         return null;
@@ -69,9 +72,9 @@ public class SubCategoryService : ISubCategoryService
     {
         var result = await _subCategoryApiClient.GetSubCategoriesByCategoryId(categoryId, cancellationToken);
 
-        if(result.IsSuccessCode && result.Data != null)
+        if (result.IsSuccessStatusCode && result.Result != null)
         {
-            return result.Data;
+            return result.Result.ToList();
         }
 
         return null;
@@ -79,7 +82,7 @@ public class SubCategoryService : ISubCategoryService
 
     public async Task<ApiStatusResult?> DeleteSubCategoryAsync(string id, CancellationToken cancellationToken)
     {
-        var result = await _subCategoryApiClient.DeleteSubCategory(id, cancellationToken);     
+        var result = await _subCategoryApiClient.DeleteSubCategory(id, cancellationToken);
 
         return result;
     }
@@ -88,9 +91,9 @@ public class SubCategoryService : ISubCategoryService
     {
         var result = await _subCategoryApiClient.CreateSubCategory(body, cancellationToken);
 
-        if(result.IsSuccessCode && result.Data is not null)
-        { 
-            return result.Data;
+        if (result.IsSuccessStatusCode && result.Result is not null)
+        {
+            return result.Result;
         }
 
         return null;
@@ -100,9 +103,9 @@ public class SubCategoryService : ISubCategoryService
     {
         var result = await _subCategoryApiClient.UpdateSubCategory(body, cancellationToken);
 
-        if(result.IsSuccessCode && result.Data !=null)
+        if (result.IsSuccessStatusCode && result.Result != null)
         {
-            return result.Data;
+            return result.Result;
         }
 
         return null;

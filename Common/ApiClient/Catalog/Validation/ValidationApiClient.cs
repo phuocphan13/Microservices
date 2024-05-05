@@ -20,10 +20,10 @@ public class ValidationApiClient : CommonApiClient, IValidationApiClient
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.ValidateCatalogCode}";
 
-        url = url.AddQueryStringParameter(nameof(catalogCode), catalogCode, true)
+        url = url.AddQueryStringParameter(nameof(catalogCode), catalogCode)
             .AddQueryStringParameter(nameof(type), ((int)type).ToString());
 
-        var result = await GetAsync<ApiStatusResult>(url, cancellationToken);
+        var result = await GetStatusAsync(url, cancellationToken);
 
         return result;
     }

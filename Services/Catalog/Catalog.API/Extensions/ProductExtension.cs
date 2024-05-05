@@ -29,7 +29,7 @@ public static class ProductExtension
             Description = product.Description,
             Price = product.Price,
             Summary = product.Summary,
-            ImageFile = product.ImageFile
+            ImageFile = product.ImageFile,
         };
     }
 

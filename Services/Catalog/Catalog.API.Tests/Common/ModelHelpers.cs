@@ -239,9 +239,9 @@ public static class ModelHelpers
             return summaries;
         }
 
-        public static List<Entities.SubCategory> GenerateSubCategories(int number = 2, Action<Entities.SubCategory>? initAction = default )
+        public static List<Entities.SubCategory> GenerateSubCategories(int number = 2, Action<Entities.SubCategory>? initAction = default)
         {
-            var subCategories = new List<Entities.SubCategory>();  
+            var subCategories = new List<Entities.SubCategory>();
 
             for (int i = 0; i < number; i++)
             {
@@ -249,12 +249,13 @@ public static class ModelHelpers
                 initAction?.Invoke(subCategory);
                 subCategories.Add(subCategory);
             }
+
             return subCategories;
         }
 
-        public static Entities.SubCategory GenerateSubCategory(string id = null!, string categoryId = null!)
+        public static Entities.SubCategory GenerateSubCategory(string id = null!, string categoryId = null!, Action<Entities.SubCategory>? initAction = default)
         {
-            return new Entities.SubCategory()
+            var subCategory = new Entities.SubCategory()
             {
                 Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id,
                 SubCategoryCode = CommonHelpers.GenerateRandomString(),
@@ -262,6 +263,10 @@ public static class ModelHelpers
                 Name = CommonHelpers.GenerateRandomString(),
                 CategoryId = string.IsNullOrWhiteSpace(categoryId) ? CommonHelpers.GenerateBsonId() : categoryId
             };
+            
+            initAction?.Invoke(subCategory);
+            
+            return subCategory;
         }
 
         public static Entities.SubCategory GenerateSubCategoryEntity(string id = null!, string categoryId = null!, Action<Entities.Product>? initAction = default)

@@ -46,6 +46,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthorization();
 
+app.UseMyCustomMiddleware();
+
 app.MapControllers();
 
 await app.InitializePlatformDbContextsAsync(builder.Configuration, isRebuildSchema);
