@@ -47,13 +47,10 @@ export class CategoryAdminComponent implements OnInit {
             this.getCategoriesAsync();
           }
         });
-      } else if (actionType === Action.Create) {
-        this.categoryService.createCategoryAsync(formData).then(result => {
-          if (result) {
-            this.getCategoriesAsync();
-          }
-        });
       }
+    });
+    modal.componentInstance.closeEvent.subscribe(() => {
+      this.getCategoriesAsync();
     });
   }
 
@@ -80,10 +77,15 @@ export class CategoryAdminComponent implements OnInit {
   onClickCreate(actionType:string){
     let modal = this.modalService.open(CategoryModalComponent, this.ngbModalOptions);
     modal.componentInstance.type = actionType;
-    modal.componentInstance.successEvent.subscribe((success: boolean) => {
-      if (success) {
-        this.getCategoriesAsync();
-      }
+    modal.componentInstance.successEvent.subscribe((formData: any) => {
+      this.categoryService.createCategoryAsync(formData).then(result => {
+        if (result) {
+          this.getCategoriesAsync();
+        }
+      });
+    });
+    modal.componentInstance.closeEvent.subscribe(() => {
+      this.getCategoriesAsync();
     });
   }
 }

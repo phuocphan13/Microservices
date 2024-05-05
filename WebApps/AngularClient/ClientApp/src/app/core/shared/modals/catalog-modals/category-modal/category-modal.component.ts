@@ -1,8 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { Action } from "../../../../../common/const";
-import { CategoryService } from "../../../../service/catalog/category.service";
-import { CategorySummary } from 'src/app/core/models/catalog/category-models/category-summary.model';
 
 @Component({
   selector: 'app-category-modal',
@@ -12,12 +10,13 @@ import { CategorySummary } from 'src/app/core/models/catalog/category-models/cat
 export class CategoryModalComponent implements OnInit {
   @Input() modalData: any;
   @Input() type: string = Action.View;
-  title: string ="";
+  title: string = "";
   isDisabled: boolean = false;
   formData: any = {};
-  @Output() successEvent = new EventEmitter<boolean>();
+  @Output() successEvent = new EventEmitter<any>();
+  @Output() closeEvent = new EventEmitter<void>();
 
-  constructor(public activeModal: NgbActiveModal, private categoryService: CategoryService) {}
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit(): void {
     this.setTitle();
@@ -37,34 +36,17 @@ export class CategoryModalComponent implements OnInit {
   }
 
   async onSubmit() {
-    let result;
-    if (this.isValidForm())
-    {if (this.type === Action.Edit || this.type === Action.Create) {
+    if (this.isValidForm()) {
+      if (this.type === Action.Edit || this.type === Action.Create) {
         this.successEvent.emit(this.formData);
+        this.activeModal.close();
       }
-    // if (this.type === Action.Edit) {
-    //   this.categoryService.updateCategoryAsync(this.formData).then(result => this.handleResponse(result));
-    // } else if (this.type == Action.Create) {
-    //   this.categoryService.createCategoryAsync(this.formData).then(result => this.handleResponse(result));
-    // }
-
-    if (result) {
-      this.handleResponse(result);
-      this.successEvent.emit(true); // Load lại danh sách nếu thành công
-    }
-  }
-  }
-
-  private handleResponse(response: any) {
-    if (response) {
-      this.activeModal.close();
-    } else {
-      // Báo lỗi
     }
   }
 
   onClickClose() {
     this.activeModal.close();
+    this.closeEvent.emit();
   }
 
   setDisabledState() {
