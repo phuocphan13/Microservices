@@ -1,6 +1,7 @@
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
 using Platform.ApiBuilder;
+using Platform.Common.Session;
 
 namespace ApiClient.Catalog.Validation;
 
@@ -11,8 +12,8 @@ public interface IValidationApiClient
 
 public class ValidationApiClient : CommonApiClient, IValidationApiClient
 {
-    public ValidationApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration) 
-        : base(httpClientFactory, configuration)
+    public ValidationApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration, ISessionState sessionState) 
+        : base(httpClientFactory, configuration, sessionState)
     {
     }
 

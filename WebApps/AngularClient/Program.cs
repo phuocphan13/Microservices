@@ -1,5 +1,6 @@
-using AngularClient.Services;
+using AngularClient.Extensions;
 using ApiClient;
+using Platform;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,11 +9,11 @@ builder.Services.AddCors();
 
 // Add services to the container.
 builder.Services.AddHttpClient();
-builder.Services.AddCommonServices();
-builder.Services.AddCatalogServices();
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<ISubCategoryService,SubCategoryService>();
+builder.Services
+    .AddPlatformCommonServices()
+    .AddCommonServices()
+    .AddCatalogServices()
+    .AddDependencyInjection();
 
 var app = builder.Build();
 

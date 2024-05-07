@@ -8,15 +8,18 @@ namespace ApiClient;
 
 public static class IServiceExtensionCollection
 {
-    public static void AddCatalogServices(this IServiceCollection services)
+    public static IServiceCollection AddCatalogServices(this IServiceCollection services)
     {
         services.AddScoped<IProductApiClient, ProductApiClient>();
         services.AddScoped<ICategoryApiClient, CategoryApiClient>();
         services.AddScoped<ISubCategoryApiClient, SubCategoryApiClient>();
         services.AddScoped<IValidationApiClient, ValidationApiClient>();
+
+        return services;
     }
 
-    public static void AddCommonServices(this IServiceCollection services)
+    public static IServiceCollection AddCommonServices(this IServiceCollection services)
     {
+        return services;
     }
 }

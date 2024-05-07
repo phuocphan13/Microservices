@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Platform.ApiBuilder;
 using Platform.ApiBuilder.Helpers;
+using Platform.Common.Session;
 
 namespace ApiClient.Common;
 
@@ -9,22 +10,24 @@ public class CommonApiClient
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IConfiguration _configuration;
+    private readonly ISessionState _sessionState;
 
-    protected CommonApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+    protected CommonApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration, ISessionState sessionState)
     {
         _httpClientFactory = httpClientFactory;
         _configuration = configuration;
+        _sessionState = sessionState;
     }
 
     protected string GetBaseUrl()
     {
         return _configuration["ApiServices:OcelotApiGw"];
     }
-    
+
     protected async Task<ApiStatusResult> GetStatusAsync(string url, CancellationToken cancellationToken)
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         return TransferResponseMessageToStatusAsync(httpResponseMessage);
@@ -34,7 +37,7 @@ public class CommonApiClient
         where TResult : class, new()
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         var result = await HttpResponseHelpers.TransformResponseToData<TResult>(httpResponseMessage, cancellationToken);
@@ -45,7 +48,7 @@ public class CommonApiClient
     protected async Task<ApiCollectionResult<TResult>> GetCollectionAsync<TResult>(string url, CancellationToken cancellationToken)
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         var result = await HttpResponseHelpers.TransformResponseToData<List<TResult>>(httpResponseMessage, cancellationToken);
@@ -58,7 +61,7 @@ public class CommonApiClient
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url);
         httpRequestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody), System.Text.Encoding.UTF8, "application/json");
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         return await HttpResponseHelpers.TransformResponseToData<ApiDataResult<TResult>>(httpResponseMessage, cancellationToken);
@@ -69,7 +72,7 @@ public class CommonApiClient
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, url);
         httpRequestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody), System.Text.Encoding.UTF8, "application/json");
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         return await HttpResponseHelpers.TransformResponseToData<ApiDataResult<TResult>>(httpResponseMessage, cancellationToken);
@@ -78,7 +81,7 @@ public class CommonApiClient
     protected async Task<ApiStatusResult> DeleteAsync(string url, CancellationToken cancellationToken)
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, url);
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         return TransferResponseMessageToStatusAsync(httpResponseMessage);
@@ -87,7 +90,7 @@ public class CommonApiClient
     private ApiStatusResult TransferResponseMessageToStatusAsync(HttpResponseMessage? httpResponseMessage)
     {
         var result = new ApiStatusResult();
-        
+
         if (httpResponseMessage is null)
         {
             result.InternalErrorCode = -1;
@@ -96,5 +99,13 @@ public class CommonApiClient
         }
 
         return result;
+    }
+
+    private HttpClient HttpClientBuilder()
+    {
+        HttpClient httpClient = _httpClientFactory.CreateClient();
+        var token = _sessionState.GetAccessToken();
+        httpClient.DefaultRequestHeaders.Add("Authorization", token);
+        return httpClient;
     }
 }

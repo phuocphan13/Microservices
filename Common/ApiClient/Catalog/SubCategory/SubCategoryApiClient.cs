@@ -2,6 +2,7 @@
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
 using Platform.ApiBuilder;
+using Platform.Common.Session;
 
 namespace ApiClient.Catalog.SubCategory;
 
@@ -18,8 +19,8 @@ public interface ISubCategoryApiClient
 
 public class SubCategoryApiClient : CommonApiClient, ISubCategoryApiClient
 {
-    public SubCategoryApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
-        : base(httpClientFactory, configuration)
+    public SubCategoryApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration, ISessionState sessionState)
+        : base(httpClientFactory, configuration, sessionState)
     {
     }
 
