@@ -14,7 +14,7 @@ public class SessionState : ISessionState
 {
     private const string SessionVariable_ObjectId = "oid";
     private const string SessionVariable_LastActivity = "la";
-    
+
     private readonly IHttpContextAccessor _httpContextAccessor;
     private Principal principal = null!;
 
@@ -30,21 +30,21 @@ public class SessionState : ISessionState
 
     public string GetAccessToken()
     {
-        if(_httpContextAccessor.HttpContext is null)
+        if (_httpContextAccessor.HttpContext is null)
         {
             throw new InvalidOperationException();
         }
-        
+
         var authorizationToken = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
 
         if (string.IsNullOrWhiteSpace(authorizationToken))
         {
-            throw new InvalidOperationException();
+            // throw new InvalidOperationException();
         }
 
         return authorizationToken;
     }
-    
+
     public async Task<string> GetUserIdAsync(CancellationToken cancellationToken)
     {
         await this.LoadAsync(cancellationToken);
@@ -81,7 +81,7 @@ public class SessionState : ISessionState
 
         string lastActivityString = this.session?.GetString(SessionState.SessionVariable_LastActivity) ?? string.Empty;
         this.lastActivity = null;
-        
+
         if (!string.IsNullOrWhiteSpace(lastActivityString) &&
             DateTime.TryParseExact(
                 lastActivityString,
@@ -132,7 +132,7 @@ public class SessionState : ISessionState
         if (this.hasChanged && this.session is not null)
         {
             string lastActivityString = this.lastActivity?.ToString("o") ?? string.Empty;
-            
+
             this.session.SetString(SessionState.SessionVariable_ObjectId, this.principal.Id);
             this.session.SetString(SessionState.SessionVariable_LastActivity, lastActivityString);
 

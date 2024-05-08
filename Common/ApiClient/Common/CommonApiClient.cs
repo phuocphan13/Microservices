@@ -19,6 +19,11 @@ public class CommonApiClient
         _sessionState = sessionState;
     }
 
+    protected string GetIdentityServerBaseUrl()
+    {
+        return _configuration["ApiServices:IdentityServiceApi"];
+    }
+
     protected string GetBaseUrl()
     {
         return _configuration["ApiServices:OcelotApiGw"];
@@ -105,7 +110,12 @@ public class CommonApiClient
     {
         HttpClient httpClient = _httpClientFactory.CreateClient();
         var token = _sessionState.GetAccessToken();
-        httpClient.DefaultRequestHeaders.Add("Authorization", token);
+
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            httpClient.DefaultRequestHeaders.Add("Authorization", token);
+        }
+
         return httpClient;
     }
 }

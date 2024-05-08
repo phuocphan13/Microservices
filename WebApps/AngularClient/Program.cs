@@ -13,6 +13,7 @@ builder.Services
     .AddPlatformCommonServices()
     .AddCommonServices()
     .AddCatalogServices()
+    .AddIdentityServerServices()
     .AddDependencyInjection();
 
 var app = builder.Build();

@@ -1,15 +1,14 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
-using IdentityServer.Models;
+using ApiClient.IdentityServer.Models;
 using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer.Services;
 
 public interface ITokenHandleService
 {
-    string GenerateTokenAsync(GenerateTokenRequest request);
+    TokenResponse GenerateTokenAsync(GenerateTokenRequest request);
 }
 
 public class TokenHandleService : ITokenHandleService
@@ -21,7 +20,7 @@ public class TokenHandleService : ITokenHandleService
         _configuration = configuration;
     }
 
-    public string GenerateTokenAsync(GenerateTokenRequest request)
+    public TokenResponse GenerateTokenAsync(GenerateTokenRequest request)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]);
@@ -62,7 +61,12 @@ public class TokenHandleService : ITokenHandleService
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
-        var token = tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
+        var securityToken = tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
+        var token = tokenHandler.WriteToken(securityToken);
+
+        return new()
+        {
+            AccessToken = token
+        };
     }
 }

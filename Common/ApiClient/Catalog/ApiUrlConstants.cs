@@ -41,7 +41,7 @@ public static class ApiUrlConstants
     public const string UpdateSubCategory = "/SubCategory/UpdateSubCategory";
 
     public const string DeleteSubCategory = "/SubCategory/DeleteSubCategory/{id}";
-    
+
     //Validation
     public const string ValidateCatalogCode = "/Validation/ValidateCatalogCode";
 }

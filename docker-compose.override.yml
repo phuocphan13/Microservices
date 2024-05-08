@@ -178,4 +178,4 @@ services:
     depends_on:
       - ocelotapigw
     ports:
-      - "8015:80"
+      - "8500:80"
