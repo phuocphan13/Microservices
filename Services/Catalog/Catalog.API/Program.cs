@@ -3,6 +3,7 @@ using Catalog.API.Repositories;
 using Catalog.API.Services;
 using Catalog.API.Services.Grpc;
 using Discount.Grpc.Protos;
+using IdentityServer.Common;
 using Platform;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,9 @@ var isRebuildSchema = builder.Configuration.GetValue<bool>(Platform.Constants.Da
 
 builder.Services.AddControllers();
 builder.Services.AddPlatformCommonServices();
+
+builder.Services.AddCustomAuthenticate(builder.Configuration);
+builder.Services.AddAuthorization();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -44,6 +48,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

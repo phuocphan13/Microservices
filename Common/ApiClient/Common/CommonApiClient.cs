@@ -40,9 +40,9 @@ public class CommonApiClient
         var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
-        var result = await HttpResponseHelpers.TransformResponseToData<TResult>(httpResponseMessage, cancellationToken);
+        var result = await HttpResponseHelpers.TransformResponseToData<ApiDataResult<TResult>>(httpResponseMessage, cancellationToken);
 
-        return new ApiDataResult<TResult>(result);
+        return result;
     }
 
     protected async Task<ApiCollectionResult<TResult>> GetCollectionAsync<TResult>(string url, CancellationToken cancellationToken)
@@ -51,9 +51,9 @@ public class CommonApiClient
         var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
-        var result = await HttpResponseHelpers.TransformResponseToData<List<TResult>>(httpResponseMessage, cancellationToken);
+        var result = await HttpResponseHelpers.TransformResponseToData<ApiCollectionResult<TResult>>(httpResponseMessage, cancellationToken);
 
-        return new ApiCollectionResult<TResult>(result);
+        return result;
     }
 
     protected async Task<ApiDataResult<TResult>> PostAsync<TResult>(string url, object requestBody, CancellationToken cancellationToken)

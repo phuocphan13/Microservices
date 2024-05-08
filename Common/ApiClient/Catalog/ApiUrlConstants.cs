@@ -2,7 +2,7 @@ namespace ApiClient.Catalog;
 
 public static class ApiUrlConstants
 {
-    public const string GetProducts = "/Product";
+    public const string GetProducts = "/GetProducts";
 
     public const string GetProductById = "/Product/GetProductById/{id}";
 
