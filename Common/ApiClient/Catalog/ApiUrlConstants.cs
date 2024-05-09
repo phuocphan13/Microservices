@@ -2,7 +2,7 @@ namespace ApiClient.Catalog;
 
 public static class ApiUrlConstants
 {
-    public const string GetProducts = "/Product";
+    public const string GetProducts = "/GetProducts";
 
     public const string GetProductById = "/Product/GetProductById/{id}";
 
@@ -41,7 +41,7 @@ public static class ApiUrlConstants
     public const string UpdateSubCategory = "/SubCategory/UpdateSubCategory";
 
     public const string DeleteSubCategory = "/SubCategory/DeleteSubCategory/{id}";
-    
+
     //Validation
     public const string ValidateCatalogCode = "/Validation/ValidateCatalogCode";
 }

@@ -7,7 +7,7 @@ namespace AngularClient.Services;
 public interface IProductService
 {
     Task<List<ProductSummary>?> GetProductsAsync(CancellationToken cancellationToken = default);
-    Task<ProductDetail?> GetProductById(string id, CancellationToken cancellationToken = default);
+    Task<ProductDetail?> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<List<ProductSummary>?> GetProductByCategoryAsync(string category, CancellationToken cancellationToken = default);
     Task<ProductDetail?> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
@@ -35,7 +35,7 @@ public class ProductService : IProductService
         return result.Result.ToList();
     }
 
-    public async Task<ProductDetail?> GetProductById(string id, CancellationToken cancellationToken)
+    public async Task<ProductDetail?> GetProductByIdAsync(string id, CancellationToken cancellationToken)
     {
         var result = await _productApiClient.GetProductByIdAsync(id, cancellationToken);
 

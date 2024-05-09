@@ -6,7 +6,7 @@ using Platform.ApiBuilder;
 namespace Catalog.API.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/[controller]/[action]")]
 public class ProductController : ApiController
 {
     private readonly IProductService _productService;

@@ -31,7 +31,7 @@ public class ProductController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById(string id, CancellationToken cancellationToken)
     {
-        var result = await _catalogService.GetProductById(id, cancellationToken);
+        var result = await _catalogService.GetProductByIdAsync(id, cancellationToken);
         if (result is null)
         {
             return NotFound();

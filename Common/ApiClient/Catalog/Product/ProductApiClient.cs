@@ -2,6 +2,7 @@ using ApiClient.Catalog.Product.Models;
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
 using Platform.ApiBuilder;
+using Platform.Common.Session;
 
 namespace ApiClient.Catalog.Product;
 
@@ -17,8 +18,8 @@ public interface IProductApiClient
 
 public class ProductApiClient : CommonApiClient, IProductApiClient
 {
-    public ProductApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
-        : base(httpClientFactory, configuration)
+    public ProductApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration, ISessionState sessionState)
+        : base(httpClientFactory, configuration, sessionState)
     {
     }
 

@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\ApiClient\ApiClient.csproj" />
     <ProjectReference Include="..\..\..\Common\Platform\Platform.csproj" />
+    <ProjectReference Include="..\..\..\Identity\IdentityServer.Common\IdentityServer.Common.csproj" />
   </ItemGroup>
   
   <ItemGroup>

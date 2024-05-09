@@ -1,15 +1,16 @@
-using IdentityServer.Models;
+using ApiClient.IdentityServer.Models;
 using IdentityServer.Services;
 using Microsoft.AspNetCore.Mvc;
+using Platform.ApiBuilder;
 
 namespace IdentityServer.Controllers;
 
 [Route("api/[controller]/[action]")]
-public class IdentityController : ControllerBase
+public class IdentityController : ApiController
 {
     private readonly ITokenHandleService _tokenHandleService;
 
-    public IdentityController(ITokenHandleService tokenHandleService)
+    public IdentityController(ITokenHandleService tokenHandleService, ILogger<IdentityController> logger) : base(logger)
     {
         _tokenHandleService = tokenHandleService;
     }
