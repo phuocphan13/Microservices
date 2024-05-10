@@ -82,6 +82,6 @@ public class ProductController : ControllerBase
     {
         var result = await _catalogService.DeleteProductAsync(id, cancellationToken);
 
-        return Ok(result);
+        return Ok(result.IsSuccessStatusCode);
     }
 }

@@ -44,8 +44,9 @@ export class ApiService {
   }
 
   errorHandler(error: HttpErrorResponse) {
-    if (error.status == 401 || error.status == 403 || (error.error.includes("Invalid Token"))) {
+    if (error.status == 401 || error.status == 403 || error.status == 404 || (error.error.includes("Invalid Token"))) {
       // window.location.href = `${environment.appRoot}/log-in?applicationId=${environment.clientId}`;
+      throw new Error("Error");
     }
 
     return of(0);

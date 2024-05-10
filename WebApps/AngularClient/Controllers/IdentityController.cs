@@ -37,12 +37,12 @@ public class IdentityController : ControllerBase
             return BadRequest("Request is null");
         }
 
-        if (!string.IsNullOrWhiteSpace(request.UserName))
+        if (string.IsNullOrWhiteSpace(request.UserName))
         {
             return BadRequest("UserName is required");
         }
 
-        if (!string.IsNullOrWhiteSpace(request.Password))
+        if (string.IsNullOrWhiteSpace(request.Password))
         {
             return BadRequest("Password is required");
         }

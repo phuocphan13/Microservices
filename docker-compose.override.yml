@@ -35,6 +35,15 @@ services:
     restart: always
     ports:
       - "1433:1433"
+        
+  authendb:
+    container_name: authendb
+    environment:
+      SA_PASSWORD: "SwN12345678"
+      ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+      - "1434:1433"
   
   rabbitmq:
     container_name: rabbitmq
@@ -176,6 +185,7 @@ services:
       - "JwtSettings:Key=LuciferForTheHellLuciferForTheHellLuciferForTheHellLuciferForTheHell"
       - "JwtSettings:LifeTime=8"
     depends_on:
+      - authendb
       - ocelotapigw
     ports:
       - "8500:80"

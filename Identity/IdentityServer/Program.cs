@@ -1,13 +1,17 @@
 using IdentityServer.Domain;
 using IdentityServer.Domain.Entities;
 using IdentityServer.Domain.Helpers;
+using IdentityServer.Extensions.Builder;
 using IdentityServer.Services;
+using IdentityServer.Services.Cores;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Platform.Database.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AuthenContext>();
+builder.Services.AddDbContext<AuthenContext>(options => options.UseSqlServer(builder.Configuration["Configuration:ConnectionString"]));
+
 builder.Services.AddIdentity<Account, Role>()
     .AddEntityFrameworkStores<AuthenContext>()
     .AddDefaultTokenProviders();
@@ -19,12 +23,26 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITokenHandleService, TokenHandleService>();
 builder.Services.AddScoped<ITokenHistoryService, TokenHistoryService>();
 
+builder.Services.AddScoped<ISeedDataService, SeedDataService>();
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+var isRebuildSchema = bool.Parse(builder.Configuration["Configuration:IsRebuildSchema"]);
+if (isRebuildSchema)
+{
+    MigrationBuilder.RunMigrationBuilder(app);
+}
+
+var isSeedData = bool.Parse(builder.Configuration["Configuration:IsSeedData"]);
+if (isSeedData)
+{
+    await SeedDataBuilder.RunSeedDataBuilder(app);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

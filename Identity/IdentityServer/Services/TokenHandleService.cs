@@ -40,9 +40,9 @@ public class TokenHandleService : ITokenHandleService
         return new()
         {
             AccessToken = accessToken.Token,
-            AccessTokenExpires = accessToken.ExpiredAt,
+            AccessTokenExpires = (accessToken.ExpiredAt - DateTime.Now).Minutes,
             RefreshToken = refreshToken.Token,
-            RefreshTokenExpires = refreshToken.ExpiredAt,
+            RefreshTokenExpires = (refreshToken.ExpiredAt - DateTime.Now).Minutes,
             TokenType = "Bearer"
         };
     }
