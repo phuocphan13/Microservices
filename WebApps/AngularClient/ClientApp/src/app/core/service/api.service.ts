@@ -1,5 +1,6 @@
-import {HttpClient, HttpParams} from "@angular/common/http";
-import {Injectable} from "@angular/core";
+import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { lastValueFrom, of } from "rxjs";
 
 @Injectable()
 export class ApiService {
@@ -11,27 +12,43 @@ export class ApiService {
   }
 
   async getAsync(url: string, params: HttpParams): Promise<any> {
-    return this.httpClient.get(url, {
+    let observableResult = this.httpClient.get(url, {
       params: params
-    }).toPromise();
+    });
+
+    return await lastValueFrom(observableResult).catch(this.errorHandler);
   }
 
   async postAsync(url: string, body: any, params: HttpParams): Promise<any> {
-    return this.httpClient.post(url, body, {
+    let observableResult = this.httpClient.post(url, body, {
       params: params
-    }).toPromise();
+    });
+
+    return await lastValueFrom(observableResult).catch(this.errorHandler);
   }
 
   async putAsync(url: string, body: any, params: HttpParams): Promise<any> {
-    return this.httpClient.put(url, body, {
+    let observableResult = this.httpClient.put(url, body, {
       params: params
-    }).toPromise();
+    });
+
+    return await lastValueFrom(observableResult).catch(this.errorHandler);
   }
 
   async deleteAsync(url: string, params: HttpParams): Promise<any> {
-    return this.httpClient.delete(url, {
+    let observableResult = this.httpClient.delete(url, {
       params: params
-    }).toPromise();
+    });
+
+    return await lastValueFrom(observableResult).catch(this.errorHandler);
+  }
+
+  errorHandler(error: HttpErrorResponse) {
+    if (error.status == 401 || error.status == 403 || (error.error.includes("Invalid Token"))) {
+      // window.location.href = `${environment.appRoot}/log-in?applicationId=${environment.clientId}`;
+    }
+
+    return of(0);
   }
 
   // // getToken() {

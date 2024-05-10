@@ -22,6 +22,7 @@ public static class IServiceExtensionCollection
     public static IServiceCollection AddIdentityServerServices(this IServiceCollection services)
     {
         services.AddScoped<IGenerateTokenApiClient, GenerateTokenApiClient>();
+        services.AddScoped<IIdentityApiClient, IdentityApiClient>();
         return services;
     }
 

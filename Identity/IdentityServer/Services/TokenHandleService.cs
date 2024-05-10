@@ -1,26 +1,53 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
-using ApiClient.IdentityServer.Models;
+using ApiClient.IdentityServer.Models.Response;
+using IdentityServer.Domain.Entities;
+using IdentityServer.Models.Token;
 using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer.Services;
 
 public interface ITokenHandleService
 {
-    TokenResponse GenerateTokenAsync(GenerateTokenRequest request);
+    Task<LoginResponse?> LoginAsync(Account account, CancellationToken cancellationToken = default);
 }
 
 public class TokenHandleService : ITokenHandleService
 {
     private readonly IConfiguration _configuration;
+    private readonly ITokenHistoryService _tokenHistoryService;
 
-    public TokenHandleService(IConfiguration configuration)
+    public TokenHandleService(IConfiguration configuration, ITokenHistoryService tokenHistoryService)
     {
         _configuration = configuration;
+        _tokenHistoryService = tokenHistoryService;
     }
 
-    public TokenResponse GenerateTokenAsync(GenerateTokenRequest request)
+    public async Task<LoginResponse?> LoginAsync(Account account, CancellationToken cancellationToken)
+    {
+        var accessToken = GenerateAccessTokenInternal(account.Id.ToString(), account.Email);
+        var refreshToken = GenerateRefreshTokenInternal();
+
+        var result = await _tokenHistoryService.SaveAppUserTokenAsync(account.Id, accessToken, refreshToken, cancellationToken);
+
+        if (!result)
+        {
+            return null;
+        }
+
+        return new()
+        {
+            AccessToken = accessToken.Token,
+            AccessTokenExpires = accessToken.ExpiredAt,
+            RefreshToken = refreshToken.Token,
+            RefreshTokenExpires = refreshToken.ExpiredAt,
+            TokenType = "Bearer"
+        };
+    }
+
+    private AccessTokenModel GenerateAccessTokenInternal(string accountId, string email)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]);
@@ -29,28 +56,10 @@ public class TokenHandleService : ITokenHandleService
         var claims = new List<Claim>()
         {
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(JwtRegisteredClaimNames.Sub, request.Email!),
-            new(JwtRegisteredClaimNames.Email, request.Email!),
-            new("userId", request.UserId!),
+            new(JwtRegisteredClaimNames.Sub, email),
+            new(JwtRegisteredClaimNames.Email, email),
+            new("userId", accountId),
         };
-
-        // foreach (var claimPair in request.CustomClaims)
-        // {
-        //     var valueType = ClaimValueTypes.String;
-        //     
-        //     if (int.TryParse(claimPair.Value, out _))
-        //     {
-        //         valueType = ClaimValueTypes.Double;
-        //     }
-        //     else if (bool.TryParse(claimPair.Value, out _))
-        //     {
-        //         valueType = ClaimValueTypes.Boolean;
-        //     }
-        //     
-        //     var claim = new Claim(claimPair.Key, claimPair.Value, valueType);
-        //     
-        //     claims.Add(claim);
-        // }
 
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
@@ -66,7 +75,26 @@ public class TokenHandleService : ITokenHandleService
 
         return new()
         {
-            AccessToken = token
+            Token = token,
+            ExpiredAt = tokenDescriptor.Expires!.Value
         };
+    }
+
+    private RefreshTokenModel GenerateRefreshTokenInternal()
+    {
+        return new RefreshTokenModel()
+        {
+            Token = GenerateRandomCode(),
+            ExpiredAt = DateTime.Now.AddDays(30)
+        };
+    }
+
+    private string GenerateRandomCode()
+    {
+        var randomNumber = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+
+        return Convert.ToBase64String(randomNumber);
     }
 }
