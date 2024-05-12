@@ -26,7 +26,7 @@ public class IdentityService : IIdentityService
     {
         var result = await _generateTokenApiClient.GenerateTokenAsync(request, cancellationToken);
 
-        if (result.IsSuccessStatusCode || result.Result is null)
+        if (!result.IsSuccessStatusCode || result.Result is null)
         {
             return null;
         }
@@ -38,7 +38,7 @@ public class IdentityService : IIdentityService
     {
         var result = await _identityApiClient.LoginAsync(request, cancellationToken);
 
-        if (result.IsSuccessStatusCode || result.Result is null)
+        if (!result.IsSuccessStatusCode || result.Result is null)
         {
             return null;
         }

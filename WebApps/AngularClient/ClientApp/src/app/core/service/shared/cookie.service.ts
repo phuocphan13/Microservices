@@ -28,6 +28,6 @@ export class CookiesService {
 
     let expires = "expires=" + date.toUTCString();
 
-    document.cookie += name + "=" + value + ";" + expires + ";path=/";
+    document.cookie = (name + "=" + value + ";" + expires + ";path=/;");
   }
 }
