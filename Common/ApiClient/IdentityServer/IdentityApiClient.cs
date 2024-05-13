@@ -10,6 +10,7 @@ namespace ApiClient.IdentityServer;
 public interface IIdentityApiClient
 {
     Task<ApiDataResult<LoginResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<AccessTokenDetail>> GenerateAccessTokenByRefreshTokenAsync(GenerateAccessTokenByRefreshTokenRequest request, CancellationToken cancellationToken = default);
 }
 
 public class IdentityApiClient : CommonApiClient, IIdentityApiClient
@@ -24,6 +25,15 @@ public class IdentityApiClient : CommonApiClient, IIdentityApiClient
         var url = $"{GetIdentityServerBaseUrl()}/api{ApiUrlConstants.Login}";
 
         var result = await PostAsync<LoginResponse>(url, request, cancellationToken);
+
+        return result;
+    }
+
+    public async Task<ApiDataResult<AccessTokenDetail>> GenerateAccessTokenByRefreshTokenAsync(GenerateAccessTokenByRefreshTokenRequest request, CancellationToken cancellationToken)
+    {
+        var url = $"{GetIdentityServerBaseUrl()}/api{ApiUrlConstants.GenerateAccessTokenByRefreshToken}";
+
+        var result = await PostAsync<AccessTokenDetail>(url, request, cancellationToken);
 
         return result;
     }

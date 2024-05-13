@@ -20,12 +20,35 @@ public class IdentityController : ApiController
         _userManager = userManager;
     }
 
-    // [HttpPost]
-    // public IActionResult GenerateToken(GenerateTokenRequest request)
-    // {
-    //     var jwtToken = _tokenHandleService.GenerateTokenAsync(request);
-    //     return Ok(jwtToken);
-    // }
+    [HttpPost]
+    public async Task<IActionResult> GenerateAccessTokenByRefreshToken([FromBody] GenerateAccessTokenByRefreshTokenRequest request, CancellationToken cancellationToken)
+    {
+        if (request is null)
+        {
+            return BadRequest("Invalid request");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.AccountId))
+        {
+            return BadRequest("Invalid account id");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.RefreshToken))
+        {
+            return BadRequest("Invalid refresh token");
+        }
+
+        var account = await _userManager.FindByIdAsync(request.AccountId);
+
+        if (account is null)
+        {
+            return BadRequest("Account is not existed");
+        }
+        
+        var token = await _tokenHandleService.GenerateAccessTokenByRefreshTokenAsync(account, request.RefreshToken, cancellationToken);
+
+        return Ok(token);
+    }
 
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)

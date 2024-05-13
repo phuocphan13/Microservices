@@ -56,4 +56,27 @@ public class IdentityController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> GenerateAccessTokenByRefreshToken([FromBody] GenerateAccessTokenByRefreshTokenRequest request, CancellationToken cancellationToken)
+    {
+        if (request is null)
+        {
+            return BadRequest("Invalid request");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.AccountId))
+        {
+            return BadRequest("Invalid account id");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.RefreshToken))
+        {
+            return BadRequest("Invalid refresh token");
+        }
+
+        var result = await _identityService.GenerateAccessTokenByRefreshTokenAsync(request, cancellationToken);
+
+        return Ok(result);
+    }
 }

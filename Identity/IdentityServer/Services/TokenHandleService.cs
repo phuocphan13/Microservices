@@ -5,6 +5,7 @@ using System.Text;
 using ApiClient.IdentityServer.Models.Response;
 using IdentityServer.Domain.Entities;
 using IdentityServer.Models.Token;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer.Services;
@@ -12,30 +13,48 @@ namespace IdentityServer.Services;
 public interface ITokenHandleService
 {
     Task<LoginResponse?> LoginAsync(Account account, CancellationToken cancellationToken = default);
+    Task<AccessTokenDetail?> GenerateAccessTokenByRefreshTokenAsync(Account account, string refreshToken, CancellationToken cancellationToken = default);
 }
 
 public class TokenHandleService : ITokenHandleService
 {
     private readonly IConfiguration _configuration;
     private readonly ITokenHistoryService _tokenHistoryService;
+    private readonly UserManager<Account> _userManager;
 
-    public TokenHandleService(IConfiguration configuration, ITokenHistoryService tokenHistoryService)
+    public TokenHandleService(IConfiguration configuration, ITokenHistoryService tokenHistoryService, UserManager<Account> userManager)
     {
         _configuration = configuration;
         _tokenHistoryService = tokenHistoryService;
+        _userManager = userManager;
+    }
+
+    public async Task<AccessTokenDetail?> GenerateAccessTokenByRefreshTokenAsync(Account account, string refreshToken, CancellationToken cancellationToken)
+    {
+        var isValid = await _tokenHistoryService.ValidateTokenAsync(account.Id, TokenTypeEnum.RefreshToken, refreshToken, cancellationToken);
+
+        if (!isValid)
+        {
+            return null;
+        }
+        
+        var token = GenerateAccessTokenInternal(account.Id.ToString(), account.Email);
+
+        return new AccessTokenDetail()
+        {
+            Token = token.Token,
+            ExpiredAt = (token.ExpiredAt - DateTime.Now).Minutes
+        };
     }
 
     public async Task<LoginResponse?> LoginAsync(Account account, CancellationToken cancellationToken)
     {
         var accessToken = GenerateAccessTokenInternal(account.Id.ToString(), account.Email);
-        var refreshToken = GenerateRefreshTokenInternal();
+        var refreshToken = GenerateRefreshTokenInternal();;
+        
+        await _tokenHistoryService.SaveAppUserTokenAsync(account.Id, TokenTypeEnum.AccessToken, accessToken, cancellationToken);
 
-        var result = await _tokenHistoryService.SaveAppUserTokenAsync(account.Id, accessToken, refreshToken, cancellationToken);
-
-        if (!result)
-        {
-            return null;
-        }
+        await _tokenHistoryService.SaveAppUserTokenAsync(account.Id, TokenTypeEnum.AccessToken, refreshToken, cancellationToken);
 
         return new()
         {
@@ -52,7 +71,7 @@ public class TokenHandleService : ITokenHandleService
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]);
         var lifeTime = TimeSpan.FromHours(int.Parse(_configuration["JwtSettings:LifeTime"]));
-        
+
         var claims = new List<Claim>()
         {
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),

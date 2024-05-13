@@ -185,7 +185,7 @@ services:
       - "JwtSettings:Key=LuciferForTheHellLuciferForTheHellLuciferForTheHellLuciferForTheHell"
       - "JwtSettings:LifeTime=8"
       - "Configuration:ConnectionString=Server=authendb;Database=AuthenDb;User Id=sa;Password=SwN12345678;"
-      - "Configuration:IsRebuild=false"
+      - "Configuration:IsRebuildSchema=false"
       - "Configuration:IsSeedData=false"
     depends_on:
       - authendb
