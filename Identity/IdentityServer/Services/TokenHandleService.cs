@@ -54,7 +54,7 @@ public class TokenHandleService : ITokenHandleService
         
         await _tokenHistoryService.SaveAppUserTokenAsync(account.Id, TokenTypeEnum.AccessToken, accessToken, cancellationToken);
 
-        await _tokenHistoryService.SaveAppUserTokenAsync(account.Id, TokenTypeEnum.AccessToken, refreshToken, cancellationToken);
+        await _tokenHistoryService.SaveAppUserTokenAsync(account.Id, TokenTypeEnum.RefreshToken, refreshToken, cancellationToken);
 
         return new()
         {
