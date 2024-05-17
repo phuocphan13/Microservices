@@ -32,6 +32,7 @@ public class ProductController : ControllerBase
     public async Task<IActionResult> GetProductById(string id, CancellationToken cancellationToken)
     {
         var result = await _catalogService.GetProductByIdAsync(id, cancellationToken);
+        
         if (result is null)
         {
             return NotFound();
@@ -57,6 +58,7 @@ public class ProductController : ControllerBase
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
         var result = await _catalogService.CreateProductAsync(requestBody, cancellationToken);
+        
         if (result is null)
         {
             return NotFound();
@@ -69,6 +71,7 @@ public class ProductController : ControllerBase
     public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductRequestBody requestBody, CancellationToken cancellationToken)
     {
         var result = await _catalogService.UpdateProductAsync(requestBody, cancellationToken);
+        
         if (result is null)
         {
             return NotFound();

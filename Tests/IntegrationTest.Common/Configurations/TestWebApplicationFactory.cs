@@ -104,12 +104,7 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
             .WithImage("docker.io/discountgrpc")
             // .WithNetwork(_networkBuilder)
             .WithExposedPort(443)
-            .WithPortBinding(443, true)
-            // .WithResourceMapping(new FileInfo("appsettings.json"), "/app/")
-            // .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "aspnetapp.pfx")
-            // .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", "13Lucifer")
-            // .WithEnvironment("ASPNETCORE_URLS", "https://+:443")
-            // .WithResourceMapping("../../../../../../Lucifer/.aspnet/https/aspnetapp.pfx", "/app/")
+            .WithPortBinding(443, 443)
             .WithCleanUp(true)
             .Build());
 
