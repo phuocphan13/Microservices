@@ -52,14 +52,14 @@ export class CategoryModalComponent implements OnInit {
     }
 
     if (result) {
-      this.handleResponse(result);
+      // this.handleResponse(result);
       this.successEvent.emit(true);
     }
   }
 
   onClickClose() {
     this.activeModal.close();
-    this.closeEvent.emit();
+    // this.closeEvent.emit();
   }
 
   setDisabledState() {

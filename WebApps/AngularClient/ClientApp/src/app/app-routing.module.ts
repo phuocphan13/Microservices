@@ -8,6 +8,7 @@ import {CatalogAdminComponent} from "./pages/admin-pages/catalog-admin/catalog-a
 import {ProductAdminComponent} from "./pages/admin-pages/catalog-admin/product-admin/product-admin.component";
 import {CategoryAdminComponent} from "./pages/admin-pages/catalog-admin/category-admin/category-admin.component";
 import { SubcategoryAdminComponent } from './pages/admin-pages/catalog-admin/subcategory-admin/subcategory-admin.component';
+import { LogInComponent } from "./pages/identity-pages/log-in/log-in.component";
 
 const appRouter: Routes = [
   {
@@ -40,6 +41,9 @@ const appRouter: Routes = [
         path: 'subcategory-admin', component: SubcategoryAdminComponent,
       }
     ]
+  },
+  {
+    path: 'log-in', component: LogInComponent,
   },
   {
     path: '**', component: HomeComponent

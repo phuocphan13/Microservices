@@ -46,7 +46,7 @@ public abstract partial class ApiController : Controller
         if (value == null)
             throw new ArgumentNullException(nameof(value));
 
-        ApiResult apiResult1 = this.CreateApiCollectionResult(HttpStatusCode.OK, value);
+        ApiCollectionResult<T> apiResult1 = this.CreateApiCollectionResult(HttpStatusCode.OK, value);
 
         return base.Ok(apiResult1);
     }

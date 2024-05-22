@@ -3,6 +3,7 @@ using ApiClient.Catalog.Models.Catalog.Category;
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
 using Platform.ApiBuilder;
+using Platform.Common.Session;
 
 namespace ApiClient.Catalog.Category;
 
@@ -17,8 +18,8 @@ public interface ICategoryApiClient
 }
 public class CategoryApiClient : CommonApiClient, ICategoryApiClient
 {
-    public CategoryApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
-    : base(httpClientFactory, configuration)
+    public CategoryApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration, ISessionState sessionState)
+    : base(httpClientFactory, configuration, sessionState)
     {
     }
 

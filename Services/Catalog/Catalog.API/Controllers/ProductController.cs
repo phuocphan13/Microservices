@@ -6,7 +6,7 @@ using Platform.ApiBuilder;
 namespace Catalog.API.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/[controller]/[action]")]
 public class ProductController : ApiController
 {
     private readonly IProductService _productService;
@@ -170,9 +170,9 @@ public class ProductController : ApiController
             return "Category Id is not allowed null.";
         }
         
-        var catalog = await _categoryService.GetCategoryBySeachAsync(requestBody.CategoryId, PropertyName.Id, cancellationToken);
+        var category = await _categoryService.GetCategoryBySeachAsync(requestBody.CategoryId, PropertyName.Id, cancellationToken);
 
-        if (catalog is null)
+        if (category is null)
         {
             return "Category is not existed.";
         }
@@ -182,9 +182,9 @@ public class ProductController : ApiController
             return "Sub-Category Id is not allowed null.";
         }
 
-        var isSubCatalogExist = await _subCategoryService.CheckExistingAsync(requestBody.SubCategoryId, PropertyName.Id, cancellationToken);
+        var isSubCategoryExist = await _subCategoryService.CheckExistingAsync(requestBody.SubCategoryId, PropertyName.Id, cancellationToken);
 
-        if (!isSubCatalogExist)
+        if (!isSubCategoryExist)
         {
             return "Sub-Category is not existed.";
         }

@@ -4,7 +4,7 @@
   },
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/v1/Catalog",
+      "DownstreamPathTemplate": "/api/v1/GetProducts",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -12,7 +12,7 @@
           "Port": 80
         }
       ],
-      "UpstreamPathTemplate": "/",
+      "UpstreamPathTemplate": "/GetProducts",
       "UpstreamHttpMethod": [
         "GET",
         "POST",
@@ -20,6 +20,9 @@
       ],
       "FileCacheOptions": {
         "TtlSeconds": 30
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
       }
     },
     //Catalog API
