@@ -14,6 +14,8 @@ public static class ApiUrlConstants
 
     public const string DeleteProduct = "/Product/DeleteProductById/{id}";
 
+    //Url for Category
+
     public const string GetCategories = "/Category/GetCategories";
 
     public const string GetCategoryById = "/Category/GetCategoryById/{id}";
