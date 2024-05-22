@@ -25,7 +25,7 @@ export class CategoryAdminComponent implements OnInit {
   async ngOnInit() {
     await this.getCategoriesAsync();
   }
-
+// hàm get data lên, lấy data này show lên trước 
   private async getCategoriesAsync() {
     this.categories = await this.categoryService.getCategoriesAsync();
   }

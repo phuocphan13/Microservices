@@ -7,6 +7,7 @@ import {ProductComponent} from "./pages/client-pages/catalog/product/product.com
 import {CatalogAdminComponent} from "./pages/admin-pages/catalog-admin/catalog-admin.component";
 import {ProductAdminComponent} from "./pages/admin-pages/catalog-admin/product-admin/product-admin.component";
 import {CategoryAdminComponent} from "./pages/admin-pages/catalog-admin/category-admin/category-admin.component";
+import { SubcategoryAdminComponent } from './pages/admin-pages/catalog-admin/subcategory-admin/subcategory-admin.component';
 
 const appRouter: Routes = [
   {
@@ -34,6 +35,9 @@ const appRouter: Routes = [
       },
       {
         path: 'category-admin', component: CategoryAdminComponent,
+      },
+      {
+        path: 'subcategory-admin', component: SubcategoryAdminComponent,
       }
     ]
   },

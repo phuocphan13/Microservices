@@ -23,6 +23,10 @@ import { CategoryAdminComponent } from "./pages/admin-pages/catalog-admin/catego
 import { CategoryModalComponent } from "./core/shared/modals/catalog-modals/category-modal/category-modal.component";
 import { ConfirmationModalComponent } from "./core/shared/modals/common/confirmation-modal/confirmation-modal.component";
 import { UnsavedConfirmModalComponent } from "./core/shared/modals/common/unsaved-confirm-modal/unsaved-confirm-modal.component";
+import { CommonModule } from '@angular/common';
+import { SubcategoryAdminComponent } from './pages/admin-pages/catalog-admin/subcategory-admin/subcategory-admin.component';
+import { SubcategoryModalComponent } from './core/shared/modals/catalog-modals/subcategory-modal/subcategory-modal.component';
+import { SubCategoryService } from './core/service/catalog/subcategory.service';
 
 @NgModule({
   declarations: [
@@ -37,6 +41,8 @@ import { UnsavedConfirmModalComponent } from "./core/shared/modals/common/unsave
     ProductAdminComponent,
     CategoryAdminComponent,
     CategoryModalComponent,
+    SubcategoryAdminComponent,
+    SubcategoryModalComponent,
     BasicGridComponent,
     ConfirmationModalComponent,
     UnsavedConfirmModalComponent
@@ -51,10 +57,12 @@ import { UnsavedConfirmModalComponent } from "./core/shared/modals/common/unsave
     NgbAlertModule,
     RouterModule,
     ReactiveFormsModule,
+    CommonModule 
   ],
   providers: [
     CatalogService,
     CategoryService,
+    SubCategoryService,
     ApiService,
   ],
   bootstrap: [AppComponent]

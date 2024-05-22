@@ -3,11 +3,11 @@ import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { Action } from "../../../../../common/const";
 
 @Component({
-  selector: 'app-category-modal',
-  templateUrl: './category-modal.component.html',
-  styleUrls: ['./category-modal.component.css']
+  selector: 'app-subcategory-modal',
+  templateUrl: './subcategory-modal.component.html',
+  styleUrls: ['./subcategory-modal.component.css']
 })
-export class CategoryModalComponent implements OnInit {
+export class SubcategoryModalComponent implements OnInit {
   [x: string]: any;
   @Input() modalData: any;
   @Input() type: string = Action.View;
@@ -18,11 +18,6 @@ export class CategoryModalComponent implements OnInit {
 
   formData: any = {};
   tempFormData: any = {};
-  isDirty: Record<string, boolean> = {
-    name: false,
-    categoryCode: false,
-    description: false
-  };
 
   constructor(public activeModal: NgbActiveModal) {}
 
@@ -34,11 +29,11 @@ export class CategoryModalComponent implements OnInit {
 
   setTitle() {
     if (this.type == 'edit') {
-      this.title = 'Edit Category';
+      this.title = 'Edit SubCategory';
     } else if (this.type == 'create') {
-      this.title = 'Create New Category';
+      this.title = 'Create New SubCategory';
     } else if (this.type == 'view') {
-      this.title = 'View Category';
+      this.title = 'View SubCategory';
     } else {
       this.title = '';
     }
@@ -64,35 +59,5 @@ export class CategoryModalComponent implements OnInit {
 
   setDisabledState() {
     this.isDisabled = this.type === 'view';
-  }
-
-  markAsDirty(fieldName: string) {
-    this.isDirty[fieldName] = true;
-  }
-
-  isValidField(fieldName: string): boolean {
-    const value = this.tempFormData[fieldName];
-    switch (fieldName) {
-      case 'name':
-        return this.isValidName(value);
-      case 'categoryCode':
-        return this.isValidCode(value);
-      case 'description':
-        return this.isValidDescription(value);
-      default:
-        return false;
-    }
-  }
-
-  isValidName(name: string): boolean {
-    return !!name && /^[a-zA-Z0-9\s]*$/.test(name);
-  }
-
-  isValidCode(code: string): boolean {
-    return !!code && /^[a-zA-Z0-9]*$/.test(code);
-  }
-
-  isValidDescription(description: string): boolean {
-    return !/[@#$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/.test(description);
   }
 }

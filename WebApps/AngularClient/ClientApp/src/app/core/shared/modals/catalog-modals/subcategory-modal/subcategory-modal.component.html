@@ -1,0 +1,30 @@
+<div class="modal-header">
+    <p>{{ title }}</p>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="onSubmit()">
+      <div>
+        <div class="modal-contents">
+          <label class="label" for="name">Name:</label>
+          <input type="text" class="form-control value" [disabled]="isDisabled" name="name" [(ngModel)]="tempFormData.name">
+        </div>
+        <div class="modal-contents">
+          <label class="label" for="description">Description:</label>
+          <textarea class="form-control value" [disabled]="isDisabled" name="description" [(ngModel)]="tempFormData.description"></textarea>
+        </div>
+        <div class="modal-contents">
+          <label class="label" for="subCategoryCode">Sub-catergory Code:</label>
+          <input type="text" class="form-control value" [disabled]="isDisabled" name="subCategoryCode" [(ngModel)]="tempFormData.subCategoryCode">
+        </div>
+        <div class="modal-contents">
+            <label class="label" for="categoryId">Category ID:</label>
+            <textarea class="form-control value" [disabled]="isDisabled" name="categoryId" [(ngModel)]="tempFormData.categoryId"></textarea>
+          </div>
+      </div>
+      <div class="modal-footer" [ngClass]="{'reverse-row': type === 'view'}">
+        <button *ngIf="type !== 'view'" type="submit" class="btn-primary" [disabled]="isDisabled">{{ type === 'edit' ? 'Update' : 'Create' }}</button>
+        <button class="btn-transparent" (click)="onClickClose()">Close</button>
+      </div>
+    </form>
+  </div>
+  
