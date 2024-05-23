@@ -60,6 +60,11 @@ public class CategoryService : ICategoryService
     {
         var entities = await _categoryRepository.GetEntitiesAsync(cancellationToken);
 
+        if (entities is null)
+        {
+            return new();
+        }
+
         return entities.Select(x => x.ToSummary()).ToList();
     }
 

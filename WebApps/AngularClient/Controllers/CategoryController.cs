@@ -1,6 +1,7 @@
 ﻿using AngularClient.Services;
 using ApiClient.Catalog.Models.Catalog.Category;
 using Microsoft.AspNetCore.Mvc;
+using Platform.ApiBuilder;
 
 namespace AngularClient.Controllers.Catalog;
 

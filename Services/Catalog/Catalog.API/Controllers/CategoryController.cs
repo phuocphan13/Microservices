@@ -1,18 +1,21 @@
 ﻿using ApiClient.Catalog.Models.Catalog.Category;
 using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Platform.ApiBuilder;
 
 namespace Catalog.API.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]/[action]")]
-public class CategoryController : ControllerBase
+public class CategoryController : ApiController
 {
     private readonly ICategoryService _categoryService;
+    private readonly ILogger<CategoryController> _logger;
 
-    public CategoryController(ICategoryService categoryService)
+    public CategoryController(ICategoryService categoryService, ILogger<CategoryController> logger) : base(logger)
     {
         _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     [HttpGet]

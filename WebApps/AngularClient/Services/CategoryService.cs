@@ -26,9 +26,12 @@ public class CategoryService : ICategoryService
     {
         var result = await _categoryApiClient.GetCategoriesAsync(cancellationToken);
 
-        if (result.IsSuccessStatusCode && result.Result is not null)
+        if (result is not null && result.IsSuccessStatusCode)
         {
-            return result.Result.ToList();
+            if (result.IsSuccessStatusCode && result.Result is not null)
+            {
+                return result.Result.ToList();
+            }
         }
 
         return null;

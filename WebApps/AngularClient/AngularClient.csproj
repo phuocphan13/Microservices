@@ -18,6 +18,9 @@
     <ItemGroup>
         <!-- Don't publish the SPA source files, but do show them in the project files list -->
         <Content Remove="$(SpaRoot)**" />
+        <Content Include="..\..\.dockerignore">
+          <Link>.dockerignore</Link>
+        </Content>
         <None Remove="$(SpaRoot)**" />
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
     </ItemGroup>
@@ -27,8 +30,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="ClientApp\src\app\core\components\" />
       <Folder Include="ClientApp\src\app\core\shared\grids\" />
-      <Folder Include="ClientApp\src\app\core\shared\modals\" />
+      <Folder Include="ClientApp\src\app\core\shared\items\" />
+      <Folder Include="ClientApp\src\app\core\shared\modals\catalog-modals\" />
+      <Folder Include="ClientApp\src\app\core\shared\modals\common\" />
+      <Folder Include="ClientApp\src\app\pages\admin-pages\" />
+      <Folder Include="ClientApp\src\app\pages\client-pages\" />
+      <Folder Include="ClientApp\src\app\pages\identity-pages\" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

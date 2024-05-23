@@ -1,0 +1,141 @@
+.login-wrap {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.login-form{
+  display: flex;
+  justify-content: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.input-control {
+  height: 50px;
+  border: 1px solid #ced4da;
+  border-radius: 25px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  margin-bottom: 20px;
+}
+
+.input-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.field-icon {
+  position: absolute;
+  top: 50%;
+  right: 25px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6c757d;
+}
+
+.field-icon:hover {
+  color: #495057;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  border-radius: 25px;
+  width: 100px;
+  height: 50px;
+  font-size: 16px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.remember-container{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #495057;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  color: #495057;
+}
+
+.checkbox-wrap {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.checkbox-primary input[type="checkbox"]:checked ~ .checkmark {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  margin-right: 10px;
+  display: inline-block;
+}
+
+.forgot-password {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.social {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.social-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 16px;
+  border: 1px solid #ced4da;
+  color: #fff;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.facebook {
+  background-color: #3b5998;
+  border-color: #3b5998;
+}
+
+.facebook:hover {
+  background-color: #2d4373;
+  border-color: #2d4373;
+}
+
+.twitter {
+  background-color: #1da1f2;
+  border-color: #1da1f2;
+}
+
+.twitter:hover {
+  background-color: #0c85d0;
+  border-color: #0c85d0;
+}

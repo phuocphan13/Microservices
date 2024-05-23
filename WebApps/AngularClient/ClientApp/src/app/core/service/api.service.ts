@@ -1,95 +1,115 @@
-import {HttpClient, HttpParams} from "@angular/common/http";
-import {Injectable} from "@angular/core";
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { lastValueFrom, of } from "rxjs";
+import { CookiesService } from "./shared/cookie.service";
+import { Token } from "../../common/const";
+import { environment } from "../../../environments/environment";
+import { AccessTokenDetail } from "../models/identity/response/access-token-detail.model";
+import { Router } from "@angular/router";
 
 @Injectable()
 export class ApiService {
   // tokenType:string | null = "";
   // accessToken:string | null = "";
 
-  constructor(public httpClient: HttpClient) {
+  constructor(public httpClient: HttpClient, private cookieService: CookiesService, private router: Router) {
 
   }
 
   async getAsync(url: string, params: HttpParams): Promise<any> {
-    return this.httpClient.get(url, {
+    await this.buildHeader(params);
+
+    let observableResult = this.httpClient.get(url, {
       params: params
-    }).toPromise();
+    });
+
+    return await lastValueFrom(observableResult).catch(this.errorHandler);
   }
 
   async postAsync(url: string, body: any, params: HttpParams): Promise<any> {
-    return this.httpClient.post(url, body, {
+    await this.buildHeader(params);
+
+    let observableResult = this.httpClient.post(url, body, {
       params: params
-    }).toPromise();
+    });
+
+    return await lastValueFrom(observableResult).catch(this.errorHandler);
   }
 
   async putAsync(url: string, body: any, params: HttpParams): Promise<any> {
-    return this.httpClient.put(url, body, {
+    await this.buildHeader(params);
+
+    let observableResult = this.httpClient.put(url, body, {
       params: params
-    }).toPromise();
+    });
+
+    return await lastValueFrom(observableResult).catch(this.errorHandler);
   }
 
   async deleteAsync(url: string, params: HttpParams): Promise<any> {
-    return this.httpClient.delete(url, {
+    await this.buildHeader(params);
+
+    let observableResult = this.httpClient.delete(url, {
       params: params
-    }).toPromise();
+    });
+
+    return await lastValueFrom(observableResult).catch(this.errorHandler);
   }
 
-  // // getToken() {
-  // //     this.tokenType = localStorage.getItem('token_type');
-  // //     this.accessToken = localStorage.getItem('access_token');
-  // //     if (!this.accessToken || !this.tokenType) {
-  // //         window.location.href = `${environment.authenHost}/login?redirectUrl=${environment.webHost}`
-  // //         return tr
-  // //     }
-  // //     return
-  // // }
-  //
-  // get(url: string, params: HttpParams): Observable<any> {
-  //     //let headers = this.buildHeader();
-  //
-  //     return this.httpClient.get<any>(url,
-  //         {
-  //             params: params,
-  //         })
-  //         //.pipe(
-  //            // catchError(this.errorHandler));
-  // }
-  //
-  // post(url: string, body: any, params: HttpParams) {
-  //     //let headers = this.buildHeader();
-  //
-  //     return this.httpClient.post<any>(url, body, {
-  //         params: params,
-  //     })
-  //         // .pipe(
-  //         //     catchError(this.errorHandler));
-  // }
-  //
-  // put(url: string, body: any, params: HttpParams) {
-  //     //let headers = this.buildHeader();
-  //
-  //     return this.httpClient.put<any>(url, body, {
-  //         params: params,
-  //     })
-  //         //.pipe(
-  //          //   catchError(this.errorHandler));
-  // }
-  //
-  // // private buildHeader() {
-  // //     if (!this.getToken()) {
-  // //         return;
-  // //     }
-  //
-  // //     let headers = new HttpHeaders();
-  // //     headers = headers.append("Authorization", `${this.tokenType} ${this.accessToken}`);
-  //
-  // //     return headers;
-  // // }
-  //
-  // // errorHandler(error: HttpErrorResponse) {
-  // //     if (error.status == 401 || error.status == 403) {
-  // //         window.location.href = `${environment.authenHost}/login?redirectUrl=${environment.webHost}`;
-  // //     }
-  // //     return of(0);
-  // // }
+  errorHandler(error: HttpErrorResponse) {
+    if (error.status == 401 || error.status == 403 || error.status == 404 || (error.error.includes("Invalid Token"))) {
+      // window.location.href = `${environment.appRoot}/log-in?applicationId=${environment.clientId}`;
+      throw new Error("Error");
+    }
+
+    return of(0);
+  }
+
+  private async generateAccessTokenByRefreshTokenAsync(accountId: string, refreshToken: string) {
+    let url = `${environment.baseApiUrl}/api/Identity/GenerateAccessTokenByRefreshToken`;
+
+    let params = {
+      accountId: accountId,
+      refreshToken: refreshToken
+    }
+
+    let observableResult = this.httpClient.post<AccessTokenDetail>(url, {
+      params: params
+    });
+
+    let result = await lastValueFrom<AccessTokenDetail>(observableResult);
+
+    if (result) {
+      this.cookieService.setCookie(Token.AccessToken, result.token!, result.expires!);
+      this.cookieService.setCookie(Token.TokenType, "Bearer", result.expires!);
+    }
+
+    return `Bearer ${result.token}`;
+  }
+
+  private async buildHeader(params: HttpParams) {
+    let token = await this.getToken();
+
+    if (token) {
+      params.append('Authorization', token);
+    }
+  }
+
+  private async getToken() {
+    let accessToken = this.cookieService.getCookie(Token.AccessToken);
+
+    if (accessToken) {
+      let tokenType = this.cookieService.getCookie(Token.TokenType);
+      return `${tokenType} ${accessToken}`;
+    } else {
+      let refreshToken = this.cookieService.getCookie(Token.RefreshToken) as string;
+
+      if (refreshToken) {
+        return await this.generateAccessTokenByRefreshTokenAsync("", refreshToken);
+      } else {
+        // await this.router.navigate(["/log-in"]);
+        return;
+      }
+    }
+  }
 }

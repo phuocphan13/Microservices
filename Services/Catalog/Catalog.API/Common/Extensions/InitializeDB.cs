@@ -21,7 +21,7 @@ public static class InitializeDB
     public static async Task InitializePlatformDbContextsAsync(
         this IApplicationBuilder builder,
         ConfigurationManager configuration,
-        bool isRebuildSchema = false)
+        bool isRebuildSchema = true)
     {
         var client = new MongoClient(configuration.GetValue<string>(DatabaseConst.ConnectionSetting.MongoDB.ConnectionString));
         var database = client.GetDatabase(configuration.GetValue<string>(DatabaseConst.ConnectionSetting.MongoDB.DatabaseName));
