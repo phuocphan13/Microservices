@@ -5,19 +5,19 @@
     <form (ngSubmit)="onSubmit()">
       <div>
         <div class="modal-contents">
-          <label class="label" for="name">Name:</label>
-          <input type="text" class="form-control value" [disabled]="isDisabled" name="name" [(ngModel)]="tempFormData.name">
+          <label class="label">Name:</label>
+          <input id="input-name" type="text" class="form-control value" [disabled]="isDisabled" name="name" [(ngModel)]="tempFormData.name">
         </div>
         <div class="modal-contents">
-          <label class="label" for="description">Description:</label>
+          <label class="label">Description:</label>
           <textarea class="form-control value" [disabled]="isDisabled" name="description" [(ngModel)]="tempFormData.description"></textarea>
         </div>
         <div class="modal-contents">
-          <label class="label" for="subCategoryCode">Sub-catergory Code:</label>
+          <label class=>Sub-catergory Code:</label>
           <input type="text" class="form-control value" [disabled]="isDisabled" name="subCategoryCode" [(ngModel)]="tempFormData.subCategoryCode">
         </div>
         <div class="modal-contents">
-            <label class="label" for="categoryId">Category ID:</label>
+            <label class="label">Category ID:</label>
             <textarea class="form-control value" [disabled]="isDisabled" name="categoryId" [(ngModel)]="tempFormData.categoryId"></textarea>
           </div>
       </div>
@@ -27,4 +27,4 @@
       </div>
     </form>
   </div>
-  
+

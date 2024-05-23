@@ -25,18 +25,12 @@ export class CategoryAdminComponent implements OnInit {
   async ngOnInit() {
     await this.getCategoriesAsync();
   }
-// hàm get data lên, lấy data này show lên trước 
+
   private async getCategoriesAsync() {
     this.categories = await this.categoryService.getCategoriesAsync();
   }
 
   modifyAction(actionType: string, rowData: any) {
-    let isView = false;
-
-    if (actionType === Action.View) {
-      isView = true;
-    }
-
     let modal = this.modalService.open(CategoryModalComponent, this.ngbModalOptions);
     modal.componentInstance.formData = rowData;
     modal.componentInstance.type = actionType;
@@ -65,19 +59,19 @@ export class CategoryAdminComponent implements OnInit {
           }
         }
       });
-
-    } else {
+    }
+    else {
       this.modifyAction(actionType, rowData);
     }
   }
 
-  onClickCreate(actionType:string){
+  onClickCreate(actionType: string) {
     let modal = this.modalService.open(CategoryModalComponent, this.ngbModalOptions);
     modal.componentInstance.type = actionType;
     modal.componentInstance.successEvent.subscribe(async (formData: any) => {
       if (actionType === Action.Create) {
-          await this.categoryService.createCategoryAsync(formData);
-          await this.getCategoriesAsync();
+        await this.categoryService.createCategoryAsync(formData);
+        await this.getCategoriesAsync();
       }
     });
   }

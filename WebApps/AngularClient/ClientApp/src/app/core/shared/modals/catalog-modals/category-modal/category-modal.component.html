@@ -5,22 +5,16 @@
   <form (ngSubmit)="onSubmit()">
     <div>
       <div class="modal-contents">
-        <label class="label" for="name">Name:</label>
-        <input type="text" class="form-control value" [disabled]="isDisabled" name="name" [(ngModel)]="tempFormData.name" (input)="markAsDirty('name')"
-          [class.error]="!isValidField('name') && isDirty.name">
-        <div *ngIf="!isValidField('name') && isDirty.name" class="error-message">Name is required and should only contain alphanumeric characters.</div>
+        <label class="label">Name:</label>
+        <input type="text" class="form-control value" [disabled]="isDisabled" name="name" [(ngModel)]="tempFormData.name">
       </div>
       <div class="modal-contents">
-        <label class="label" for="categoryCode">Code:</label>
-        <input type="text" class="form-control value" [disabled]="isDisabled" name="categoryCode" [(ngModel)]="tempFormData.categoryCode" (input)="markAsDirty('categoryCode')"
-          [class.error]="!isValidField('categoryCode') && isDirty.categoryCode">
-        <div *ngIf="!isValidField('categoryCode') && isDirty.categoryCode" class="error-message">Code is required and should only contain alphanumeric characters.</div>
+        <label class="label">Code:</label>
+        <input type="text" class="form-control value" [disabled]="isDisabled" name="categoryCode" [(ngModel)]="tempFormData.categoryCode">
       </div>
       <div class="modal-contents">
-        <label class="label" for="description">Description:</label>
-        <textarea class="form-control value" [disabled]="isDisabled" name="description" [(ngModel)]="tempFormData.description" (input)="markAsDirty('description')"
-          [class.error]="!isValidField('description') && isDirty.description"></textarea>
-        <div *ngIf="!isValidField('description') && isDirty.description" class="error-message">Description should not contain special characters.</div>
+        <label class="label">Description:</label>
+        <textarea class="form-control value" [disabled]="isDisabled" name="description" [(ngModel)]="tempFormData.description"></textarea>
       </div>
     </div>
     <div class="modal-footer" [ngClass]="{'reverse-row': type === 'view'}">
