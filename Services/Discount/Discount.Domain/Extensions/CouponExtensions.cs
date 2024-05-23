@@ -1,11 +1,10 @@
 using ApiClient.Discount.Models.Coupon;
-using Discount.Domain.Entities;
 
 namespace Discount.Domain.Extensions;
 
 public static class CouponExtensions
 {
-    public static CouponDetail ToDetail(this Coupon coupon)
+    public static CouponDetail ToDetail(this Entities.Coupon coupon)
     {
         return new CouponDetail()
         {
@@ -15,9 +14,9 @@ public static class CouponExtensions
         };
     }
     
-    public static Coupon ToCreateCoupon(this CreateCouponRequestBody requestBody)
+    public static Entities.Coupon ToCreateCoupon(this CreateCouponRequestBody requestBody)
     {
-        return new Coupon()
+        return new Entities.Coupon()
         {
             Name = requestBody.Name,
             Description = requestBody.Description,
@@ -27,9 +26,9 @@ public static class CouponExtensions
         };
     }
 
-    public static Coupon ToUpdateCoupon(this UpdateCouponRequestBody requestBody)
+    public static Entities.Coupon ToUpdateCoupon(this UpdateCouponRequestBody requestBody)
     {
-        return new Coupon()
+        return new Entities.Coupon()
         {
             Id = requestBody.Id!.Value,
             Name = requestBody.Name,

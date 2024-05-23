@@ -1,5 +1,4 @@
 using ApiClient.Discount.Models.Coupon;
-using Discount.Domain.Entities;
 using Discount.Domain.Extensions;
 using Discount.Domain.Repositories;
 
@@ -7,7 +6,7 @@ namespace Discount.Domain.Services;
 
 public interface ICouponService
 {
-    Task<Coupon> GetCouponByTextAsync(string searchText, CatalogType type);
+    Task<CouponDetail> GetCouponByTextAsync(string searchText, CatalogType type);
     Task<CouponDetail> CreateCouponAsync(CreateCouponRequestBody requestBody);
     Task<CouponDetail> UpdateCouponAsync(UpdateCouponRequestBody requestBody);
     Task<bool> DeleteCouponAsync(int id);
@@ -22,21 +21,21 @@ public class CouponService : ICouponService
         _couponRepository = couponRepository ?? throw new ArgumentNullException(nameof(couponRepository));
     }
 
-    public async Task<Coupon> GetCouponByTextAsync(string searchText, CatalogType type)
+    public async Task<CouponDetail> GetCouponByTextAsync(string searchText, CatalogType type)
     {
         var coupon = await _couponRepository.GetCouponAsync(searchText, type);
 
         if (coupon is null)
         {
             //ToDo Create Summary/Detail Coupon
-            return new Coupon()
+            return new CouponDetail()
             {
                 Amount = 0,
                 Description = "No Discount Desc"
             };
         }
 
-        return coupon;
+        return coupon.ToDetail();
     }
 
     public async Task<CouponDetail> CreateCouponAsync(CreateCouponRequestBody requestBody)

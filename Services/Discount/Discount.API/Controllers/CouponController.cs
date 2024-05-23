@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ApiClient.Discount.Models.Coupon;
-using Discount.Domain.Entities;
 using Discount.Domain.Services;
 
 namespace Discount.API.Controllers;
@@ -19,7 +18,7 @@ public class CouponController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<Coupon>> GetDiscount([FromQuery] string searchText, [FromQuery] CatalogType type)
+    public async Task<ActionResult<Domain.Entities.Coupon>> GetDiscount([FromQuery] string searchText, [FromQuery] CatalogType type)
     {
         var coupon = await _couponService.GetCouponByTextAsync(searchText, type);
         return Ok(coupon);

@@ -21,6 +21,7 @@
 
 	<ItemGroup>
 		<Protobuf Include="..\..\..\Common\ApiClient\Discount\Grpc\Protos\discount.proto" GrpcServices="Server"/>
+		<Protobuf Include="..\..\..\Common\ApiClient\Discount\Grpc\Protos\coupon.proto" GrpcServices="Server"/>
 	</ItemGroup>
 
 	<ItemGroup>

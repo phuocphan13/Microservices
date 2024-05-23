@@ -1,13 +1,12 @@
-using Discount.Domain.Entities;
 using Discount.Domain.Repositories.Common;
 
 namespace Discount.Domain.Repositories;
 
 public interface ICouponRepository
 {
-    Task<Coupon?> GetCouponAsync(string value, CatalogType type);
-    Task<Coupon> CreateCouponAsync(Coupon coupon);
-    Task<Coupon> UpdateCouponAsync(Coupon coupon);
+    Task<Entities.Coupon?> GetCouponAsync(string value, CatalogType type);
+    Task<Entities.Coupon> CreateCouponAsync(Entities.Coupon coupon);
+    Task<Entities.Coupon> UpdateCouponAsync(Entities.Coupon coupon);
     Task<bool> DeleteCouponAsync(int id);
 }
 
@@ -20,22 +19,22 @@ public class CouponRepository : ICouponRepository
         _baseRepository = baseRepository ?? throw new ArgumentNullException(nameof(baseRepository));
     }
 
-    public async Task<Coupon?> GetCouponAsync(string value, CatalogType type)
+    public async Task<Entities.Coupon?> GetCouponAsync(string value, CatalogType type)
     {
         const string query = "Code = @Code and @Type = Type";
 
-        var coupon = await _baseRepository.QueryFirstOrDefaultAsync<Coupon>(query, new { Code = value, Type = (int)type });
+        var coupon = await _baseRepository.QueryFirstOrDefaultAsync<Entities.Coupon>(query, new { Code = value, Type = (int)type });
 
         return coupon;
     }
 
-    public async Task<Coupon> CreateCouponAsync(Coupon coupon)
+    public async Task<Entities.Coupon> CreateCouponAsync(Entities.Coupon coupon)
     {
         var entity = await _baseRepository.CreateEntityAsync(coupon);
         return entity;
     }
 
-    public async Task<Coupon> UpdateCouponAsync(Coupon coupon)
+    public async Task<Entities.Coupon> UpdateCouponAsync(Entities.Coupon coupon)
     {
         var entity = await _baseRepository.UpdateEntityAsync(coupon);
         return entity;
@@ -43,7 +42,7 @@ public class CouponRepository : ICouponRepository
 
     public async Task<bool> DeleteCouponAsync(int id)
     {
-        var result = await _baseRepository.DeleteEntityAsync<Coupon>(id);
+        var result = await _baseRepository.DeleteEntityAsync<Entities.Coupon>(id);
 
         return result;
     }

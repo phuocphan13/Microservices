@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+option csharp_namespace = "Coupon.Grpc.Protos";
+
+service CouponProtoService {
+}
