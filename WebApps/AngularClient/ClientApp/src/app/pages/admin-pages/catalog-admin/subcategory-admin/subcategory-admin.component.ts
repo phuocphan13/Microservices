@@ -75,6 +75,12 @@ export class SubcategoryAdminComponent {
   onClickCreate(actionType:string){
     let modal = this.modalService.open(SubcategoryModalComponent, this.ngbModalOptions);
     modal.componentInstance.type = actionType;
+    modal.componentInstance.successEvent.subscribe(async (fromData: any) => {
+      if(actionType === Action.Create) {
+        await this.subCategoryService.creatSubCategoryAsync(fromData);
+        await this.getSubCategoryAsync();
+      }
+    });
     
   }
 }

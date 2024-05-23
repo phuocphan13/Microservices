@@ -107,7 +107,7 @@ export class ApiService {
       if (refreshToken) {
         return await this.generateAccessTokenByRefreshTokenAsync("", refreshToken);
       } else {
-        await this.router.navigate(["/log-in"]);
+        // await this.router.navigate(["/log-in"]);
         return;
       }
     }

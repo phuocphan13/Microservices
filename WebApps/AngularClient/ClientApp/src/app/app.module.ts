@@ -25,6 +25,9 @@ import { ConfirmationModalComponent } from "./core/shared/modals/common/confirma
 import { UnsavedConfirmModalComponent } from "./core/shared/modals/common/unsaved-confirm-modal/unsaved-confirm-modal.component";
 import { LogInComponent } from "./pages/identity-pages/log-in/log-in.component";
 import { ServiceModule } from "./core/service/service.module";
+import { SubCategoryService } from './core/service/catalog/subcategory.service';
+import { SubcategoryAdminComponent } from './pages/admin-pages/catalog-admin/subcategory-admin/subcategory-admin.component';
+import { SubcategoryModalComponent } from './core/shared/modals/catalog-modals/subcategory-modal/subcategory-modal.component';
 
 @NgModule({
   declarations: [

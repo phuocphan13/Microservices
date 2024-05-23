@@ -194,7 +194,7 @@
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
-      "DownstreamPathTemplate": "/api/v1/SubCategorySubCategory/CreateSubCategory",
+      "DownstreamPathTemplate": "/api/v1/SubCategory/CreateSubCategory",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
