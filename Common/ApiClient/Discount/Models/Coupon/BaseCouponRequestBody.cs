@@ -10,7 +10,9 @@ public class BaseCouponRequestBody
 
     public string? Description { get; set; }
 
-    public int Amount { get; set; }
+    public int Type { get; set; }
+
+    public decimal Value { get; set; }
     
     public DateTime FromDate { get; set; }
 

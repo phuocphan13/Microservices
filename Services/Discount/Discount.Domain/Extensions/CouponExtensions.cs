@@ -1,3 +1,4 @@
+using ApiClient.Discount.Enum;
 using ApiClient.Discount.Models.Coupon;
 
 namespace Discount.Domain.Extensions;
@@ -9,7 +10,8 @@ public static class CouponExtensions
         return new CouponDetail()
         {
             Id = coupon.Id,
-            Amount = coupon.Amount,
+            Value = coupon.Value,
+            Type = (int)coupon.Type,
             Description = coupon.Description
         };
     }
@@ -20,7 +22,8 @@ public static class CouponExtensions
         {
             Name = requestBody.Name,
             Description = requestBody.Description,
-            Amount = requestBody.Amount,
+            Value = requestBody.Value,
+            Type = (CouponEnum)requestBody.Type,
             FromDate = requestBody.FromDate,
             ToDate = requestBody.ToDate,
         };
@@ -33,7 +36,8 @@ public static class CouponExtensions
             Id = requestBody.Id!.Value,
             Name = requestBody.Name,
             Description = requestBody.Description,
-            Amount = requestBody.Amount,
+            Value = requestBody.Value,
+            Type = (CouponEnum)requestBody.Type,
             FromDate = requestBody.FromDate,
             ToDate = requestBody.ToDate,
         };

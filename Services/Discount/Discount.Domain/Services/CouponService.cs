@@ -6,7 +6,7 @@ namespace Discount.Domain.Services;
 
 public interface ICouponService
 {
-    Task<CouponDetail> GetCouponByTextAsync(string searchText, CatalogType type);
+    Task<CouponDetail> GetCouponAsync(string id);
     Task<CouponDetail> CreateCouponAsync(CreateCouponRequestBody requestBody);
     Task<CouponDetail> UpdateCouponAsync(UpdateCouponRequestBody requestBody);
     Task<bool> DeleteCouponAsync(int id);
@@ -21,16 +21,15 @@ public class CouponService : ICouponService
         _couponRepository = couponRepository ?? throw new ArgumentNullException(nameof(couponRepository));
     }
 
-    public async Task<CouponDetail> GetCouponByTextAsync(string searchText, CatalogType type)
+    public async Task<CouponDetail> GetCouponAsync(string id)
     {
-        var coupon = await _couponRepository.GetCouponAsync(searchText, type);
+        var coupon = await _couponRepository.GetCouponAsync(id);
 
         if (coupon is null)
         {
             //ToDo Create Summary/Detail Coupon
             return new CouponDetail()
             {
-                Amount = 0,
                 Description = "No Discount Desc"
             };
         }

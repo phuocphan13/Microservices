@@ -139,7 +139,7 @@ public static class QueryBuilderExtensions
 
         if (custom is ColumnAttribute columnAttribute)
         {
-            type += columnAttribute.TypeName;
+            type += columnAttribute.TypeName!.ToUpper();
         }
 
         type += GenerateRequired(prop);

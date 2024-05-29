@@ -1,7 +1,6 @@
 ﻿using AngularClient.Services;
 using ApiClient.Catalog.Models.Catalog.Category;
 using Microsoft.AspNetCore.Mvc;
-using Platform.ApiBuilder;
 
 namespace AngularClient.Controllers.Catalog;
 
@@ -32,7 +31,7 @@ public class CategoryController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCategoryById(string id, CancellationToken cancellationToken)
     {
-        if(string.IsNullOrWhiteSpace(id))
+        if (string.IsNullOrWhiteSpace(id))
         {
             return BadRequest("The Id field cannot be null");
         }

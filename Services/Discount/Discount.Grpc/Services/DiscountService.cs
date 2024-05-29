@@ -2,7 +2,6 @@
 using AutoMapper;
 using Discount.Domain.Services;
 using Discount.Grpc.Protos;
-using Google.Protobuf.Collections;
 using Grpc.Core;
 
 namespace Discount.Grpc.Services;
@@ -36,8 +35,8 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     
         _logger.LogInformation($"Discount is retrieved for Catalog Code: {discount.CatalogCode} with Amount {discount.Amount}");
     
-        var couponModel = _mapper.Map<DiscountDetailModel>(discount);
-        return couponModel;
+        var discountModel = _mapper.Map<DiscountDetailModel>(discount);
+        return discountModel;
     }
 
     public override async Task<ListDetailsModel> GetListDiscounts(GetListDiscountRequest request, ServerCallContext context)

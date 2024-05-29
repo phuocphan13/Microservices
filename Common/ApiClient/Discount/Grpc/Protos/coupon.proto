@@ -1,7 +1,24 @@
 syntax = "proto3";
 
 option csharp_namespace = "Coupon.Grpc.Protos";
+package coupon;
 
 service CouponProtoService {
-  
+  rpc GetCoupon (GetCouponRequest) returns (CouponDetailModel);
+}
+
+enum CouponType {
+  Percent = 0;
+  Fixed = 1;
+}
+
+message GetCouponRequest {
+  string id = 1;
+}
+
+message CouponDetailModel {
+  int32 id = 1;
+  string Description = 2;
+  CouponType Type = 3;
+  string Value = 4;
 }

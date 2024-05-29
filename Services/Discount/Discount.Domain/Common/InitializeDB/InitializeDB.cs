@@ -1,3 +1,4 @@
+using ApiClient.Discount.Enum;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -32,7 +33,8 @@ public static class InitializeDB
         {
             new()
             {
-                Amount = 200,
+                Type = CouponEnum.Percent,
+                Value = 20,
                 Name = "SamSung 10",
                 Description = "SamSung 10 Description",
                 CreatedBy = "Admin",

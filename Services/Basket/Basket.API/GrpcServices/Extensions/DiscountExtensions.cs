@@ -9,7 +9,7 @@ public static class DiscountExtensions
     {
         return new CouponDetail()
         {
-            Amount = model.Amount,
+            // Amount = model.Amount,
             Description = model.Description,
             Id = model.Id,
         };

@@ -17,12 +17,12 @@ public class CouponController : ControllerBase
         _couponService = couponService ?? throw new ArgumentNullException(nameof(couponService));
     }
 
-    [HttpGet]
-    public async Task<ActionResult<Domain.Entities.Coupon>> GetDiscount([FromQuery] string searchText, [FromQuery] CatalogType type)
-    {
-        var coupon = await _couponService.GetCouponByTextAsync(searchText, type);
-        return Ok(coupon);
-    }
+    // [HttpGet]
+    // public async Task<ActionResult<Domain.Entities.Coupon>> GetDiscount([FromQuery] string searchText, [FromQuery] CatalogType type)
+    // {
+    //     var coupon = await _couponService.GetCouponByTextAsync(searchText, type);
+    //     return Ok(coupon);
+    // }
 
     [HttpPost]
     public async Task<ActionResult<CouponDetail>> CreateDiscount([FromBody] CreateCouponRequestBody requestBody)

@@ -1,4 +1,3 @@
-using ApiClient.Common;
 using Platform.ApiBuilder;
 
 namespace UnitTest.Common.Helpers;
