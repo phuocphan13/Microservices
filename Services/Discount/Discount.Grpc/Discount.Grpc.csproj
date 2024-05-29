@@ -13,10 +13,6 @@
 	<ItemGroup>
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
 		<PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.63.0" />
-		<PackageReference Include="Grpc.Tools" Version="2.64.0">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
 	</ItemGroup>
 
@@ -26,7 +22,6 @@
 
 	<ItemGroup>
 		<Protobuf Include="..\..\..\Common\ApiClient\Discount\Grpc\Protos\*.proto" GrpcServices="Server" />
-		<Content Include="@(Protobuf)" LinkBase="Protos" />
 	</ItemGroup>
 
 	<ItemGroup>
