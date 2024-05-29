@@ -1,4 +1,3 @@
-using Discount.Domain.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -17,8 +16,8 @@ public static class InitializeDB
         {
             var connection = new NpgsqlConnection(configuration[DatabaseConst.ConnectionSetting.Postgres.ConnectionString]);
             
-            await ConfigureDB.DropTable<Coupon>(connection);
-            await ConfigureDB.CreateTable<Coupon>(connection);
+            await ConfigureDB.DropTable<Entities.Coupon>(connection);
+            await ConfigureDB.CreateTable<Entities.Coupon>(connection);
             await ConfigureDB.InsertTable(connection, GenerateCoupons());
 
             await ConfigureDB.DropTable<Entities.Discount>(connection);
@@ -27,9 +26,9 @@ public static class InitializeDB
         }
     }
 
-    private static List<Coupon> GenerateCoupons()
+    private static List<Entities.Coupon> GenerateCoupons()
     {
-        return new List<Coupon>()
+        return new List<Entities.Coupon>()
         {
             new()
             {

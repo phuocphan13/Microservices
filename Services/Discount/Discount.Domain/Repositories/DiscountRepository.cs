@@ -51,7 +51,7 @@ public class DiscountRepository : IDiscountRepository
     {
         const string query = "Id = @Id";
 
-        var entity = await _baseRepository.QueryFirstOrDefaultAsync<Entities.Discount>(query, new { Id = id });
+        var entity = await _baseRepository.QueryFirstOrDefaultAsync<Entities.Discount>(query, new { Id = int.Parse(id) });
 
         return entity;
     }
