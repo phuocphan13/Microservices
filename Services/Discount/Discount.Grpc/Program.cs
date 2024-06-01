@@ -1,6 +1,7 @@
 using ApiClient;
 using Discount.Domain;
 using Discount.Domain.Common.InitializeDB;
+using Discount.Grpc.GrpcServices;
 using Discount.Grpc.Services;
 using Platform;
 

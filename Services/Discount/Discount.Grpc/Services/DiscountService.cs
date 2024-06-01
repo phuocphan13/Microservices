@@ -4,7 +4,7 @@ using Discount.Domain.Services;
 using Discount.Grpc.Protos;
 using Grpc.Core;
 
-namespace Discount.Grpc.Services;
+namespace Discount.Grpc.GrpcServices;
 
 public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
 {
