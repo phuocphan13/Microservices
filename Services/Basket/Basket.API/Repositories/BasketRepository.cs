@@ -6,9 +6,9 @@ namespace Basket.API.Repositories;
 
 public interface IBasketRepository
 {
-    Task<ShoppingCart?> GetBasket(string userName);
-    Task<ShoppingCart?> UpdateBasket(ShoppingCart basket);
-    Task DeleteBasket(string userName);
+    Task<ShoppingCart?> GetBasket(string userName, CancellationToken cancellationToken = default);
+    Task<ShoppingCart?> UpdateBasket(ShoppingCart basket, CancellationToken cancellationToken = default);
+    Task DeleteBasket(string userName, CancellationToken cancellationToken = default);
 }
 
 public class BasketRepository : IBasketRepository
@@ -20,9 +20,9 @@ public class BasketRepository : IBasketRepository
         _redisCache = redisCache ?? throw new ArgumentNullException(nameof(redisCache));
     }
 
-    public async Task<ShoppingCart?> GetBasket(string userName)
+    public async Task<ShoppingCart?> GetBasket(string userName, CancellationToken cancellationToken)
     {
-        var basket = await _redisCache.GetStringAsync(userName);
+        var basket = await _redisCache.GetStringAsync(userName, cancellationToken);
         if(string.IsNullOrWhiteSpace(basket))
         {
             return null;
@@ -31,15 +31,15 @@ public class BasketRepository : IBasketRepository
         return JsonConvert.DeserializeObject<ShoppingCart>(basket);
     }
 
-    public async Task<ShoppingCart?> UpdateBasket(ShoppingCart basket)
+    public async Task<ShoppingCart?> UpdateBasket(ShoppingCart basket, CancellationToken cancellationToken)
     {
-        await _redisCache.SetStringAsync(basket.UserName, JsonConvert.SerializeObject(basket));
+        await _redisCache.SetStringAsync(basket.UserName, JsonConvert.SerializeObject(basket), cancellationToken);
 
-        return await GetBasket(basket.UserName!);
+        return await GetBasket(basket.UserName!, cancellationToken);
     }
 
-    public async Task DeleteBasket(string userName)
+    public async Task DeleteBasket(string userName, CancellationToken cancellationToken)
     {
-        await _redisCache.RemoveAsync(userName);
+        await _redisCache.RemoveAsync(userName, cancellationToken);
     }
 }

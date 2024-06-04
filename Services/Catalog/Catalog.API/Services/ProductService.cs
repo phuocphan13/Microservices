@@ -12,6 +12,7 @@ public interface IProductService
     Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken = default);
     Task<ProductDetail?> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<List<ProductSummary>> GetProductsByCategoryAsync(string category, CancellationToken cancellationToken = default);
+    Task<List<ProductSummary>?> GetProductsByListCodesAsync(List<string> codes, CancellationToken cancellationToken = default);
     Task<ProductDetail?> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<bool> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
@@ -83,6 +84,20 @@ public class ProductService : IProductService
         
         var product = await MappingProductDetailInternalAsync(entity, cancellationToken);
         return product;
+    }
+
+    public async Task<List<ProductSummary>?> GetProductsByListCodesAsync(List<string> codes, CancellationToken cancellationToken)
+    {
+        var entities = await _productRepository.GetEntitiesQueryAsync(x => codes.Contains(x.ProductCode!), cancellationToken);
+
+        if (entities is null || !entities.Any())
+        {
+            return null;
+        }
+
+        var products = await GetProductSummariesInternalAsync(entities, cancellationToken);
+
+        return products;
     }
 
     public async Task<ProductDetail?> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken)

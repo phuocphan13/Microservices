@@ -1,0 +1,32 @@
+using ApiClient.Basket.Models;
+using Basket.API.Entitites;
+
+namespace Basket.API.Extensions.ModelExtensions;
+
+public static class ShoppingCartExtensions
+{
+    public static CartDetail ToDetail(this ShoppingCart entity)
+    {
+        return new CartDetail
+        {
+            UserName = entity.UserName,
+            Items = entity.Items.Select(x => new CartItem
+            {
+                Price = x.Price,
+                ProductCode = x.ProductCode,
+                Quantity = x.Quantity
+            }).ToList(),
+            TotalPrice = entity.TotalPrice
+        };
+    }
+
+    public static void ToEntityFromUpdate(this ShoppingCart entity, UpdateCartRequestBody requestBody)
+    {
+        entity.Items = requestBody.Items.Select(x => new ShoppingCartItem()
+        {
+            Price = x.Price,
+            ProductCode = x.ProductCode,
+            Quantity = x.Quantity
+        }).ToList();
+    }
+}

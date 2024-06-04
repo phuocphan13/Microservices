@@ -63,7 +63,7 @@ public class DiscountGrpcService : IDiscountGrpcService
         {
             result = await _discountGrpcService.GetListDiscountsAsync(request);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return new();
         }

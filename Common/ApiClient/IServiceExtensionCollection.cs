@@ -1,3 +1,4 @@
+using ApiClient.Basket;
 using ApiClient.Catalog.Catalog;
 using ApiClient.Catalog.Category;
 using ApiClient.Catalog.Product;
@@ -16,6 +17,13 @@ public static class IServiceExtensionCollection
         services.AddScoped<ISubCategoryApiClient, SubCategoryApiClient>();
         services.AddScoped<ICatalogApiClient, CatalogApiClient>();
 
+        return services;
+    }
+    
+    public static IServiceCollection AddBasketServices(this IServiceCollection services)
+    {
+        services.AddScoped<IBasketApiClient, BasketApiClient>();
+        
         return services;
     }
     
