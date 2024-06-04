@@ -3,16 +3,16 @@ using Microsoft.Extensions.Configuration;
 using Platform.ApiBuilder;
 using Platform.Common.Session;
 
-namespace ApiClient.Catalog.Validation;
+namespace ApiClient.Catalog.Catalog;
 
-public interface IValidationApiClient
+public interface ICatalogApiClient
 {
     Task<ApiStatusResult> ValidateCatalogCodeAsync(string catalogCode, DiscountEnum type, CancellationToken cancellationToken = default);
 }
 
-public class ValidationApiClient : CommonApiClient, IValidationApiClient
+public class CatalogApiClient : CommonApiClient, ICatalogApiClient
 {
-    public ValidationApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration, ISessionState sessionState) 
+    public CatalogApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration, ISessionState sessionState) 
         : base(httpClientFactory, configuration, sessionState)
     {
     }

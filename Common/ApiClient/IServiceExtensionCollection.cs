@@ -1,7 +1,7 @@
+using ApiClient.Catalog.Catalog;
 using ApiClient.Catalog.Category;
 using ApiClient.Catalog.Product;
 using ApiClient.Catalog.SubCategory;
-using ApiClient.Catalog.Validation;
 using ApiClient.IdentityServer;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +14,7 @@ public static class IServiceExtensionCollection
         services.AddScoped<IProductApiClient, ProductApiClient>();
         services.AddScoped<ICategoryApiClient, CategoryApiClient>();
         services.AddScoped<ISubCategoryApiClient, SubCategoryApiClient>();
-        services.AddScoped<IValidationApiClient, ValidationApiClient>();
+        services.AddScoped<ICatalogApiClient, CatalogApiClient>();
 
         return services;
     }

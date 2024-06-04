@@ -5,18 +5,18 @@ using Platform.ApiBuilder;
 
 namespace Catalog.API.Services;
 
-public interface IValidationService
+public interface ICatalogService
 {
     Task<ApiStatusResult> ValidateCatalogCodeAsync(string? catalogCode, DiscountEnum type, CancellationToken cancellationToken = default);
 }
 
-public class ValidationService : IValidationService
+public class CatalogService : ICatalogService
 {
     private readonly IRepository<Category> _categoryRepository;
     private readonly IRepository<SubCategory> _subCategoryRepository;
     private readonly IRepository<Product> _productRepository;
 
-    public ValidationService(
+    public CatalogService(
         IRepository<Category> categoryRepository,
         IRepository<SubCategory> subCategoryRepository,
         IRepository<Product> productRepository)

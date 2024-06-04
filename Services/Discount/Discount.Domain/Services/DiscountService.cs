@@ -1,7 +1,7 @@
+using ApiClient.Catalog.Catalog;
 using ApiClient.Discount.Models.Discount;
 using Discount.Domain.Extensions;
 using Discount.Domain.Repositories;
-using Discount.Domain.Services.Externals;
 
 namespace Discount.Domain.Services;
 
@@ -18,12 +18,12 @@ public interface IDiscountService
 public class DiscountService : IDiscountService
 {
     private readonly IDiscountRepository _discountRepository;
-    private readonly ICatalogService _catalogService;
+    private readonly ICatalogApiClient _catalogApiClient;
 
-    public DiscountService(IDiscountRepository discountRepository, ICatalogService catalogService)
+    public DiscountService(IDiscountRepository discountRepository, ICatalogApiClient catalogApiClient)
     {
         _discountRepository = discountRepository ?? throw new ArgumentNullException(nameof(discountRepository));
-        _catalogService = catalogService ?? throw new ArgumentNullException(nameof(catalogService));
+        _catalogApiClient = catalogApiClient ?? throw new ArgumentNullException(nameof(catalogApiClient));
     }
 
     public async Task<DiscountDetail?> GetDiscountAsync(string id)
@@ -139,7 +139,7 @@ public class DiscountService : IDiscountService
 
     private async Task<DiscountDetail?> CreateDiscountInternalAsync(CreateDiscountRequestBody requestBody, CancellationToken cancellationToken)
     {
-        var isValid = await ValidationDateAsync(requestBody, cancellationToken);
+        var isValid = await ValidateDataAsync(requestBody, cancellationToken);
 
         if (!isValid)
         {
@@ -155,7 +155,7 @@ public class DiscountService : IDiscountService
 
     private async Task<DiscountDetail?> UpdateDiscountInternalAsync(UpdateDiscountRequestBody requestBody, CancellationToken cancellationToken)
     {
-        var isValid = await ValidationDateAsync(requestBody, cancellationToken);
+        var isValid = await ValidateDataAsync(requestBody, cancellationToken);
         
         if (!isValid)
         {
@@ -185,16 +185,29 @@ public class DiscountService : IDiscountService
     }
 
     #region Internal Function
-
-    private async Task<bool> ValidationDateAsync<T>(T requestBody, CancellationToken cancellationToken)
+    private async Task<bool> ValidateDataAsync<T>(T requestBody, CancellationToken cancellationToken)
         where T : BaseDiscountRequestBody
     {
-        var isExisted = await _catalogService.ValidateCatalogCodeExistedAsync(requestBody.CatalogCode!, requestBody.Type!.Value, cancellationToken);
+        var isDateValid = await ValidationDateAsync(requestBody);
+        
+        var isCatalogCodeExisted = await ValidateCatalogCodeExistedAsync(requestBody.CatalogCode!, requestBody.Type!.Value, cancellationToken);
 
-        var isOverlap = await _discountRepository.AnyDateAsync(requestBody.CatalogCode!, requestBody.Type!.Value, requestBody.FromDate, requestBody.ToDate);
-
-        return isExisted && !isOverlap;
+        return isDateValid && isCatalogCodeExisted;
     }
 
+    private async Task<bool> ValidationDateAsync<T>(T requestBody)
+        where T : BaseDiscountRequestBody
+    {
+        var isOverlap = await _discountRepository.AnyDateAsync(requestBody.CatalogCode!, requestBody.Type!.Value, requestBody.FromDate, requestBody.ToDate);
+
+        return !isOverlap;
+    }
+    
+    private async Task<bool> ValidateCatalogCodeExistedAsync(string catalogCode, DiscountEnum type, CancellationToken cancellationToken)
+    {
+        var result = await _catalogApiClient.ValidateCatalogCodeAsync(catalogCode, type, cancellationToken);
+
+        return result.IsSuccessStatusCode;
+    }
     #endregion
 }
