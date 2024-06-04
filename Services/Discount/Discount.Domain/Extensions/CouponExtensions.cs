@@ -10,6 +10,7 @@ public static class CouponExtensions
         return new CouponDetail()
         {
             Id = coupon.Id,
+            Name = coupon.Name,
             Value = coupon.Value,
             Type = (int)coupon.Type,
             Description = coupon.Description

@@ -1,6 +1,9 @@
+using ApiClient.Discount.Models.Coupon;
+using ApiClient.Discount.Models.Discount;
 using AutoMapper;
 using Coupon.Grpc.Protos;
 using Discount.Domain.Services;
+using Discount.Grpc.Protos;
 using Grpc.Core;
 
 namespace Discount.Grpc.Services;
@@ -35,6 +38,21 @@ public class CouponService : CouponProtoService.CouponProtoServiceBase
         _logger.LogInformation($"Coupon is retrieved for Id: {request.Id}");
         
         var couponModel = _mapper.Map<CouponDetailModel>(coupon);
+        return couponModel;
+    }
+
+    public override async Task<CouponDetailModel> CreateCoupon(Coupon.Grpc.Protos.CreateCouponRequest request, ServerCallContext context)
+    {
+        var requestBody = _mapper.Map<CreateCouponRequestBody>(request);
+        var result = await _couponService.CreateCouponAsync(requestBody);
+
+        if (result is null)
+        {
+            _logger.LogError("Discount is failed created.");
+        }
+
+        var couponModel = _mapper.Map<CouponDetailModel>(requestBody);
+
         return couponModel;
     }
 }
