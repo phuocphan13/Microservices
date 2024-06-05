@@ -1,9 +1,7 @@
 using ApiClient.Discount.Models.Coupon;
-using ApiClient.Discount.Models.Discount;
 using AutoMapper;
 using Coupon.Grpc.Protos;
 using Discount.Domain.Services;
-using Discount.Grpc.Protos;
 using Grpc.Core;
 
 namespace Discount.Grpc.Services;

@@ -1,11 +1,14 @@
 using ApiClient.Discount.Models.Coupon;
+using ApiClient.Discount.Models.Discount;
 using AutoMapper;
 using Coupon.Grpc.Protos;
 using Discount.Domain.Services;
+using Discount.Grpc.Protos;
 using Microsoft.Extensions.Logging;
 using Moq;
 using UnitTest.Common.Helpers;
 using UnitTest.Common.Helpers.Grpc;
+using CreateCouponRequest = Coupon.Grpc.Protos.CreateCouponRequest;
 
 namespace Discount.Tests.Grpc;
 
@@ -43,7 +46,7 @@ public class CouponGrpcServiceTests
         couponService.Setup(x => x.GetCouponAsync(It.IsAny<string>())).ReturnsAsync(couponDetail);
         mapper.ConfigMapper<CouponDetail, CouponDetailModel>(couponModel);
 
-        var service = new Discount.Grpc.Services.CouponService((ILogger<Discount.Grpc.Services.CouponService>)couponService.Object, (IMapper)logger.Object, (ICouponService)mapper.Object);
+        var service = new Discount.Grpc.Services.CouponService(logger.Object, mapper.Object, couponService.Object);
         var result = await service.GetCoupon(request, TestServerCallContextHelpers.Create());
 
         Assert.Multiple(() =>
@@ -52,6 +55,7 @@ public class CouponGrpcServiceTests
             Assert.That(description, Is.EqualTo(result.Description));
         });
     }
+
 
     [Test]
     public async Task CreateCouponAsync_ExpectedResult()
@@ -76,5 +80,30 @@ public class CouponGrpcServiceTests
             Value = 20.ToString(),
             Type = (CouponType)1
         };
-}
+
+        var requestBody = new CreateCouponRequest()
+        {
+            Description = description,
+            Name = name,
+            Value = 20.ToString(),
+            Type = (CouponType)1
+        };
+
+        var couponService = new Mock<ICouponService>();
+        var mapper = new Mock<IMapper>();
+        var logger = new Mock<ILogger<Discount.Grpc.Services.CouponService>>();
+
+        couponService.Setup(x => x.CreateCouponAsync(It.IsAny<CreateCouponRequestBody>())).ReturnsAsync(couponDetail);
+        mapper.ConfigMapper<CouponDetail, CouponDetailModel>(couponModel);
+
+        var service = new Discount.Grpc.Services.CouponService(logger.Object, mapper.Object, couponService.Object);
+        var result = await service.CreateCoupon(requestBody, TestServerCallContextHelpers.Create());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(id, Is.EqualTo(result.Id.ToString()));
+            Assert.That(description, Is.EqualTo(result.Description));
+        });
+
+    }
 }
