@@ -3,6 +3,7 @@ using ApiClient.Catalog.Catalog;
 using ApiClient.Catalog.Category;
 using ApiClient.Catalog.Product;
 using ApiClient.Catalog.SubCategory;
+using ApiClient.DirectApiClients.Catalog;
 using ApiClient.IdentityServer;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,7 +11,7 @@ namespace ApiClient;
 
 public static class IServiceExtensionCollection
 {
-    public static IServiceCollection AddCatalogServices(this IServiceCollection services)
+    public static IServiceCollection AddCatalogApiClient(this IServiceCollection services)
     {
         services.AddScoped<IProductApiClient, ProductApiClient>();
         services.AddScoped<ICategoryApiClient, CategoryApiClient>();
@@ -20,10 +21,17 @@ public static class IServiceExtensionCollection
         return services;
     }
     
-    public static IServiceCollection AddBasketServices(this IServiceCollection services)
+    public static IServiceCollection AddBasketApiClient(this IServiceCollection services)
     {
         services.AddScoped<IBasketApiClient, BasketApiClient>();
         
+        return services;
+    }
+
+    public static IServiceCollection AddCatalogInternalClient(this IServiceCollection services)
+    {
+        services.AddScoped<IProductInternalClient, ProductInternalClient>();
+
         return services;
     }
     

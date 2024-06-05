@@ -7,7 +7,7 @@ namespace Basket.API.Repositories;
 public interface IBasketRepository
 {
     Task<ShoppingCart?> GetBasket(string userName, CancellationToken cancellationToken = default);
-    Task<ShoppingCart?> UpdateBasket(ShoppingCart basket, CancellationToken cancellationToken = default);
+    Task<ShoppingCart?> SaveCart(ShoppingCart cart, CancellationToken cancellationToken = default);
     Task DeleteBasket(string userName, CancellationToken cancellationToken = default);
 }
 
@@ -31,11 +31,11 @@ public class BasketRepository : IBasketRepository
         return JsonConvert.DeserializeObject<ShoppingCart>(basket);
     }
 
-    public async Task<ShoppingCart?> UpdateBasket(ShoppingCart basket, CancellationToken cancellationToken)
+    public async Task<ShoppingCart?> SaveCart(ShoppingCart cart, CancellationToken cancellationToken)
     {
-        await _redisCache.SetStringAsync(basket.UserName, JsonConvert.SerializeObject(basket), cancellationToken);
+        await _redisCache.SetStringAsync(cart.UserId, JsonConvert.SerializeObject(cart), cancellationToken);
 
-        return await GetBasket(basket.UserName!, cancellationToken);
+        return await GetBasket(cart.UserId, cancellationToken);
     }
 
     public async Task DeleteBasket(string userName, CancellationToken cancellationToken)
