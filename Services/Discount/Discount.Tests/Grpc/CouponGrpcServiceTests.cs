@@ -52,4 +52,29 @@ public class CouponGrpcServiceTests
             Assert.That(description, Is.EqualTo(result.Description));
         });
     }
+
+    [Test]
+    public async Task CreateCouponAsync_ExpectedResult()
+    {
+        string id = "1";
+        string description = "Test Create Coupon";
+        string name = "Test";
+
+        var couponDetail = new CouponDetail()
+        {
+            Id = int.Parse(id),
+            Description = description,
+            Name = name,
+            Value = 20
+        };
+
+        var couponModel = new CouponDetailModel()
+        {
+            Id = int.Parse(id),
+            Description = description,
+            Name = name,
+            Value = 20.ToString(),
+            Type = (CouponType)1
+        };
+}
 }
