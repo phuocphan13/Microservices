@@ -1,9 +1,7 @@
 using ApiClient.Discount.Models.Coupon;
-using ApiClient.Discount.Models.Discount;
 using AutoMapper;
 using Coupon.Grpc.Protos;
 using Discount.Domain.Services;
-using Discount.Grpc.Protos;
 using Microsoft.Extensions.Logging;
 using Moq;
 using UnitTest.Common.Helpers;
@@ -57,8 +55,7 @@ public class CouponGrpcServiceTests
             Assert.That(description, Is.EqualTo(result.Description));
         });
     }
-
-
+    
     [Test]
     public async Task CreateCouponAsync_ExpectedResult()
     {
@@ -106,6 +103,5 @@ public class CouponGrpcServiceTests
             Assert.That(id, Is.EqualTo(result.Id.ToString()));
             Assert.That(description, Is.EqualTo(result.Description));
         });
-
     }
 }

@@ -25,7 +25,7 @@ public class CouponService : CouponProtoService.CouponProtoServiceBase
         {
             throw new RpcException(new Status(StatusCode.InvalidArgument, $"Id cannot be null."));
         }
-        
+
         var coupon = await _couponService.GetCouponAsync(request.Id);
         
         if (coupon is null)
@@ -39,8 +39,10 @@ public class CouponService : CouponProtoService.CouponProtoServiceBase
         return couponModel;
     }
 
-    public override async Task<CouponDetailModel> CreateCoupon(Coupon.Grpc.Protos.CreateCouponRequest request, ServerCallContext context)
+    public override async Task<CouponDetailModel> CreateCoupon(CreateCouponRequest request, ServerCallContext context)
     {
+        //Todo-Phat: Add Validation for other fields and Check if Entity is Exist
+        
         var requestBody = _mapper.Map<CreateCouponRequestBody>(request);
         var result = await _couponService.CreateCouponAsync(requestBody);
 

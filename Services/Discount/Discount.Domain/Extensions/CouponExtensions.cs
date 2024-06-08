@@ -34,7 +34,7 @@ public static class CouponExtensions
     {
         return new Entities.Coupon()
         {
-            Id = requestBody.Id!.Value,
+            Id = requestBody.Id,
             Name = requestBody.Name,
             Description = requestBody.Description,
             Value = requestBody.Value,
