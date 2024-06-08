@@ -7,7 +7,7 @@ namespace Discount.Domain.Entities;
 public class Coupon : ExtendEntity
 {
     [Required]
-    public string? Name { get; set; }
+    public string Name { get; set; } = null!;
     
     [MaxLength(256)]
     public string? Description { get; set; }

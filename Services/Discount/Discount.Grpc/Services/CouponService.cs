@@ -1,10 +1,12 @@
+using ApiClient.Discount.Models.Coupon;
 using AutoMapper;
 using Coupon.Grpc.Protos;
 using Discount.Domain.Services;
+using Discount.Grpc.Protos;
 using Grpc.Core;
 
 namespace Discount.Grpc.Services;
-
+// ------------- GRPC SERVICE ----------------- GRPC SERVICE ----------------- GRPC SERVICE ----------------- GRPC SERVICE -----------------
 public class CouponService : CouponProtoService.CouponProtoServiceBase
 {
     private readonly ILogger<CouponService> _logger;
@@ -36,5 +38,43 @@ public class CouponService : CouponProtoService.CouponProtoServiceBase
         
         var couponModel = _mapper.Map<CouponDetailModel>(coupon);
         return couponModel;
+    }
+
+    // ------------- GRPC SERVICE ----------------- GRPC SERVICE ----------------- GRPC SERVICE ----------------- GRPC SERVICE -----------------
+    public override async Task<CouponDetailModel> UpdateCoupon(EditCouponRequest request, ServerCallContext context)
+    {
+        var requestBody = _mapper.Map<UpdateCouponRequestBody>(request);
+
+        var result = await _couponService.UpdateCouponAsync(requestBody);
+
+        if (result is null)
+        {
+            _logger.LogError("Coupon update failed.");
+        }
+
+        _logger.LogInformation($"Coupon updated successfully.");
+        var couponModel = _mapper.Map<CouponDetailModel>(result);
+
+        return couponModel;
+    }
+    // ------------- GRPC SERVICE ----------------- GRPC SERVICE ----------------- GRPC SERVICE ----------------- GRPC SERVICE -----------------
+
+    public override async Task<InactiveCouponResponse> InactiveCoupon (InactiveCounponRequest request, ServerCallContext context)
+    {
+        var result = await _couponService.InactiveCoupon(request.Id);
+
+        if(result is false)
+        {
+            _logger.LogError("Coupon delete failed.");
+        }
+
+        _logger.LogInformation("Coupon delete is successfully.");
+
+        var response = new InactiveCouponResponse()
+        {
+            Success = true
+        };
+
+        return response;
     }
 }

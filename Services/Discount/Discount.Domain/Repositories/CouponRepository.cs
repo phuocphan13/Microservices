@@ -7,7 +7,7 @@ public interface ICouponRepository
     Task<Entities.Coupon?> GetCouponAsync(string id);
     Task<Entities.Coupon> CreateCouponAsync(Entities.Coupon coupon);
     Task<Entities.Coupon> UpdateCouponAsync(Entities.Coupon coupon);
-    Task<bool> DeleteCouponAsync(int id);
+    Task<bool> InactiveCouponAsync(int id);
 }
 
 public class CouponRepository : ICouponRepository
@@ -40,9 +40,9 @@ public class CouponRepository : ICouponRepository
         return entity;
     }
 
-    public async Task<bool> DeleteCouponAsync(int id)
+    public async Task<bool> InactiveCouponAsync(int id)
     {
-        var result = await _baseRepository.DeleteEntityAsync<Entities.Coupon>(id);
+        var result = await _baseRepository.InactiveEntityAsync<Entities.Coupon>(id);
 
         return result;
     }

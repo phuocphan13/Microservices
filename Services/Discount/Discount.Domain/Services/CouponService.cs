@@ -9,7 +9,7 @@ public interface ICouponService
     Task<CouponDetail> GetCouponAsync(string id);
     Task<CouponDetail> CreateCouponAsync(CreateCouponRequestBody requestBody);
     Task<CouponDetail> UpdateCouponAsync(UpdateCouponRequestBody requestBody);
-    Task<bool> DeleteCouponAsync(int id);
+    Task<bool> InactiveCoupon(int id);
 }
 
 public class CouponService : ICouponService
@@ -48,16 +48,18 @@ public class CouponService : ICouponService
 
     public async Task<CouponDetail> UpdateCouponAsync(UpdateCouponRequestBody requestBody)
     {
-        var coupon = requestBody.ToUpdateCoupon();
+        var data = await _couponRepository.GetCouponAsync(requestBody.Id.ToString());
 
-        var entity = await _couponRepository.UpdateCouponAsync(coupon);
+        data.ToUpdateCoupon(requestBody);
+
+        var entity = await _couponRepository.UpdateCouponAsync(data);
 
         return entity.ToDetail();
     }
 
-    public async Task<bool> DeleteCouponAsync(int id)
+    public async Task<bool> InactiveCoupon(int id)
     {
-        var result = await _couponRepository.DeleteCouponAsync(id);
+        var result = await _couponRepository.InactiveCouponAsync(id);
 
         return result;
     }
