@@ -138,13 +138,13 @@ public class CouponGrpcServiceTests
 
         var couponService = new Mock<ICouponService>();
         var mapper = new Mock<IMapper>();
-        var logger = new Mock<ILogger<Discount.Grpc.Services.CouponService>>();
+        var logger = new Mock<ILogger<GrpcServices.CouponService>>();
 
 
         couponService.Setup(x => x.UpdateCouponAsync(It.IsAny<UpdateCouponRequestBody>())).ReturnsAsync(couponDetail);
         mapper.ConfigMapper<CouponDetail, CouponDetailModel>(couponModel);
 
-        var service = new Discount.Grpc.Services.CouponService(logger.Object, mapper.Object, couponService.Object);
+        var service = new GrpcServices.CouponService(logger.Object, mapper.Object, couponService.Object);
         var result = await service.UpdateCoupon(requestBody, TestServerCallContextHelpers.Create());
 
         Assert.Multiple(() =>
