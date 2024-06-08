@@ -7,11 +7,11 @@ namespace Catalog.API.Controllers;
 [Route("api/v1/[controller]/[action]")]
 public class ValidationController : ControllerBase
 {
-    private readonly IValidationService _validationService;
+    private readonly ICatalogService _catalogService;
 
-    public ValidationController(IValidationService validationService)
+    public ValidationController(ICatalogService catalogService)
     {
-        _validationService = validationService;
+        _catalogService = catalogService;
     }
 
     [HttpGet]
@@ -27,7 +27,7 @@ public class ValidationController : ControllerBase
             return BadRequest("Type cannot be blank.");
         }
 
-        var isValid = await _validationService.ValidateCatalogCodeAsync(catalogCode, type.Value, cancellationToken);
+        var isValid = await _catalogService.ValidateCatalogCodeAsync(catalogCode, type.Value, cancellationToken);
 
         return Ok(isValid);
     }

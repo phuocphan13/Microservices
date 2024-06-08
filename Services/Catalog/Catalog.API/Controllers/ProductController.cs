@@ -74,6 +74,25 @@ public class ProductController : ApiController
 
         return Ok(result);
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetProductsByListCodes([FromQuery] List<string> codes, CancellationToken cancellationToken)
+    {
+        if (codes is null || !codes.Any())
+        {
+            return BadRequest("Missing Codes.");
+        }
+
+        var result = await _productService.GetProductsByListCodesAsync(codes, cancellationToken);
+
+        if (result is null || !result.Any())
+        {
+            _logger.LogError($"Product with codes: {string.Join(",", codes)}, not found.");
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
 
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequestBody requestBody, CancellationToken cancellationToken)

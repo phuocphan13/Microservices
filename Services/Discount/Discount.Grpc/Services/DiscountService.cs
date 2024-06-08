@@ -4,7 +4,7 @@ using Discount.Domain.Services;
 using Discount.Grpc.Protos;
 using Grpc.Core;
 
-namespace Discount.Grpc.Services;
+namespace Discount.Grpc.GrpcServices;
 
 public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
 {
@@ -100,7 +100,7 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
         }
     
         _logger.LogInformation($"Discount is successfully created. Catalog Code: {requestBody.CatalogCode}");
-        var couponModel = _mapper.Map<DiscountDetailModel>(requestBody); 
+        var couponModel = _mapper.Map<DiscountDetailModel>(result); 
     
         return couponModel;
     }
@@ -117,7 +117,7 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
         }
     
         _logger.LogInformation($"Discount is successfully updated. Catalog Code: {requestBody.CatalogCode}");
-        var couponModel = _mapper.Map<DiscountDetailModel>(requestBody);
+        var couponModel = _mapper.Map<DiscountDetailModel>(result);
     
         return couponModel;
     }

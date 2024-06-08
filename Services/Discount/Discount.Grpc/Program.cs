@@ -1,6 +1,7 @@
 using ApiClient;
 using Discount.Domain;
 using Discount.Domain.Common.InitializeDB;
+using Discount.Grpc.GrpcServices;
 using Discount.Grpc.Services;
 using Platform;
 
@@ -18,7 +19,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDiscountCommonServices();
 builder.Services.AddPlatformCommonServices();
-builder.Services.AddCatalogServices();
+builder.Services.AddCatalogApiClient();
 
 var app = builder.Build();
 

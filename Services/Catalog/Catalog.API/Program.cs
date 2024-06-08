@@ -30,7 +30,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
-builder.Services.AddScoped<IValidationService, ValidationService>();
+builder.Services.AddScoped<ICatalogService, CatalogService>();
 
 builder.Services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();
 

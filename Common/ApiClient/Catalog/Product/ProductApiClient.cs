@@ -11,6 +11,7 @@ public interface IProductApiClient
     Task<ApiCollectionResult<ProductSummary>> GetProducts(CancellationToken cancellationToken = default);
     Task<ApiDataResult<ProductDetail>> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<ApiCollectionResult<ProductSummary>> GetProductByCategoryAsync(string category, CancellationToken cancellationToken = default);
+    Task<ApiCollectionResult<ProductSummary>> GetProductsByListCodesAsync(IEnumerable<string> codes, CancellationToken cancellationToken = default);
     Task<ApiDataResult<ProductDetail>> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<ApiDataResult<ProductDetail>> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<ApiStatusResult> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
@@ -48,6 +49,20 @@ public class ProductApiClient : CommonApiClient, IProductApiClient
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetProductByCategory}";
 
         url = url.AddDataInUrl(nameof(category), category);
+
+        var result = await GetCollectionAsync<ProductSummary>(url, cancellationToken);
+
+        return result;
+    }
+    
+    public async Task<ApiCollectionResult<ProductSummary>> GetProductsByListCodesAsync(IEnumerable<string> codes, CancellationToken cancellationToken)
+    {
+        var url = $"{GetBaseUrl()}{ApiUrlConstants.GetProductsByListCodes}";
+
+        foreach (var code in codes)
+        {
+            url += url.AddDataInUrl(nameof(codes), code);
+        }
 
         var result = await GetCollectionAsync<ProductSummary>(url, cancellationToken);
 
