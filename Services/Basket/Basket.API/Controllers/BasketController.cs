@@ -1,38 +1,37 @@
 ﻿using AutoMapper;
 using Basket.API.Entitites;
-using Basket.API.GrpcServices;
 using EventBus.Messages.Events;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using ApiClient.Basket.Models;
 using Basket.API.Services;
 using Microsoft.AspNetCore.Authorization;
+using Platform.ApiBuilder;
 
 namespace Basket.API.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
-public class BasketController : ControllerBase
+[Route("api/v1/[controller]/[action]")]
+public class BasketController : ApiController
 {
     private readonly IBasketService _basketService;
     private readonly ILogger<BasketController> _logger;
-    private readonly IDiscountGrpcService _discountGrpcService;
     private readonly IMapper _mapper;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IBus _bus;
 
-    public BasketController(IBasketService basketService, ILogger<BasketController> logger, IDiscountGrpcService discountGrpcService, IMapper mapper, IPublishEndpoint publishEndpoint)
+    public BasketController(IBasketService basketService, ILogger<BasketController> logger, IMapper mapper, IPublishEndpoint publishEndpoint, IBus bus)
+        : base(logger)
     {
         _basketService = basketService ?? throw new ArgumentNullException(nameof(basketService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
+        _bus = bus;
     }
 
-    [Authorize]
-    [HttpGet("{userName}", Name = "GetBasket")]
-    [ProducesResponseType(typeof(CartDetail), (int)HttpStatusCode.OK)]
+    // [Authorize]
+    [HttpGet("{userName}")]
     public async Task<IActionResult> GetBasket(string userName, CancellationToken cancellationToken)
     {
         var result = await _basketService.GetBasketAsync(userName, cancellationToken);
@@ -47,44 +46,43 @@ public class BasketController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(ShoppingCart), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> UpdateBasket([FromBody] UpdateCartRequestBody basket, CancellationToken cancellationToken)
+    public async Task<IActionResult> SaveBasket([FromBody] SaveCartRequestBody cart, CancellationToken cancellationToken)
     {
-        foreach (var item in basket.Items)
+        if (cart is null)
         {
-            var coupon = await _discountGrpcService.GetDiscount(item.ProductCode!);
-            // item.Price -= coupon.Amount;
+            return BadRequest("Cart is not allowed Null.");
         }
 
-        var result = await _basketService.UpdateBasketAsync(basket, cancellationToken);
+        if (string.IsNullOrWhiteSpace(cart.UserId))
+        {
+            return BadRequest("UserNmaId is not allowed Null or Empty.");
+        }
+
+        var result = await _basketService.SaveCartAsync(cart, cancellationToken);
 
         if (result is null)
         {
-            _logger.LogError($"Basket with user name: {basket.UserName}, not found.");
+            _logger.LogError($"Basket with user name: {cart.UserName}, not found.");
             return NotFound();
         }
 
         return Ok(result);
     }
 
-    [HttpDelete("{userName}", Name = "DeleteBasket")]
-    [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+    [HttpDelete("DeleteBasket/{userName}")]
     public async Task<IActionResult> DeleteBasket(string userName, CancellationToken cancellationToken)
     {
         await _basketService.DeleteBasketAsync(userName, cancellationToken);
         return Ok();
     }
 
-    [Route("[action]")]
     [HttpPost]
-    [ProducesResponseType((int)HttpStatusCode.Accepted)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> Checkout([FromBody] BasketCheckout basketCheckout, CancellationToken cancellationToken)
     {
         // get existing basket with total price
-        var basket = await _basketService.GetBasketAsync(basketCheckout.UserName, cancellationToken);
+        var basket = await _basketService.GetBasketAsync(basketCheckout.UserId, cancellationToken);
 
-        if (basket == null || string.IsNullOrWhiteSpace(basket.UserName))
+        if (basket == null)
         {
             return BadRequest();
         }
@@ -96,7 +94,7 @@ public class BasketController : ControllerBase
         await _publishEndpoint.Publish(eventMessage, cancellationToken);
 
         // remove the basket
-        await _basketService.DeleteBasketAsync(basket.UserName, cancellationToken);
+        await _basketService.DeleteBasketAsync(basket.UserName!, cancellationToken);
 
         return Accepted();
     }

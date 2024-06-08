@@ -2,6 +2,7 @@
 {
     public class BasketCheckout
     {
+        public string UserId { get; set; } = null!;
         public string UserName { get; set; } = null!;
         public decimal TotalPrice { get; set; }
 

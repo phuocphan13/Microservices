@@ -29,6 +29,18 @@ public class CommonApiClient
         return _configuration["ApiServices:OcelotApiGw"];
     }
 
+    protected string GetServiceUrl(string serviceName)
+    {
+        string url = serviceName switch
+        {
+            ServiceConstants.Api.Catalog => _configuration[$"Microservices:{ServiceConstants.ApiAppSettting.Catalog}"],
+            ServiceConstants.Api.Discount => _configuration[$"Microservices:{ServiceConstants.ApiAppSettting.Discount}"],
+            _ => string.Empty
+        };
+
+        return url + "/api/v1";
+    }
+
     protected async Task<ApiStatusResult> GetStatusAsync(string url, CancellationToken cancellationToken)
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);

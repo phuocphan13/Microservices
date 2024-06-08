@@ -19,7 +19,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDiscountCommonServices();
 builder.Services.AddPlatformCommonServices();
-builder.Services.AddCatalogServices();
+builder.Services.AddCatalogApiClient();
 
 var app = builder.Build();
 

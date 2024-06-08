@@ -9,6 +9,7 @@ public static class ShoppingCartExtensions
     {
         return new CartDetail
         {
+            UserId = entity.UserId,
             UserName = entity.UserName,
             Items = entity.Items.Select(x => new CartItem
             {
@@ -20,13 +21,19 @@ public static class ShoppingCartExtensions
         };
     }
 
-    public static void ToEntityFromUpdate(this ShoppingCart entity, UpdateCartRequestBody requestBody)
+    public static ShoppingCart ToEntityFromSave(this SaveCartRequestBody requestBody)
     {
-        entity.Items = requestBody.Items.Select(x => new ShoppingCartItem()
+        return new()
         {
-            Price = x.Price,
-            ProductCode = x.ProductCode,
-            Quantity = x.Quantity
-        }).ToList();
+            UserId = requestBody.UserId,
+            Items = requestBody.Items.Select(x => new ShoppingCartItem()
+            {
+                Price = x.Price,
+                ProductCode = x.ProductCode,
+                Quantity = x.Quantity,
+                CreatedDate = DateTime.UtcNow,
+                CreatedBy = requestBody.UserId
+            }).ToList()
+        };
     }
 }

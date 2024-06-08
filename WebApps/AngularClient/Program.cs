@@ -12,7 +12,7 @@ builder.Services.AddHttpClient();
 builder.Services
     .AddPlatformCommonServices()
     .AddCommonServices()
-    .AddCatalogServices()
+    .AddCatalogApiClient()
     .AddIdentityServerServices()
     .AddDependencyInjection();
 

@@ -1,4 +1,6 @@
+using EventBus.Messages;
 using EventBus.Messages.Common;
+using EventBus.Messages.TestModel;
 using MassTransit;
 using Ordering.API.EventBusConsumer;
 using Ordering.API.Extensions;
@@ -14,22 +16,47 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddApplicationServices();
-builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services
+    .AddApplicationServices()
+    .AddEventBusServices()
+    .AddInfrastructureServices(builder.Configuration);
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<BasketCheckoutConsumer>();
 
 builder.Services.AddMassTransit(config =>
 {
-    config.AddConsumer<BasketCheckoutConsumer>();
+    // config.AddConsumer<BasketCheckoutConsumer>();
+    //
+    // config.UsingRabbitMq((ctx, cfg) =>
+    // {
+    //     cfg.Host(builder.Configuration["EventBusSettings:HostAddress"]);
+    //     cfg.ReceiveEndpoint(EventBusConstants.BasketCheckoutQueue, c =>
+    //     {
+    //         c.ConfigureConsumer<BasketCheckoutConsumer>(ctx);
+    //     });
+    // });
+
+
+    config.AddConsumers(typeof(Program).Assembly);
 
     config.UsingRabbitMq((ctx, cfg) =>
     {
+        // cfg.ConfigureEndpoints(ctx);
         cfg.Host(builder.Configuration["EventBusSettings:HostAddress"]);
-        cfg.ReceiveEndpoint(EventBusConstants.BasketCheckoutQueue, c =>
+        cfg.ReceiveEndpoint("Test-Message-Queue", c =>
         {
-            c.ConfigureConsumer<BasketCheckoutConsumer>(ctx);
+            // c.Bind("direct-queue", x =>
+            // {
+            //     x.ExchangeType = "direct";
+            // });
+            c.ConfigureConsumeTopology = false;
+            c.Bind("direct-queue");
+            // c.Bind<TestModel>(x =>
+            // {
+            //     x.ExchangeType = "direct";
+            // });
+            c.Consumer<TestMessageQueueConsumer>();
         });
     });
 });

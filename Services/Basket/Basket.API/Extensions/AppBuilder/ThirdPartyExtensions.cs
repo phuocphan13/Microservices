@@ -1,4 +1,5 @@
 using Discount.Grpc.Protos;
+using EventBus.Messages.TestModel;
 using MassTransit;
 
 namespace Basket.API.Extensions.AppBuilder;
@@ -19,6 +20,10 @@ public static class ThirdPartyExtensions
             config.UsingRabbitMq((ctx, cfg) =>
             {
                 cfg.Host(configuration["EventBusSettings:HostAddress"]);
+                // cfg.Publish<TestModel>(e =>
+                // {
+                //     e.ExchangeType = "direct";
+                // });
             });
         });
 
