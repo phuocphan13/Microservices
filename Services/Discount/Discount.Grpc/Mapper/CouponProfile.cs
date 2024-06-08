@@ -14,5 +14,7 @@ public class CouponProfile : Profile
         CreateMap<CouponDetail, CouponDetailModel>().ReverseMap();
         CreateMap<Coupon.Grpc.Protos.CreateCouponRequest, CreateCouponRequestBody>().ReverseMap();
         CreateMap<CreateCouponRequestBody,CouponDetailModel>().ReverseMap();
+        CreateMap<EditCouponRequest, UpdateCouponRequestBody>().ReverseMap();
+
     }
 }

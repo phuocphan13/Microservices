@@ -21,7 +21,7 @@ public static class CouponExtensions
     {
         return new Entities.Coupon()
         {
-            Name = requestBody.Name,
+            Name = requestBody.Name!,
             Description = requestBody.Description,
             Value = requestBody.Value,
             Type = (CouponEnum)requestBody.Type,
@@ -30,17 +30,11 @@ public static class CouponExtensions
         };
     }
 
-    public static Entities.Coupon ToUpdateCoupon(this UpdateCouponRequestBody requestBody)
+    public static void ToUpdateCoupon(this Entities.Coupon entity, UpdateCouponRequestBody requestBody)
     {
-        return new Entities.Coupon()
-        {
-            Id = requestBody.Id,
-            Name = requestBody.Name,
-            Description = requestBody.Description,
-            Value = requestBody.Value,
-            Type = (CouponEnum)requestBody.Type,
-            FromDate = requestBody.FromDate,
-            ToDate = requestBody.ToDate,
-        };
+        entity.Name = requestBody.Name!;
+        entity.Description = requestBody.Description;
+        entity.Value = requestBody.Value;
+        entity.Type = (CouponEnum)requestBody.Type;
     }
 }
