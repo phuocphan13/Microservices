@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using Discount.Domain.Entities;
 using Discount.Domain.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +15,8 @@ public interface IBaseRepository
     Task<TEntity> CreateEntityAsync<TEntity>(TEntity entity) where TEntity : ExtendEntity, new();
     Task<TEntity> UpdateEntityAsync<TEntity>(TEntity entity) where TEntity : ExtendEntity, new();
     Task<bool> DeleteEntityAsync<TEntity>(int id) where TEntity : ExtendEntity, new();
+    Task<bool> InactiveEntityAsync<TEntity>(int id) where TEntity : ExtendEntity, new();
+
 }
 
 public class BaseRepository : IBaseRepository
@@ -93,12 +95,12 @@ public class BaseRepository : IBaseRepository
         var tableName = typeof(TEntity).Name.ToLower();
         var tableProperty = QueryBuilderExtensions.UpdateQueryBuilder<TEntity>();
 
-        string sql = $"UPDATE {tableName} SET ({tableProperty}) WHERE Id = @Id";
+        string sql = $"UPDATE {tableName} SET {tableProperty} WHERE Id = @Id";
 
         entity.UpdatedBy = "Admin Created";
         entity.UpdatedDate = DateTime.Now;
 
-        await connection.ExecuteAsync(sql, entity);
+        await connection.ExecuteAsync(sql, entity); // Tới đây lỗi văng ra
 
         return entity;
     }
@@ -109,7 +111,22 @@ public class BaseRepository : IBaseRepository
         using var connection = InitializaCollection();
 
         var tableName = typeof(TEntity).Name.ToLower();
+
         string sql = $"DELETE FROM {tableName} WHERE id = @id";
+
+        var affected = await connection.ExecuteAsync(sql, new { Id = id });
+
+        return affected > 0;
+    }
+
+    public async Task<bool> InactiveEntityAsync<TEntity>(int id)
+        where TEntity : ExtendEntity, new()
+    {
+        using var connection = InitializaCollection();
+
+        var tableName = typeof(TEntity).Name.ToLower();
+        string sql = $"UPDATE {tableName} SET IsActive = false WHERE id = @id";
+
 
         var affected = await connection.ExecuteAsync(sql, new { Id = id });
 

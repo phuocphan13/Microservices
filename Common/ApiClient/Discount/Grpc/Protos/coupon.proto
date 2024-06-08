@@ -5,6 +5,8 @@ package coupon;
 
 service CouponProtoService {
   rpc GetCoupon (GetCouponRequest) returns (CouponDetailModel);
+  rpc UpdateCoupon (EditCouponRequest) returns (CouponDetailModel);
+  rpc InactiveCoupon (InactiveCounponRequest) returns (InactiveCouponResponse);
 }
 
 enum CouponType {
@@ -22,3 +24,21 @@ message CouponDetailModel {
   CouponType Type = 3;
   string Value = 4;
 }
+
+message EditCouponRequest {
+	int32 id = 1;
+	string Description = 2;
+	CouponType Type = 3;
+	string Value = 4;
+	string Name = 5;
+}
+
+message InactiveCounponRequest {
+	int32 id = 1;
+}
+
+message InactiveCouponResponse{
+  bool success = 1;
+}
+
+
