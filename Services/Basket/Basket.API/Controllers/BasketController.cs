@@ -3,7 +3,6 @@ using Basket.API.Entitites;
 using EventBus.Messages.Events;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using ApiClient.Basket.Models;
 using Basket.API.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -19,18 +18,20 @@ public class BasketController : ApiController
     private readonly ILogger<BasketController> _logger;
     private readonly IMapper _mapper;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IBus _bus;
 
-    public BasketController(IBasketService basketService, ILogger<BasketController> logger, IMapper mapper, IPublishEndpoint publishEndpoint)
+    public BasketController(IBasketService basketService, ILogger<BasketController> logger, IMapper mapper, IPublishEndpoint publishEndpoint, IBus bus)
         : base(logger)
     {
         _basketService = basketService ?? throw new ArgumentNullException(nameof(basketService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
+        _bus = bus;
     }
 
     // [Authorize]
-    [HttpGet("GetBasket/{userName}")]
+    [HttpGet("{userName}")]
     public async Task<IActionResult> GetBasket(string userName, CancellationToken cancellationToken)
     {
         var result = await _basketService.GetBasketAsync(userName, cancellationToken);
@@ -79,9 +80,9 @@ public class BasketController : ApiController
     public async Task<IActionResult> Checkout([FromBody] BasketCheckout basketCheckout, CancellationToken cancellationToken)
     {
         // get existing basket with total price
-        var basket = await _basketService.GetBasketAsync(basketCheckout.UserName, cancellationToken);
+        var basket = await _basketService.GetBasketAsync(basketCheckout.UserId, cancellationToken);
 
-        if (basket == null || string.IsNullOrWhiteSpace(basket.UserName))
+        if (basket == null)
         {
             return BadRequest();
         }
@@ -93,7 +94,7 @@ public class BasketController : ApiController
         await _publishEndpoint.Publish(eventMessage, cancellationToken);
 
         // remove the basket
-        await _basketService.DeleteBasketAsync(basket.UserName, cancellationToken);
+        await _basketService.DeleteBasketAsync(basket.UserName!, cancellationToken);
 
         return Accepted();
     }

@@ -1,5 +1,6 @@
 using ApiClient;
 using Basket.API.Extensions.AppBuilder;
+using EventBus.Messages;
 using IdentityServer.Common;
 using Platform;
 
@@ -21,7 +22,8 @@ builder.Services
     .AddPlatformCommonServices()
     .AddServiceDependency()
     .AddThirdParty(builder.Configuration)
-    .AddCatalogInternalClient();
+    .AddCatalogInternalClient()
+    .AddEventBusServices();
 
 //builder.Services.AddMassTransitHostedService();
 

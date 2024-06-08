@@ -9,6 +9,7 @@ public static class ShoppingCartExtensions
     {
         return new CartDetail
         {
+            UserId = entity.UserId,
             UserName = entity.UserName,
             Items = entity.Items.Select(x => new CartItem
             {
