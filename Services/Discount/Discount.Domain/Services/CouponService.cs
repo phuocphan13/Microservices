@@ -27,7 +27,6 @@ public class CouponService : ICouponService
 
         if (coupon is null)
         {
-            //ToDo Create Summary/Detail Coupon
             return new CouponDetail()
             {
                 Description = "No Discount Desc"
@@ -48,11 +47,11 @@ public class CouponService : ICouponService
 
     public async Task<CouponDetail> UpdateCouponAsync(UpdateCouponRequestBody requestBody)
     {
-        var data = await _couponRepository.GetCouponAsync(requestBody.Id.ToString());
+        var data = await _couponRepository.GetCouponAsync(requestBody.Id.ToString()!);
 
-        data.ToUpdateCoupon(requestBody);
+        data!.ToUpdateCoupon(requestBody);
 
-        var entity = await _couponRepository.UpdateCouponAsync(data);
+        var entity = await _couponRepository.UpdateCouponAsync(data!);
 
         return entity.ToDetail();
     }

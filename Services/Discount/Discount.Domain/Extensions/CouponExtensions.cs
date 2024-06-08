@@ -20,7 +20,7 @@ public static class CouponExtensions
     {
         return new Entities.Coupon()
         {
-            Name = requestBody.Name,
+            Name = requestBody.Name!,
             Description = requestBody.Description,
             Value = requestBody.Value,
             Type = (CouponEnum)requestBody.Type,
@@ -31,7 +31,7 @@ public static class CouponExtensions
 
     public static void ToUpdateCoupon(this Entities.Coupon entity, UpdateCouponRequestBody requestBody)
     {
-        entity.Name = requestBody.Name;
+        entity.Name = requestBody.Name!;
         entity.Description = requestBody.Description;
         entity.Value = requestBody.Value;
         entity.Type = (CouponEnum)requestBody.Type;

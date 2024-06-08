@@ -37,11 +37,4 @@ public class CouponController : ControllerBase
         var coupon = await _couponService.UpdateCouponAsync(requestBody);
         return Ok(coupon);
     }
-    
-    [HttpDelete("{id:int}")]
-    public async Task<ActionResult<bool>> DeleteDiscount(int id)
-    {
-        var result = await _couponService.DeleteCouponAsync(id);
-        return Ok(result);
-    }
 }
