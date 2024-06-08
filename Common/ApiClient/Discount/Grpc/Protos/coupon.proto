@@ -5,6 +5,7 @@ package coupon;
 
 service CouponProtoService {
   rpc GetCoupon (GetCouponRequest) returns (CouponDetailModel);
+  rpc CreateCoupon (CreateCouponRequest) returns (CouponDetailModel);
   rpc UpdateCoupon (EditCouponRequest) returns (CouponDetailModel);
   rpc InactiveCoupon (InactiveCounponRequest) returns (InactiveCouponResponse);
 }
@@ -20,6 +21,14 @@ message GetCouponRequest {
 
 message CouponDetailModel {
   int32 id = 1;
+  string Name = 2;
+  string Description = 3;
+  CouponType Type = 4;
+  string Value = 5;
+}
+
+message CreateCouponRequest{
+  string Name = 1;
   string Description = 2;
   CouponType Type = 3;
   string Value = 4;

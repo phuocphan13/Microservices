@@ -41,6 +41,23 @@ public class CouponService : CouponProtoService.CouponProtoServiceBase
         return couponModel;
     }
 
+    public override async Task<CouponDetailModel> CreateCoupon(CreateCouponRequest request, ServerCallContext context)
+    {
+        //Todo-Phat: Add Validation for other fields and Check if Entity is Exist
+        
+        var requestBody = _mapper.Map<CreateCouponRequestBody>(request);
+        var result = await _couponService.CreateCouponAsync(requestBody);
+
+        if (result is null)
+        {
+            _logger.LogError("Discount is failed created.");
+        }
+
+        var couponModel = _mapper.Map<CouponDetailModel>(requestBody);
+
+        return couponModel;
+    }
+
     // ------------- GRPC SERVICE ----------------- GRPC SERVICE ----------------- GRPC SERVICE ----------------- GRPC SERVICE -----------------
     public override async Task<CouponDetailModel> UpdateCoupon(EditCouponRequest request, ServerCallContext context)
     {

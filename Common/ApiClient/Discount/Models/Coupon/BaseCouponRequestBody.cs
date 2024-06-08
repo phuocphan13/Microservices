@@ -1,12 +1,8 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
-
 namespace ApiClient.Discount.Models.Coupon;
 
 public class BaseCouponRequestBody
 {
-    public string? Name { get; set; }
+    public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
 

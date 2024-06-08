@@ -75,7 +75,7 @@ public class DiscountGrpcServiceTests
             Description = description,
         };
 
-        var request = new CreateCouponRequest()
+        var request = new CreateDiscountRequest()
         {
             Amount = 10,
             Description = description,
@@ -94,7 +94,7 @@ public class DiscountGrpcServiceTests
         var logger = new Mock<ILogger<GrpcServices.DiscountService>>();
 
         discountService.Setup(x => x.CreateDiscountAsync(It.IsAny<CreateDiscountRequestBody>(), It.IsAny<CancellationToken>())).ReturnsAsync(discountDetail);
-        mapper.ConfigMapper<CreateCouponRequest, CreateDiscountRequestBody>(requestBody);
+        mapper.ConfigMapper<CreateDiscountRequest, CreateDiscountRequestBody>(requestBody);
         mapper.ConfigMapper<DiscountDetail, DiscountDetailModel>(discountModel);
         
         var service = new GrpcServices.DiscountService(discountService.Object, logger.Object, mapper.Object);

@@ -1,5 +1,6 @@
 ﻿using ApiClient.Discount.Models.Discount;
 using AutoMapper;
+using Coupon.Grpc.Protos;
 using Discount.Domain.Services;
 using Discount.Grpc.Protos;
 using Grpc.Core;
@@ -89,7 +90,7 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
         return couponModel;
     }
     
-    public override async Task<DiscountDetailModel> CreateDiscount(CreateCouponRequest request, ServerCallContext context)
+    public override async Task<DiscountDetailModel> CreateDiscount(CreateDiscountRequest request, ServerCallContext context)
     {
         var requestBody = _mapper.Map<CreateDiscountRequestBody>(request);
         var result = await _discountService.CreateDiscountAsync(requestBody, default);
@@ -105,7 +106,7 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
         return couponModel;
     }
     
-    public override async Task<DiscountDetailModel> UpdateDiscount(UpdateCouponRequest request, ServerCallContext context)
+    public override async Task<DiscountDetailModel> UpdateDiscount(UpdateDiscountRequest request, ServerCallContext context)
     {
         var requestBody = _mapper.Map<UpdateDiscountRequestBody>(request);
         
