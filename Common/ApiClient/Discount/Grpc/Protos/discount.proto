@@ -7,8 +7,8 @@ service DiscountProtoService {
   rpc GetDiscount (GetDiscountRequest) returns (DiscountDetailModel);
   rpc GetListDiscounts (GetListDiscountRequest) returns (ListDetailsModel);
   rpc GetDiscountByCatalogCode (GetDiscountByCatalogCodeRequest) returns (DiscountDetailModel);
-  rpc CreateDiscount (CreateCouponRequest) returns (DiscountDetailModel);
-  rpc UpdateDiscount (UpdateCouponRequest) returns (DiscountDetailModel);
+  rpc CreateDiscount (CreateDiscountRequest) returns (DiscountDetailModel);
+  rpc UpdateDiscount (UpdateDiscountRequest) returns (DiscountDetailModel);
   rpc InactiveDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
 }
 
@@ -34,14 +34,14 @@ message GetDiscountByCatalogCodeRequest {
   string catalogCode = 2;
 }
 
-message CreateCouponRequest {
+message CreateDiscountRequest {
   string code = 1;
   CatalogType type = 2;
   string description = 3;
   int32 amount = 4;
 }
 
-message UpdateCouponRequest {
+message UpdateDiscountRequest {
   string id = 1;
   string code = 2;
   CatalogType type = 3;
