@@ -10,6 +10,8 @@ using UnitTest.Common.Helpers;
 using UnitTest.Common.Helpers.Grpc;
 using CreateCouponRequest = Coupon.Grpc.Protos.CreateCouponRequest;
 
+using GrpcServices = Discount.Grpc.Services;
+
 namespace Discount.Tests.Grpc;
 
 public class CouponGrpcServiceTests
@@ -41,12 +43,12 @@ public class CouponGrpcServiceTests
 
         var couponService = new Mock<ICouponService>();
         var mapper = new Mock<IMapper>();
-        var logger = new Mock<ILogger<Discount.Grpc.Services.CouponService>>();
+        var logger = new Mock<ILogger<GrpcServices.CouponService>>();
 
         couponService.Setup(x => x.GetCouponAsync(It.IsAny<string>())).ReturnsAsync(couponDetail);
         mapper.ConfigMapper<CouponDetail, CouponDetailModel>(couponModel);
 
-        var service = new Discount.Grpc.Services.CouponService(logger.Object, mapper.Object, couponService.Object);
+        var service = new GrpcServices.CouponService(logger.Object, mapper.Object, couponService.Object);
         var result = await service.GetCoupon(request, TestServerCallContextHelpers.Create());
 
         Assert.Multiple(() =>
@@ -91,12 +93,12 @@ public class CouponGrpcServiceTests
 
         var couponService = new Mock<ICouponService>();
         var mapper = new Mock<IMapper>();
-        var logger = new Mock<ILogger<Discount.Grpc.Services.CouponService>>();
+        var logger = new Mock<ILogger<GrpcServices.CouponService>>();
 
         couponService.Setup(x => x.CreateCouponAsync(It.IsAny<CreateCouponRequestBody>())).ReturnsAsync(couponDetail);
         mapper.ConfigMapper<CouponDetail, CouponDetailModel>(couponModel);
 
-        var service = new Discount.Grpc.Services.CouponService(logger.Object, mapper.Object, couponService.Object);
+        var service = new GrpcServices.CouponService(logger.Object, mapper.Object, couponService.Object);
         var result = await service.CreateCoupon(requestBody, TestServerCallContextHelpers.Create());
 
         Assert.Multiple(() =>
