@@ -71,6 +71,12 @@ public class CouponService : CouponProtoService.CouponProtoServiceBase
             throw new RpcException(new Status(StatusCode.InvalidArgument, $"Id cannot be null."));
         }
 
+        var coupon = await _couponService.GetCouponAsync(request.Id.ToString());
+        if (coupon is null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, $"Coupon with Product Id = {request.Id} is not existed"));
+        }    
+
         //Todo-Trung: Add Validation for other fields and Check if Entity is Exist
 
         var requestBody = _mapper.Map<UpdateCouponRequestBody>(request);
@@ -92,6 +98,16 @@ public class CouponService : CouponProtoService.CouponProtoServiceBase
 
     public override async Task<InactiveCouponResponse> InactiveCoupon(InactiveCounponRequest request, ServerCallContext context)
     {
+        if (request.Id == 0)
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Id cannot be null."));
+        }
+
+        var coupon = await _couponService.GetCouponAsync(request.Id.ToString());
+        if (coupon is null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, $"Coupon with Product Id = {request.Id} is not existed"));
+        }
         //Todo-Trung: Add Validation for other fields and Check if Entity is Exist
         var result = await _couponService.InactiveCoupon(request.Id);
 
