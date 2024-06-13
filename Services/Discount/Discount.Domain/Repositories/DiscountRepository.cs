@@ -1,4 +1,7 @@
+using ApiClient.Discount.Models.Discount;
+using ApiClient.Discount.Models.Discount.AmountModel;
 using Discount.Domain.Repositories.Common;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Discount.Domain.Repositories;
 
@@ -11,6 +14,7 @@ public interface IDiscountRepository
     Task<Entities.Discount> UpdateDiscountAsync(Entities.Discount Discount);
     Task<bool> DeleteDiscountAsync(int id);
     Task<bool> AnyDateAsync(string catalogCode, DiscountEnum type, DateTime? fromDate, DateTime? toDate);
+    //Task<Entities.Discount?> AmountDiscountAsync(AmountDiscountRequestBody requestBody);
 }
 
 public class DiscountRepository : IDiscountRepository
@@ -84,4 +88,11 @@ public class DiscountRepository : IDiscountRepository
 
         return result;
     }
+
+    //public async Task<Entities.Discount> AmountDiscountAsync(List<CatalogItem> catalogItems)
+    //{
+    //    const string query = "";
+    //    var param = new { RequestBody = requestBody };
+    //    var entity = await _baseRepository.QueryAsync<Entities.Discount>(query, param);
+    //}
 }

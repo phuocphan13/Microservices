@@ -13,6 +13,7 @@ public interface IDiscountService
     Task<DiscountDetail?> CreateDiscountAsync(CreateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> UpdateDiscountAsync(UpdateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> InactiveDiscountAsync(int id);
+    //Task<DiscountDetail?> AmountDiscountAsync (AmountDiscountRequestBody requestBody, CancellationToken cancellationToken);
 }
 
 public class DiscountService : IDiscountService
@@ -210,4 +211,11 @@ public class DiscountService : IDiscountService
         return result.IsSuccessStatusCode;
     }
     #endregion
+
+    //public async Task<DiscountDetail?> AmountDiscountAsync(AmountDiscountRequestBody requestBody, CancellationToken cancellationToken)
+    //{
+    //    var amount = await _discountRepository.AmountDiscountAsync(requestBody, cancellationToken); // convert requestBody to catalogItems
+
+    //    return amount.ToDetail();
+    //}
 }

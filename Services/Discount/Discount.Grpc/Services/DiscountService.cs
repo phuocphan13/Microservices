@@ -141,4 +141,51 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     
         return response;
     }
+    //---------------GRPC------------GRPC-----------------------
+    public override async Task<AmountAfterDiscountResponse> AmountAfterDiscount(AmountAfterDiscountRequest request, ServerCallContext context)
+    {
+        //viet lại file Proto để map được với requestBody
+        var requestBody = _mapper.Map<AmountDiscountRequestBody>(request);
+
+       // var amount = await _discountService.AmountDiscountAsync(requestBody.Type.ToList() , requestBody.CatalogCode.ToList(), Re); //truyền vào Model lồng 
+
+
+        var amounts = new List<AmountAfterDiscountResponse>()
+        {
+             new AmountAfterDiscountResponse() {
+                Type = "2",
+                CatalogCode = "SS-01",
+                Amount = "200"
+            },
+              new AmountAfterDiscountResponse() {
+                Type = "3",
+                CatalogCode = "SS-01",
+                Amount = "300"
+            },
+               new AmountAfterDiscountResponse() {
+                Type = "4",
+                CatalogCode = "SS-01",
+                Amount = "50"
+            },
+                new AmountAfterDiscountResponse() {
+                Type = "3",
+                CatalogCode = "APL-01",
+                Amount = "100"
+            },
+                new AmountAfterDiscountResponse() {
+                Type = "4",
+                CatalogCode = "APL-01",
+                Amount = "200"
+            },
+                new AmountAfterDiscountResponse() {
+                Type = "4",
+                CatalogCode = "OPPO-01",
+                Amount = "200"
+            }
+        };
+
+        var response = _mapper.Map<AmountAfterDiscountResponse>(amounts);
+
+        return response;
+    }
 }
