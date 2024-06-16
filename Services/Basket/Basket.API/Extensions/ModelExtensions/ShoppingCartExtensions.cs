@@ -1,17 +1,16 @@
 using ApiClient.Basket.Models;
-using Basket.API.Entitites;
 
 namespace Basket.API.Extensions.ModelExtensions;
 
-public static class ShoppingCartExtensions
+public static class ShoppingBasketExtensions
 {
-    public static CartDetail ToDetail(this ShoppingCart entity)
+    public static BasketDetail ToDetail(this Entitites.Basket entity)
     {
-        return new CartDetail
+        return new BasketDetail
         {
             UserId = entity.UserId,
             UserName = entity.UserName,
-            Items = entity.Items.Select(x => new CartItem
+            Items = entity.Items.Select(x => new BasketItemSummary
             {
                 Price = x.Price,
                 ProductCode = x.ProductCode,
@@ -21,12 +20,12 @@ public static class ShoppingCartExtensions
         };
     }
 
-    public static ShoppingCart ToEntityFromSave(this SaveCartRequestBody requestBody)
+    public static Entitites.Basket ToEntityFromSave(this SaveBasketRequestBody requestBody)
     {
         return new()
         {
             UserId = requestBody.UserId,
-            Items = requestBody.Items.Select(x => new ShoppingCartItem()
+            Items = requestBody.Items.Select(x => new Entitites.BasketItem()
             {
                 Price = x.Price,
                 ProductCode = x.ProductCode,

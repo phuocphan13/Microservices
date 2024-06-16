@@ -1,25 +1,25 @@
 ﻿namespace Basket.API.Entitites;
 
-public class ShoppingCart
+public class Basket
 {
-    public ShoppingCart()
+    public Basket()
     {
 
     }
 
-    public ShoppingCart(string username)
+    public Basket(string username)
     {
         this.UserName = username;
     }
-
+    
     //Todo, Should concern about UserId with UserName
     public string UserId { get; set; } = null!;
-    public string? UserName { get; set; }
+    public string UserName { get; set; } = null!;
 
     //Todo, Using SessionState to store the session date
     public DateTime SessionDate { get; set; }
     
-    public List<ShoppingCartItem> Items { get; set; } = new();
+    public List<BasketItem> Items { get; set; } = new();
 
     public decimal TotalPrice
     {

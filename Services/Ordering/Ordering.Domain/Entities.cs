@@ -4,7 +4,8 @@ namespace Ordering.Domain;
 
 public class Order : EntityBase
 {
-    public string? UserName { get; set; }
+    public Guid UserId { get; set; }
+    public string UserName { get; set; } = null!;
     public decimal TotalPrice { get; set; }
 
     // BillingAddress

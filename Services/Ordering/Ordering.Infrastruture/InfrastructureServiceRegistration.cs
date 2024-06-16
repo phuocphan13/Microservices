@@ -2,11 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ordering.Application.Contracts.Infrastructure;
-using Ordering.Application.Contracts.Persistence;
 using Ordering.Application.Models;
+using Ordering.Infrastruture.Database;
 using Ordering.Infrastruture.Mail;
 using Ordering.Infrastruture.Persistence;
-using Ordering.Infrastruture.Repositories;
+using Platform.Database.Helpers;
 
 namespace Ordering.Infrastruture;
 
@@ -17,11 +17,12 @@ public static class InfrastructureServiceRegistration
         services.AddDbContext<OrderContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("OrderingConnectionString")));
 
-        services.AddScoped(typeof(IAsyncRepository<>), typeof(RepositoryBase<>));
-        services.AddScoped<IOrderRepository, OrderRepository>();
-
         services.Configure<EmailSettings>(c => configuration.GetSection("EmailSettings"));
         services.AddTransient<IEmailService, EmailService>();
+
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }
