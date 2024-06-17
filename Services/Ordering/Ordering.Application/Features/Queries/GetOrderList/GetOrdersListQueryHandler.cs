@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
-using Ordering.Domain;
+using Ordering.Domain.Entities;
 using Platform.Database.Helpers;
 
 namespace Ordering.Application.Features.Queries.GetOrderList;
@@ -18,7 +18,7 @@ public class GetOrdersListQueryHandler : IRequestHandler<GetOrdersListQuery, Lis
 
     public async Task<List<OrdersVm>> Handle(GetOrdersListQuery request, CancellationToken cancellationToken)
     {
-        var orderList = await _orderRepository.GetAllListAsync(x => x.UserId == Guid.Parse(request.UserId), cancellationToken);
+        var orderList = await _orderRepository.GetAllListAsync(x => x.UserId == request.UserId, cancellationToken);
 
         var orderVmList = _mapper.Map<List<OrdersVm>>(orderList);
 

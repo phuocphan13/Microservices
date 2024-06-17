@@ -6,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Ordering.API.EventBusConsumer;
 using Ordering.API.Extensions;
 using Ordering.Application;
-using Ordering.Infrastruture;
-using Ordering.Infrastruture.Persistence;
+using Ordering.Infrastructure;
+using Ordering.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 var isRebuildSchema = bool.Parse(builder.Configuration["Database:IsRebuildSchema"]);
@@ -27,9 +27,9 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<BasketCheckoutConsumer>();
 
 builder.Services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
-builder.Services.AddHostedService<MassTransitConsoleHostedService>();
 builder.Services.AddMassTransit(config =>
 {
+    config.AddConsumersFromNamespaceContaining<BasketCheckoutConsumer>();
     config.AddSagaStateMachine<BasketStateMachine, BasketStateInstance>()
         .RedisRepository(r =>
         {
@@ -39,10 +39,12 @@ builder.Services.AddMassTransit(config =>
     config.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration["EventBusSettings:HostAddress"]);
-    
+        
         cfg.ConfigureEndpoints(context);
     });
-});;
+});
+
+builder.Services.AddHostedService<MassTransitConsoleHostedService>();
 
 var app = builder.Build();
 

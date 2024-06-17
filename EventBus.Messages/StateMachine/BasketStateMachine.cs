@@ -15,26 +15,30 @@ public class BasketStateMachine : MassTransitStateMachine<BasketStateInstance>
 
         InstanceState(x => x.CurrentState);
 
-        // Initially(
-        //     When(BasketCheckoutEvent)
-        //         .Then(context =>
-        //         {
-        //             context.Saga.UserId = context.Message.UserId;
-        //             context.Saga.TotalPrice = context.Message.TotalPrice;;
-        //
-        //             context.Saga.CreatedDate = DateTime.UtcNow;
-        //             context.Saga.Timestamp = DateTime.UtcNow;
-        //         })
-        //         .TransitionTo(Checkoutted));
-        
-        // During(Checkoutted,
-        //     Ignore(BasketCheckoutEvent));
-        
-        // DuringAny(
-        //     When(BasketCheckoutEvent)
-        //         .Then(context =>
-        //         {
-        //             context.Saga.Timestamp = context.Message.Timestamp;
-        //         }));
+        Initially(
+            When(BasketCheckoutEvent)
+                .Then(context =>
+                {
+                    context.Saga.UserId = context.Message.UserId;
+                    context.Saga.TotalPrice = context.Message.TotalPrice;
+                    
+                    context.Saga.CreatedDate = DateTime.UtcNow;
+                    context.Saga.Timestamp = DateTime.UtcNow;
+                })
+                // .Publish(context => new MessageModelTest()
+                // {
+                //     UserId = context.Message.UserId
+                // })
+                .TransitionTo(Checkoutted));
+
+        During(Checkoutted,
+            Ignore(BasketCheckoutEvent));
+
+        DuringAny(
+            When(BasketCheckoutEvent)
+                .Then(context =>
+                {
+                    context.Saga.Timestamp = context.Message.Timestamp;
+                }));
     }
 }

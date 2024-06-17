@@ -19,7 +19,7 @@ public static class ThirdPartyExtensions
             config.UsingRabbitMq((ctx, cfg) =>
             {
                 cfg.Host(configuration["EventBusSettings:HostAddress"]);
-                cfg.ConfigureEndpoints(ctx);
+                // cfg.ConfigureEndpoints(ctx);
             });
         });
         

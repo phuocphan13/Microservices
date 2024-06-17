@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Ordering.Application.Contracts.Infrastructure;
 using Ordering.Application.Exceptions;
-using Ordering.Domain;
+using Ordering.Domain.Entities;
 using Platform.Database.Helpers;
 
 namespace Ordering.Application.Features.Commands.UpdateOrder;

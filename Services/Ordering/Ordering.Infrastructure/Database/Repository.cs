@@ -1,7 +1,7 @@
-using Ordering.Infrastruture.Persistence;
+using Ordering.Infrastructure.Persistence;
 using Platform.Database.Helpers;
 
-namespace Ordering.Infrastruture.Database;
+namespace Ordering.Infrastructure.Database;
 
 public class Repository<TEntity> : RepositoryBase<TEntity, OrderContext>
     where TEntity : class

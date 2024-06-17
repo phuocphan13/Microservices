@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
-using Ordering.Infrastruture.Persistence;
+using Ordering.Infrastructure.Persistence;
 using Platform.Database.Helpers;
 
-namespace Ordering.Infrastruture.Database;
+namespace Ordering.Infrastructure.Database;
 
 public class UnitOfWork : UnitOfWorkBase<OrderContext>
 {

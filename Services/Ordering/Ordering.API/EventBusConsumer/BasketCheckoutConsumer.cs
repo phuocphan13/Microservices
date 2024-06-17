@@ -22,7 +22,7 @@ public class BasketCheckoutConsumer : IConsumer<BasketCheckoutMessage>
     public async Task Consume(ConsumeContext<BasketCheckoutMessage> context)
     {
         var isValid = ValidateMessage(context.Message);
-
+        
         if (!isValid)
         {
             return;
