@@ -21,30 +21,8 @@ builder.Services.AddSwaggerGen();
 builder.Services
     .AddApplicationServices()
     .AddEventBusServices()
+    .AddThirdParties(builder.Configuration)
     .AddInfrastructureServices(builder.Configuration);
-
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped<BasketCheckoutConsumer>();
-
-builder.Services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
-builder.Services.AddMassTransit(config =>
-{
-    config.AddConsumersFromNamespaceContaining<BasketCheckoutConsumer>();
-    config.AddSagaStateMachine<BasketStateMachine, BasketStateInstance>()
-        .RedisRepository(r =>
-        {
-            r.DatabaseConfiguration(builder.Configuration["ConnectionStrings:SagaConnectionString"]);
-        });
-    
-    config.UsingRabbitMq((context, cfg) =>
-    {
-        cfg.Host(builder.Configuration["EventBusSettings:HostAddress"]);
-        
-        cfg.ConfigureEndpoints(context);
-    });
-});
-
-builder.Services.AddHostedService<MassTransitConsoleHostedService>();
 
 var app = builder.Build();
 

@@ -6,7 +6,7 @@ namespace Ordering.Infrastructure.Database;
 
 public class UnitOfWork : UnitOfWorkBase<OrderContext>
 {
-    public UnitOfWork(OrderContext authenContext, ILogger<UnitOfWork> logger) : base(authenContext, logger)
+    public UnitOfWork(OrderContext orderContext, ILogger<UnitOfWork> logger) : base(orderContext, logger)
     {
     }
 }

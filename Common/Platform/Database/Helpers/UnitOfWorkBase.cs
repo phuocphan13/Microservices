@@ -9,7 +9,7 @@ public interface IUnitOfWork
     Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 
-public class UnitOfWorkBase<TContext> : IUnitOfWork where TContext : DbContext
+public abstract class UnitOfWorkBase<TContext> : IUnitOfWork where TContext : DbContext
 {
     private readonly TContext _gmcContext;
     private readonly ILogger _logger;
@@ -20,7 +20,7 @@ public class UnitOfWorkBase<TContext> : IUnitOfWork where TContext : DbContext
         _logger = logger;
     }
 
-    public bool SaveChanges()
+    public virtual bool SaveChanges()
     {
         try
         {
@@ -34,7 +34,7 @@ public class UnitOfWorkBase<TContext> : IUnitOfWork where TContext : DbContext
         }
     }
 
-    public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
+    public virtual async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
     {
         try
         {
