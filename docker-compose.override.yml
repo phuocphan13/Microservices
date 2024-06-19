@@ -77,9 +77,10 @@ services:
     container_name: catalog.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
-      - "DatabaseSettings:DatabaseName=ProductDb"
-      - "DatabaseSettings:IsRebuildSchema=false"
+      - "DatabaseSettings:MongoDb:ConnectionString=mongodb://catalogdb:27017"
+      - "DatabaseSettings:MongoDb:DatabaseName=ProductDb"
+      - "DatabaseSettings:MongoDb:IsRebuildSchema=false"
+      - "GrpcSettings:DiscountUrl=http://discount.grpc"
       - ASPNETCORE_URLS=https://+:443
       - ASPNETCORE_Kestrel__Certificates__Default__Password=13Lucifer
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
@@ -111,7 +112,7 @@ services:
     container_name: discount.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
+      - "DatabaseSettings:Postgres:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
       - "DatabaseSettings:IsRebuildSchema=false;"
     depends_on:
       - discountdb
