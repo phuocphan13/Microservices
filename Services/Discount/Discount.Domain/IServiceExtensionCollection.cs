@@ -7,7 +7,7 @@ namespace Discount.Domain;
 
 public static class IServiceExtensionCollection
 {
-    public static void AddDiscountCommonServices(this IServiceCollection services)
+    public static IServiceCollection AddDiscountCommonServices(this IServiceCollection services)
     {
         services.AddScoped<ICouponRepository, CouponRepository>();
         services.AddScoped<IBaseRepository, BaseRepository>();
@@ -17,5 +17,7 @@ public static class IServiceExtensionCollection
         services.AddScoped<ICouponService, CouponService>();
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+        return services;
     }
 }
