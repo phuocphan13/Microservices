@@ -6,5 +6,9 @@ public class BasketItem : BaseEntity
     
     public decimal Price { get; set; }
 
+    public string CategoryCode { get; set; } = null!;
+
+    public string SubCategoryCode { get; set; } = null!;
+
     public string ProductCode { get; set; } = null!;
 }

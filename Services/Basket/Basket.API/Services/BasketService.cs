@@ -33,10 +33,10 @@ public class BasketService : IBasketService
             return null;
         }
 
-        // if (basket.SessionDate < DateTime.Now.AddHours(-24))
-        // {
-        //     await UpdateBasketItemsInternalAsync(basket, cancellationToken);
-        // }
+        if (basket.SessionDate < DateTime.Now.AddHours(-24))
+        {
+            await UpdateBasketItemsInternalAsync(basket, cancellationToken);
+        }
 
         return basket.ToDetail();
     }
@@ -51,31 +51,7 @@ public class BasketService : IBasketService
         }
         else
         {
-            foreach (var item in basket.Items)
-            {
-                if (item.IsRemove)
-                {
-                    entity.Items.RemoveAll(x => x.ProductCode == item.ProductCode);
-                }
-                else
-                {
-                    var BasketItem = entity.Items.FirstOrDefault(x => x.ProductCode == item.ProductCode);
-
-                    if (BasketItem is not null)
-                    {
-                        BasketItem.Quantity = item.Quantity;
-                    }
-                    else
-                    {
-                        entity.Items.Add(new BasketItem
-                        {
-                            Price = item.Price,
-                            ProductCode = item.ProductCode,
-                            Quantity = item.Quantity
-                        });
-                    }
-                }
-            }
+            entity.ToEntityFromUpdate(basket);
         }
 
         await _basketRepository.SaveBasket(entity, cancellationToken);

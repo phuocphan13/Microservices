@@ -25,10 +25,6 @@ public class BasketStateMachine : MassTransitStateMachine<BasketStateInstance>
                     context.Saga.CreatedDate = DateTime.UtcNow;
                     context.Saga.Timestamp = DateTime.UtcNow;
                 })
-                // .Publish(context => new MessageModelTest()
-                // {
-                //     UserId = context.Message.UserId
-                // })
                 .TransitionTo(Checkoutted));
 
         During(Checkoutted,
