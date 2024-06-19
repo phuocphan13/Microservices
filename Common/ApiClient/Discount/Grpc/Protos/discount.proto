@@ -81,14 +81,22 @@ message ListSubCategoryModel {
 	repeated ListProductModel ProdList = 3;
 }
 
-message AmountAfterDiscountRequest {
-	repeated string Type = 1;
-	repeated string CatalogCode = 2;
+message ListCategoryModel {
+	string Type = 1;
+	string CatalogCode = 2;
 	repeated ListSubCategoryModel SubList = 3;
 }
 
-message AmountAfterDiscountResponse {
+message AmountAfterDiscountRequest {
+	repeated ListCategoryModel Categories = 1;
+}
+
+message DiscountResponse {
 	string Type = 1;
 	string CatalogCode = 2;
 	string Amount = 3; 
+}
+
+message AmountAfterDiscountResponse {
+	repeated DiscountResponse AmountDiscounts = 1;
 }

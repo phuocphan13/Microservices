@@ -1,6 +1,7 @@
 using ApiClient.Discount.Models.Discount;
 using ApiClient.Discount.Models.Discount.AmountModel;
 using Discount.Domain.Repositories.Common;
+using System.Reflection;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Discount.Domain.Repositories;
@@ -89,10 +90,54 @@ public class DiscountRepository : IDiscountRepository
         return result;
     }
 
-    //public async Task<Entities.Discount> AmountDiscountAsync(List<CatalogItem> catalogItems)
-    //{
-    //    const string query = "";
-    //    var param = new { RequestBody = requestBody };
-    //    var entity = await _baseRepository.QueryAsync<Entities.Discount>(query, param);
-    //}
+    public async Task<List<Entities.Discount>?> AmountDiscountAsync(List<AmountDiscountRepositoryModel> catalogItems) // truyen vo TYPE - LISTCATALOGCODE
+    {
+        List<string> prefixQueries = new List<string>();
+        object param = new { Type_Cate = "", CatalogCode_Cate = "", Type_SubCate = "", CatalogCode_SubCate = "", Type_Product = "", CatalogCode_Product = "" };
+
+        foreach(var item in catalogItems.OrderBy(x => x.Type))
+        {
+            string prefix = "";
+            if(item.Type == 1)
+            {
+                prefix = "Cate";
+            }
+            else if (item.Type == 1)
+            {
+                prefix = "SubCate";
+            }
+            else if (item.Type == 1)
+            {
+                prefix = "Cate";
+            }
+
+            string typePrefix = $"Type_{prefix}";
+            string catalogCodePrefix = $"CatalogCode_{prefix}";
+
+            SetValueForOject(param, typePrefix, item.Type);
+            SetValueForOject(param, catalogCodePrefix, string.Join(",", item.CatalogCodes));
+
+            prefixQueries.Add($"(Type = @{typePrefix} and CatalogCode in @{catalogCodePrefix})");
+        }
+
+        string query = string.Join(" or ", prefixQueries);
+
+        var entity = await _baseRepository.QueryAsync<Entities.Discount>(query, param);
+
+        return entity;
+    }
+
+    public static void SetValueForOject (object param, string propertyName, string value)
+    {
+        Type type = param.GetType();
+        PropertyInfo? prop = type.GetProperty(propertyName);
+
+        if (prop is null)
+        {
+            return;
+        }    
+
+        prop.SetValue(param, value, null);
+    }
+
 }

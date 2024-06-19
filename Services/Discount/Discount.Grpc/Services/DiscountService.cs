@@ -1,4 +1,5 @@
 ﻿using ApiClient.Discount.Models.Discount;
+using ApiClient.Discount.Models.Discount.AmountModel;
 using AutoMapper;
 using Coupon.Grpc.Protos;
 using Discount.Domain.Services;
@@ -144,40 +145,40 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     //---------------GRPC------------GRPC-----------------------
     public override async Task<AmountAfterDiscountResponse> AmountAfterDiscount(AmountAfterDiscountRequest request, ServerCallContext context)
     {
-        //viet lại file Proto để map được với requestBody
+        //viet lại file Proto để map được với requestBody -- OK
         var requestBody = _mapper.Map<AmountDiscountRequestBody>(request);
 
-       // var amount = await _discountService.AmountDiscountAsync(requestBody.Type.ToList() , requestBody.CatalogCode.ToList(), Re); //truyền vào Model lồng 
+        //var amount = await _discountService.AmountDiscountAsync(requestBody); //truyền vào Model lồng 
 
 
-        var amounts = new List<AmountAfterDiscountResponse>()
+        var amounts = new List<DiscountResponse>()
         {
-             new AmountAfterDiscountResponse() {
+             new DiscountResponse() {
                 Type = "2",
                 CatalogCode = "SS-01",
                 Amount = "200"
             },
-              new AmountAfterDiscountResponse() {
+              new DiscountResponse() {
                 Type = "3",
                 CatalogCode = "SS-01",
                 Amount = "300"
             },
-               new AmountAfterDiscountResponse() {
+               new DiscountResponse() {
                 Type = "4",
                 CatalogCode = "SS-01",
                 Amount = "50"
             },
-                new AmountAfterDiscountResponse() {
+                new DiscountResponse() {
                 Type = "3",
                 CatalogCode = "APL-01",
                 Amount = "100"
             },
-                new AmountAfterDiscountResponse() {
+                new DiscountResponse() {
                 Type = "4",
                 CatalogCode = "APL-01",
                 Amount = "200"
             },
-                new AmountAfterDiscountResponse() {
+                new DiscountResponse() {
                 Type = "4",
                 CatalogCode = "OPPO-01",
                 Amount = "200"

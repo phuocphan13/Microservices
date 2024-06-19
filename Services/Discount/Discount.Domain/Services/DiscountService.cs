@@ -1,5 +1,6 @@
 using ApiClient.Catalog.Catalog;
 using ApiClient.Discount.Models.Discount;
+using ApiClient.Discount.Models.Discount.AmountModel;
 using Discount.Domain.Extensions;
 using Discount.Domain.Repositories;
 
@@ -212,10 +213,23 @@ public class DiscountService : IDiscountService
     }
     #endregion
 
-    //public async Task<DiscountDetail?> AmountDiscountAsync(AmountDiscountRequestBody requestBody, CancellationToken cancellationToken)
-    //{
-    //    var amount = await _discountRepository.AmountDiscountAsync(requestBody, cancellationToken); // convert requestBody to catalogItems
+    public async Task<List<AmountDiscountResponseModel>?> AmountDiscountAsync(AmountDiscountRequestBody requestBody, CancellationToken cancellationToken)
+    {
+        //bien ra AmountDiscountRepositoryModel
+        var listDiscountRepository = new List<AmountDiscountRepositoryModel>();
 
-    //    return amount.ToDetail();
-    //}
+        //foreach (var item in )
+        //    type - listCatalogCodes
+        //truyen vao list model vao Repository
+        //var amount = await _discountRepository.AmountDiscountAsync(listDiscountRepository); // convert requestBody to catalogItems
+
+        //nhan entity tra ra tuw AmountDiscountSummary
+
+        var response = new List<AmountDiscountResponseModel>();
+
+
+        return response;
+
+
+    }
 }

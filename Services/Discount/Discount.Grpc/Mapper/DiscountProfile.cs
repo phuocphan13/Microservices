@@ -1,5 +1,6 @@
 ﻿using ApiClient.Discount.Models.Coupon;
 using ApiClient.Discount.Models.Discount;
+using ApiClient.Discount.Models.Discount.AmountModel;
 using AutoMapper;
 using Coupon.Grpc.Protos;
 using Discount.Grpc.Protos;
@@ -14,5 +15,8 @@ public class DiscountProfile : Profile
         CreateMap<DiscountDetail, DiscountDetailModel>().ReverseMap();
         
         CreateMap<CouponDetail, CouponDetailModel>().ReverseMap();
+
+        CreateMap<AmountAfterDiscountRequest, AmountDiscountRequestBody>().ReverseMap();
+        CreateMap<AmountDiscountResponseModel, DiscountResponse>().ReverseMap();
     }
 }
