@@ -14,6 +14,16 @@ services:
     restart: always
     ports:
       - "6379:6379"
+    volumes:
+      - ./basketdb/data:/data
+        
+  sagadb:
+    container_name: sagadb
+    restart: always
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./sagadb/data:/data
 
   discountdb:
     container_name: discountdb
@@ -104,6 +114,7 @@ services:
       - "ApiSettings:JwtSettings:LifeTime=8"
     depends_on:
       - basketdb
+      - sagadb
       - rabbitmq
     ports:
       - "8001:80"
@@ -144,6 +155,7 @@ services:
     depends_on:
       - orderdb
       - rabbitmq
+      - sagadb
     ports:
       - "8004:80"
 

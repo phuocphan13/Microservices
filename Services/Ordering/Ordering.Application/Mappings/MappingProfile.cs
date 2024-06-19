@@ -2,7 +2,7 @@
 using Ordering.Application.Features.Commands.CheckoutOrder;
 using Ordering.Application.Features.Commands.UpdateOrder;
 using Ordering.Application.Features.Queries.GetOrderList;
-using Ordering.Domain;
+using Ordering.Domain.Entities;
 
 namespace Ordering.Application.Mappings;
 

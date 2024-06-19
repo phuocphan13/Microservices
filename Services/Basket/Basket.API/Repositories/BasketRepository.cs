@@ -1,13 +1,12 @@
-﻿using Basket.API.Entitites;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
 namespace Basket.API.Repositories;
 
 public interface IBasketRepository
 {
-    Task<ShoppingCart?> GetBasket(string userName, CancellationToken cancellationToken = default);
-    Task<ShoppingCart?> SaveCart(ShoppingCart cart, CancellationToken cancellationToken = default);
+    Task<Entitites.Basket?> GetBasket(string userId, CancellationToken cancellationToken = default);
+    Task<Entitites.Basket?> SaveBasket(Entitites.Basket basket, CancellationToken cancellationToken = default);
     Task DeleteBasket(string userName, CancellationToken cancellationToken = default);
 }
 
@@ -20,22 +19,23 @@ public class BasketRepository : IBasketRepository
         _redisCache = redisCache ?? throw new ArgumentNullException(nameof(redisCache));
     }
 
-    public async Task<ShoppingCart?> GetBasket(string userName, CancellationToken cancellationToken)
+    public async Task<Entitites.Basket?> GetBasket(string userId, CancellationToken cancellationToken)
     {
-        var basket = await _redisCache.GetStringAsync(userName, cancellationToken);
+        var basket = await _redisCache.GetStringAsync(userId, cancellationToken);
+        
         if(string.IsNullOrWhiteSpace(basket))
         {
             return null;
         }
 
-        return JsonConvert.DeserializeObject<ShoppingCart>(basket);
+        return JsonConvert.DeserializeObject<Entitites.Basket>(basket);
     }
 
-    public async Task<ShoppingCart?> SaveCart(ShoppingCart cart, CancellationToken cancellationToken)
+    public async Task<Entitites.Basket?> SaveBasket(Entitites.Basket basket, CancellationToken cancellationToken)
     {
-        await _redisCache.SetStringAsync(cart.UserId, JsonConvert.SerializeObject(cart), cancellationToken);
+        await _redisCache.SetStringAsync(basket.UserId, JsonConvert.SerializeObject(basket), cancellationToken);
 
-        return await GetBasket(cart.UserId, cancellationToken);
+        return await GetBasket(basket.UserId, cancellationToken);
     }
 
     public async Task DeleteBasket(string userName, CancellationToken cancellationToken)

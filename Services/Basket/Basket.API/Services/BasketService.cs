@@ -1,5 +1,4 @@
 using ApiClient.Basket.Models;
-using ApiClient.Catalog.Product;
 using ApiClient.DirectApiClients.Catalog;
 using Basket.API.Entitites;
 using Basket.API.Extensions.ModelExtensions;
@@ -9,9 +8,9 @@ namespace Basket.API.Services;
 
 public interface IBasketService
 {
-    Task<CartDetail?> GetBasketAsync(string userName, CancellationToken cancellationToken = default);
-    Task<CartDetail> SaveCartAsync(SaveCartRequestBody cart, CancellationToken cancellationToken = default);
-    Task DeleteBasketAsync(string userName, CancellationToken cancellationToken = default);
+    Task<BasketDetail?> GetBasketAsync(string userId, CancellationToken cancellationToken = default);
+    Task<BasketDetail> SaveBasketAsync(SaveBasketRequestBody basket, CancellationToken cancellationToken = default);
+    Task DeleteBasketAsync(string userId, CancellationToken cancellationToken = default);
 }
 
 public class BasketService : IBasketService
@@ -25,7 +24,7 @@ public class BasketService : IBasketService
         _productInternalClient = productInternalClient ?? throw new ArgumentNullException(nameof(productInternalClient));
     }
 
-    public async Task<CartDetail?> GetBasketAsync(string userName, CancellationToken cancellationToken)
+    public async Task<BasketDetail?> GetBasketAsync(string userName, CancellationToken cancellationToken)
     {
         var basket = await _basketRepository.GetBasket(userName, cancellationToken);
 
@@ -42,55 +41,31 @@ public class BasketService : IBasketService
         return basket.ToDetail();
     }
 
-    public async Task<CartDetail> SaveCartAsync(SaveCartRequestBody cart, CancellationToken cancellationToken)
+    public async Task<BasketDetail> SaveBasketAsync(SaveBasketRequestBody basket, CancellationToken cancellationToken)
     {
-        var entity = await _basketRepository.GetBasket(cart.UserId, cancellationToken);
+        var entity = await _basketRepository.GetBasket(basket.UserId, cancellationToken);
 
         if (entity is null)
         {
-            entity = cart.ToEntityFromSave();
+            entity = basket.ToEntityFromSave();
         }
         else
         {
-            foreach (var item in cart.Items)
-            {
-                if (item.Quantity == 0)
-                {
-                    entity.Items.RemoveAll(x => x.ProductCode == item.ProductCode);
-                }
-                else
-                {
-                    var cartItem = entity.Items.FirstOrDefault(x => x.ProductCode == item.ProductCode);
-
-                    if (cartItem is not null)
-                    {
-                        cartItem.Quantity = item.Quantity;
-                    }
-                    else
-                    {
-                        entity.Items.Add(new ShoppingCartItem
-                        {
-                            Price = item.Price,
-                            ProductCode = item.ProductCode,
-                            Quantity = item.Quantity
-                        });
-                    }
-                }
-            }
+            entity.ToEntityFromUpdate(basket);
         }
 
-        await _basketRepository.SaveCart(entity, cancellationToken);
+        await _basketRepository.SaveBasket(entity, cancellationToken);
 
         return entity.ToDetail();
     }
 
-    public async Task DeleteBasketAsync(string userName, CancellationToken cancellationToken)
+    public async Task DeleteBasketAsync(string userId, CancellationToken cancellationToken)
     {
-        await _basketRepository.DeleteBasket(userName, cancellationToken);
+        await _basketRepository.DeleteBasket(userId, cancellationToken);
     }
 
     #region Internal Functions
-    private async Task UpdateBasketItemsInternalAsync(ShoppingCart basket, CancellationToken cancellationToken)
+    private async Task UpdateBasketItemsInternalAsync(Entitites.Basket basket, CancellationToken cancellationToken)
     {
         var productCodes = basket.Items.Select(x => x.ProductCode);
 
