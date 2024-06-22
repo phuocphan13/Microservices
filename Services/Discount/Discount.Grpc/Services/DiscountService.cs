@@ -147,42 +147,8 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     {
         //viet lại file Proto để map được với requestBody -- OK
         var requestBody = _mapper.Map<AmountDiscountRequestBody>(request);
-        //var amount = await _discountService.AmountDiscountAsync(requestBody); //truyền vào Model lồng 
 
-
-        var amounts = new List<DiscountResponse>()
-        {
-             new DiscountResponse() {
-                Type = "2",
-                CatalogCode = "SS-01",
-                Amount = "200"
-            },
-              new DiscountResponse() {
-                Type = "3",
-                CatalogCode = "SS-01",
-                Amount = "300"
-            },
-               new DiscountResponse() {
-                Type = "4",
-                CatalogCode = "SS-01",
-                Amount = "50"
-            },
-                new DiscountResponse() {
-                Type = "3",
-                CatalogCode = "APL-01",
-                Amount = "100"
-            },
-                new DiscountResponse() {
-                Type = "4",
-                CatalogCode = "APL-01",
-                Amount = "200"
-            },
-                new DiscountResponse() {
-                Type = "4",
-                CatalogCode = "OPPO-01",
-                Amount = "200"
-            }
-        };
+        var amounts = await _discountService.AmountDiscountAsync(requestBody, default);
 
         var response = _mapper.Map<AmountAfterDiscountResponse>(amounts);
 
