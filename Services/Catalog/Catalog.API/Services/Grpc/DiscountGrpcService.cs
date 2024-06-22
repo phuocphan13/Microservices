@@ -1,4 +1,6 @@
 using ApiClient.Discount.Models.Discount;
+using ApiClient.Discount.Models.Discount.AmountModel;
+using Catalog.API.Entities;
 using Catalog.API.Extensions.Grpc;
 using Discount.Grpc.Protos;
 
@@ -82,4 +84,44 @@ public class DiscountGrpcService : IDiscountGrpcService
 
         return discounts;
     }
+
+    public async Task<AmountAfterDiscountResponse> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct)
+    {
+        var listCategory = new AmountAfterDiscountRequest();
+
+       foreach(var categoryItem in entityCategory)
+        {
+            var category = new ListCategoryModel();
+
+            category.Type = "2";
+            category.CatalogCode = categoryItem.CategoryCode;
+
+            foreach(var subCategoryItem in entitySubCategory.Where(x=>x.CategoryId == categoryItem.Id))
+            {
+                var subCategory = new ListSubCategoryModel();
+
+                subCategory.SubType = "3";
+                subCategory.SubCatalogCode = subCategoryItem.SubCategoryCode;
+
+                foreach(var productItem in entityProduct.Where(x=>x.SubCategoryId == subCategoryItem.Id))
+                {
+                    var product = new ListProductModel();
+
+                    product.ProdType = "4";
+                    product.ProdCatalogCode = productItem.ProductCode;
+
+                    subCategory.ProdList.Add(product);
+                }
+
+                category.SubList.Add(subCategory);
+            }
+
+            listCategory.Categories.Add(category);
+        }
+
+        var result = await _discountGrpcService.AmountAfterDiscountAsync(listCategory);
+
+        return result;
+    }
+
 }

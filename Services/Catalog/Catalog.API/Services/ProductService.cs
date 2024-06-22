@@ -160,6 +160,7 @@ public class ProductService : IProductService
         var subCategories = await _subCategoryRepository.GetEntitiesQueryAsync(x => subCategoryIds.Contains(x.Id), cancellationToken);
         var discounts = await _discountGrpcService.GetListDiscountsByCatalogCodeAsync(DiscountEnum.Product, productCodes);
 
+
         var summaries = new List<ProductSummary>();
 
         foreach (var entity in entities)

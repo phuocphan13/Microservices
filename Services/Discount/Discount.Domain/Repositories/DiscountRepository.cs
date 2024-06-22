@@ -98,17 +98,17 @@ public class DiscountRepository : IDiscountRepository
         foreach(var item in catalogItems.OrderBy(x => x.Type))
         {
             string prefix = "";
-            if(item.Type == 1)
+            if(item.Type == "2")
             {
-                prefix = "Cate";
+                prefix = "Category";
             }
-            else if (item.Type == 1)
+            else if (item.Type == "3")
             {
-                prefix = "SubCate";
+                prefix = "SubCategory";
             }
-            else if (item.Type == 1)
+            else if (item.Type == "4")
             {
-                prefix = "Cate";
+                prefix = "Product";
             }
 
             string typePrefix = $"Type_{prefix}";

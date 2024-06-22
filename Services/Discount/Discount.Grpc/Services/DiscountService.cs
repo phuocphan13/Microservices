@@ -147,7 +147,6 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     {
         //viet lại file Proto để map được với requestBody -- OK
         var requestBody = _mapper.Map<AmountDiscountRequestBody>(request);
-
         //var amount = await _discountService.AmountDiscountAsync(requestBody); //truyền vào Model lồng 
 
 
