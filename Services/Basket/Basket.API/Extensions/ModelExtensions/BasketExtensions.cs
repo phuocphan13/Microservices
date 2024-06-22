@@ -14,6 +14,43 @@ public static class ShoppingBasketExtensions
         {
             UserId = entity.UserId,
             UserName = entity.UserName,
+            TotalPrice = entity.TotalPrice,
+            DiscountItems = entity.Discounts.Select(x => new DiscountItemSummary()
+            {
+                Amount = x.Amount,
+                CatalogCode = x.CatalogCode,
+                Type = x.Type
+            }).ToList(),
+            CouponItems = entity.Coupons.Select(x => new CouponItemSummary()
+            {
+                Amount = x.Amount,
+                CatalogCode = x.CatalogCode,
+                Type = x.Type
+            }).ToList()
+        };
+
+        foreach (var item in entity.Items)
+        {
+            var summary = new BasketItemSummary()
+            {
+                ProductCode = item.ProductCode,
+                Quantity = item.Quantity,
+                // Price = item.CalculateItemPrice(entity.Discounts, entity.Coupons)
+                Price = item.Price
+            };
+            
+            detail.Items.Add(summary);
+        }
+
+        return detail;
+    }
+    
+    public static BasketSummary ToSummary(this Entitites.Basket entity)
+    {
+        var detail = new BasketSummary
+        {
+            UserId = entity.UserId,
+            UserName = entity.UserName,
             TotalPrice = entity.TotalPrice
         };
 
@@ -23,7 +60,8 @@ public static class ShoppingBasketExtensions
             {
                 ProductCode = item.ProductCode,
                 Quantity = item.Quantity,
-                Price = item.CalculateItemPrice(entity.Discounts, entity.Coupons)
+                // Price = item.CalculateItemPrice(entity.Discounts, entity.Coupons
+                Price = item.Price
             };
 
             detail.Items.Add(summary);
@@ -82,6 +120,7 @@ public static class ShoppingBasketExtensions
                 if (basketItem is not null)
                 {
                     basketItem.Quantity = item.Quantity;
+                    basketItem.Price = item.Price;
                     basketItem.LastModifiedDate = DateTime.Now;
                 }
                 else

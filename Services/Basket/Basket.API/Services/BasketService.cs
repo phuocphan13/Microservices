@@ -1,6 +1,5 @@
 using ApiClient.Basket.Models;
 using ApiClient.DirectApiClients.Catalog;
-using Basket.API.Entitites;
 using Basket.API.Extensions.ModelExtensions;
 using Basket.API.Repositories;
 
@@ -8,7 +7,8 @@ namespace Basket.API.Services;
 
 public interface IBasketService
 {
-    Task<BasketDetail?> GetBasketAsync(string userId, CancellationToken cancellationToken = default);
+    Task<BasketSummary?> GetBasketAsync(string userId, CancellationToken cancellationToken = default);
+    Task<BasketDetail?> GetBasketDetailAsync(string userId, CancellationToken cancellationToken = default);
     Task<BasketDetail> SaveBasketAsync(SaveBasketRequestBody basket, CancellationToken cancellationToken = default);
     Task DeleteBasketAsync(string userId, CancellationToken cancellationToken = default);
 }
@@ -24,21 +24,40 @@ public class BasketService : IBasketService
         _productInternalClient = productInternalClient ?? throw new ArgumentNullException(nameof(productInternalClient));
     }
 
-    public async Task<BasketDetail?> GetBasketAsync(string userName, CancellationToken cancellationToken)
+    public async Task<BasketSummary?> GetBasketAsync(string userId, CancellationToken cancellationToken)
     {
-        var basket = await _basketRepository.GetBasket(userName, cancellationToken);
+        var basket = await GetBasketEntityAsync(userId, cancellationToken);
 
         if (basket is null)
         {
             return null;
         }
 
-        if (basket.SessionDate < DateTime.Now.AddHours(-24))
+        return basket.ToSummary();
+    }
+
+    public async Task<BasketDetail?> GetBasketDetailAsync(string userId, CancellationToken cancellationToken)
+    {
+        var basket = await GetBasketEntityAsync(userId, cancellationToken);
+
+        if (basket is null)
+        {
+            return null;
+        }
+
+        return basket.ToDetail();
+    }
+    
+    private async Task<Entitites.Basket?> GetBasketEntityAsync(string userId, CancellationToken cancellationToken)
+    {
+        var basket = await _basketRepository.GetBasket(userId, cancellationToken);
+
+        if (basket is not null &&  basket.SessionDate < DateTime.Now.AddHours(-24))
         {
             await UpdateBasketItemsInternalAsync(basket, cancellationToken);
         }
 
-        return basket.ToDetail();
+        return basket;
     }
 
     public async Task<BasketDetail> SaveBasketAsync(SaveBasketRequestBody basket, CancellationToken cancellationToken)

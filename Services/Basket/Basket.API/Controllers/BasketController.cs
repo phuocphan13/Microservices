@@ -84,7 +84,7 @@ public class BasketController : ApiController
     [HttpPost]
     public async Task<IActionResult> Checkout([FromBody] BasketCheckout basketCheckout, CancellationToken cancellationToken)
     {
-        var basket = await _basketService.GetBasketAsync(basketCheckout.UserId, cancellationToken);
+        var basket = await _basketService.GetBasketDetailAsync(basketCheckout.UserId, cancellationToken);
         
         if (basket == null)
         {
@@ -92,8 +92,7 @@ public class BasketController : ApiController
         }
 
         // send checkout event to rabbitmq
-        var eventMessage = _mapper.Map<BasketCheckoutMessage>(basketCheckout);
-        eventMessage.TotalPrice = 200;
+        var eventMessage = _mapper.Map<BasketCheckoutMessage>(basket);
 
         await _publishEndpoint.Publish(eventMessage, cancellationToken);
 

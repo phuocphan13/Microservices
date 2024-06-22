@@ -1,3 +1,4 @@
+using System.Reflection;
 using ApiClient.Discount.Enum;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -35,8 +36,28 @@ public static class InitializeDB
             {
                 Type = CouponEnum.Percent,
                 Value = 20,
-                Name = "SamSung 10",
-                Description = "SamSung 10 Description",
+                Name = "Happy Monday",
+                Description = "Happy Monday Description",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
+                Type = CouponEnum.Percent,
+                Value = 20,
+                Name = "Happy Tuesday",
+                Description = "Happy Tuesday Description",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
+                Type = CouponEnum.Percent,
+                Value = 20,
+                Name = "Happy Wednesday",
+                Description = "Happy Wednesday Description",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
                 IsActive = true,
@@ -50,10 +71,60 @@ public static class InitializeDB
         {
             new()
             {
+                Amount = 10,
+                Description = "SamSung 10 Description",
+                Type = DiscountEnum.Category,
+                CatalogCode = "CategoryCode-1",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
+                Amount = 20,
+                Description = "SamSung 10 Description",
+                Type = DiscountEnum.Product,
+                CatalogCode = "CategoryCode-2",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
+                Amount = 10,
+                Description = "SamSung 10 Description",
+                Type = DiscountEnum.SubCategory,
+                CatalogCode = "CategoryCode-1",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
+                Amount = 20,
+                Description = "SamSung 10 Description",
+                Type = DiscountEnum.SubCategory,
+                CatalogCode = "CategoryCode-2",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
+                Amount = 100,
+                Description = "SamSung 10 Description",
+                Type = DiscountEnum.Product,
+                CatalogCode = "ProductCode-1",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
                 Amount = 200,
                 Description = "SamSung 10 Description",
                 Type = DiscountEnum.Product,
-                CatalogCode = "IPX-APL",
+                CatalogCode = "ProductCode-2",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
                 IsActive = true,

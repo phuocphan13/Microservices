@@ -1,9 +1,4 @@
 using EventBus.Messages;
-using EventBus.Messages.Extensions;
-using EventBus.Messages.StateMachine;
-using MassTransit;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Ordering.API.EventBusConsumer;
 using Ordering.API.Extensions;
 using Ordering.Application;
 using Ordering.Infrastructure;

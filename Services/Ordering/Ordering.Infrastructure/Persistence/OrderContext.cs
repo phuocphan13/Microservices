@@ -14,9 +14,9 @@ public class OrderContext : DbContext
     {
     }
     
-    public OrderContext(DbContextOptions<OrderContext> options) : base(options)
-    {
-    }
+    // public OrderContext(DbContextOptions<OrderContext> options) : base(options)
+    // {
+    // }
 
     //Todo: add some field for storing Discount, Coupon
     public virtual DbSet<Order> Orders { get; set; }
@@ -27,7 +27,8 @@ public class OrderContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;");
+            // optionsBuilder.UseSqlServer("Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=192.168.2.10,1433;Database=OrderDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;");
             // optionsBuilder.UseSqlServer(_configuration["Configuration:ConnectionString"]);
             //optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS; Database=Authentication;Trusted_Connection=True;");
         }

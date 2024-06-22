@@ -29,11 +29,14 @@ public class OrderContextSeed
                 Email = "Lucifer.Moningstar@hell.com",
                 PhoneNumber = "666",
                 Status = OrderStatus.Checkoutted,
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.UtcNow,
+                UserId = "1412C1C6-B2F3-4F3E-B75B-E9EBDF11C4D8",
                 OrderItems = new()
                 {
                     new()
                     {
-                        ProductCode = "Product-Code",
+                        ProductCode = "ProductCode-1",
                         Price = 20M,
                         Quantity = 2
                     }
