@@ -11,6 +11,7 @@ public interface IDiscountGrpcService
     Task<DiscountDetail> GetDiscount(string productName);
     Task<DiscountDetail> GetDiscountByCatalogCode(DiscountEnum type, string catalogCode);
     Task<List<DiscountDetail>> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, IEnumerable<string> catalogCodes);
+    Task<AmountAfterDiscountResponse> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct);
 }
 
 public class DiscountGrpcService : IDiscountGrpcService

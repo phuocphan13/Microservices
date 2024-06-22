@@ -15,6 +15,9 @@ public class DiscountProfile : Profile
         CreateMap<DiscountDetail, DiscountDetailModel>().ReverseMap();
         CreateMap<CouponDetail, CouponDetailModel>().ReverseMap();
         CreateMap<AmountAfterDiscountRequest, AmountDiscountRequestBody>().ReverseMap();
+        CreateMap<CategoryRequestBody, ListCategoryModel>().ReverseMap();
+        CreateMap<SubCategoryRequestBody, ListSubCategoryModel>().ReverseMap();
+        CreateMap<ProductRequestBody, ListProductModel>().ReverseMap();
         CreateMap<AmountDiscountResponseModel, DiscountResponse>().ReverseMap();
         CreateMap<AmountDiscountResponseModel, Domain.Entities.Discount>().ReverseMap();
     }

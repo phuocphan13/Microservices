@@ -146,12 +146,18 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     public override async Task<AmountAfterDiscountResponse> AmountAfterDiscount(AmountAfterDiscountRequest request, ServerCallContext context)
     {
         //viet lại file Proto để map được với requestBody -- OK
-        var requestBody = _mapper.Map<AmountDiscountRequestBody>(request);
+        try {
+            var requestBody = _mapper.Map<AmountDiscountRequestBody>(request);
 
-        var amounts = await _discountService.AmountDiscountAsync(requestBody, default);
+            var amounts = await _discountService.AmountDiscountAsync(requestBody, default);
 
-        var response = _mapper.Map<AmountAfterDiscountResponse>(amounts);
+            var response = _mapper.Map<AmountAfterDiscountResponse>(amounts);
 
-        return response;
+            return response;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
 }
