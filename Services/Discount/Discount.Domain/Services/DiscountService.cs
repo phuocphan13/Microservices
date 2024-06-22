@@ -1,6 +1,7 @@
-using ApiClient.Catalog.Catalog;
+﻿using ApiClient.Catalog.Catalog;
 using ApiClient.Discount.Models.Discount;
 using ApiClient.Discount.Models.Discount.AmountModel;
+using AutoMapper;
 using Discount.Domain.Extensions;
 using Discount.Domain.Repositories;
 
@@ -14,18 +15,21 @@ public interface IDiscountService
     Task<DiscountDetail?> CreateDiscountAsync(CreateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> UpdateDiscountAsync(UpdateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> InactiveDiscountAsync(int id);
-    //Task<DiscountDetail?> AmountDiscountAsync (AmountDiscountRequestBody requestBody, CancellationToken cancellationToken);
+    Task<List<DiscountDetail>?> AmountDiscountAsync (AmountDiscountRequestBody requestBody, CancellationToken cancellationToken);
 }
 
 public class DiscountService : IDiscountService
 {
     private readonly IDiscountRepository _discountRepository;
     private readonly ICatalogApiClient _catalogApiClient;
+    private readonly IMapper _mapper;
 
-    public DiscountService(IDiscountRepository discountRepository, ICatalogApiClient catalogApiClient)
+    public DiscountService(IDiscountRepository discountRepository, ICatalogApiClient catalogApiClient, IMapper mapper)
     {
         _discountRepository = discountRepository ?? throw new ArgumentNullException(nameof(discountRepository));
         _catalogApiClient = catalogApiClient ?? throw new ArgumentNullException(nameof(catalogApiClient));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+
     }
 
     public async Task<DiscountDetail?> GetDiscountAsync(string id)
@@ -48,7 +52,7 @@ public class DiscountService : IDiscountService
         {
             return null;
         }
-        
+
         return discounts.Select(x => x.ToDetail()).ToList();
     }
 
@@ -158,7 +162,7 @@ public class DiscountService : IDiscountService
     private async Task<DiscountDetail?> UpdateDiscountInternalAsync(UpdateDiscountRequestBody requestBody, CancellationToken cancellationToken)
     {
         var isValid = await ValidateDataAsync(requestBody, cancellationToken);
-        
+
         if (!isValid)
         {
             return null;
@@ -191,7 +195,7 @@ public class DiscountService : IDiscountService
         where T : BaseDiscountRequestBody
     {
         var isDateValid = await ValidationDateAsync(requestBody);
-        
+
         var isCatalogCodeExisted = await ValidateCatalogCodeExistedAsync(requestBody.CatalogCode!, requestBody.Type!.Value, cancellationToken);
 
         return isDateValid && isCatalogCodeExisted;
@@ -204,7 +208,7 @@ public class DiscountService : IDiscountService
 
         return !isOverlap;
     }
-    
+
     private async Task<bool> ValidateCatalogCodeExistedAsync(string catalogCode, DiscountEnum type, CancellationToken cancellationToken)
     {
         var result = await _catalogApiClient.ValidateCatalogCodeAsync(catalogCode, type, cancellationToken);
@@ -213,23 +217,35 @@ public class DiscountService : IDiscountService
     }
     #endregion
 
-    public async Task<List<AmountDiscountResponseModel>?> AmountDiscountAsync(AmountDiscountRequestBody requestBody, CancellationToken cancellationToken)
+    public async Task<List<DiscountDetail>?> AmountDiscountAsync(AmountDiscountRequestBody requestBody, CancellationToken cancellationToken)
     {
         //bien ra AmountDiscountRepositoryModel
-        var listDiscountRepository = new List<AmountDiscountRepositoryModel>();
+        var cateCodes = requestBody.Categories.Select(x => x.CatalogCode);
+        var subCateCodes = requestBody.Categories.SelectMany(x => x.SubCategories).Select(a => a.CatalogCode);
+        var prodCateCodes = requestBody.Categories.SelectMany(x => x.SubCategories).SelectMany(a => a.Products).Select(b => b.CatalogCode);
 
-        //foreach (var item in )
-        //    type - listCatalogCodes
-        //truyen vao list model vao Repository
-        //var amount = await _discountRepository.AmountDiscountAsync(listDiscountRepository); // convert requestBody to catalogItems
+        var repoModel = new List<AmountDiscountRepositoryModel>()
+        {
+            new AmountDiscountRepositoryModel()
+            {
+                Type = "2",
+                CatalogCodes = cateCodes.ToList()
+            },
+            new AmountDiscountRepositoryModel()
+            {
+                Type = "3",
+                CatalogCodes = subCateCodes.ToList()
+            },
+            new AmountDiscountRepositoryModel()
+            {
+                Type = "4",
+                CatalogCodes = prodCateCodes.ToList()
+            }
+        };
 
-        //nhan entity tra ra tuw AmountDiscountSummary
+        var response = await _discountRepository.AmountDiscountAsync(repoModel);
+ 
 
-        var response = new List<AmountDiscountResponseModel>();
-
-
-        return response;
-
-
+        return response.Select(x => x.ToDetail()).ToList();
     }
 }

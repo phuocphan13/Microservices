@@ -15,7 +15,7 @@ public interface IDiscountRepository
     Task<Entities.Discount> UpdateDiscountAsync(Entities.Discount Discount);
     Task<bool> DeleteDiscountAsync(int id);
     Task<bool> AnyDateAsync(string catalogCode, DiscountEnum type, DateTime? fromDate, DateTime? toDate);
-    //Task<Entities.Discount?> AmountDiscountAsync(AmountDiscountRequestBody requestBody);
+    Task<List<Entities.Discount>?> AmountDiscountAsync(List<AmountDiscountRepositoryModel> requestBody);
 }
 
 public class DiscountRepository : IDiscountRepository
@@ -98,17 +98,17 @@ public class DiscountRepository : IDiscountRepository
         foreach(var item in catalogItems.OrderBy(x => x.Type))
         {
             string prefix = "";
-            if(item.Type == 1)
+            if(item.Type == "2")
             {
                 prefix = "Cate";
             }
-            else if (item.Type == 1)
+            else if (item.Type == "3")
             {
                 prefix = "SubCate";
             }
-            else if (item.Type == 1)
+            else if (item.Type == "4")
             {
-                prefix = "Cate";
+                prefix = "Product";
             }
 
             string typePrefix = $"Type_{prefix}";
@@ -116,7 +116,7 @@ public class DiscountRepository : IDiscountRepository
 
             SetValueForOject(param, typePrefix, item.Type);
             SetValueForOject(param, catalogCodePrefix, string.Join(",", item.CatalogCodes));
-
+            
             prefixQueries.Add($"(Type = @{typePrefix} and CatalogCode in @{catalogCodePrefix})");
         }
 
