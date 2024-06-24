@@ -15,5 +15,9 @@ public class CheckoutOrderCommand : IRequest<bool>
     public DateTime Timestamp { get; set; }
     
 
-    public List<BasketItemSummary> Items { get; set; } = new();
+    public ICollection<BasketItemSummary> Items { get; set; } = new List<BasketItemSummary>();
+
+    public ICollection<DiscountItemSummary> DiscountItems { get; set; } = new List<DiscountItemSummary>();
+
+    public ICollection<CouponItemSummary> CouponItems { get; set; } = new List<CouponItemSummary>();
 }

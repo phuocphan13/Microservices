@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Platform.Database.Entity;
 
 namespace Platform.Database.Helpers;
 
@@ -45,7 +47,8 @@ public interface IRepository<TEntity> where TEntity : class
 }
 
 public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>
-    where TEntity : class where TContext : DbContext
+    where TEntity : EntityBase, new()
+    where TContext : DbContext
 {
     protected readonly TContext Context;
     protected readonly DbSet<TEntity> Entities;
@@ -108,26 +111,31 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>
 
     public virtual async Task InsertAsync(TEntity entity, CancellationToken cancellationToken)
     {
+        AddAuditInfo(entity);
         await Entities.AddAsync(entity, cancellationToken);
     }
 
     public virtual void Insert(IEnumerable<TEntity> entities)
     {
+        AddAuditInfoList(entities);
         Entities.AddRange(entities);
     }
 
     public virtual async Task InsertAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
     {
+        AddAuditInfoList(entities);
         await Entities.AddRangeAsync(entities, cancellationToken);
     }
 
     public virtual void Update(TEntity entity)
     {
+        AddAuditInfo(entity, true);
         Entities.Update(entity);
     }
 
     public virtual void Update(IEnumerable<TEntity> entities)
     {
+        AddAuditInfoList(entities, true);
         Entities.UpdateRange(entities);
     }
 
@@ -149,5 +157,27 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>
     public void DeleteRange(IEnumerable<TEntity> entities)
     {
         Entities.RemoveRange(entities);
+    }
+    
+    private void AddAuditInfoList(IEnumerable<TEntity> entities, bool isUpdate = false)
+    {
+        foreach (var entity in entities)
+        {
+            AddAuditInfo(entity, isUpdate);
+        }
+    }
+
+    private void AddAuditInfo(TEntity entity, bool isUpdate = false)
+    {
+        if (isUpdate)
+        {
+            entity.LastModifiedDate = DateTime.UtcNow;
+            entity.LastModifiedBy = "Lucifer";
+        }
+        else
+        {
+            entity.CreatedBy = "Lucifer";
+            entity.CreatedDate = DateTime.UtcNow;
+        }
     }
 }

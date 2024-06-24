@@ -1,6 +1,6 @@
 public enum OrderStatus
 {
-    Checkoutted =1,
+    Checkoutted = 1,
     PaymentSucceeded = 2,
     PaymentFailed = 3,
     Cancelled = 4,

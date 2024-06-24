@@ -1,5 +1,4 @@
-﻿using ApiClient.Discount.Enum;
-using Basket.API.Extensions.ModelExtensions;
+﻿using Basket.API.Extensions.ModelExtensions;
 
 namespace Basket.API.Entitites;
 

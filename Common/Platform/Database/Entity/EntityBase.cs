@@ -1,6 +1,6 @@
-﻿namespace Ordering.Domain.Entities;
+namespace Platform.Database.Entity;
 
-public abstract class EntityBase : BaseIdEntity
+public class EntityBase : BaseIdEntity
 {
     public string? CreatedBy { get; set; }
 

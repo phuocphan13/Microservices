@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Ordering.Domain.Entities;
+namespace Platform.Database.Entity;
 
 public class BaseIdEntity
 {

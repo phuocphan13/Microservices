@@ -1,5 +1,4 @@
 using ApiClient.Basket.Models;
-using ApiClient.Discount.Enum;
 using Basket.API.Entitites;
 
 namespace Basket.API.Extensions.ModelExtensions;
@@ -75,6 +74,7 @@ public static class ShoppingBasketExtensions
         return new()
         {
             UserId = requestBody.UserId,
+            UserName = requestBody.UserName!,
             SessionDate = DateTime.UtcNow,
             Items = requestBody.Items.Select(x => new BasketItem()
             {
@@ -105,6 +105,7 @@ public static class ShoppingBasketExtensions
 
     public static void ToEntityFromUpdate(this Entitites.Basket entity, SaveBasketRequestBody basket)
     {
+        entity.UserName = basket.UserName!;
         entity.SessionDate = DateTime.UtcNow;
 
         foreach (var item in basket.Items)

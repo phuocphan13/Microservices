@@ -1,5 +1,3 @@
-using ApiClient.Discount.Enum;
-
 namespace ApiClient.Basket.Models;
 
 public class CouponItemSummary

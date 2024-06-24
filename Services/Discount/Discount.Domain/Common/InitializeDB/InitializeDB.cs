@@ -1,5 +1,3 @@
-using System.Reflection;
-using ApiClient.Discount.Enum;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Npgsql;

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Platform.Database.Entity;
 
 namespace Ordering.Domain.Entities;
 
@@ -30,4 +31,8 @@ public class Order : EntityBase
     public string? Description { get; set; }
 
     public List<OrderItem> OrderItems { get; set; } = new();
+
+    public List<DiscountItem> Discounts { get; set; } = new();
+
+    public List<CouponItem> Coupons { get; set; } = new();
 }

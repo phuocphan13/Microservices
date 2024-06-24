@@ -28,6 +28,13 @@ public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand,
     public async Task<bool> Handle(CheckoutOrderCommand request, CancellationToken cancellationToken)
     {
         var orderEntity = _mapper.Map<Order>(request);
+        orderEntity.ClientName = "Sai Gon";
+        orderEntity.PhoneNumber = "Sai Gon";
+        orderEntity.Email = "Sai Gon";
+        orderEntity.Address = "Sai Gon";
+        orderEntity.CreatedBy = "Admin";
+        orderEntity.CreatedDate = DateTime.UtcNow;
+        orderEntity.Status = OrderStatus.Checkoutted;
         
         await _orderRepository.InsertAsync(orderEntity, cancellationToken);
 

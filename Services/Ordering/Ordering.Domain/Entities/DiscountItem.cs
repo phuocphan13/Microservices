@@ -3,16 +3,15 @@ using Platform.Database.Entity;
 
 namespace Ordering.Domain.Entities;
 
-public class OrderItem : BaseIdEntity
+public class DiscountItem : BaseIdEntity
 {
-    [MaxLength(72)]
-    public string? ProductCode { get; set; }
+    public DiscountEnum Type { get; set; }
 
-    public int Quantity { get; set; }
+    [MaxLength(256)]
+    public string CatalogCode { get; set; } = null!;
 
-    public decimal Price { get; set; }
+    public decimal Amount { get; set; }
 
     public int OrderId { get; set; }
-
     public Order Order { get; set; } = null!;
 }

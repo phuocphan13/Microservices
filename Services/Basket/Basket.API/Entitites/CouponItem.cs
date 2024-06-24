@@ -1,5 +1,3 @@
-using ApiClient.Discount.Enum;
-
 namespace Basket.API.Entitites;
 
 public class CouponItem : BaseEntity

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ordering.Domain.Entities;
+using Platform.Database.Entity;
 
 namespace Ordering.Infrastructure.Persistence;
 
@@ -23,14 +24,16 @@ public class OrderContext : DbContext
     
     public virtual DbSet<OrderItem> OrderItems { get; set; }
 
+    public virtual DbSet<DiscountItem> Discounts { get; set; }
+
+    public virtual DbSet<CouponItem> Coupons { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
             // optionsBuilder.UseSqlServer("Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;");
             optionsBuilder.UseSqlServer("Server=192.168.2.10,1433;Database=OrderDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;");
-            // optionsBuilder.UseSqlServer(_configuration["Configuration:ConnectionString"]);
-            //optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS; Database=Authentication;Trusted_Connection=True;");
         }
         
         base.OnConfiguring(optionsBuilder);
