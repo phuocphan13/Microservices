@@ -98,5 +98,5 @@ message DiscountResponse {
 }
 
 message AmountAfterDiscountResponse {
-	repeated DiscountResponse AmountDiscounts = 1;
+	int32  SumAmountDiscount = 1;
 }

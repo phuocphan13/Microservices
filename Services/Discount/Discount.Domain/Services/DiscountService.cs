@@ -224,27 +224,36 @@ public class DiscountService : IDiscountService
         var subCateCodes = requestBody.Categories.SelectMany(x => x.SubCategories).Select(a => a.CatalogCode);
         var prodCateCodes = requestBody.Categories.SelectMany(x => x.SubCategories).SelectMany(a => a.Products).Select(b => b.CatalogCode);
 
-        var repoModel = new List<AmountDiscountRepositoryModel>()
+        var repoModel = new List<AmountDiscountRepositoryModel>();
+        try
         {
-            new AmountDiscountRepositoryModel()
+            repoModel = new List<AmountDiscountRepositoryModel>()
             {
-                Type = "2",
-                CatalogCodes = cateCodes.ToList()
-            },
-            new AmountDiscountRepositoryModel()
-            {
-                Type = "3",
-                CatalogCodes = subCateCodes.ToList()
-            },
-            new AmountDiscountRepositoryModel()
-            {
-                Type = "4",
-                CatalogCodes = prodCateCodes.ToList()
-            }
-        };
+                new AmountDiscountRepositoryModel()
+                {
+                    Type = "2",
+                    CatalogCodes = cateCodes.ToList()
+                },
+                new AmountDiscountRepositoryModel()
+                {
+                    Type = "3",
+                    CatalogCodes = subCateCodes.ToList()
+                },
+                new AmountDiscountRepositoryModel()
+                {
+                    Type = "4",
+                    CatalogCodes = prodCateCodes.ToList()
+                }
+            };
+        }
+        catch (Exception ex)
+        {
+
+        }
 
         var response = await _discountRepository.AmountDiscountAsync(repoModel);
- 
+
+
 
         return response.Select(x => x.ToDetail()).ToList();
     }
