@@ -145,19 +145,33 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     //---------------GRPC------------GRPC-----------------------
     public override async Task<AmountAfterDiscountResponse> AmountAfterDiscount(AmountAfterDiscountRequest request, ServerCallContext context)
     {
-        //viet lại file Proto để map được với requestBody -- OK
-        try {
-            var requestBody = _mapper.Map<AmountDiscountRequestBody>(request);
-
-            var amounts = await _discountService.AmountDiscountAsync(requestBody, default);
-
-            var response = _mapper.Map<AmountAfterDiscountResponse>(amounts);
-
-            return response;
-        }
-        catch (Exception ex)
+        if(request == null)
         {
-            return null;
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Cannot be null."));
+        }    
+        var requestBody = _mapper.Map<AmountDiscountRequestBody>(request);
+
+        var amounts = await _discountService.AmountDiscountAsync(requestBody, default);
+
+        var amountModel = _mapper.Map<List<DiscountResponse>>(amounts); 
+
+        if(amountModel is null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, $"Discount with this Product is not existed"));
         }
+
+        int sumAmount = 0;
+
+        foreach (var item in amountModel)
+        {
+            sumAmount += int.Parse(item.Amount);
+        }
+
+        var response = new AmountAfterDiscountResponse()
+        {
+            SumAmountDiscount = sumAmount
+        };
+
+        return response;
     }
 }

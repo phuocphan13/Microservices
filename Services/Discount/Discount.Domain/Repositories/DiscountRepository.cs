@@ -1,5 +1,6 @@
 using ApiClient.Discount.Models.Discount;
 using ApiClient.Discount.Models.Discount.AmountModel;
+using Discount.Domain.Models.EntityHelpers;
 using Discount.Domain.Repositories.Common;
 using System.Reflection;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -93,37 +94,50 @@ public class DiscountRepository : IDiscountRepository
     public async Task<List<Entities.Discount>?> AmountDiscountAsync(List<AmountDiscountRepositoryModel> catalogItems) // truyen vo TYPE - LISTCATALOGCODE
     {
         List<string> prefixQueries = new List<string>();
-        object param = new { Type_Cate = "", CatalogCode_Cate = "", Type_SubCate = "", CatalogCode_SubCate = "", Type_Product = "", CatalogCode_Product = "" };
+        var param = new AmountDiscountParams();
 
-        foreach(var item in catalogItems.OrderBy(x => x.Type))
+        try
         {
-            string prefix = "";
-            if(item.Type == "2")
+            foreach (var item in catalogItems.OrderBy(x => x.Type))
             {
-                prefix = "Category";
-            }
-            else if (item.Type == "3")
-            {
-                prefix = "SubCategory";
-            }
-            else if (item.Type == "4")
-            {
-                prefix = "Product";
-            }
+                string prefix = "";
+                if (item.Type == "2")
+                {
+                    prefix = "Cate";
+                    param.Type_Cate = 2;
+                    param.CatalogCode_Cate = string.Join(",", item.CatalogCodes);
+                }
+                else if (item.Type == "3")
+                {
+                    prefix = "SubCate";
+                    param.Type_SubCate = 3;
+                    param.CatalogCode_SubCate = string.Join(",", item.CatalogCodes);
+                }
+                else if (item.Type == "4")
+                {
+                    prefix = "Product";
+                    param.Type_Product = 4;
+                    param.CatalogCode_Product = string.Join(",", item.CatalogCodes);
+                }
 
-            string typePrefix = $"Type_{prefix}";
-            string catalogCodePrefix = $"CatalogCode_{prefix}";
+                string typePrefix = $"Type_{prefix}";
+                string catalogCodePrefix = $"CatalogCode_{prefix}";
 
-            SetValueForOject(param, typePrefix, item.Type);
-            SetValueForOject(param, catalogCodePrefix, string.Join(",", item.CatalogCodes));
-            
-            prefixQueries.Add($"(Type = @{typePrefix} and CatalogCode in @{catalogCodePrefix})");
+                //SetValueForOject(param, typePrefix, item.Type);
+                //SetValueForOject(param, catalogCodePrefix, string.Join(",", item.CatalogCodes));
+
+                prefixQueries.Add($"(Type = @{typePrefix} and CatalogCode in (@{catalogCodePrefix}))");
+            }
+        }
+        catch (Exception ex)
+        {
+
         }
 
+        
+
         string query = string.Join(" or ", prefixQueries);
-
         var entity = await _baseRepository.QueryAsync<Entities.Discount>(query, param);
-
         return entity;
     }
 
@@ -138,6 +152,7 @@ public class DiscountRepository : IDiscountRepository
         }    
 
         prop.SetValue(param, value, null);
+        
     }
 
 }
