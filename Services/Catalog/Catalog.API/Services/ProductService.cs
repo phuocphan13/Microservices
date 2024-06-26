@@ -160,7 +160,7 @@ public class ProductService : IProductService
         var subCategories = await _subCategoryRepository.GetEntitiesQueryAsync(x => subCategoryIds.Contains(x.Id), cancellationToken);
         var discounts = await _discountGrpcService.GetListDiscountsByCatalogCodeAsync(DiscountEnum.Product, productCodes);
 
-        var grpcTest = await _discountGrpcService.GetAmountsAfterDiscountAsync(categories, subCategories,entities);
+        var grpcDiscountsTest = await _discountGrpcService.GetAmountsAfterDiscountAsync(categories, subCategories,entities);
 
         var summaries = new List<ProductSummary>();
 
@@ -169,10 +169,17 @@ public class ProductService : IProductService
             var cate = categories.FirstOrDefault(x => x.Id == entity.CategoryId)?.Name;
             var subCate = subCategories.FirstOrDefault(x => x.Id == entity.SubCategoryId)?.Name;
             var discount = discounts?.FirstOrDefault(x => x.CatalogCode == entity.ProductCode);
+            
+            var grpcDiscountTest = grpcDiscountsTest.FirstOrDefault(x => x.CatalogCode == entity.ProductCode);
 
-            if (discount is not null)
+            //if (discount is not null)
+            //{
+            //    entity.Price -= discount.Amount;
+            //}
+
+            if (grpcDiscountTest is not null)
             {
-                entity.Price -= discount.Amount;
+                entity.Price -= grpcDiscountTest.Amount;
             }
 
             summaries.Add(entity.ToSummary(cate, subCate));

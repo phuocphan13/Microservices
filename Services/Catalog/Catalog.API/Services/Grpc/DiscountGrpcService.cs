@@ -11,7 +11,7 @@ public interface IDiscountGrpcService
     Task<DiscountDetail> GetDiscount(string productName);
     Task<DiscountDetail> GetDiscountByCatalogCode(DiscountEnum type, string catalogCode);
     Task<List<DiscountDetail>> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, IEnumerable<string> catalogCodes);
-    Task<AmountAfterDiscountResponse> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct);
+    Task<List<DiscountDetail>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct);
 }
 
 public class DiscountGrpcService : IDiscountGrpcService
@@ -86,7 +86,7 @@ public class DiscountGrpcService : IDiscountGrpcService
         return discounts;
     }
 
-    public async Task<AmountAfterDiscountResponse> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct)
+    public async Task<List<DiscountDetail>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct)
     {
         var listCategory = new AmountAfterDiscountRequest();
 
@@ -122,7 +122,7 @@ public class DiscountGrpcService : IDiscountGrpcService
 
         var result = await _discountGrpcService.AmountAfterDiscountAsync(listCategory);
 
-        return result;
+        return result.ToListDetail();
     }
 
 }
