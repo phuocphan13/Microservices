@@ -22,12 +22,10 @@ public static class DiscountGrpcExtensions
         var listDiscounts = new List<DiscountDetail>();
         var discount = new DiscountDetail();
 
-        foreach(var item in model.AmountDiscounts)
+        foreach(var item in model.AmountDiscountResponse)
         {
             discount.Amount = int.Parse(item.Amount);
             discount.CatalogCode = item.CatalogCode;
-            discount.Type = (DiscountEnum)int.Parse(item.Type);
-
             listDiscounts.Add(discount);
         }
         return listDiscounts;
