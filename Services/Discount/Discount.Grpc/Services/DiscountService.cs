@@ -153,7 +153,14 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
 
         var amounts = await _discountService.AmountDiscountAsync(requestBody, default);
 
-        var response = _mapper.Map<AmountAfterDiscountResponse>(amounts);
+        var amountsDiscount = _mapper.Map<List<DiscountResponse>>(amounts);
+
+        var response = new AmountAfterDiscountResponse();
+
+        foreach (var item in amountsDiscount)
+        {
+            response.AmountDiscountResponse.Add(item);
+        }
 
         return response;
     }
