@@ -153,24 +153,7 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
 
         var amounts = await _discountService.AmountDiscountAsync(requestBody, default);
 
-        var amountModel = _mapper.Map<List<DiscountResponse>>(amounts); 
-
-        if(amountModel is null)
-        {
-            throw new RpcException(new Status(StatusCode.NotFound, $"Discount with this Product is not existed"));
-        }
-
-        int sumAmount = 0;
-
-        foreach (var item in amountModel)
-        {
-            sumAmount += int.Parse(item.Amount);
-        }
-
-        var response = new AmountAfterDiscountResponse()
-        {
-            SumAmountDiscount = sumAmount
-        };
+        var response = _mapper.Map<AmountAfterDiscountResponse>(amounts);
 
         return response;
     }
