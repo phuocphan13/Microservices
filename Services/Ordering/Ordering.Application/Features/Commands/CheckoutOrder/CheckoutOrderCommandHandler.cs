@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Ordering.Application.Contracts.Infrastructure;
+using Ordering.Application.Helpers;
 using Ordering.Application.Models;
 using Ordering.Domain.Entities;
 using Platform.Database.Helpers;
@@ -28,13 +29,7 @@ public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand,
     public async Task<bool> Handle(CheckoutOrderCommand request, CancellationToken cancellationToken)
     {
         var orderEntity = _mapper.Map<Order>(request);
-        orderEntity.ClientName = "Sai Gon";
-        orderEntity.PhoneNumber = "Sai Gon";
-        orderEntity.Email = "Sai Gon";
-        orderEntity.Address = "Sai Gon";
-        orderEntity.CreatedBy = "Admin";
-        orderEntity.CreatedDate = DateTime.UtcNow;
-        orderEntity.Status = OrderStatus.Checkoutted;
+        orderEntity.AddAuditInfo();
         
         await _orderRepository.InsertAsync(orderEntity, cancellationToken);
 
