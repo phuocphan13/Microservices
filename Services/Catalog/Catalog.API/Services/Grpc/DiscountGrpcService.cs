@@ -88,41 +88,25 @@ public class DiscountGrpcService : IDiscountGrpcService
 
     public async Task<List<DiscountDetail>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct)
     {
-        var listCategory = new AmountAfterDiscountRequest();
-
+       var listStringCategory = new List<StringCategoryModel>();
        foreach(var categoryItem in entityCategory)
         {
-            var category = new ListCategoryModel();
-
-            category.Type = "2";
-            category.CatalogCode = categoryItem.CategoryCode;
-
             foreach(var subCategoryItem in entitySubCategory.Where(x=>x.CategoryId == categoryItem.Id))
             {
-                var subCategory = new ListSubCategoryModel();
-
-                subCategory.SubType = "3";
-                subCategory.SubCatalogCode = subCategoryItem.SubCategoryCode;
-
                 foreach(var productItem in entityProduct.Where(x=>x.SubCategoryId == subCategoryItem.Id))
                 {
-                    var product = new ListProductModel();
+                    var stringCategory = new StringCategoryModel();
 
-                    product.ProdType = "4";
-                    product.ProdCatalogCode = productItem.ProductCode;
+                    stringCategory.CodeStr = $"{categoryItem.CategoryCode}.{subCategoryItem.CategoryId}.{productItem.ProductCode}";
 
-                    subCategory.ProdList.Add(product);
+                    listStringCategory.Add(stringCategory);
                 }
-
-                category.SubList.Add(subCategory);
             }
-
-            listCategory.Categories.Add(category);
         }
 
-        var result = await _discountGrpcService.AmountAfterDiscountAsync(listCategory);
+       //var result = await _discountGrpcService.AmountAfterDiscountAsync(listCategory);
 
-        return result.ToListDetail();
+       return result.ToListDetail();
     }
 
 }
