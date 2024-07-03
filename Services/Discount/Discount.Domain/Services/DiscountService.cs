@@ -5,6 +5,7 @@ using AutoMapper;
 using Discount.Domain.Extensions;
 using Discount.Domain.Repositories;
 using System.Collections.Generic;
+using Discount.Grpc.Protos;
 
 namespace Discount.Domain.Services;
 
@@ -16,8 +17,7 @@ public interface IDiscountService
     Task<DiscountDetail?> CreateDiscountAsync(CreateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> UpdateDiscountAsync(UpdateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> InactiveDiscountAsync(int id);
-    Task<List<DiscountDetail>?> AmountDiscountAsync (AmountDiscountRequestBody requestBody, CancellationToken cancellationToken);
-    Task<List<DiscountDetail>?> TotalDiscountAmountAsync(List<ListCodeRequestBody> requestBody, CancellationToken cancellationToken);
+    Task<IEnumerable<TotalAmountModel>?> TotalDiscountAmountAsync(List<CombinationCodeRequestBody> requestBody);
 }
 
 public class DiscountService : IDiscountService
@@ -31,7 +31,6 @@ public class DiscountService : IDiscountService
         _discountRepository = discountRepository ?? throw new ArgumentNullException(nameof(discountRepository));
         _catalogApiClient = catalogApiClient ?? throw new ArgumentNullException(nameof(catalogApiClient));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-
     }
 
     public async Task<DiscountDetail?> GetDiscountAsync(string id)
@@ -219,55 +218,52 @@ public class DiscountService : IDiscountService
     }
     #endregion
 
-    public async Task<List<DiscountDetail>?> AmountDiscountAsync(AmountDiscountRequestBody requestBody, CancellationToken cancellationToken)
-    {
-        //bien ra AmountDiscountRepositoryModel
-        var cateCodes = requestBody.Categories.Select(x => x.CatalogCode);
-        var subCateCodes = requestBody.Categories.SelectMany(x => x.SubCategories).Select(a => a.CatalogCode);
-        var prodCateCodes = requestBody.Categories.SelectMany(x => x.SubCategories).SelectMany(a => a.Products).Select(b => b.CatalogCode);
+    public async Task<IEnumerable<TotalAmountModel>?> TotalDiscountAmountAsync(List<CombinationCodeRequestBody> requestBody)
+    {  
+        // ABC.CA.casd
+        // ListCodeRequest --> Code: "ProductCode.SubCategoryCode.CategoryCode"
+        var productCodes = new List<string>();
 
-        var repoModel = new List<AmountDiscountRepositoryModel>();
-
-        repoModel = new List<AmountDiscountRepositoryModel>()
+        foreach (var item in requestBody)
         {
-            new AmountDiscountRepositoryModel()
-            {
-                Type = "2",
-                CatalogCodes = cateCodes.ToList()
-            },
-            new AmountDiscountRepositoryModel()
-            {
-                Type = "3",
-                CatalogCodes = subCateCodes.ToList()
-            },
-            new AmountDiscountRepositoryModel()
-            {
-                Type = "4",
-                CatalogCodes = prodCateCodes.ToList()
-            }
-        };
-        var response = await _discountRepository.AmountDiscountAsync(repoModel);
-        return response.Select(x => x.ToDetail()).ToList();
-    }
+            string[] codes = item.CombineCode.Split('.'); // [111, 444, 555] 
 
-    public async Task<List<DiscountDetail>?> TotalDiscountAmountAsync( List<ListCodeRequestBody> requestBody, CancellationToken cancellationToken)
-    {
-        var productCode = new List<string>();
+            productCodes.AddRange(codes);
+        }
 
-        List<string[]> codeStr = new List<string[]>();
+        var discounts = await _discountRepository.GetAmountDiscountAsync(productCodes);
 
-        foreach ( var item in requestBody)
+        if (discounts is null || !discounts.Any())
         {
-            string[] codes = item.CodeStr.Split('.'); // [ 111, 444, 555] 
+            return null;
+        }
 
-            foreach (var code in codes)
-            {
-                productCode.Add(code); //[ 111, 444, 555, 666, 4644, 888,..., n ]
-            }    
-        }    
+        // totalAmounts --> List Product Codes based on RequestBody
+        var totalAmounts = requestBody.Select(x => new TotalAmountModel()
+        {
+            CatalogCode = x.CombineCode.Split(".")[0],
+            Amount = 0
+        });
+        
+        // Item -> "A.B.C"
+        // Item -> "ProductCode.SubCategoryCode.CategoryCode"
+        // Discounts: A, C
+        
+        // DiscountItems --> A,C
+        
+        
+        foreach (var item in requestBody)
+        {
+            // Assume: if has any Discounts for this item
+            
+            // Get ProductCode in totalAmounts => increase Amount
+            var codeArrays = item.CombineCode.Split('.');
+            var product = totalAmounts.First(x => x.CatalogCode == codeArrays[0]);
 
-        var response = await _discountRepository.GetAmountDiscountAsync(productCode);
+            var discountItems = discounts.Where(x => codeArrays.Contains(x.CatalogCode));
+            product.Amount += discountItems.Sum(x => x.Amount);
+        }
 
-        return response.Select(x => x.ToDetail()).ToList();
+        return totalAmounts.Where(x => x.Amount > 0);
     }
 }

@@ -28,7 +28,7 @@ public class ProductService : IProductService
     public ProductService(
         IRepository<Product> productRepository,
         IRepository<Category> categoryRepository,
-        IRepository<SubCategory> subCategoryRepository, 
+        IRepository<SubCategory> subCategoryRepository,
         IDiscountGrpcService discountGrpcService)
     {
         _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
@@ -81,7 +81,7 @@ public class ProductService : IProductService
         {
             return null;
         }
-        
+
         var product = await MappingProductDetailInternalAsync(entity, cancellationToken);
         return product;
     }
@@ -129,7 +129,7 @@ public class ProductService : IProductService
         }
 
         var result = await MappingProductDetailInternalAsync(entity, cancellationToken);
-        
+
         return result;
     }
 
@@ -149,18 +149,15 @@ public class ProductService : IProductService
     }
 
     #region Internal Functions
-
     private async Task<List<ProductSummary>> GetProductSummariesInternalAsync(List<Product> entities, CancellationToken cancellationToken)
     {
         var categoryIds = entities.Select(x => x.CategoryId);
         var subCategoryIds = entities.Select(x => x.SubCategoryId);
-        var productCodes = entities.Select(x => x.ProductCode!);
 
         var categories = await _categoryRepository.GetEntitiesQueryAsync(x => categoryIds.Contains(x.Id), cancellationToken);
         var subCategories = await _subCategoryRepository.GetEntitiesQueryAsync(x => subCategoryIds.Contains(x.Id), cancellationToken);
-        var discounts = await _discountGrpcService.GetListDiscountsByCatalogCodeAsync(DiscountEnum.Product, productCodes);
 
-        var grpcDiscountsTest = await _discountGrpcService.GetAmountsAfterDiscountAsync(categories, subCategories,entities);
+        var discounts = await _discountGrpcService.GetAmountsAfterDiscountAsync(categories, subCategories, entities);
 
         var summaries = new List<ProductSummary>();
 
@@ -169,17 +166,10 @@ public class ProductService : IProductService
             var cate = categories.FirstOrDefault(x => x.Id == entity.CategoryId)?.Name;
             var subCate = subCategories.FirstOrDefault(x => x.Id == entity.SubCategoryId)?.Name;
             var discount = discounts?.FirstOrDefault(x => x.CatalogCode == entity.ProductCode);
-            
-            var grpcDiscountTest = grpcDiscountsTest.FirstOrDefault(x => x.CatalogCode == entity.ProductCode);
 
-            //if (discount is not null)
-            //{
-            //    entity.Price -= discount.Amount;
-            //}
-
-            if (grpcDiscountTest is not null)
+            if (discount is not null)
             {
-                entity.Price -= grpcDiscountTest.Amount;
+                entity.Price -= discount.Amount;
             }
 
             summaries.Add(entity.ToSummary(cate, subCate));
@@ -200,6 +190,5 @@ public class ProductService : IProductService
 
         return product;
     }
-
     #endregion
 }

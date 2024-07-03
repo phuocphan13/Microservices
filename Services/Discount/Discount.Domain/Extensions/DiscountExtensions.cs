@@ -1,3 +1,4 @@
+using System.Globalization;
 using ApiClient.Discount.Models.Discount;
 using ApiClient.Discount.Models.Discount.AmountModel;
 using Discount.Grpc.Protos;
@@ -20,7 +21,7 @@ public static class DiscountExtensions
             ToDate = entity.ToDate
         };
     }
-    
+
     public static Entities.Discount ToEntityFromCreateBody(this CreateDiscountRequestBody body)
     {
         return new Entities.Discount()
@@ -50,20 +51,18 @@ public static class DiscountExtensions
         };
     }
 
-    public static AmountAfterDiscountResponse ToAmountAfterDiscountResponse (this List<TotalAmountModel> body)
+    public static AmountAfterDiscountResponse ToAmountAfterDiscountResponse(this IEnumerable<TotalAmountModel> amounts)
     {
         var response = new AmountAfterDiscountResponse();
-        var itemResponse = new DiscountResponse();
 
-        foreach (var item in body)
+        var amountResponses = amounts.Select(x => new DiscountResponse()
         {
-            itemResponse.Amount = item.Amount.ToString();
-            itemResponse.CatalogCode = item.CatalogCode;
-            
-            response.AmountDiscountResponse.Add(itemResponse);
-        }
+            Amount = x.Amount.ToString(CultureInfo.InvariantCulture),
+            CatalogCode = x.CatalogCode
+        });
+
+        response.AmountDiscountResponse.AddRange(amountResponses);
 
         return response;
     }
-
 }

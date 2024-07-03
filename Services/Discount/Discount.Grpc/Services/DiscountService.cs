@@ -1,12 +1,10 @@
 ﻿using ApiClient.Discount.Models.Discount;
 using ApiClient.Discount.Models.Discount.AmountModel;
 using AutoMapper;
-using Coupon.Grpc.Protos;
 using Discount.Domain.Extensions;
 using Discount.Domain.Services;
 using Discount.Grpc.Protos;
 using Grpc.Core;
-using ListCodeRequestModel = Discount.Grpc.Protos.ListCodeRequestModel;
 
 namespace Discount.Grpc.GrpcServices;
 
@@ -144,61 +142,34 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     
         return response;
     }
-    //---------------GRPC------------GRPC-----------------------
-    public override async Task<AmountAfterDiscountResponse> AmountAfterDiscount(AmountAfterDiscountRequest request, ServerCallContext context)
+
+    // ListCodeRequest --> Code: "ProductCode.SubCategoryCode.CategoryCode"
+    public override async Task<AmountAfterDiscountResponse> TotalDiscountAmount(ListCodeRequest request, ServerCallContext context)
     {
-        if(request == null)
-        {
-            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Cannot be null."));
-        }    
-        var requestBody = _mapper.Map<AmountDiscountRequestBody>(request);
-
-        var amounts = await _discountService.AmountDiscountAsync(requestBody, default);
-
-        var amountsDiscount = _mapper.Map<List<DiscountResponse>>(amounts);
-
-        var response = new AmountAfterDiscountResponse();
-
-        foreach (var item in amountsDiscount)
-        {
-            response.AmountDiscountResponse.Add(item);
-        }
-
-        return response;
-    }
-
-    public override async Task<AmountAfterDiscountResponse> TotalDiscountAmount(ListCodeRequestModel request, ServerCallContext context)
-    {
-        if (request == null)
+        if (request is null)
         {
             throw new RpcException(new Status(StatusCode.InvalidArgument, $"Cannot be null."));
         }
 
-        var requestBody = _mapper.Map<List<ListCodeRequestBody>>(request);
-
-        var amounts = await _discountService.TotalDiscountAmountAsync(requestBody, default);
-
-        var totalAmounts = new List<TotalAmountModel>();
-
-        foreach(var item in request.Codes)
+        if (!request.Codes.Any())
         {
-            var stringCode = item.Split('.');
-
-            foreach(var amount in amounts)
-            {
-                var totalAmount = new TotalAmountModel();
-
-                for(var i = 0; i < stringCode.Length; i++)
-                {
-                    if(amount.CatalogCode == stringCode[i])
-                    {
-                        totalAmount.Amount += amount.Amount;
-                    }    
-                }
-                totalAmounts.Add(totalAmount);
-            }
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Cannot be null."));
         }
 
-        return totalAmounts.ToAmountAfterDiscountResponse();
+        if (request.Codes.Any(x => string.IsNullOrWhiteSpace(x)))
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Cannot be null."));
+        }
+
+        var requestBody = _mapper.Map<List<CombinationCodeRequestBody>>(request);
+
+        var amounts = await _discountService.TotalDiscountAmountAsync(requestBody);
+
+        if (amounts is null || !amounts.Any())
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, $"Discount with Product Code = {request.Codes} is not existed"));
+        }
+
+        return amounts.ToAmountAfterDiscountResponse();
     }
 }

@@ -11,7 +11,7 @@ public interface IDiscountGrpcService
     Task<DiscountDetail> GetDiscount(string productName);
     Task<DiscountDetail> GetDiscountByCatalogCode(DiscountEnum type, string catalogCode);
     Task<List<DiscountDetail>> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, IEnumerable<string> catalogCodes);
-    Task<List<DiscountDetail>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct);
+    Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct);
 }
 
 public class DiscountGrpcService : IDiscountGrpcService
@@ -86,34 +86,25 @@ public class DiscountGrpcService : IDiscountGrpcService
         return discounts;
     }
 
-    public async Task<List<DiscountDetail>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct)
+    public async Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct)
     {
-        var listStringCategory = new List<StringCategoryModel>();
+        var request = new ListCodeRequest();
+        
         foreach (var categoryItem in entityCategory)
         {
             foreach (var subCategoryItem in entitySubCategory.Where(x => x.CategoryId == categoryItem.Id))
             {
                 foreach (var productItem in entityProduct.Where(x => x.SubCategoryId == subCategoryItem.Id))
                 {
-                    var stringCategory = new StringCategoryModel();
+                    var combinatedCode = $"{productItem.ProductCode}.{subCategoryItem.SubCategoryCode}.{categoryItem.CategoryCode}";
 
-                    stringCategory.CodeStr = $"{categoryItem.CategoryCode}.{subCategoryItem.CategoryId}.{productItem.ProductCode}";
-
-                    listStringCategory.Add(stringCategory);
+                    request.Codes.Add(combinatedCode);
                 }
             }
-        }
-
-        var request = new Discount.Grpc.Protos.ListCodeRequestModel();
-
-        foreach (var item in listStringCategory)
-        {
-            request.Codes.Add(item.CodeStr);
         }
 
         var result = await _discountGrpcService.TotalDiscountAmountAsync(request);
 
         return result.ToListDetail();
     }
-
 }

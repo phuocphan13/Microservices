@@ -17,17 +17,56 @@ public static class DiscountGrpcExtensions
         };
     }
 
-    public static List<DiscountDetail> ToListDetail(this AmountAfterDiscountResponse model)
+    // ProductCode: A, B, C, D
+    // Amount     : 1, 2, 3, 4
+    // { D, 4 }, { D, 4 }, { D, 4 }, { D, 4 }
+    public static List<DiscountSummary> ToListDetail(this AmountAfterDiscountResponse model)
     {
-        var listDiscounts = new List<DiscountDetail>();
-        var discount = new DiscountDetail();
+        // Variable Type: Value type, Reference type
+        // Value type: int, double, decimal, char, bool, struct
+        // Reference type: class, interface, delegate, array
+        
+        // Value type: Tham Trị
+        // Reference type: Tham Chiếu
+        
+        // Variable: Ô nhớ, Tên, Kiểu dữ liệu
+        // Different: Ô nhớ
+        
+        // Value: Ô nhớ chứa giá trị: 2
+        // Reference: Ô nhớ chứa địa chỉ ô nhớ: 0x12345678
+        
+        // Giá trị = 2 ==> 0x12345678 = 2
+        
+        // ValueType = 2 ==> Get ValueType ==> 2
+        // ReferenceType = 2 ==> Get ReferenceType ==> 0x12345678 ==> 2
+        
+        // 0x12345678 = 3
+        
+        // var listDiscounts = new List<DiscountDetail>();
+        //  // discount ==> Reference Type
+        //
+        // foreach (var item in model.AmountDiscountResponse)
+        // {
+        //     var discount = new DiscountDetail
+        //     {
+        //         // discount.Amount = 0x12345678
+        //         Amount = int.Parse(item.Amount),
+        //         // discount.CatalogCode = 1x12345678
+        //         CatalogCode = item.CatalogCode
+        //     };
+        //
+        //     // listDiscounts.Add(0x12345678, 1x12345678)
+        //     listDiscounts.Add(discount);
+        // }
 
-        foreach(var item in model.AmountDiscountResponse)
+        var listDiscounts = model.AmountDiscountResponse.Select(x => new DiscountSummary()
         {
-            discount.Amount = int.Parse(item.Amount);
-            discount.CatalogCode = item.CatalogCode;
-            listDiscounts.Add(discount);
-        }
+            Amount = int.Parse(x.Amount),
+            CatalogCode = x.CatalogCode
+        }).ToList();
+        
+        // discount: D, 4
+
         return listDiscounts;
     }
 }
