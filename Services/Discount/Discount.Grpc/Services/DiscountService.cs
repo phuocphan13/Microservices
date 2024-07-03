@@ -2,6 +2,7 @@
 using ApiClient.Discount.Models.Discount.AmountModel;
 using AutoMapper;
 using Coupon.Grpc.Protos;
+using Discount.Domain.Extensions;
 using Discount.Domain.Services;
 using Discount.Grpc.Protos;
 using Grpc.Core;
@@ -166,17 +167,38 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
         return response;
     }
 
-    public override async Task<List<AmountAfterDiscountResponse>> TotalDiscountAmount (List<ListCodeRequestModel> request, ServerCallContext context)
+    public override async Task<AmountAfterDiscountResponse> TotalDiscountAmount(ListCodeRequestModel request, ServerCallContext context)
     {
         if (request == null)
         {
             throw new RpcException(new Status(StatusCode.InvalidArgument, $"Cannot be null."));
         }
 
-        var requestBody = _mapper.Map<ListCodeRequestBody>(request);
+        var requestBody = _mapper.Map<List<ListCodeRequestBody>>(request);
 
         var amounts = await _discountService.TotalDiscountAmountAsync(requestBody, default);
 
-        return new List<AmountAfterDiscountResponse>();
+        var totalAmounts = new List<TotalAmountModel>();
+
+        foreach(var item in request.Codes)
+        {
+            var stringCode = item.Split('.');
+
+            foreach(var amount in amounts)
+            {
+                var totalAmount = new TotalAmountModel();
+
+                for(var i = 0; i < stringCode.Length; i++)
+                {
+                    if(amount.CatalogCode == stringCode[i])
+                    {
+                        totalAmount.Amount += amount.Amount;
+                    }    
+                }
+                totalAmounts.Add(totalAmount);
+            }
+        }
+
+        return totalAmounts.ToAmountAfterDiscountResponse();
     }
 }

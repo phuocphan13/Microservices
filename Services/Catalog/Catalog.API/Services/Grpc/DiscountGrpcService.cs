@@ -88,12 +88,12 @@ public class DiscountGrpcService : IDiscountGrpcService
 
     public async Task<List<DiscountDetail>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct)
     {
-       var listStringCategory = new List<StringCategoryModel>();
-       foreach(var categoryItem in entityCategory)
+        var listStringCategory = new List<StringCategoryModel>();
+        foreach (var categoryItem in entityCategory)
         {
-            foreach(var subCategoryItem in entitySubCategory.Where(x=>x.CategoryId == categoryItem.Id))
+            foreach (var subCategoryItem in entitySubCategory.Where(x => x.CategoryId == categoryItem.Id))
             {
-                foreach(var productItem in entityProduct.Where(x=>x.SubCategoryId == subCategoryItem.Id))
+                foreach (var productItem in entityProduct.Where(x => x.SubCategoryId == subCategoryItem.Id))
                 {
                     var stringCategory = new StringCategoryModel();
 
@@ -104,9 +104,16 @@ public class DiscountGrpcService : IDiscountGrpcService
             }
         }
 
-       //var result = await _discountGrpcService.AmountAfterDiscountAsync(listCategory);
+        var request = new Discount.Grpc.Protos.ListCodeRequestModel();
 
-       return result.ToListDetail();
+        foreach (var item in listStringCategory)
+        {
+            request.Codes.Add(item.CodeStr);
+        }
+
+        var result = await _discountGrpcService.TotalDiscountAmountAsync(request);
+
+        return result.ToListDetail();
     }
 
 }

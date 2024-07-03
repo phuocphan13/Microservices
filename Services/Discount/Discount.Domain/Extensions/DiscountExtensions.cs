@@ -1,4 +1,7 @@
 using ApiClient.Discount.Models.Discount;
+using ApiClient.Discount.Models.Discount.AmountModel;
+using Discount.Grpc.Protos;
+using System.Runtime.CompilerServices;
 
 namespace Discount.Domain.Extensions;
 
@@ -46,4 +49,21 @@ public static class DiscountExtensions
             IsActive = true
         };
     }
+
+    public static AmountAfterDiscountResponse ToAmountAfterDiscountResponse (this List<TotalAmountModel> body)
+    {
+        var response = new AmountAfterDiscountResponse();
+        var itemResponse = new DiscountResponse();
+
+        foreach (var item in body)
+        {
+            itemResponse.Amount = item.Amount.ToString();
+            itemResponse.CatalogCode = item.CatalogCode;
+            
+            response.AmountDiscountResponse.Add(itemResponse);
+        }
+
+        return response;
+    }
+
 }

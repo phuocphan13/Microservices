@@ -31,6 +31,6 @@ public class DiscountProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.MapFrom(x => x.Type))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(x => x.Amount)).ReverseMap();
 
-        CreateMap<ListCodeRequestModel, ListCodeRequestBody>().ReverseMap();
+        CreateMap<ListCodeRequestModel, List<ListCodeRequestBody>>() .ReverseMap();
     }
 }
