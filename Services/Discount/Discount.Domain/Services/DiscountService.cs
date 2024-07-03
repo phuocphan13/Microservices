@@ -4,6 +4,7 @@ using ApiClient.Discount.Models.Discount.AmountModel;
 using AutoMapper;
 using Discount.Domain.Extensions;
 using Discount.Domain.Repositories;
+using System.Collections.Generic;
 
 namespace Discount.Domain.Services;
 
@@ -16,6 +17,7 @@ public interface IDiscountService
     Task<DiscountDetail?> UpdateDiscountAsync(UpdateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> InactiveDiscountAsync(int id);
     Task<List<DiscountDetail>?> AmountDiscountAsync (AmountDiscountRequestBody requestBody, CancellationToken cancellationToken);
+    Task<List<DiscountDetail>?> TotalDiscountAmountAsync(List<ListCodeRequestBody> requestBody, CancellationToken cancellationToken);
 }
 
 public class DiscountService : IDiscountService
@@ -225,35 +227,46 @@ public class DiscountService : IDiscountService
         var prodCateCodes = requestBody.Categories.SelectMany(x => x.SubCategories).SelectMany(a => a.Products).Select(b => b.CatalogCode);
 
         var repoModel = new List<AmountDiscountRepositoryModel>();
-        try
+
+        repoModel = new List<AmountDiscountRepositoryModel>()
         {
-            repoModel = new List<AmountDiscountRepositoryModel>()
+            new AmountDiscountRepositoryModel()
             {
-                new AmountDiscountRepositoryModel()
-                {
-                    Type = "2",
-                    CatalogCodes = cateCodes.ToList()
-                },
-                new AmountDiscountRepositoryModel()
-                {
-                    Type = "3",
-                    CatalogCodes = subCateCodes.ToList()
-                },
-                new AmountDiscountRepositoryModel()
-                {
-                    Type = "4",
-                    CatalogCodes = prodCateCodes.ToList()
-                }
-            };
-        }
-        catch (Exception ex)
-        {
-
-        }
-
+                Type = "2",
+                CatalogCodes = cateCodes.ToList()
+            },
+            new AmountDiscountRepositoryModel()
+            {
+                Type = "3",
+                CatalogCodes = subCateCodes.ToList()
+            },
+            new AmountDiscountRepositoryModel()
+            {
+                Type = "4",
+                CatalogCodes = prodCateCodes.ToList()
+            }
+        };
         var response = await _discountRepository.AmountDiscountAsync(repoModel);
+        return response.Select(x => x.ToDetail()).ToList();
+    }
 
+    public async Task<List<DiscountDetail>?> TotalDiscountAmountAsync( List<ListCodeRequestBody> requestBody, CancellationToken cancellationToken)
+    {
+        var productCode = new List<string>();
 
+        List<string[]> codeStr = new List<string[]>();
+
+        foreach ( var item in requestBody)
+        {
+            string[] codes = item.CodeStr.Split('.'); // [ 111, 444, 555] 
+
+            foreach (var code in codes)
+            {
+                productCode.Add(code); //[ 111, 444, 555, 666, 4644, 888,..., n ]
+            }    
+        }    
+
+        var response = await _discountRepository.GetAmountDiscountAsync(productCode);
 
         return response.Select(x => x.ToDetail()).ToList();
     }

@@ -4,6 +4,7 @@ using ApiClient.Discount.Models.Discount.AmountModel;
 using AutoMapper;
 using Coupon.Grpc.Protos;
 using Discount.Grpc.Protos;
+using ListCodeRequestModel = Discount.Grpc.Protos.ListCodeRequestModel;
 
 namespace Discount.Grpc.Mapper;
 
@@ -29,5 +30,7 @@ public class DiscountProfile : Profile
         CreateMap<DiscountResponse, DiscountDetail>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(x => x.Type))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(x => x.Amount)).ReverseMap();
+
+        CreateMap<ListCodeRequestModel, ListCodeRequestBody>().ReverseMap();
     }
 }
