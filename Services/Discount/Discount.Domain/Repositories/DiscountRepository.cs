@@ -17,6 +17,7 @@ public interface IDiscountRepository
     Task<bool> DeleteDiscountAsync(int id);
     Task<bool> AnyDateAsync(string catalogCode, DiscountEnum type, DateTime? fromDate, DateTime? toDate);
     Task<List<Entities.Discount>?> AmountDiscountAsync(List<AmountDiscountRepositoryModel> requestBody);
+    Task<List<Entities.Discount>?> GetAmountDiscountAsync(List<string> catalogItems);
 }
 
 public class DiscountRepository : IDiscountRepository
@@ -62,7 +63,7 @@ public class DiscountRepository : IDiscountRepository
         return entity;
     }
 
-    public async Task<List<Entities.Discount>?> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, List<string> catalogCodes)
+    public async Task<List<Entities.Discount>?> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, List<string> catalogCodes)// [111,222,333]
     {
         const string query = "CatalogCode IN (@CatalogCodes) and Type = @Type";
         object param = new { CatalogCodes = string.Join(",", catalogCodes), Type = (int)type };
@@ -96,45 +97,37 @@ public class DiscountRepository : IDiscountRepository
         List<string> prefixQueries = new List<string>();
         var param = new AmountDiscountParams();
 
-        try
+        foreach (var item in catalogItems.OrderBy(x => x.Type))
         {
-            foreach (var item in catalogItems.OrderBy(x => x.Type))
+            string prefix = "";
+            if (item.Type == "2")
             {
-                string prefix = "";
-                if (item.Type == "2")
-                {
-                    prefix = "Cate";
-                    param.Type_Cate = 2;
-                    param.CatalogCode_Cate = string.Join(",", item.CatalogCodes);
-                }
-                else if (item.Type == "3")
-                {
-                    prefix = "SubCate";
-                    param.Type_SubCate = 3;
-                    param.CatalogCode_SubCate = string.Join(",", item.CatalogCodes);
-                }
-                else if (item.Type == "4")
-                {
-                    prefix = "Product";
-                    param.Type_Product = 4;
-                    param.CatalogCode_Product = string.Join(",", item.CatalogCodes);
-                }
-
-                string typePrefix = $"Type_{prefix}";
-                string catalogCodePrefix = $"CatalogCode_{prefix}";
-
-                //SetValueForOject(param, typePrefix, item.Type);
-                //SetValueForOject(param, catalogCodePrefix, string.Join(",", item.CatalogCodes));
-
-                prefixQueries.Add($"(Type = @{typePrefix} and CatalogCode in (@{catalogCodePrefix}))");
+                prefix = "Cate";
+                param.Type_Cate = 2;
+                param.CatalogCode_Cate = string.Join(",", item.CatalogCodes);
             }
-        }
-        catch (Exception ex)
-        {
+            else if (item.Type == "3")
+            {
+                prefix = "SubCate";
+                param.Type_SubCate = 3;
+                param.CatalogCode_SubCate = string.Join(",", item.CatalogCodes);
+            }
+            else if (item.Type == "4")
+            {
+                prefix = "Product";
+                param.Type_Product = 4;
+                param.CatalogCode_Product = string.Join(",", item.CatalogCodes);
+            }
 
+            string typePrefix = $"Type_{prefix}";
+            string catalogCodePrefix = $"CatalogCode_{prefix}";
+
+            //SetValueForOject(param, typePrefix, item.Type);
+            //SetValueForOject(param, catalogCodePrefix, string.Join(",", item.CatalogCodes));
+
+            prefixQueries.Add($"(Type = @{typePrefix} and CatalogCode in (@{catalogCodePrefix}))");
         }
 
-        
 
         string query = string.Join(" or ", prefixQueries);
         var entity = await _baseRepository.QueryAsync<Entities.Discount>(query, param);
@@ -155,4 +148,15 @@ public class DiscountRepository : IDiscountRepository
         
     }
 
+    public async Task<List<Entities.Discount>?> GetAmountDiscountAsync(List<string> catalogItems) //[ 111, 444, 555, 666, 4644, 888,..., n]
+    {
+        //select * from discount
+        //where catalogCode in ('111','222','333','444')
+        const string query = "CatalogCode IN (@CatalogCodes)";
+        object param = new { CatalogCodes = string.Join(",", catalogItems) };
+
+        var entity = await _baseRepository.QueryAsync<Entities.Discount>(query, param);
+
+        return entity;
+    }
 }

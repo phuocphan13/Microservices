@@ -5,6 +5,7 @@ using Coupon.Grpc.Protos;
 using Discount.Domain.Services;
 using Discount.Grpc.Protos;
 using Grpc.Core;
+using ListCodeRequestModel = Discount.Grpc.Protos.ListCodeRequestModel;
 
 namespace Discount.Grpc.GrpcServices;
 
@@ -163,5 +164,19 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
         }
 
         return response;
+    }
+
+    public override async Task<List<AmountAfterDiscountResponse>> TotalDiscountAmount (List<ListCodeRequestModel> request, ServerCallContext context)
+    {
+        if (request == null)
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Cannot be null."));
+        }
+
+        var requestBody = _mapper.Map<ListCodeRequestBody>(request);
+
+        var amounts = await _discountService.TotalDiscountAmountAsync(requestBody, default);
+
+        return new List<AmountAfterDiscountResponse>();
     }
 }
