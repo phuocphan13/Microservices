@@ -156,8 +156,10 @@ public class ProductService : IProductService
 
         var categories = await _categoryRepository.GetEntitiesQueryAsync(x => categoryIds.Contains(x.Id), cancellationToken);
         var subCategories = await _subCategoryRepository.GetEntitiesQueryAsync(x => subCategoryIds.Contains(x.Id), cancellationToken);
-
+        var testDiscount = await _discountGrpcService.GetListDiscountsByCatalogCodeAsync((DiscountEnum)4, (IEnumerable<string>)entities);
         var discounts = await _discountGrpcService.GetAmountsAfterDiscountAsync(categories, subCategories, entities);
+
+        
 
         var summaries = new List<ProductSummary>();
 

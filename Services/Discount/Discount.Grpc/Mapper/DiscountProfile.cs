@@ -29,6 +29,26 @@ public class DiscountProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.MapFrom(x => x.Type))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(x => x.Amount)).ReverseMap();
 
-        CreateMap<ListCodeRequestModel, List<CombinationCodeRequestBody>>() .ReverseMap();
+        CreateMap<ListCodeRequestModel, List<CombinationCodeRequestBody>>().ReverseMap();
+
+        CreateMap<ListCodeRequest, List<CombinationCodeRequestBody>>()
+            .ConvertUsing(x => x.Codes.Select(x => new CombinationCodeRequestBody { CombineCode = x }).ToList());
+
+    }
+
+    public List<CombinationCodeRequestBody> MapABCToCombineCodeModelList(ListCodeRequestModel abcMessage)
+    {
+        List<CombinationCodeRequestBody> combineCodeModelList = new List<CombinationCodeRequestBody>();
+
+        foreach (var code in abcMessage.Codes)
+        {
+            CombinationCodeRequestBody model = new CombinationCodeRequestBody
+            {
+                CombineCode = code.ToString(),
+            };
+            combineCodeModelList.Add(model);
+        }
+
+        return combineCodeModelList;
     }
 }
