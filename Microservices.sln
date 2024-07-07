@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ordering.Domain", "Services
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ordering.Application", "Services\Ordering\Ordering.Application\Ordering.Application.csproj", "{2C3FD295-12BC-43B5-A200-E6C2857D101B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ordering.Infrastruture", "Services\Ordering\Ordering.Infrastruture\Ordering.Infrastruture.csproj", "{78EA3355-829F-4DC7-AE64-3307B8B6F05D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ordering.Infrastructure", "Services\Ordering\Ordering.Infrastructure\Ordering.Infrastructure.csproj", "{78EA3355-829F-4DC7-AE64-3307B8B6F05D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A0E2C293-4F44-4498-A802-6846E8F23A98}"
 EndProject

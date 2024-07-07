@@ -1,4 +1,3 @@
-using ApiClient.Discount.Enum;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -35,8 +34,28 @@ public static class InitializeDB
             {
                 Type = CouponEnum.Percent,
                 Value = 20,
-                Name = "SamSung 10",
-                Description = "SamSung 10 Description",
+                Name = "Happy Monday",
+                Description = "Happy Monday Description",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
+                Type = CouponEnum.Percent,
+                Value = 20,
+                Name = "Happy Tuesday",
+                Description = "Happy Tuesday Description",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
+                Type = CouponEnum.Percent,
+                Value = 20,
+                Name = "Happy Wednesday",
+                Description = "Happy Wednesday Description",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
                 IsActive = true,
@@ -48,6 +67,56 @@ public static class InitializeDB
     {
         return new List<Entities.Discount>()
         {
+            new()
+            {
+                Amount = 10,
+                Description = "SamSung 10 Description",
+                Type = DiscountEnum.Category,
+                CatalogCode = "CategoryCode-1",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
+                Amount = 20,
+                Description = "SamSung 10 Description",
+                Type = DiscountEnum.Product,
+                CatalogCode = "CategoryCode-2",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
+                Amount = 10,
+                Description = "SamSung 10 Description",
+                Type = DiscountEnum.SubCategory,
+                CatalogCode = "CategoryCode-1",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
+                Amount = 20,
+                Description = "SamSung 10 Description",
+                Type = DiscountEnum.SubCategory,
+                CatalogCode = "CategoryCode-2",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
+            new()
+            {
+                Amount = 100,
+                Description = "SamSung 10 Description",
+                Type = DiscountEnum.Product,
+                CatalogCode = "ProductCode-1",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            },
             new()
             {
                 Amount = 200,
@@ -73,47 +142,7 @@ public static class InitializeDB
                 Amount = 300,
                 Description = "SamSung 10 Description",
                 Type = DiscountEnum.Product,
-                CatalogCode = "SS-10",
-                CreatedBy = "Admin",
-                CreatedDate = DateTime.Now,
-                IsActive = true,
-            },
-            new()
-            {
-                Amount = 300,
-                Description = "SamSung 9 Description",
-                Type = DiscountEnum.Product,
-                CatalogCode = "SS-09",
-                CreatedBy = "Admin",
-                CreatedDate = DateTime.Now,
-                IsActive = true,
-            },
-            new()
-            {
-                Amount = 250,
-                Description = "MacBook",
-                Type = DiscountEnum.Category,
-                CatalogCode = "CATE-CODE-2",
-                CreatedBy = "Admin",
-                CreatedDate = DateTime.Now,
-                IsActive = true,
-            },
-            new()
-            {
-                Amount = 500,
-                Description = "MacOS",
-                Type = DiscountEnum.SubCategory,
-                CatalogCode = "SUP-CODE-2",
-                CreatedBy = "Admin",
-                CreatedDate = DateTime.Now,
-                IsActive = true,
-            },
-            new()
-            {
-                Amount = 500,
-                Description = "MacOS 01",
-                Type = DiscountEnum.Product,
-                CatalogCode = "Mac-01",
+                CatalogCode = "ProductCode-2",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
                 IsActive = true,

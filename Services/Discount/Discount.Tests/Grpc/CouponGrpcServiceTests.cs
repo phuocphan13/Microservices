@@ -111,7 +111,6 @@ public class CouponGrpcServiceTests
         string id = "1";
         string description = "Test update coupon";
         string name = "Test";
-        string type = "3";
 
         var couponDetail = new CouponDetail()
         {

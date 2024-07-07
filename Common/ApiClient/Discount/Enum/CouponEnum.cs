@@ -1,5 +1,3 @@
-namespace ApiClient.Discount.Enum;
-
 public enum CouponEnum
 {
     Percent = 1,

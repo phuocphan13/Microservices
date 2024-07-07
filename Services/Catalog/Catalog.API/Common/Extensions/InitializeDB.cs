@@ -49,21 +49,21 @@ public static class InitializeDB
             new()
             {
                 Id = CategorySmartPhoneId,
-                CategoryCode = ModelHelpers.GenerateGuid(),
+                CategoryCode = "CategoryCode-1",
                 Name = "Smart Phone",
                 Description = "Smart Phone Description"
             },
             new()
             {
                 Id = CategoryLaptopPhoneId,
-                CategoryCode = ModelHelpers.GenerateGuid(),
+                CategoryCode = "CategoryCode-2",
                 Name = "Laptop",
                 Description = "Laptop Description"
             },
             new()
             {
                 Id = CategoryHeadphoneId,
-                CategoryCode = ModelHelpers.GenerateGuid(),
+                CategoryCode = "CategoryCode-3",
                 Name = "Head Phone",
                 Description = "Laptop Description"
             }
@@ -77,7 +77,7 @@ public static class InitializeDB
             new()
             {
                 Id = SubCategoryAppleId,
-                SubCategoryCode = ModelHelpers.GenerateGuid(),
+                SubCategoryCode = "SubCategoryCode-1",
                 Name = "Apple",
                 Description = "Apple Description",
                 CategoryId = CategorySmartPhoneId
@@ -85,7 +85,7 @@ public static class InitializeDB
             new()
             {
                 Id = SubCategorySamSungId,
-                SubCategoryCode = ModelHelpers.GenerateGuid(),
+                SubCategoryCode = "SubCategoryCode-2",
                 Name = "SamSung",
                 Description = "SamSung Description",
                 CategoryId = CategorySmartPhoneId
@@ -93,7 +93,7 @@ public static class InitializeDB
             new()
             {
                 Id = SubCategoryHauweiId,
-                SubCategoryCode = ModelHelpers.GenerateGuid(),
+                SubCategoryCode = "SubCategoryCode-3",
                 Name = "Huawei",
                 Description = "Huawei Description",
                 CategoryId = CategorySmartPhoneId
@@ -101,7 +101,7 @@ public static class InitializeDB
             new()
             {
                 Id = SubCategoryXiaomiId,
-                SubCategoryCode = ModelHelpers.GenerateGuid(),
+                SubCategoryCode = "SubCategoryCode-4",
                 Name = "Xiaomi",
                 Description = "Xiaomi Description",
                 CategoryId = CategorySmartPhoneId
@@ -109,7 +109,7 @@ public static class InitializeDB
             new()
             {
                 Id = SubCategoryHTCId,
-                SubCategoryCode = ModelHelpers.GenerateGuid(),
+                SubCategoryCode = "SubCategoryCode-5",
                 Name = "HTC",
                 Description = "HTC Description",
                 CategoryId = CategorySmartPhoneId
@@ -117,7 +117,7 @@ public static class InitializeDB
             new()
             {
                 Id = SubCategoryLGId,
-                SubCategoryCode = ModelHelpers.GenerateGuid(),
+                SubCategoryCode = "SubCategoryCode-6",
                 Name = "LG",
                 Description = "LG Description",
                 CategoryId = CategorySmartPhoneId
@@ -132,7 +132,7 @@ public static class InitializeDB
             new()
             {
                 Id = ModelHelpers.GenerateId(),
-                ProductCode = "IPX-APL",
+                ProductCode = "ProductCode-1",
                 Name = "IPhone X",
                 Summary = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
                 Description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus.",
@@ -144,7 +144,7 @@ public static class InitializeDB
             new()
             {
                 Id = ModelHelpers.GenerateId(),
-                ProductCode = "SS-09",
+                ProductCode = "ProductCode-2",
                 Name = "Samsung 10",
                 Summary = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
                 Description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus.",
@@ -156,7 +156,7 @@ public static class InitializeDB
             new()
             {
                 Id = ModelHelpers.GenerateId(),
-                ProductCode = ModelHelpers.GenerateGuid(),
+                ProductCode = "ProductCode-3",
                 Name = "Huawei Plus",
                 Summary = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
                 Description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus.",
@@ -168,7 +168,7 @@ public static class InitializeDB
             new()
             {
                 Id = ModelHelpers.GenerateId(),
-                ProductCode = ModelHelpers.GenerateGuid(),
+                ProductCode = "ProductCode-4",
                 Name = "Xiaomi Mi 9",
                 Summary = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
                 Description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus.",
@@ -180,7 +180,7 @@ public static class InitializeDB
             new()
             {
                 Id = ModelHelpers.GenerateId(),
-                ProductCode = ModelHelpers.GenerateGuid(),
+                ProductCode = "ProductCode-5",
                 Name = "HTC U11+ Plus",
                 Summary = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
                 Description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus.",
@@ -192,7 +192,7 @@ public static class InitializeDB
             new()
             {
                 Id = ModelHelpers.GenerateId(),
-                ProductCode = ModelHelpers.GenerateGuid(),
+                ProductCode = "ProductCode-6",
                 Name = "LG G7 ThinQ",
                 Summary = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
                 Description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus.",

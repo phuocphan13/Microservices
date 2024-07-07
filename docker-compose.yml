@@ -5,7 +5,10 @@ services:
     image: mongo
 
   basketdb:
-    image: redis:alpine
+    image: redis
+    
+  sagadb:
+    image: redis
     
   discountdb:
     image: postgres
@@ -14,6 +17,9 @@ services:
     image: mcr.microsoft.com/mssql/server:2017-latest
     
   authendb:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+  
+  rabbitmqdb:
     image: mcr.microsoft.com/mssql/server:2017-latest
 
   rabbitmq:
