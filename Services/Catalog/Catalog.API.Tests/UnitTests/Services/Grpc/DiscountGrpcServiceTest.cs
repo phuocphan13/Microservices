@@ -1,3 +1,5 @@
+using ApiClient.Discount.Models.Discount;
+using Catalog.API.Entities;
 using Catalog.API.Services.Grpc;
 using Discount.Grpc.Protos;
 using UnitTest.Common.Helpers;
@@ -126,6 +128,50 @@ public class DiscountGrpcServiceTest
 
         Assert.NotNull(detail);
         Assert.Equal(3, detail.Count);
+    }
+    #endregion
+
+    #region GetAmountsAfterDiscountAsync
+
+    [Fact]
+    public async Task GetAmountsAfterDiscountAsync_ValidParams_ExpectedResult()
+    {
+        var categories = new List<Category>
+            {
+                new Category { Id = "1", CategoryCode = "Cat1" }
+            };
+        var subCategories = new List<SubCategory>
+            {
+                new SubCategory { Id = "1", CategoryId = "1", SubCategoryCode = "Sub1" }
+            };
+        var products = new List<Product>
+            {
+                new Product { Id = "1", SubCategoryId = "1", ProductCode = "Prod1" }
+            };
+
+        var discountSummary = new List<DiscountSummary>
+            {
+                new DiscountSummary { Amount = 10 }
+            };
+
+        var response = new AmountAfterDiscountResponse
+        {
+            AmountDiscountResponse =
+                {
+                    new DiscountResponse { Type = CatalogType.Product.ToString(), CatalogCode = "Prod1.Sub1.Cat1", Amount = "10" }
+                }
+        };
+
+        var call = GrpcHelpers.BuildAsyncUnaryCall(response);
+        var discountGrpcService = new Mock<DiscountProtoService.DiscountProtoServiceClient>();
+        discountGrpcService.Setup(x => x.TotalDiscountAmountAsync(It.IsAny<ListCodeRequest>(), null, null, default)).Returns(call);
+
+        var service = new DiscountGrpcService(discountGrpcService.Object);
+
+        var result = await service.GetAmountsAfterDiscountAsync(categories, subCategories, products);
+
+        Assert.NotNull(result);
+        Assert.Equal(10, result[0].Amount);
     }
     #endregion
 }

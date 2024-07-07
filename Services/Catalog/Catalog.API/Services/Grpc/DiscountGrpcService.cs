@@ -3,6 +3,7 @@ using ApiClient.Discount.Models.Discount.AmountModel;
 using Catalog.API.Entities;
 using Catalog.API.Extensions.Grpc;
 using Discount.Grpc.Protos;
+using System.Collections.Immutable;
 
 namespace Catalog.API.Services.Grpc;
 
@@ -88,6 +89,20 @@ public class DiscountGrpcService : IDiscountGrpcService
 
     public async Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct)
     {
+        if(entityCategory is null || entityCategory.Count == 0) {
+            throw new ArgumentException("Category list cannot be null or empty");
+        }
+
+        if (entitySubCategory is null || entitySubCategory.Count == 0)
+        {
+            throw new ArgumentException("Sub-Category list cannot be null or empty");
+        }
+
+        if (entityProduct is null || entityProduct.Count == 0)
+        {
+            throw new ArgumentException("Product list cannot be null or empty");
+        }
+
         var request = new ListCodeRequest();
         
         foreach (var categoryItem in entityCategory)

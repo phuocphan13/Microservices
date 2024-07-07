@@ -6,6 +6,7 @@ public interface ICouponRepository
 {
     Task<Entities.Coupon?> GetCouponAsync(string id);
     Task<Entities.Coupon> CreateCouponAsync(Entities.Coupon coupon);
+    Task<Entities.Coupon?> GetCouponForCreateAsync(string name);
     Task<Entities.Coupon> UpdateCouponAsync(Entities.Coupon coupon);
     Task<bool> InactiveCouponAsync(int id);
 }
@@ -24,6 +25,15 @@ public class CouponRepository : ICouponRepository
         const string query = "Id = @Id";
 
         var coupon = await _baseRepository.QueryFirstOrDefaultAsync<Entities.Coupon>(query, new { Id = int.Parse(id) });
+
+        return coupon;
+    }
+
+    public async Task<Entities.Coupon?> GetCouponForCreateAsync(string name)
+    {
+        const string query = "Name = @Name";
+
+        var coupon = await _baseRepository.QueryFirstOrDefaultAsync<Entities.Coupon>(query, new { Name = name });
 
         return coupon;
     }

@@ -44,13 +44,39 @@ public class CouponService : CouponProtoService.CouponProtoServiceBase
     public override async Task<CouponDetailModel> CreateCoupon(CreateCouponRequest request, ServerCallContext context)
     {
         //Todo-Phat: Add Validation for other fields and Check if Entity is Exist
-        
+        if (string.IsNullOrEmpty(request.Name))
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Name cannot be null"));
+        }
+
+        if (string.IsNullOrEmpty(request.Description))
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Description cannot be null"));
+        }
+
+        if (string.IsNullOrEmpty(request.Value))
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Value cannot be null"));
+        }
+
+        if (string.IsNullOrEmpty(request.Type.ToString()))
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Type cannot be null"));
+        }
+
+        var existingCoupon = await _couponService.GetCouponForCreateAsync(request.Name);
+        if (existingCoupon != null)
+        {
+            throw new RpcException(new Status(StatusCode.AlreadyExists, $"Coupon already exists."));
+        }    
+
         var requestBody = _mapper.Map<CreateCouponRequestBody>(request);
         var result = await _couponService.CreateCouponAsync(requestBody);
 
         if (result is null)
         {
-            _logger.LogError("Discount is failed created.");
+            _logger.LogError("Coupon creation failed.");
+            throw new RpcException(new Status(StatusCode.Internal, "Coupon creation failed"));
         }
 
         var couponModel = _mapper.Map<CouponDetailModel>(requestBody);

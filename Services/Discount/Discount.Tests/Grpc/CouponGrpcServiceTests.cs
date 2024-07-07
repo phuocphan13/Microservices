@@ -104,6 +104,7 @@ public class CouponGrpcServiceTests
             Assert.That(description, Is.EqualTo(result.Description));
         });
     }
+
     [Test]
     public async Task UpdateCouponAsync_ExpectedResult()
     {
@@ -152,8 +153,5 @@ public class CouponGrpcServiceTests
             Assert.That(id, Is.EqualTo(result.Id.ToString()));
             Assert.That(description, Is.EqualTo(result.Description));
         });
-
     }
-
-   
 }

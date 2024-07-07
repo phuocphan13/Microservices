@@ -85,6 +85,12 @@ public class CategoryController : ApiController
             return BadRequest("Category Code is not allowed null.");
         }
 
+        var existingCategory = await _categoryService.GetCategoryByCodeOrNameAsync(requestBody.CategoryCode, requestBody.Name);
+        if (existingCategory != null)
+        {
+            return Problem("Category code or name already exists.");
+        }
+
         var result = await _categoryService.CreateCategoryAsync(requestBody, cancellationToken);
 
         if (result is null)
