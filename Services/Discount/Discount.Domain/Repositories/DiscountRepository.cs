@@ -152,8 +152,8 @@ public class DiscountRepository : IDiscountRepository
     {
         //select * from discount
         //where catalogCode in ('111','222','333','444')
-        const string query = "CatalogCode IN (@CatalogCodes)";
-        object param = new { CatalogCodes = string.Join(",", catalogItems.Select(x => $"'{x}'")) };
+        const string query = "CatalogCode = ANY (@CatalogCodes)";
+        object param = new { CatalogCodes =  catalogItems.ToArray()};
         var entity = await _baseRepository.QueryAsync<Entities.Discount>(query, param);
 
         return entity;
