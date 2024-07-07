@@ -1,4 +1,3 @@
-using ApiClient.Discount.Enum;
 using ApiClient.Discount.Models.Coupon;
 
 namespace Discount.Domain.Extensions;

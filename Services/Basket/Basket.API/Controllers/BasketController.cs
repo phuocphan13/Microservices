@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+﻿using ApiClient.Basket.Events.CheckoutEvents;
+using AutoMapper;
 using Basket.API.Entitites;
-using EventBus.Messages.Events;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using ApiClient.Basket.Models;
@@ -31,14 +31,14 @@ public class BasketController : ApiController
     }
 
     // [Authorize]
-    [HttpGet("{userName}")]
-    public async Task<IActionResult> GetBasket(string userName, CancellationToken cancellationToken)
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetBasket(string userId, CancellationToken cancellationToken)
     {
-        var result = await _basketService.GetBasketAsync(userName, cancellationToken);
+        var result = await _basketService.GetBasketAsync(userId, cancellationToken);
 
         if (result is null)
         {
-            return NotFound($"Not found Basket with Username: {userName}");
+            return NotFound($"Not found Basket with Username: {userId}");
         }
         
         //For user first time to go to Basket
@@ -46,55 +46,57 @@ public class BasketController : ApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> SaveBasket([FromBody] SaveCartRequestBody cart, CancellationToken cancellationToken)
+    public async Task<IActionResult> SaveBasket([FromBody] SaveBasketRequestBody basket, CancellationToken cancellationToken)
     {
-        if (cart is null)
+        if (basket is null)
         {
-            return BadRequest("Cart is not allowed Null.");
+            return BadRequest("Basket is not allowed Null.");
         }
 
-        if (string.IsNullOrWhiteSpace(cart.UserId))
+        if (string.IsNullOrWhiteSpace(basket.UserId))
         {
-            return BadRequest("UserNmaId is not allowed Null or Empty.");
+            return BadRequest("UserId is not allowed Null or Empty.");
         }
 
-        var result = await _basketService.SaveCartAsync(cart, cancellationToken);
+        var result = await _basketService.SaveBasketAsync(basket, cancellationToken);
 
         if (result is null)
         {
-            _logger.LogError($"Basket with user name: {cart.UserName}, not found.");
+            _logger.LogError($"Basket with user name: {basket.UserName}, not found.");
             return NotFound();
         }
 
         return Ok(result);
     }
 
-    [HttpDelete("DeleteBasket/{userName}")]
-    public async Task<IActionResult> DeleteBasket(string userName, CancellationToken cancellationToken)
+    [HttpDelete("{userId}")]
+    public async Task<IActionResult> DeleteBasket(string userId, CancellationToken cancellationToken)
     {
-        await _basketService.DeleteBasketAsync(userName, cancellationToken);
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return BadRequest("UserId is not allowed Null or Empty.");
+        }
+        
+        await _basketService.DeleteBasketAsync(userId, cancellationToken);
         return Ok();
     }
 
     [HttpPost]
     public async Task<IActionResult> Checkout([FromBody] BasketCheckout basketCheckout, CancellationToken cancellationToken)
     {
-        // get existing basket with total price
-        var basket = await _basketService.GetBasketAsync(basketCheckout.UserId, cancellationToken);
-
+        var basket = await _basketService.GetBasketDetailAsync(basketCheckout.UserId, cancellationToken);
+        
         if (basket == null)
         {
             return BadRequest();
         }
 
         // send checkout event to rabbitmq
-        var eventMessage = _mapper.Map<BasketCheckoutEvent>(basketCheckout);
-        eventMessage.TotalPrice = basket.TotalPrice;
+        var eventMessage = _mapper.Map<BasketCheckoutMessage>(basket);
 
         await _publishEndpoint.Publish(eventMessage, cancellationToken);
 
-        // remove the basket
-        await _basketService.DeleteBasketAsync(basket.UserName!, cancellationToken);
+        // await _basketService.DeleteBasketAsync(basket.UserId, cancellationToken);
 
         return Accepted();
     }

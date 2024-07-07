@@ -14,6 +14,16 @@ services:
     restart: always
     ports:
       - "6379:6379"
+    volumes:
+      - ./basketdb/data:/data
+        
+  sagadb:
+    container_name: sagadb
+    restart: always
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./sagadb/data:/data
 
   discountdb:
     container_name: discountdb
@@ -44,6 +54,15 @@ services:
     restart: always
     ports:
       - "1434:1433"
+  
+  rabbitmqdb:
+    container_name: rabbitmqdb
+    environment:
+      SA_PASSWORD: "SwN12345678"
+      ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+      - "1435:1433"
   
   rabbitmq:
     container_name: rabbitmq
@@ -77,9 +96,10 @@ services:
     container_name: catalog.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
-      - "DatabaseSettings:DatabaseName=ProductDb"
-      - "DatabaseSettings:IsRebuildSchema=false"
+      - "DatabaseSettings:MongoDb:ConnectionString=mongodb://catalogdb:27017"
+      - "DatabaseSettings:MongoDb:DatabaseName=ProductDb"
+      - "DatabaseSettings:MongoDb:IsRebuildSchema=false"
+      - "GrpcSettings:DiscountUrl=http://discount.grpc"
       - ASPNETCORE_URLS=https://+:443
       - ASPNETCORE_Kestrel__Certificates__Default__Password=13Lucifer
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
@@ -103,6 +123,7 @@ services:
       - "ApiSettings:JwtSettings:LifeTime=8"
     depends_on:
       - basketdb
+      - sagadb
       - rabbitmq
     ports:
       - "8001:80"
@@ -111,7 +132,7 @@ services:
     container_name: discount.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
+      - "DatabaseSettings:Postgres:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
       - "DatabaseSettings:IsRebuildSchema=false;"
     depends_on:
       - discountdb
@@ -143,6 +164,7 @@ services:
     depends_on:
       - orderdb
       - rabbitmq
+      - sagadb
     ports:
       - "8004:80"
 

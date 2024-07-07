@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Platform.Common;
 using Platform.Common.Session;
+using Platform.Database.Helpers;
 
 namespace Platform;
 

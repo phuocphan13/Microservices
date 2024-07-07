@@ -106,4 +106,19 @@ public class DiscountGrpcServiceTests
             Assert.That(description, Is.EqualTo(result.Description));
         });
     }
+
+    //[Test]
+    //public async Task TotalDiscountAmount_ExpectedResult()
+    //{
+    //    string prodCode = "SS-09";
+    //    string subCode = CommonHelpers.GenerateRandomString();
+    //    string cateCode = CommonHelpers.GenerateRandomString();
+    //    string code = prodCode + "." + subCode + "." + cateCode;
+
+    //    var request = new ListCodeRequest()
+    //    {
+    //        Codes = code
+    //    };
+
+    //}
 }
