@@ -139,7 +139,6 @@ public class CouponGrpcServiceTests
         var mapper = new Mock<IMapper>();
         var logger = new Mock<ILogger<GrpcServices.CouponService>>();
 
-
         couponService.Setup(x => x.UpdateCouponAsync(It.IsAny<UpdateCouponRequestBody>())).ReturnsAsync(couponDetail);
         mapper.ConfigMapper<CouponDetail, CouponDetailModel>(couponModel);
 
@@ -151,8 +150,5 @@ public class CouponGrpcServiceTests
             Assert.That(id, Is.EqualTo(result.Id.ToString()));
             Assert.That(description, Is.EqualTo(result.Description));
         });
-
     }
-
-   
 }

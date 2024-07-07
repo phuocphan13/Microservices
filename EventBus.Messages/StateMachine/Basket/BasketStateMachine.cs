@@ -1,13 +1,15 @@
 using ApiClient.Basket.Events.CheckoutEvents;
 using MassTransit;
 
-namespace EventBus.Messages.StateMachine;
+namespace EventBus.Messages.StateMachine.Basket;
 
-public class BasketStateMachine : MassTransitStateMachine<BasketStateInstance>
+public class BasketStateMachine : MassTransitStateMachine<BasketState>
 {
     public Event<BasketCheckoutMessage> BasketCheckoutEvent { get; private set; } = null!;
 
     public State Checkoutted { get; private set; } = null!;
+
+    public State Accepted { get; private set; } = null!;
 
     public BasketStateMachine()
     {
@@ -19,8 +21,12 @@ public class BasketStateMachine : MassTransitStateMachine<BasketStateInstance>
             When(BasketCheckoutEvent)
                 .Then(context =>
                 {
-                    context.Saga.UserId = context.Message.UserId;
+                    context.Saga.UserId = context.Message.UserName;
+                    context.Saga.UserName = context.Message.UserId;
                     context.Saga.TotalPrice = context.Message.TotalPrice;
+
+                    context.Saga.EventId = context.Message.EventId;
+                    context.Saga.MemberId = context.Message.MemberId;
                     
                     context.Saga.CreatedDate = DateTime.UtcNow;
                     context.Saga.Timestamp = DateTime.UtcNow;
@@ -28,13 +34,15 @@ public class BasketStateMachine : MassTransitStateMachine<BasketStateInstance>
                 .TransitionTo(Checkoutted));
 
         During(Checkoutted,
-            Ignore(BasketCheckoutEvent));
-
-        DuringAny(
             When(BasketCheckoutEvent)
-                .Then(context =>
-                {
-                    context.Saga.Timestamp = context.Message.Timestamp;
-                }));
+                .TransitionTo(Accepted));
+        // Ignore(BasketCheckoutEvent));
+
+        // DuringAny(
+        //     When(BasketCheckoutEvent)
+        //         .Then(context =>
+        //         {
+        //             context.Saga.Timestamp = context.Message.Timestamp;
+        //         }));
     }
 }

@@ -2,7 +2,7 @@ namespace ApiClient.Basket.Events;
 
 public class BaseMessage
 {
-    public string UserId { get; set; } = null!;
+    public string MemberId { get; set; } = Guid.NewGuid().ToString();
     
-    public string UserName { get; set; } = null!;
+    public string EventId { get; set; } = Guid.NewGuid().ToString();
 }
