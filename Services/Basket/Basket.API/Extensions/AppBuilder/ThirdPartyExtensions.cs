@@ -1,5 +1,5 @@
 using Discount.Grpc.Protos;
-using MassTransit;
+using EventBus.Messages;
 
 namespace Basket.API.Extensions.AppBuilder;
 
@@ -13,15 +13,8 @@ public static class ThirdPartyExtensions
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(x => x.Address = new Uri(configuration["GrpcSettings:DiscountUrl"]));
-        
-        services.AddMassTransit(config =>
-        {
-            config.UsingRabbitMq((ctx, cfg) =>
-            {
-                cfg.Host(configuration["EventBusSettings:HostAddress"]);
-                // cfg.ConfigureEndpoints(ctx);
-            });
-        });
+
+        services.AddMessageOutbox(configuration);
         
         return services;
     }

@@ -1,3 +1,5 @@
+using ApiClient.Basket.Events;
+using ApiClient.Basket.Events.CheckoutEvents;
 using EventBus.Messages.Helpers;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
@@ -6,35 +8,32 @@ namespace EventBus.Messages.Services;
 
 public interface IQueueService
 {
-    Task SendFanoutMessageAsync<T>(T message, CancellationToken cancellationToken = default) where T : class;
-
+    Task SendFanoutMessageAsync<T>(T message, CancellationToken cancellationToken = default) where T : BaseMessage, new();
     Task SendDirectMessageAsync<T>(T message, string directQueue, CancellationToken cancellationToken = default) where T : class;
 }
 
 public class QueueService : IQueueService
 {
-    private readonly IPublishEndpoint _publishEndpoint;
     private readonly IBus _bus;
     private readonly IConfiguration _configuration;
+    private readonly IMessageService _messageService;
 
-    public QueueService(IPublishEndpoint publishEndpoint, IBus bus, IConfiguration configuration)
+    public QueueService(IBus bus, IConfiguration configuration, IMessageService messageService)
     {
-        _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
         _bus = bus ?? throw new ArgumentNullException(nameof(bus));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
     }
     
-    public async Task SendFanoutMessageAsync<T>(T message, CancellationToken cancellationToken)
-        where T: class
+    public async Task SendFanoutMessageAsync<T>(T message, CancellationToken cancellationToken) 
+        where T : BaseMessage, new()
     {
         if (message is null)
         {
-            return;
+            throw new InvalidOperationException("Message is not allowed Null.");
         }
-
-        var pipe = new LoggingPublishPipe<T>();
-
-        await _publishEndpoint.Publish(message, pipe, cancellationToken);
+        
+        await _messageService.SumbitOutboxAsync(message, cancellationToken);
     }
     
     public async Task SendDirectMessageAsync<T>(T message, string directQueue, CancellationToken cancellationToken)

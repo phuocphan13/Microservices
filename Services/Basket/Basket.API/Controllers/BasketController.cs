@@ -5,6 +5,8 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using ApiClient.Basket.Models;
 using Basket.API.Services;
+using EventBus.Messages.Entities;
+using EventBus.Messages.Services;
 using Microsoft.AspNetCore.Authorization;
 using Platform.ApiBuilder;
 
@@ -17,17 +19,15 @@ public class BasketController : ApiController
     private readonly IBasketService _basketService;
     private readonly ILogger<BasketController> _logger;
     private readonly IMapper _mapper;
-    private readonly IPublishEndpoint _publishEndpoint;
-    private readonly IBus _bus;
+    private readonly IQueueService _queueService;
 
-    public BasketController(IBasketService basketService, ILogger<BasketController> logger, IMapper mapper, IPublishEndpoint publishEndpoint, IBus bus)
+    public BasketController(IBasketService basketService, ILogger<BasketController> logger, IMapper mapper, IPublishEndpoint publishEndpoint, IBus bus, IQueueService queueService)
         : base(logger)
     {
         _basketService = basketService ?? throw new ArgumentNullException(nameof(basketService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
-        _bus = bus;
+        _queueService = queueService ?? throw new ArgumentNullException(nameof(queueService));
     }
 
     // [Authorize]
@@ -93,8 +93,8 @@ public class BasketController : ApiController
 
         // send checkout event to rabbitmq
         var eventMessage = _mapper.Map<BasketCheckoutMessage>(basket);
-
-        await _publishEndpoint.Publish(eventMessage, cancellationToken);
+        
+        await _queueService.SendFanoutMessageAsync(eventMessage, cancellationToken);
 
         // await _basketService.DeleteBasketAsync(basket.UserId, cancellationToken);
 
