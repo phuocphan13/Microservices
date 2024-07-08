@@ -21,8 +21,8 @@ public class BasketStateMachine : MassTransitStateMachine<BasketState>
             When(BasketCheckoutEvent)
                 .Then(context =>
                 {
-                    context.Saga.UserId = context.Message.UserName;
-                    context.Saga.UserName = context.Message.UserId;
+                    context.Saga.UserId = context.Message.UserId;
+                    context.Saga.UserName = context.Message.UserName;
                     context.Saga.TotalPrice = context.Message.TotalPrice;
 
                     context.Saga.EventId = context.Message.EventId;
@@ -34,9 +34,7 @@ public class BasketStateMachine : MassTransitStateMachine<BasketState>
                 .TransitionTo(Checkoutted));
 
         During(Checkoutted,
-            When(BasketCheckoutEvent)
-                .TransitionTo(Accepted));
-        // Ignore(BasketCheckoutEvent));
+            Ignore(BasketCheckoutEvent));
 
         // DuringAny(
         //     When(BasketCheckoutEvent)

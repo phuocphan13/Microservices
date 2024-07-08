@@ -1,6 +1,5 @@
 using Discount.Grpc.Protos;
 using EventBus.Messages;
-using MassTransit;
 
 namespace Basket.API.Extensions.AppBuilder;
 

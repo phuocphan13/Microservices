@@ -2,7 +2,7 @@ using MassTransit;
 
 namespace EventBus.Messages.StateMachine.Basket;
 
-public class BasketState : SagaStateMachineInstance
+public class BasketState : SagaStateMachineInstance, ISagaVersion
 {
     public Guid CorrelationId { get; set; }
     
@@ -12,7 +12,7 @@ public class BasketState : SagaStateMachineInstance
 
     public string CurrentState { get; set; } = null!;
     
-    // public int Version { get; set; }
+    public int Version { get; set; }
     
     public decimal TotalPrice { get; set; }
     
