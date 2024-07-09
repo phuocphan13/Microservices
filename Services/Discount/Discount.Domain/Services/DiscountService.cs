@@ -238,12 +238,10 @@ public class DiscountService : IDiscountService
             return null;
         }
 
+        var totalAmountsList = new List<TotalAmountModel>();
+
         // totalAmounts --> List Product Codes based on RequestBody
-        var totalAmounts = requestBody.Select(x => new TotalAmountModel()
-        {
-            CatalogCode = x.CombineCode.Split(".")[0],
-            Amount = 0
-        });
+        
         
         // Item -> "A.B.C"
         // Item -> "ProductCode.SubCategoryCode.CategoryCode"
@@ -255,15 +253,20 @@ public class DiscountService : IDiscountService
         foreach (var item in requestBody)
         {
             // Assume: if has any Discounts for this item
-            
+            var totalAmounts = requestBody.Select(x => new TotalAmountModel()
+            {
+                CatalogCode = x.CombineCode.Split(".")[0],
+                Amount = 0
+            });
             // Get ProductCode in totalAmounts => increase Amount
             var codeArrays = item.CombineCode.Split('.');
             var product = totalAmounts.First(x => x.CatalogCode == codeArrays[0]);
 
             var discountItems = discounts.Where(x => codeArrays.Contains(x.CatalogCode));
             product.Amount += discountItems.Sum(x => x.Amount);
+            totalAmountsList.Add(product);
         }
 
-        return totalAmounts.Where(x => x.Amount > 0);
+        return totalAmountsList.Where(x => x.Amount > 0);
     }
 }
