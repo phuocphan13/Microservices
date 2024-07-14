@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ApiClient.Discount.Models.Discount.AmountModel;
 
-namespace ApiClient.Discount.Models.Discount.AmountModel
+public class AmountDiscountResponseModel
 {
-    public class AmountDiscountResponseModel
-    {
-        public string Type { get; set; }
-        public string CatalogCode { get; set; }
-        public string Amount { get; set; }
-    }
+    public string Type { get; set; } = null!;
+    
+    public string CatalogCode { get; set; } = null!;
+   
+    public string Amount { get; set; } = null!;
 }

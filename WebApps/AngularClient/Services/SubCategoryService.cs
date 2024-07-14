@@ -1,9 +1,5 @@
-﻿using ApiClient.Catalog.Category;
-using ApiClient.Catalog.Product.Models;
-using ApiClient.Catalog.SubCategory;
+﻿using ApiClient.Catalog.SubCategory;
 using ApiClient.Catalog.SubCategory.Models;
-using ApiClient.Common;
-using System.Xml.Linq;
 using Platform.ApiBuilder;
 
 

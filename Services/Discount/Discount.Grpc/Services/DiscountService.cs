@@ -143,7 +143,6 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
         return response;
     }
 
-    // ListCodeRequest --> Code: "ProductCode.SubCategoryCode.CategoryCode"
     public override async Task<AmountAfterDiscountResponse> TotalDiscountAmount(ListCodeRequest request, ServerCallContext context)
     {
         if (request is null)

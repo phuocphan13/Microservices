@@ -1,9 +1,6 @@
-﻿using ApiClient.Catalog.Models.Catalog.Category;
-using ApiClient.Discount.Models.Coupon;
-using ApiClient.Discount.Models.Discount;
+﻿using ApiClient.Discount.Models.Coupon;
 using AutoMapper;
 using Coupon.Grpc.Protos;
-using Discount.Grpc.Protos;
 
 namespace Discount.Grpc.Mapper;
 

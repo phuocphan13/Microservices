@@ -3,7 +3,6 @@ using ApiClient.Catalog.Models.Catalog.Category;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.API.Services;
 

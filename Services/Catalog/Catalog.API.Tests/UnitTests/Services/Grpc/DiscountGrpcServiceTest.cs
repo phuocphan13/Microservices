@@ -1,6 +1,7 @@
 using ApiClient.Discount.Models.Discount;
 using Catalog.API.Entities;
 using Catalog.API.Services.Grpc;
+using Catalog.API.Tests.Common;
 using Discount.Grpc.Protos;
 using UnitTest.Common.Helpers;
 
@@ -82,7 +83,7 @@ public class DiscountGrpcServiceTest
 
         Assert.Null(detail);
     }
-    
+
     [Fact]
     public async Task GetListDiscountsByCatalogCodeAsync_ValidParams_WithNotAnyResponse_ExpectedResult()
     {
@@ -101,7 +102,7 @@ public class DiscountGrpcServiceTest
 
         Assert.Null(detail);
     }
-    
+
     [Fact]
     public async Task GetListDiscountsByCatalogCodeAsync_ValidParams_ExpectedResult()
     {
@@ -132,34 +133,33 @@ public class DiscountGrpcServiceTest
     #endregion
 
     #region GetAmountsAfterDiscountAsync
-
     [Fact]
     public async Task GetAmountsAfterDiscountAsync_ValidParams_ExpectedResult()
     {
         var categories = new List<Category>
-            {
-                new Category { Id = "1", CategoryCode = "Cat1" }
-            };
+        {
+            new Category { Id = "1", CategoryCode = "Cat1" }
+        };
         var subCategories = new List<SubCategory>
-            {
-                new SubCategory { Id = "1", CategoryId = "1", SubCategoryCode = "Sub1" }
-            };
+        {
+            new SubCategory { Id = "1", CategoryId = "1", SubCategoryCode = "Sub1" }
+        };
         var products = new List<Product>
-            {
-                new Product { Id = "1", SubCategoryId = "1", ProductCode = "Prod1" }
-            };
+        {
+            new Product { Id = "1", SubCategoryId = "1", ProductCode = "Prod1" }
+        };
 
         var discountSummary = new List<DiscountSummary>
-            {
-                new DiscountSummary { Amount = 10 }
-            };
+        {
+            new DiscountSummary { Amount = 10 }
+        };
 
         var response = new AmountAfterDiscountResponse
         {
             AmountDiscountResponse =
-                {
-                    new DiscountResponse { Type = CatalogType.Product.ToString(), CatalogCode = "Prod1.Sub1.Cat1", Amount = "10" }
-                }
+            {
+                new DiscountResponse { Type = CatalogType.Product.ToString(), CatalogCode = "Prod1.Sub1.Cat1", Amount = "10" }
+            }
         };
 
         var call = GrpcHelpers.BuildAsyncUnaryCall(response);
@@ -179,7 +179,10 @@ public class DiscountGrpcServiceTest
     {
         var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.GetAmountsAfterDiscountAsync(null, new List<SubCategory>(), new List<Product>()));
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            _ = await service.GetAmountsAfterDiscountAsync(null!, new List<SubCategory>(), new List<Product>());
+        });
     }
 
     [Fact]
@@ -187,7 +190,10 @@ public class DiscountGrpcServiceTest
     {
         var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.GetAmountsAfterDiscountAsync(new List<Category>(), new List<SubCategory>(), new List<Product>()));
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            _ = await service.GetAmountsAfterDiscountAsync(new List<Category>(), new List<SubCategory>(), new List<Product>());
+        });
     }
 
     [Fact]
@@ -195,7 +201,10 @@ public class DiscountGrpcServiceTest
     {
         var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.GetAmountsAfterDiscountAsync(new List<Category> { new Category() }, null, new List<Product>()));
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new Category() }, null, new List<Product>());
+        });
     }
 
     [Fact]
@@ -203,23 +212,22 @@ public class DiscountGrpcServiceTest
     {
         var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.GetAmountsAfterDiscountAsync(new List<Category> { new Category() }, new List<SubCategory>(), new List<Product>()));
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new Category() }, new List<SubCategory>(), new List<Product>());
+        });
     }
 
-    [Fact]
-    public async Task GetAmountsAfterDiscountAsync_NullProductList_ThrowException()
+    [Theory]
+    [ClassData(typeof(TheoryDataHelpers<Product>))]
+    public async Task GetAmountsAfterDiscountAsync_NullOrEmptyProductList_ThrowException(List<Product>? products)
     {
         var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.GetAmountsAfterDiscountAsync(new List<Category> { new Category() }, new List<SubCategory> { new SubCategory() }, null));
-    }
-
-    [Fact]
-    public async Task GetAmountsAfterDiscountAsync_EmptyProductList_ThrowException()
-    {
-        var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
-
-        await Assert.ThrowsAsync<ArgumentException>(() => service.GetAmountsAfterDiscountAsync(new List<Category> { new Category() }, new List<SubCategory> { new SubCategory() }, new List<Product>()));
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new() }, new List<SubCategory> { new() }, products!);
+        });
     }
     #endregion
 }

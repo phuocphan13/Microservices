@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using Catalog.API.Common.Consts;
 using Catalog.API.Common.Extensions;
 using Catalog.API.Entities;
 using MongoDB.Driver;

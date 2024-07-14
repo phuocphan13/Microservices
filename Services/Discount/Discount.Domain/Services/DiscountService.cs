@@ -1,11 +1,8 @@
 ﻿using ApiClient.Catalog.Catalog;
 using ApiClient.Discount.Models.Discount;
 using ApiClient.Discount.Models.Discount.AmountModel;
-using AutoMapper;
 using Discount.Domain.Extensions;
 using Discount.Domain.Repositories;
-using System.Collections.Generic;
-using Discount.Grpc.Protos;
 
 namespace Discount.Domain.Services;
 
@@ -24,13 +21,11 @@ public class DiscountService : IDiscountService
 {
     private readonly IDiscountRepository _discountRepository;
     private readonly ICatalogApiClient _catalogApiClient;
-    private readonly IMapper _mapper;
 
-    public DiscountService(IDiscountRepository discountRepository, ICatalogApiClient catalogApiClient, IMapper mapper)
+    public DiscountService(IDiscountRepository discountRepository, ICatalogApiClient catalogApiClient)
     {
         _discountRepository = discountRepository ?? throw new ArgumentNullException(nameof(discountRepository));
         _catalogApiClient = catalogApiClient ?? throw new ArgumentNullException(nameof(catalogApiClient));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public async Task<DiscountDetail?> GetDiscountAsync(string id)
@@ -224,7 +219,7 @@ public class DiscountService : IDiscountService
 
         foreach (var item in requestBody)
         {
-            string[] codes = item.CombineCode.Split('.'); // [111, 444, 555] 
+            string[] codes = item.CombineCode.Split('.'); 
 
             productCodes.AddRange(codes);
         }
@@ -240,13 +235,12 @@ public class DiscountService : IDiscountService
         
         foreach (var item in requestBody)
         {
-            // Assume: if has any Discounts for this item
             var totalAmounts = requestBody.Select(x => new TotalAmountModel()
             {
                 CatalogCode = x.CombineCode.Split(".")[0],
                 Amount = 0
             });
-            // Get ProductCode in totalAmounts => increase Amount
+            
             var codeArrays = item.CombineCode.Split('.');
             var product = totalAmounts.First(x => x.CatalogCode == codeArrays[0]);
 

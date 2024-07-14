@@ -6,7 +6,7 @@ namespace Discount.Domain.Services;
 
 public interface ICouponService
 {
-    Task<CouponDetail> GetCouponAsync(string id);
+    Task<CouponDetail?> GetCouponAsync(string id);
     Task<CouponDetail> CreateCouponAsync(CreateCouponRequestBody requestBody);
     Task<CouponDetail> GetCouponForCreateAsync(string name);
     Task<CouponDetail> UpdateCouponAsync(UpdateCouponRequestBody requestBody);
@@ -60,7 +60,7 @@ public class CouponService : ICouponService
 
     public async Task<CouponDetail> UpdateCouponAsync(UpdateCouponRequestBody requestBody)
     {
-        var data = await _couponRepository.GetCouponAsync(requestBody.Id.ToString()!);
+        var data = await _couponRepository.GetCouponAsync(requestBody.Id.ToString());
 
         data!.ToUpdateCoupon(requestBody);
 

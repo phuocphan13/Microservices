@@ -1,9 +1,7 @@
 using ApiClient.Discount.Models.Discount;
-using ApiClient.Discount.Models.Discount.AmountModel;
 using Catalog.API.Entities;
 using Catalog.API.Extensions.Grpc;
 using Discount.Grpc.Protos;
-using System.Collections.Immutable;
 
 namespace Catalog.API.Services.Grpc;
 

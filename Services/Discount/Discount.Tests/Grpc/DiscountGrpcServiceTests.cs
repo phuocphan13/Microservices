@@ -2,15 +2,11 @@ using ApiClient.Discount.Models.Discount;
 using ApiClient.Discount.Models.Discount.AmountModel;
 using AutoMapper;
 using Discount.Domain.Services;
-using Discount.Grpc.GrpcServices;
 using Discount.Grpc.Protos;
-using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NUnit.Framework.Internal;
 using UnitTest.Common.Helpers;
 using UnitTest.Common.Helpers.Grpc;
-using DiscountService = Discount.Grpc.GrpcServices.DiscountService;
 using GrpcServices = Discount.Grpc.GrpcServices;
 
 namespace Discount.Tests.Grpc;

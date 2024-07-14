@@ -1,24 +1,23 @@
 ﻿using AngularClient.Services;
 using ApiClient.Catalog.SubCategory.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AngularClient.Controllers
-{
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    public class SubCategoryController : ControllerBase
-    {
-        private readonly ISubCategoryService _subCategoryService;
+namespace AngularClient.Controllers;
 
-       public SubCategoryController(ISubCategoryService subCategoryService)
-        {
+[Route("api/[controller]/[action]")]
+[ApiController]
+public class SubCategoryController : ControllerBase
+{
+    private readonly ISubCategoryService _subCategoryService;
+
+    public SubCategoryController(ISubCategoryService subCategoryService)
+    {
             _subCategoryService = subCategoryService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetSubCategories(CancellationToken cancellationToken) 
-        {
+    [HttpGet]
+    public async Task<IActionResult> GetSubCategories(CancellationToken cancellationToken) 
+    {
             var result = await _subCategoryService.GetSubCategoriesAsync(cancellationToken);
 
             if (result == null)
@@ -29,9 +28,9 @@ namespace AngularClient.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetSubCategoryById (string id, CancellationToken cancellationToken)
-        {
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetSubCategoryById (string id, CancellationToken cancellationToken)
+    {
             if(string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest();
@@ -45,9 +44,9 @@ namespace AngularClient.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{name}")]
-        public async Task<IActionResult> GetSubCategoryByName (string name, CancellationToken cancellationToken)
-        {
+    [HttpGet("{name}")]
+    public async Task<IActionResult> GetSubCategoryByName (string name, CancellationToken cancellationToken)
+    {
             if(string.IsNullOrWhiteSpace(name))
             {
                 return BadRequest();
@@ -62,9 +61,9 @@ namespace AngularClient.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{categoryId}")]
-        public async Task<IActionResult> GetSubCategoriesByCategoryId (string categoryId, CancellationToken cancellationToken)
-        {
+    [HttpGet("{categoryId}")]
+    public async Task<IActionResult> GetSubCategoriesByCategoryId (string categoryId, CancellationToken cancellationToken)
+    {
             if (string.IsNullOrWhiteSpace(categoryId))
             {
                 return BadRequest();
@@ -80,9 +79,9 @@ namespace AngularClient.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateSubCategory ([FromBody] CreateSubCategoryRequestBody body, CancellationToken cancellationToken)
-        {
+    [HttpPost]
+    public async Task<IActionResult> CreateSubCategory ([FromBody] CreateSubCategoryRequestBody body, CancellationToken cancellationToken)
+    {
             var result = await _subCategoryService.CreateSubCategoryAsync(body, cancellationToken);
 
             if(result == null)
@@ -93,9 +92,9 @@ namespace AngularClient.Controllers
             return Ok(result);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateSubCategory ([FromBody] UpdateSubCategoryRequestBody body, CancellationToken cancellationToken)
-        {
+    [HttpPut]
+    public async Task<IActionResult> UpdateSubCategory ([FromBody] UpdateSubCategoryRequestBody body, CancellationToken cancellationToken)
+    {
             var result = await _subCategoryService.UpdateSubCategoryAsync(body, cancellationToken);
             if (result is null)
             {
@@ -105,9 +104,9 @@ namespace AngularClient.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSubCategory(string id, CancellationToken cancellationToken)
-        {
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteSubCategory(string id, CancellationToken cancellationToken)
+    {
             var result = await _subCategoryService.DeleteSubCategoryAsync(id, cancellationToken);
 
             if (result is null)
@@ -117,5 +116,4 @@ namespace AngularClient.Controllers
 
             return Ok(result);
         }
-    }
 }

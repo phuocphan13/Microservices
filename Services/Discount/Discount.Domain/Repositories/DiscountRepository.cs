@@ -1,9 +1,7 @@
-using ApiClient.Discount.Models.Discount;
 using ApiClient.Discount.Models.Discount.AmountModel;
 using Discount.Domain.Models.EntityHelpers;
 using Discount.Domain.Repositories.Common;
 using System.Reflection;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Discount.Domain.Repositories;
 
@@ -122,9 +120,6 @@ public class DiscountRepository : IDiscountRepository
             string typePrefix = $"Type_{prefix}";
             string catalogCodePrefix = $"CatalogCode_{prefix}";
 
-            //SetValueForOject(param, typePrefix, item.Type);
-            //SetValueForOject(param, catalogCodePrefix, string.Join(",", item.CatalogCodes));
-
             prefixQueries.Add($"(Type = @{typePrefix} and CatalogCode in (@{catalogCodePrefix}))");
         }
 
@@ -134,24 +129,8 @@ public class DiscountRepository : IDiscountRepository
         return entity;
     }
 
-    public static void SetValueForOject (object param, string propertyName, string value)
+    public async Task<List<Entities.Discount>?> GetAmountDiscountAsync(List<string> catalogItems)
     {
-        Type type = param.GetType();
-        PropertyInfo? prop = type.GetProperty(propertyName);
-
-        if (prop is null)
-        {
-            return;
-        }    
-
-        prop.SetValue(param, value, null);
-        
-    }
-
-    public async Task<List<Entities.Discount>?> GetAmountDiscountAsync(List<string> catalogItems) //[ 111, 444, 555, 666, 4644, 888,..., n]
-    {
-        //select * from discount
-        //where catalogCode in ('111','222','333','444')
         const string query = "CatalogCode = ANY (@CatalogCodes)";
         object param = new { CatalogCodes =  catalogItems.ToArray()};
         var entity = await _baseRepository.QueryAsync<Entities.Discount>(query, param);

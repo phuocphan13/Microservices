@@ -5,9 +5,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using ApiClient.Basket.Models;
 using Basket.API.Services;
-using EventBus.Messages.Entities;
 using EventBus.Messages.Services;
-using Microsoft.AspNetCore.Authorization;
 using Platform.ApiBuilder;
 
 namespace Basket.API.Controllers;

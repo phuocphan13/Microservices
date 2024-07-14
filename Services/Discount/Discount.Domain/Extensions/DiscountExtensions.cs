@@ -2,7 +2,6 @@ using System.Globalization;
 using ApiClient.Discount.Models.Discount;
 using ApiClient.Discount.Models.Discount.AmountModel;
 using Discount.Grpc.Protos;
-using System.Runtime.CompilerServices;
 
 namespace Discount.Domain.Extensions;
 

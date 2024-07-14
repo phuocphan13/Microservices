@@ -1,10 +1,7 @@
 ﻿using ApiClient.Catalog.SubCategory.Models;
-using ApiClient.Common;
-using Catalog.API.Common.Consts;
 using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Platform.ApiBuilder;
-using static Catalog.API.Common.Consts.ResponseMessages;
 
 namespace Catalog.API.Controllers;
 

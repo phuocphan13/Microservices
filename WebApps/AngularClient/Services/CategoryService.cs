@@ -1,7 +1,6 @@
 ﻿using ApiClient.Catalog.Category;
 using ApiClient.Catalog.Category.Models;
 using ApiClient.Catalog.Models.Catalog.Category;
-using ApiClient.Common;
 using Platform.ApiBuilder;
 
 namespace AngularClient.Services;
