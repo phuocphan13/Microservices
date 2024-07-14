@@ -10,7 +10,7 @@ public static class InitializeDB
     public static async Task InitializeDiscountDbContextsAsync(
         this IApplicationBuilder builder,
         ConfigurationManager configuration,
-        bool isRebuildSchema = true)
+        bool isRebuildSchema = false)
     {
         if (isRebuildSchema)
         {
@@ -82,7 +82,7 @@ public static class InitializeDB
                 Amount = 20,
                 Description = "SamSung 10 Description",
                 Type = DiscountEnum.Product,
-                CatalogCode = "ProductCode-2",
+                CatalogCode = "CategoryCode-2",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
                 IsActive = true,
@@ -92,7 +92,7 @@ public static class InitializeDB
                 Amount = 10,
                 Description = "SamSung 10 Description",
                 Type = DiscountEnum.SubCategory,
-                CatalogCode = "SubCategoryCode-1",
+                CatalogCode = "CategoryCode-1",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
                 IsActive = true,
@@ -102,7 +102,7 @@ public static class InitializeDB
                 Amount = 20,
                 Description = "SamSung 10 Description",
                 Type = DiscountEnum.SubCategory,
-                CatalogCode = "SubCategoryCode-2",
+                CatalogCode = "CategoryCode-2",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
                 IsActive = true,
@@ -120,29 +120,9 @@ public static class InitializeDB
             new()
             {
                 Amount = 200,
-                Description = "Phone",
-                Type = DiscountEnum.Category,
-                CatalogCode = "CATE-CODE-1",
-                CreatedBy = "Admin",
-                CreatedDate = DateTime.Now,
-                IsActive = true,
-            },
-            new()
-            {
-                Amount = 100,
-                Description = "SamSung",
-                Type = DiscountEnum.SubCategory,
-                CatalogCode = "SUP-CODE-1",
-                CreatedBy = "Admin",
-                CreatedDate = DateTime.Now,
-                IsActive = true,
-            },
-            new()
-            {
-                Amount = 300,
                 Description = "SamSung 10 Description",
                 Type = DiscountEnum.Product,
-                CatalogCode = "ProductCode-3",
+                CatalogCode = "ProductCode-2",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
                 IsActive = true,

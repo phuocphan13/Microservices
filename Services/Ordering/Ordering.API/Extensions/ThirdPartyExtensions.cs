@@ -1,5 +1,5 @@
-﻿using EventBus.Messages.Extensions;
-using EventBus.Messages.StateMachine;
+using EventBus.Messages;
+using EventBus.Messages.Extensions;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Ordering.API.EventBusConsumer;
@@ -14,23 +14,12 @@ public static class ThirdPartyExtensions
         
         //MassTransit configuration
         services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
-        services.AddMassTransit(config =>
-        {
-            config.AddConsumersFromNamespaceContaining<BasketCheckoutConsumer>();
-            config.AddSagaStateMachine<BasketStateMachine, BasketStateInstance>()
-                .RedisRepository(r => { r.DatabaseConfiguration(configuration["ConnectionStrings:SagaConnectionString"]); });
-
-            config.UsingRabbitMq((context, cfg) =>
-            {
-                cfg.Host(configuration["EventBusSettings:HostAddress"]);
-
-                cfg.ConfigureEndpoints(context);
-            });
-        });
-
         services.AddHostedService<MassTransitConsoleHostedService>();
-        
-        // builder.Services.AddScoped<BasketCheckoutConsumer>();
+
+        services.AddMessageOutboxCosumer(configuration, busAction: x =>
+        {
+            x.AddConsumer<BasketCheckoutConsumer>();
+        });
         
         return services;
     }
