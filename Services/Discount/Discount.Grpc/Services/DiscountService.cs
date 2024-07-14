@@ -1,6 +1,7 @@
 ﻿using ApiClient.Discount.Models.Discount;
+using ApiClient.Discount.Models.Discount.AmountModel;
 using AutoMapper;
-using Coupon.Grpc.Protos;
+using Discount.Domain.Extensions;
 using Discount.Domain.Services;
 using Discount.Grpc.Protos;
 using Grpc.Core;
@@ -140,5 +141,34 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
         };
     
         return response;
+    }
+
+    public override async Task<AmountAfterDiscountResponse> TotalDiscountAmount(ListCodeRequest request, ServerCallContext context)
+    {
+        if (request is null)
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Cannot be null."));
+        }
+
+        if (!request.Codes.Any())
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Cannot be null."));
+        }
+
+        if (request.Codes.Any(x => string.IsNullOrWhiteSpace(x)))
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Cannot be null."));
+        }
+
+        var requestBody = _mapper.Map<List<CombinationCodeRequestBody>>(request);
+
+        var amounts = await _discountService.TotalDiscountAmountAsync(requestBody);
+
+        if (amounts is null || !amounts.Any())
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, $"Discount with Product Code = {request.Codes} is not existed"));
+        }
+
+        return amounts.ToAmountAfterDiscountResponse();
     }
 }

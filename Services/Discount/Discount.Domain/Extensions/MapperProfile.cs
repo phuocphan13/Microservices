@@ -1,5 +1,4 @@
 using AutoMapper;
-using Discount.Domain.Entities;
 
 namespace Discount.Domain.Extensions;
 

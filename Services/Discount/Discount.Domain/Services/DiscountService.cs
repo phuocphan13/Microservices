@@ -1,5 +1,6 @@
-using ApiClient.Catalog.Catalog;
+﻿using ApiClient.Catalog.Catalog;
 using ApiClient.Discount.Models.Discount;
+using ApiClient.Discount.Models.Discount.AmountModel;
 using Discount.Domain.Extensions;
 using Discount.Domain.Repositories;
 
@@ -13,6 +14,7 @@ public interface IDiscountService
     Task<DiscountDetail?> CreateDiscountAsync(CreateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> UpdateDiscountAsync(UpdateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> InactiveDiscountAsync(int id);
+    Task<IEnumerable<TotalAmountModel>?> TotalDiscountAmountAsync(List<CombinationCodeRequestBody> requestBody);
 }
 
 public class DiscountService : IDiscountService
@@ -46,7 +48,7 @@ public class DiscountService : IDiscountService
         {
             return null;
         }
-        
+
         return discounts.Select(x => x.ToDetail()).ToList();
     }
 
@@ -156,7 +158,7 @@ public class DiscountService : IDiscountService
     private async Task<DiscountDetail?> UpdateDiscountInternalAsync(UpdateDiscountRequestBody requestBody, CancellationToken cancellationToken)
     {
         var isValid = await ValidateDataAsync(requestBody, cancellationToken);
-        
+
         if (!isValid)
         {
             return null;
@@ -189,7 +191,7 @@ public class DiscountService : IDiscountService
         where T : BaseDiscountRequestBody
     {
         var isDateValid = await ValidationDateAsync(requestBody);
-        
+
         var isCatalogCodeExisted = await ValidateCatalogCodeExistedAsync(requestBody.CatalogCode!, requestBody.Type!.Value, cancellationToken);
 
         return isDateValid && isCatalogCodeExisted;
@@ -202,7 +204,7 @@ public class DiscountService : IDiscountService
 
         return !isOverlap;
     }
-    
+
     private async Task<bool> ValidateCatalogCodeExistedAsync(string catalogCode, DiscountEnum type, CancellationToken cancellationToken)
     {
         var result = await _catalogApiClient.ValidateCatalogCodeAsync(catalogCode, type, cancellationToken);
@@ -210,4 +212,43 @@ public class DiscountService : IDiscountService
         return result.IsSuccessStatusCode;
     }
     #endregion
+
+    public async Task<IEnumerable<TotalAmountModel>?> TotalDiscountAmountAsync(List<CombinationCodeRequestBody> requestBody)
+    {  
+        var productCodes = new List<string>();
+
+        foreach (var item in requestBody)
+        {
+            string[] codes = item.CombineCode.Split('.'); 
+
+            productCodes.AddRange(codes);
+        }
+
+        var discounts = await _discountRepository.GetAmountDiscountAsync(productCodes);
+
+        if (discounts is null || !discounts.Any())
+        {
+            return null;
+        }
+
+        var totalAmountsList = new List<TotalAmountModel>();
+        
+        foreach (var item in requestBody)
+        {
+            var totalAmounts = requestBody.Select(x => new TotalAmountModel()
+            {
+                CatalogCode = x.CombineCode.Split(".")[0],
+                Amount = 0
+            });
+            
+            var codeArrays = item.CombineCode.Split('.');
+            var product = totalAmounts.First(x => x.CatalogCode == codeArrays[0]);
+
+            var discountItems = discounts.Where(x => codeArrays.Contains(x.CatalogCode));
+            product.Amount += discountItems.Sum(x => x.Amount);
+            totalAmountsList.Add(product);
+        }
+
+        return totalAmountsList.Where(x => x.Amount > 0);
+    }
 }

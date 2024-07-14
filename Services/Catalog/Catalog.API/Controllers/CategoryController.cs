@@ -34,7 +34,7 @@ public class CategoryController : ApiController
     [HttpGet("{name}")]
     public async Task<IActionResult> GetCategoryByName(string name, CancellationToken cancellationToken)
     {
-        if(string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(name))
         {
             return BadRequest("The Name field cannot be null");
         }
@@ -52,10 +52,10 @@ public class CategoryController : ApiController
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCategoryById(string id, CancellationToken cancellationToken)
     {
-        if(string.IsNullOrWhiteSpace(id))
+        if (string.IsNullOrWhiteSpace(id))
         {
             return BadRequest("The Id filed cannot be null");
-        }    
+        }
 
         var result = await _categoryService.GetCategoryBySeachAsync(id, PropertyName.Id, cancellationToken);
 
@@ -83,6 +83,12 @@ public class CategoryController : ApiController
         if (string.IsNullOrWhiteSpace(requestBody.CategoryCode))
         {
             return BadRequest("Category Code is not allowed null.");
+        }
+
+        var existingCategory = await _categoryService.GetCategoryByCodeOrNameAsync(requestBody.CategoryCode, requestBody.Name);
+        if (existingCategory != null)
+        {
+            return Problem("Category code or name already exists.");
         }
 
         var result = await _categoryService.CreateCategoryAsync(requestBody, cancellationToken);
@@ -114,12 +120,12 @@ public class CategoryController : ApiController
         }
 
         var result = await _categoryService.UpdateCategoryAsync(requestBody, cancellationToken);
-        
+
         if (result is null)
         {
             return Problem("Cannot update category.");
         }
-        
+
         return Ok(result);
     }
 

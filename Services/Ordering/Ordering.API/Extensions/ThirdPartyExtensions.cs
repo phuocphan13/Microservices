@@ -1,4 +1,4 @@
-﻿using EventBus.Messages;
+using EventBus.Messages;
 using EventBus.Messages.Extensions;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection.Extensions;

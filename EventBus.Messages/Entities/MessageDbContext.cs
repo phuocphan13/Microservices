@@ -1,4 +1,3 @@
-using EventBus.Messages.StateMachine;
 using EventBus.Messages.StateMachine.Basket;
 using MassTransit;
 using MassTransit.EntityFrameworkCoreIntegration;

@@ -1,4 +1,7 @@
+using ApiClient.Discount.Models.Discount;
+using Catalog.API.Entities;
 using Catalog.API.Services.Grpc;
+using Catalog.API.Tests.Common;
 using Discount.Grpc.Protos;
 using UnitTest.Common.Helpers;
 
@@ -80,7 +83,7 @@ public class DiscountGrpcServiceTest
 
         Assert.Null(detail);
     }
-    
+
     [Fact]
     public async Task GetListDiscountsByCatalogCodeAsync_ValidParams_WithNotAnyResponse_ExpectedResult()
     {
@@ -99,7 +102,7 @@ public class DiscountGrpcServiceTest
 
         Assert.Null(detail);
     }
-    
+
     [Fact]
     public async Task GetListDiscountsByCatalogCodeAsync_ValidParams_ExpectedResult()
     {
@@ -126,6 +129,105 @@ public class DiscountGrpcServiceTest
 
         Assert.NotNull(detail);
         Assert.Equal(3, detail.Count);
+    }
+    #endregion
+
+    #region GetAmountsAfterDiscountAsync
+    [Fact]
+    public async Task GetAmountsAfterDiscountAsync_ValidParams_ExpectedResult()
+    {
+        var categories = new List<Category>
+        {
+            new Category { Id = "1", CategoryCode = "Cat1" }
+        };
+        var subCategories = new List<SubCategory>
+        {
+            new SubCategory { Id = "1", CategoryId = "1", SubCategoryCode = "Sub1" }
+        };
+        var products = new List<Product>
+        {
+            new Product { Id = "1", SubCategoryId = "1", ProductCode = "Prod1" }
+        };
+
+        var discountSummary = new List<DiscountSummary>
+        {
+            new DiscountSummary { Amount = 10 }
+        };
+
+        var response = new AmountAfterDiscountResponse
+        {
+            AmountDiscountResponse =
+            {
+                new DiscountResponse { Type = CatalogType.Product.ToString(), CatalogCode = "Prod1.Sub1.Cat1", Amount = "10" }
+            }
+        };
+
+        var call = GrpcHelpers.BuildAsyncUnaryCall(response);
+        var discountGrpcService = new Mock<DiscountProtoService.DiscountProtoServiceClient>();
+        discountGrpcService.Setup(x => x.TotalDiscountAmountAsync(It.IsAny<ListCodeRequest>(), null, null, default)).Returns(call);
+
+        var service = new DiscountGrpcService(discountGrpcService.Object);
+
+        var result = await service.GetAmountsAfterDiscountAsync(categories, subCategories, products);
+
+        Assert.NotNull(result);
+        Assert.Equal(10, result[0].Amount);
+    }
+
+    [Fact]
+    public async Task GetAmountsAfterDiscountAsync_NullCategoryList_ThrowException()
+    {
+        var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            _ = await service.GetAmountsAfterDiscountAsync(null!, new List<SubCategory>(), new List<Product>());
+        });
+    }
+
+    [Fact]
+    public async Task GetAmountsAfterDiscountAsync_EmptyCategoryList_ThrowException()
+    {
+        var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            _ = await service.GetAmountsAfterDiscountAsync(new List<Category>(), new List<SubCategory>(), new List<Product>());
+        });
+    }
+
+    [Fact]
+    public async Task GetAmountsAfterDiscountAsync_NullSubCategoryList_ThrowException()
+    {
+        var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new Category() }, null, new List<Product>());
+        });
+    }
+
+    [Fact]
+    public async Task GetAmountsAfterDiscountAsync_EmptySubCategoryList_ThrowException()
+    {
+        var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new Category() }, new List<SubCategory>(), new List<Product>());
+        });
+    }
+
+    [Theory]
+    [ClassData(typeof(TheoryDataHelpers<Product>))]
+    public async Task GetAmountsAfterDiscountAsync_NullOrEmptyProductList_ThrowException(List<Product>? products)
+    {
+        var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new() }, new List<SubCategory> { new() }, products!);
+        });
     }
     #endregion
 }

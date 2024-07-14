@@ -14,6 +14,7 @@ public interface ICategoryService
     Task<CategoryDetail?> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<CategoryDetail?> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<bool> DeleteCategoryAsync(string id, CancellationToken cancellationToken = default);
+    Task<Category> GetCategoryByCodeOrNameAsync(string categoryCode, string categoryName, CancellationToken cancellationToken = default);
 }
 
 public class CategoryService : ICategoryService
@@ -36,6 +37,11 @@ public class CategoryService : ICategoryService
         };
 
         return result;
+    }
+
+    public async Task<Category> GetCategoryByCodeOrNameAsync(string categoryCode, string categoryName, CancellationToken cancellationToken)
+    {
+        return await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.CategoryCode == categoryCode || x.Name == categoryName, cancellationToken);
     }
 
     public async Task<CategoryDetail?> GetCategoryBySeachAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)

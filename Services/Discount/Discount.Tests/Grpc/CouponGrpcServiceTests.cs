@@ -104,6 +104,7 @@ public class CouponGrpcServiceTests
             Assert.That(description, Is.EqualTo(result.Description));
         });
     }
+
     [Test]
     public async Task UpdateCouponAsync_ExpectedResult()
     {

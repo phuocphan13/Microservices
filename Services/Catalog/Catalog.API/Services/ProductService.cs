@@ -28,7 +28,7 @@ public class ProductService : IProductService
     public ProductService(
         IRepository<Product> productRepository,
         IRepository<Category> categoryRepository,
-        IRepository<SubCategory> subCategoryRepository, 
+        IRepository<SubCategory> subCategoryRepository,
         IDiscountGrpcService discountGrpcService)
     {
         _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
@@ -81,7 +81,7 @@ public class ProductService : IProductService
         {
             return null;
         }
-        
+
         var product = await MappingProductDetailInternalAsync(entity, cancellationToken);
         return product;
     }
@@ -129,7 +129,7 @@ public class ProductService : IProductService
         }
 
         var result = await MappingProductDetailInternalAsync(entity, cancellationToken);
-        
+
         return result;
     }
 
@@ -149,16 +149,17 @@ public class ProductService : IProductService
     }
 
     #region Internal Functions
-
     private async Task<List<ProductSummary>> GetProductSummariesInternalAsync(List<Product> entities, CancellationToken cancellationToken)
     {
         var categoryIds = entities.Select(x => x.CategoryId);
         var subCategoryIds = entities.Select(x => x.SubCategoryId);
-        var productCodes = entities.Select(x => x.ProductCode!);
+        var productCode = entities.Select(x => x.ProductCode);
 
         var categories = await _categoryRepository.GetEntitiesQueryAsync(x => categoryIds.Contains(x.Id), cancellationToken);
         var subCategories = await _subCategoryRepository.GetEntitiesQueryAsync(x => subCategoryIds.Contains(x.Id), cancellationToken);
-        var discounts = await _discountGrpcService.GetListDiscountsByCatalogCodeAsync(DiscountEnum.Product, productCodes);
+        var discounts = await _discountGrpcService.GetAmountsAfterDiscountAsync(categories, subCategories, entities);
+
+        
 
         var summaries = new List<ProductSummary>();
 
@@ -191,6 +192,5 @@ public class ProductService : IProductService
 
         return product;
     }
-
     #endregion
 }

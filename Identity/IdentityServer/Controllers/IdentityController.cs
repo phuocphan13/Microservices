@@ -1,4 +1,3 @@
-using ApiClient.IdentityServer.Models;
 using ApiClient.IdentityServer.Models.Request;
 using IdentityServer.Domain.Entities;
 using IdentityServer.Services;

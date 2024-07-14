@@ -126,6 +126,16 @@ public static class InitializeDB
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
                 IsActive = true,
+            },
+             new()
+            {
+                Amount = 50,
+                Description = "Laptop 10 Description",
+                Type = DiscountEnum.Product,
+                CatalogCode = "ProductCode-25",
+                CreatedBy = "Admin",
+                CreatedDate = DateTime.Now,
+                IsActive = true,
             }
         };
     }

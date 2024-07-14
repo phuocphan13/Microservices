@@ -1,4 +1,5 @@
 using ApiClient.Discount.Models.Discount;
+using Catalog.API.Entities;
 using Catalog.API.Extensions.Grpc;
 using Discount.Grpc.Protos;
 
@@ -9,6 +10,7 @@ public interface IDiscountGrpcService
     Task<DiscountDetail> GetDiscount(string productName);
     Task<DiscountDetail> GetDiscountByCatalogCode(DiscountEnum type, string catalogCode);
     Task<List<DiscountDetail>> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, IEnumerable<string> catalogCodes);
+    Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct);
 }
 
 public class DiscountGrpcService : IDiscountGrpcService
@@ -81,5 +83,41 @@ public class DiscountGrpcService : IDiscountGrpcService
         }).ToList();
 
         return discounts;
+    }
+
+    public async Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct)
+    {
+        if(entityCategory is null || entityCategory.Count == 0) {
+            throw new ArgumentException("Category list cannot be null or empty");
+        }
+
+        if (entitySubCategory is null || entitySubCategory.Count == 0)
+        {
+            throw new ArgumentException("Sub-Category list cannot be null or empty");
+        }
+
+        if (entityProduct is null || entityProduct.Count == 0)
+        {
+            throw new ArgumentException("Product list cannot be null or empty");
+        }
+
+        var request = new ListCodeRequest();
+        
+        foreach (var categoryItem in entityCategory)
+        {
+            foreach (var subCategoryItem in entitySubCategory.Where(x => x.CategoryId == categoryItem.Id))
+            {
+                foreach (var productItem in entityProduct.Where(x => x.SubCategoryId == subCategoryItem.Id))
+                {
+                    var combinatedCode = $"{productItem.ProductCode}.{subCategoryItem.SubCategoryCode}.{categoryItem.CategoryCode}";
+
+                    request.Codes.Add(combinatedCode);
+                }
+            }
+        }
+
+        var result = await _discountGrpcService.TotalDiscountAmountAsync(request);
+
+        return result.ToListDetail();
     }
 }

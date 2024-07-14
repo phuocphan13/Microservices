@@ -1,7 +1,6 @@
-﻿namespace ApiClient.Catalog.SubCategory.Models
+﻿namespace ApiClient.Catalog.SubCategory.Models;
+
+public class SubCategoryDetail : BaseSubCategoryResquestBody
 {
-    public class SubCategoryDetail : BaseSubCategoryResquestBody
-    {
-        public string? Id { get; set; }
-    }
+    public string? Id { get; set; }
 }

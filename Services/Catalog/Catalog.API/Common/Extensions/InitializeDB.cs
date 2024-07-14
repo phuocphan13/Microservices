@@ -17,6 +17,8 @@ public static class InitializeDB
     private static readonly string SubCategoryXiaomiId = ModelHelpers.GenerateId();
     private static readonly string SubCategoryHTCId = ModelHelpers.GenerateId();
     private static readonly string SubCategoryLGId = ModelHelpers.GenerateId();
+
+    private static readonly string SubCategoryLGLaptopId = ModelHelpers.GenerateId();
     
     public static async Task InitializePlatformDbContextsAsync(
         this IApplicationBuilder builder,
@@ -122,6 +124,14 @@ public static class InitializeDB
                 Description = "LG Description",
                 CategoryId = CategorySmartPhoneId
             },
+            new()
+            {
+                Id = SubCategoryLGLaptopId,
+                SubCategoryCode = "SubCategoryCode-7",
+                Name = "LG",
+                Description = "LG Description",
+                CategoryId = CategoryLaptopPhoneId
+            },
         };
     }
 
@@ -200,7 +210,19 @@ public static class InitializeDB
                 Price = 240.00M,
                 CategoryId = CategorySmartPhoneId,
                 SubCategoryId = SubCategoryLGId
-            }
+            },
+            new()
+            {
+                Id = ModelHelpers.GenerateId(),
+                ProductCode = "ProductCode-25",
+                Name = "Laptop 10",
+                Summary = "This Laptop.",
+                Description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus.",
+                ImageFile = "product-2.png",
+                Price = 800.00M,
+                CategoryId = CategoryLaptopPhoneId,
+                SubCategoryId = SubCategoryLGLaptopId
+            },
         };
     }
 }

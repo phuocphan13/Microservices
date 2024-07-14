@@ -10,6 +10,7 @@ service DiscountProtoService {
   rpc CreateDiscount (CreateDiscountRequest) returns (DiscountDetailModel);
   rpc UpdateDiscount (UpdateDiscountRequest) returns (DiscountDetailModel);
   rpc InactiveDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
+  rpc TotalDiscountAmount (ListCodeRequest) returns (AmountAfterDiscountResponse);
 }
 
 enum CatalogType
@@ -67,4 +68,35 @@ message DiscountDetailModel {
   CatalogType Type = 3;
   string Description = 4;
   int32 Amount = 5;
+}
+
+message ListProductModel {
+	string ProdType = 1;
+	string ProdCatalogCode = 2;
+}
+
+message ListSubCategoryModel {
+	string SubType = 1;
+	string SubCatalogCode = 2;
+	repeated ListProductModel ProdList = 3;
+}
+
+message ListCategoryModel {
+	string Type = 1;
+	string CatalogCode = 2;
+	repeated ListSubCategoryModel SubList = 3;
+}
+
+message DiscountResponse {
+	string Type = 1;
+	string CatalogCode = 2;
+	string Amount = 3; 
+}
+
+message AmountAfterDiscountResponse {
+	repeated DiscountResponse AmountDiscountResponse = 1;
+}
+
+message ListCodeRequest {
+	repeated string Codes = 1;
 }

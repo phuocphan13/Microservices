@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using ApiClient.Discount.Models.Discount;
-using Catalog.API.Common.Consts;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;

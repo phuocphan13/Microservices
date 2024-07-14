@@ -1,9 +1,7 @@
 ﻿using ApiClient.Catalog.SubCategory.Models;
-using ApiClient.Common;
 using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Platform.ApiBuilder;
-using static Catalog.API.Common.Consts.ResponseMessages;
 
 namespace Catalog.API.Controllers;
 
@@ -122,6 +120,16 @@ public class SubCategoryController : ApiController
         {
             return BadRequest(validationMsg);
         }
+
+        var subCategory = await _subCategoryService.GetSubCategoriesAsync(cancellationToken);
+        //var isExisted = await _subCategoryRepository.AnyAsync(x => (x.Name == body.Name || x.SubCategoryCode == body.SubCategoryCode) && x.Id != body.Id, cancellationToken);
+        foreach (var item in subCategory)
+        {
+            if ((item.Name == requestBody.Name || item.SubCategoryCode == requestBody.SubCategoryCode) && item.Id != requestBody.Id)
+            {
+                return BadRequest("Updated information already exists."); ;
+            }
+        }    
 
         var result = await _subCategoryService.UpdateSubCategoryAsync(requestBody, cancellationToken);
 

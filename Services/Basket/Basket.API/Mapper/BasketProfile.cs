@@ -3,14 +3,13 @@ using ApiClient.Basket.Models;
 using AutoMapper;
 using Basket.API.Entitites;
 
-namespace Basket.API.Mapper
+namespace Basket.API.Mapper;
+
+public class BasketProfile : Profile
 {
-    public class BasketProfile : Profile
+    public BasketProfile()
     {
-        public BasketProfile()
-        {
-            CreateMap<BasketCheckout, BasketCheckoutMessage>().ReverseMap();
-            CreateMap<BasketDetail, BasketCheckoutMessage>().ReverseMap();
-        }
+        CreateMap<BasketCheckout, BasketCheckoutMessage>().ReverseMap();
+        CreateMap<BasketDetail, BasketCheckoutMessage>().ReverseMap();
     }
 }

@@ -1,6 +1,4 @@
 using ApiClient.Basket.Events;
-using ApiClient.Basket.Events.CheckoutEvents;
-using EventBus.Messages.Helpers;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 

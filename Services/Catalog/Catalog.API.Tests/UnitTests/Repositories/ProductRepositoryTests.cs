@@ -1,8 +1,3 @@
-using Catalog.API.Repositories;
-using Catalog.API.Tests.Common;
-using Microsoft.Extensions.Configuration;
-using MongoDB.Driver;
-
 namespace Catalog.API.Tests.UnitTests.Repositories;
 
 public class ProductRepositoryTests
