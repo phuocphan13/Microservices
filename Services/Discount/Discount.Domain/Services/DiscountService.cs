@@ -220,8 +220,6 @@ public class DiscountService : IDiscountService
 
     public async Task<IEnumerable<TotalAmountModel>?> TotalDiscountAmountAsync(List<CombinationCodeRequestBody> requestBody)
     {  
-        // ABC.CA.casd
-        // ListCodeRequest --> Code: "ProductCode.SubCategoryCode.CategoryCode"
         var productCodes = new List<string>();
 
         foreach (var item in requestBody)
@@ -239,16 +237,6 @@ public class DiscountService : IDiscountService
         }
 
         var totalAmountsList = new List<TotalAmountModel>();
-
-        // totalAmounts --> List Product Codes based on RequestBody
-        
-        
-        // Item -> "A.B.C"
-        // Item -> "ProductCode.SubCategoryCode.CategoryCode"
-        // Discounts: A, C
-        
-        // DiscountItems --> A,C
-        
         
         foreach (var item in requestBody)
         {
