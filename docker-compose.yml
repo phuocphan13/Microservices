@@ -21,6 +21,9 @@ services:
   
   rabbitmqdb:
     image: mcr.microsoft.com/mssql/server:2017-latest
+    
+  workerdb:
+     image: mcr.microsoft.com/mssql/server:2017-latest
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
