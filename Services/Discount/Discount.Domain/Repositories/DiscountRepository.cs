@@ -1,4 +1,4 @@
-using ApiClient.Discount.Models.Discount.AmountModel;
+﻿using ApiClient.Discount.Models.Discount.AmountModel;
 using Discount.Domain.Models.EntityHelpers;
 using Discount.Domain.Repositories.Common;
 using System.Reflection;
@@ -16,6 +16,7 @@ public interface IDiscountRepository
     Task<bool> AnyDateAsync(string catalogCode, DiscountEnum type, DateTime? fromDate, DateTime? toDate);
     Task<List<Entities.Discount>?> AmountDiscountAsync(List<AmountDiscountRepositoryModel> requestBody);
     Task<List<Entities.Discount>?> GetAmountDiscountAsync(List<string> catalogItems);
+    Task<bool> InactiveEntityAsync(int id);
 }
 
 public class DiscountRepository : IDiscountRepository
@@ -136,5 +137,11 @@ public class DiscountRepository : IDiscountRepository
         var entity = await _baseRepository.QueryAsync<Entities.Discount>(query, param);
 
         return entity;
+    }
+
+    public async Task<bool> InactiveEntityAsync (int id)
+    {
+        var inactive = await _baseRepository.InactiveEntityAsync<Entities.Discount>(id); // quên cái chỗ TEntities
+        return true;
     }
 }

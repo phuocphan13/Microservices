@@ -229,6 +229,19 @@
       "UpstreamPathTemplate": "/SubCategory/DeleteSubCategory/{id}",
       "UpstreamHttpMethod": [ "DELETE" ]
     },
+    //Discount - Grpc
+    {
+      "DownstreamPathTemplate": "/api/v1/Discount/Grpc/Protos/{id}", //Link call to Call to "Catalog.API => Controller"
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/Discount/Grpc/Protos/{id}", //Link Call From "Angular Client"
+      "UpstreamHttpMethod": [ "POST" ]
+    },
     //Catalog: Validation
     {
       "DownstreamPathTemplate": "/api/v1/Validation/ValidateCatalogCode",

@@ -130,10 +130,10 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
         
         if (result is null)
         {
-            _logger.LogError("Discount is failed deleted.");
+            _logger.LogError("Discount is failed inactive.");
         }
     
-        _logger.LogInformation($"Discount is successfully deleted. Discount Id: {request.Id}");
+        _logger.LogInformation($"Discount is deactivated. Discount Id: {request.Id}");
     
         var response = new DeleteDiscountResponse()
         {

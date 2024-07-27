@@ -13,7 +13,7 @@ public interface IDiscountService
     Task<DiscountDetail?> GetDiscountByCatalogCodeAsync(int type, string catalogCode);
     Task<DiscountDetail?> CreateDiscountAsync(CreateDiscountRequestBody requestBody, CancellationToken cancellationToken);
     Task<DiscountDetail?> UpdateDiscountAsync(UpdateDiscountRequestBody requestBody, CancellationToken cancellationToken);
-    Task<DiscountDetail?> InactiveDiscountAsync(int id);
+    Task<bool?> InactiveDiscountAsync(int id);
     Task<IEnumerable<TotalAmountModel>?> TotalDiscountAmountAsync(List<CombinationCodeRequestBody> requestBody);
 }
 
@@ -171,19 +171,18 @@ public class DiscountService : IDiscountService
         return entity.ToDetail();
     }
 
-    public async Task<DiscountDetail?> InactiveDiscountAsync(int id)
+    public async Task<bool?> InactiveDiscountAsync(int id)
     {
         var discount = await _discountRepository.GetDiscountAsync(id.ToString());
 
         if (discount is null)
         {
-            return null;
+            return false;
         }
 
-        discount.IsActive = false;
-        discount = await _discountRepository.UpdateDiscountAsync(discount);
+        var inactive = await _discountRepository.InactiveEntityAsync(id);
 
-        return discount.ToDetail();
+        return inactive;
     }
 
     #region Internal Function
