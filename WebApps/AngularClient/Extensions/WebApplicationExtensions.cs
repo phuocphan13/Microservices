@@ -1,5 +1,6 @@
 using ApiClient.Discount.Models.Coupon;
 using Coupon.Grpc.Protos;
+using Discount.Grpc.Protos;
 
 namespace AngularClient.Extensions;
 
@@ -18,5 +19,13 @@ static class WebApplicationExtensions
             ToDate = string.IsNullOrEmpty(x.ToDate) ? (DateTime?)null : DateTime.Parse(x.ToDate),
             IsActive = x.IsActive,
         }).ToList();
+    }
+
+    public static DeleteDiscountRequest  ToInactiveRequestBody (this ApiClient.Discount.Models.Discount.ActiveModel.InactiveRequestBody request)
+    {
+        return new DeleteDiscountRequest()
+        {
+            Id = request.Id,
+        };
     }
 }

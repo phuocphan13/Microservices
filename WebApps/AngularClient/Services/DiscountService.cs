@@ -1,6 +1,7 @@
 ﻿using Platform.ApiBuilder;
 using Discount.Grpc.Protos;
 using ApiClient.Discount.Models.Discount.ActiveModel;
+using AngularClient.Extensions;
 
 namespace AngularClient.Services;
 
@@ -24,7 +25,7 @@ public class DiscountService : IDiscountService
             Id = id,
         };
 
-        var result =  _discountProtoApiClient.InactiveDiscount(request);
+        var result =  _discountProtoApiClient.InactiveDiscount(request.ToInactiveRequestBody());
 
         return null;
     }
