@@ -5,6 +5,7 @@ namespace Discount.Domain.Repositories;
 public interface ICouponRepository
 {
     Task<Entities.Coupon?> GetCouponAsync(string id);
+    Task<List<Entities.Coupon>?> GetAllCouponsAsync();
     Task<Entities.Coupon> CreateCouponAsync(Entities.Coupon coupon);
     Task<Entities.Coupon?> GetCouponForCreateAsync(string name);
     Task<Entities.Coupon> UpdateCouponAsync(Entities.Coupon coupon);
@@ -27,6 +28,15 @@ public class CouponRepository : ICouponRepository
         var coupon = await _baseRepository.QueryFirstOrDefaultAsync<Entities.Coupon>(query, new { Id = int.Parse(id) });
 
         return coupon;
+    }
+
+    public async Task<List<Entities.Coupon>?> GetAllCouponsAsync()
+    {
+        const string query = "select * from coupon";
+
+        var coupon = await _baseRepository.QueryAsync<Entities.Coupon>(query, new {});
+
+        return coupon?.ToList();
     }
 
     public async Task<Entities.Coupon?> GetCouponForCreateAsync(string name)

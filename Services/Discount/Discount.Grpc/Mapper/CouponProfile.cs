@@ -13,5 +13,8 @@ public class CouponProfile : Profile
         CreateMap<CreateCouponRequestBody,CouponDetailModel>().ReverseMap();
         CreateMap<EditCouponRequest, UpdateCouponRequestBody>().ReverseMap();
 
+        CreateMap<ApiClient.Discount.Models.Coupon.CouponSummary, Coupon.Grpc.Protos.CouponSummary>().ReverseMap();
+        CreateMap<List<ApiClient.Discount.Models.Coupon.CouponSummary>, CouponListResponse>().ForMember(dest => dest.CouponList, opt => opt.MapFrom(src => src));
+
     }
 }

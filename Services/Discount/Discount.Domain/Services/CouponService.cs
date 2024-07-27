@@ -7,6 +7,7 @@ namespace Discount.Domain.Services;
 public interface ICouponService
 {
     Task<CouponDetail?> GetCouponAsync(string id);
+    Task<List<CouponSummary>?> GetAllCouponsAsync();
     Task<CouponDetail> CreateCouponAsync(CreateCouponRequestBody requestBody);
     Task<CouponDetail> GetCouponForCreateAsync(string name);
     Task<CouponDetail> UpdateCouponAsync(UpdateCouponRequestBody requestBody);
@@ -32,6 +33,17 @@ public class CouponService : ICouponService
         }
 
         return coupon.ToDetail();
+    }
+
+    public async Task<List<CouponSummary>?> GetAllCouponsAsync()
+    {
+        var coupon = await _couponRepository.GetAllCouponsAsync();
+        if(coupon is null)
+        {
+            return null;
+        }
+
+        return coupon.ToSummaries();
     }
 
     public async Task<CouponDetail> CreateCouponAsync(CreateCouponRequestBody requestBody)

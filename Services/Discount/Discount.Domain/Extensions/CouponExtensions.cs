@@ -36,4 +36,19 @@ public static class CouponExtensions
         entity.Value = requestBody.Value;
         entity.Type = (CouponEnum)requestBody.Type;
     }
+
+    public static List<CouponSummary> ToSummaries(this List<Entities.Coupon> coupons)
+    {
+        return coupons.Select(x => new CouponSummary()
+        {
+            Id = x.Id,
+            Name = x.Name,
+            Description = x.Description,
+            Value = x.Value,
+            Type = (int)x.Type,
+            FromDate = x.FromDate,
+            ToDate = x.ToDate,
+            IsActive = x.IsActive,
+        }).ToList();
+    }
 }
