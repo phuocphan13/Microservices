@@ -8,6 +8,7 @@ service CouponProtoService {
   rpc CreateCoupon (CreateCouponRequest) returns (CouponDetailModel);
   rpc UpdateCoupon (EditCouponRequest) returns (CouponDetailModel);
   rpc InactiveCoupon (InactiveCounponRequest) returns (InactiveCouponResponse);
+  rpc GetAllCoupons (Empty) returns (CouponListResponse);
 }
 
 enum CouponType {
@@ -49,5 +50,22 @@ message InactiveCounponRequest {
 message InactiveCouponResponse{
   bool success = 1;
 }
+
+message CouponSummary{
+	int32 id = 1;
+	string Name = 2;
+	string Description = 3;
+	CouponType Type = 4;
+	string Value = 5;
+	string FromDate = 6;
+	string ToDate = 7;
+	bool IsActive = 8;
+}
+
+message CouponListResponse{
+	repeated CouponSummary couponList = 1;
+}
+
+message Empty{}
 
 

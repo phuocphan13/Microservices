@@ -313,6 +313,22 @@
       "UpstreamPathTemplate": "/Discount",
       "UpstreamHttpMethod": [ "PUT", "POST" ]
     },
+    //Coupon API
+    {
+      "DownstreamPathTemplate": "/CouponProtoService/GetAllCoupons",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/Coupon/GetAllCoupons",
+      "UpstreamHttpMethod": [ "POST" ],
+      "Grpc": {
+        "IsGrpc": true
+      }
+    },
     //Order API
     {
       "DownstreamPathTemplate": "/api/v1/Order/{userName}",

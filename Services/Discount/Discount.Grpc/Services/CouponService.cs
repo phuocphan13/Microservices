@@ -40,6 +40,20 @@ public class CouponService : CouponProtoService.CouponProtoServiceBase
         return couponModel;
     }
 
+    public override async Task<CouponListResponse> GetAllCoupons(Empty request, ServerCallContext context)
+    {
+        var coupon = await _couponService.GetAllCouponsAsync();
+
+        if (coupon is null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, $"Coupons is empty"));
+        }
+
+        var couponModel = _mapper.Map<CouponListResponse>(coupon);
+
+        return couponModel;
+    }
+
     public override async Task<CouponDetailModel> CreateCoupon(CreateCouponRequest request, ServerCallContext context)
     {
         //Todo-Phat: Add Validation for other fields and Check if Entity is Exist

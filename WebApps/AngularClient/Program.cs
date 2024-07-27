@@ -14,7 +14,8 @@ builder.Services
     .AddCommonServices()
     .AddCatalogApiClient()
     .AddIdentityServerServices()
-    .AddDependencyInjection();
+    .AddDependencyInjection()
+    .AddGrpcServices();
 
 var app = builder.Build();
 
