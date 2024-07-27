@@ -174,47 +174,26 @@ public class DiscountGrpcServiceTest
         Assert.Equal(10, result[0].Amount);
     }
 
-    [Fact]
-    public async Task GetAmountsAfterDiscountAsync_NullCategoryList_ThrowException()
+    [Theory]
+    [ClassData(typeof(TheoryDataHelpers<Category>))]
+    public async Task GetAmountsAfterDiscountAsync_NullOrEmptyCategoryList_ThrowException(List<Category>? categories)
     {
         var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            _ = await service.GetAmountsAfterDiscountAsync(null!, new List<SubCategory>(), new List<Product>());
+            _ = await service.GetAmountsAfterDiscountAsync(categories!, new List<SubCategory> { new() }, new List<Product> { new() });
         });
     }
-
-    [Fact]
-    public async Task GetAmountsAfterDiscountAsync_EmptyCategoryList_ThrowException()
+    [Theory]
+    [ClassData(typeof(TheoryDataHelpers<SubCategory>))]
+    public async Task GetAmountsAfterDiscountAsync_NullOrEmptySubCategoryList_ThrowException(List<SubCategory>? subCategories)
     {
         var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            _ = await service.GetAmountsAfterDiscountAsync(new List<Category>(), new List<SubCategory>(), new List<Product>());
-        });
-    }
-
-    [Fact]
-    public async Task GetAmountsAfterDiscountAsync_NullSubCategoryList_ThrowException()
-    {
-        var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
-
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
-        {
-            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new Category() }, null, new List<Product>());
-        });
-    }
-
-    [Fact]
-    public async Task GetAmountsAfterDiscountAsync_EmptySubCategoryList_ThrowException()
-    {
-        var service = new DiscountGrpcService(new Mock<DiscountProtoService.DiscountProtoServiceClient>().Object);
-
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
-        {
-            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new Category() }, new List<SubCategory>(), new List<Product>());
+            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new() }, subCategories!, new List<Product> { new() });
         });
     }
 
