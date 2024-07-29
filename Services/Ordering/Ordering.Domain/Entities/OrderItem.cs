@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Platform.Database.Entity;
+using Platform.Database.Entity.SQL;
 
 namespace Ordering.Domain.Entities;
 

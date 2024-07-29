@@ -3,9 +3,12 @@ using Ordering.API.Extensions;
 using Ordering.Application;
 using Ordering.Infrastructure;
 using Ordering.Infrastructure.Persistence;
+using Worker;
+using Worker.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var isRebuildSchema = bool.Parse(builder.Configuration["Database:IsRebuildSchema"]);
+var isRebuildWorkerSchema = bool.Parse(builder.Configuration["Worker:IsRebuildSchema"]);
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -16,6 +19,7 @@ builder.Services.AddSwaggerGen();
 builder.Services
     .AddApplicationServices()
     .AddEventBusServices()
+    .AddWorkerServices(builder.Configuration)
     .AddThirdParties(builder.Configuration)
     .AddInfrastructureServices(builder.Configuration);
 
@@ -40,5 +44,7 @@ if (isRebuildSchema)
         OrderContextSeed.SeedAsync(context!, logger!).Wait();
     });
 }
+
+await app.InitializeWorkerDbContextsAsync(isRebuildWorkerSchema);
 
 app.Run();

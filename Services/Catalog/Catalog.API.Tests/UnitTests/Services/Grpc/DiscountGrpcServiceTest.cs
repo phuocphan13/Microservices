@@ -138,20 +138,18 @@ public class DiscountGrpcServiceTest
     {
         var categories = new List<Category>
         {
-            new Category { Id = "1", CategoryCode = "Cat1" }
+            new()
+                { Id = "1", CategoryCode = "Cat1" }
         };
         var subCategories = new List<SubCategory>
         {
-            new SubCategory { Id = "1", CategoryId = "1", SubCategoryCode = "Sub1" }
+            new()
+                { Id = "1", CategoryId = "1", SubCategoryCode = "Sub1" }
         };
         var products = new List<Product>
         {
-            new Product { Id = "1", SubCategoryId = "1", ProductCode = "Prod1" }
-        };
-
-        var discountSummary = new List<DiscountSummary>
-        {
-            new DiscountSummary { Amount = 10 }
+            new()
+                { Id = "1", SubCategoryId = "1", ProductCode = "Prod1" }
         };
 
         var response = new AmountAfterDiscountResponse
@@ -203,7 +201,7 @@ public class DiscountGrpcServiceTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new Category() }, null, new List<Product>());
+            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new() }, null!, new List<Product>());
         });
     }
 
@@ -214,7 +212,7 @@ public class DiscountGrpcServiceTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new Category() }, new List<SubCategory>(), new List<Product>());
+            _ = await service.GetAmountsAfterDiscountAsync(new List<Category> { new() }, new List<SubCategory>(), new List<Product>());
         });
     }
 

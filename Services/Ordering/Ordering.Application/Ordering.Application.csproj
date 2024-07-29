@@ -8,6 +8,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\Common\ApiClient\ApiClient.csproj" />
+		<ProjectReference Include="..\..\..\Common\Worker\Worker.csproj" />
+		<ProjectReference Include="..\..\..\EventBus.Messages\EventBus.Messages.csproj" />
 		<ProjectReference Include="..\Ordering.Domain\Ordering.Domain.csproj" />
 	</ItemGroup>
 
@@ -18,10 +20,6 @@
 		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Contracts\Persistence\" />
 	</ItemGroup>
 
 </Project>

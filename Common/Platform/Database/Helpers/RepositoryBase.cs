@@ -1,10 +1,10 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Platform.Database.Entity;
+using Platform.Database.Entity.SQL;
 
 namespace Platform.Database.Helpers;
 
-public interface IRepository<TEntity> where TEntity : class
+public interface IRepository<TEntity> where TEntity : BaseIdEntity
 {
     IQueryable<TEntity> GetAll();
 
@@ -46,7 +46,7 @@ public interface IRepository<TEntity> where TEntity : class
 }
 
 public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>
-    where TEntity : EntityBase, new()
+    where TEntity : BaseIdEntity, new()
     where TContext : DbContext
 {
     protected readonly TContext Context;
@@ -168,15 +168,18 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>
 
     private void AddAuditInfo(TEntity entity, bool isUpdate = false)
     {
-        if (isUpdate)
+        if (entity is EntityBase model)
         {
-            entity.LastModifiedDate = DateTime.UtcNow;
-            entity.LastModifiedBy = "Lucifer";
-        }
-        else
-        {
-            entity.CreatedBy = "Lucifer";
-            entity.CreatedDate = DateTime.UtcNow;
+            if (isUpdate)
+            {
+                model.LastModifiedDate = DateTime.UtcNow;
+                model.LastModifiedBy = "Lucifer";
+            }
+            else
+            {
+                model.CreatedBy = "Lucifer";
+                model.CreatedDate = DateTime.UtcNow;
+            }
         }
     }
 }

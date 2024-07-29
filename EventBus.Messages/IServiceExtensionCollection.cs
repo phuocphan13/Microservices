@@ -19,6 +19,7 @@ public static class IServiceExtensionCollection
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IQueueService, QueueService>();
         services.AddScoped<IPublishService, PublishService>();
+        services.AddScoped<IBasketMessageService, BasketMessageService>();
         
         return services;
     }
@@ -45,7 +46,7 @@ public static class IServiceExtensionCollection
             });
 
             x.SetKebabCaseEndpointNameFormatter();
-
+            
             // Add consumers
             busAction?.Invoke(x);
             

@@ -145,6 +145,33 @@ namespace Ordering.Infrastructure.Migrations
                     b.ToTable("Orders");
                 });
 
+            modelBuilder.Entity("Ordering.Domain.Entities.OrderHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CurrentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LastStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderHistories");
+                });
+
             modelBuilder.Entity("Ordering.Domain.Entities.OrderItem", b =>
                 {
                     b.Property<int>("Id")
@@ -195,6 +222,17 @@ namespace Ordering.Infrastructure.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("Ordering.Domain.Entities.OrderHistory", b =>
+                {
+                    b.HasOne("Ordering.Domain.Entities.Order", "Order")
+                        .WithMany("OrderHistories")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("Ordering.Domain.Entities.OrderItem", b =>
                 {
                     b.HasOne("Ordering.Domain.Entities.Order", "Order")
@@ -211,6 +249,8 @@ namespace Ordering.Infrastructure.Migrations
                     b.Navigation("Coupons");
 
                     b.Navigation("Discounts");
+
+                    b.Navigation("OrderHistories");
 
                     b.Navigation("OrderItems");
                 });

@@ -1,5 +1,7 @@
 ﻿using ApiClient.Basket.Events.CheckoutEvents;
 using AutoMapper;
+using EventBus.Messages.Services;
+using EventBus.Messages.StateMachine.Basket;
 using MassTransit;
 using MediatR;
 using Ordering.Application.Features.Commands.CheckoutOrder;
@@ -11,33 +13,49 @@ public class BasketCheckoutConsumer : IConsumer<BasketCheckoutMessage>
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
     private readonly ILogger<BasketCheckoutConsumer> _logger;
+    private readonly IBasketMessageService _basketMessageService;
 
-    public BasketCheckoutConsumer(IMapper mapper, IMediator mediator, ILogger<BasketCheckoutConsumer> logger)
+    public BasketCheckoutConsumer(IMapper mapper, IMediator mediator, ILogger<BasketCheckoutConsumer> logger, IBasketMessageService basketMessageService)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _basketMessageService = basketMessageService ?? throw new ArgumentNullException(nameof(basketMessageService));
     }
 
     public async Task Consume(ConsumeContext<BasketCheckoutMessage> context)
     {
-        var isValid = ValidateMessage(context.Message);
+        if (context.Message is null)
+        {
+            _logger.LogInformation("BasketCheckoutEvent is null.");
+            return;
+        }
         
+        var checkState = await _basketMessageService.CheckBasketStateAsync(context.Message, BasketConstants.BasketState.Checkoutted, context.CancellationToken);
+
+        if (checkState is null or true)
+        {
+            _logger.LogInformation("BasketCheckoutEvent already consumed. CorrelationId: {UserId}", context.Message.UserId);
+            return;
+        }
+
+        var isValid = ValidateMessage(context.Message);
+
         if (!isValid)
         {
             return;
         }
-        
+
         var command = _mapper.Map<CheckoutOrderCommand>(context.Message);
         var result = await _mediator.Send(command);
 
         _logger.LogInformation("BasketCheckoutEvent consumed sucessfully. Create Order Id: {newOrderId}", result);
     }
-    
+
     private bool ValidateMessage(BasketCheckoutMessage message)
     {
         bool isValid = true;
-        
+
         if (message is null)
         {
             _logger.LogError("");
@@ -61,7 +79,7 @@ public class BasketCheckoutConsumer : IConsumer<BasketCheckoutMessage>
             _logger.LogError("");
             isValid = false;
         }
-        
+
         return isValid;
     }
 }

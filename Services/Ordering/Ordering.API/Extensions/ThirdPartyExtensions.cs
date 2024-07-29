@@ -3,6 +3,7 @@ using EventBus.Messages.Extensions;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Ordering.API.EventBusConsumer;
+using Ordering.Application.WorkerServices;
 
 namespace Ordering.API.Extensions;
 
@@ -20,6 +21,9 @@ public static class ThirdPartyExtensions
         {
             x.AddConsumer<BasketCheckoutConsumer>();
         });
+        
+        //Workers
+        services.AddHostedService<OrderWokerJobService>();
         
         return services;
     }

@@ -35,7 +35,6 @@
       <Folder Include="ClientApp\src\app\core\shared\items\" />
       <Folder Include="ClientApp\src\app\core\shared\modals\catalog-modals\" />
       <Folder Include="ClientApp\src\app\core\shared\modals\common\" />
-      <Folder Include="ClientApp\src\app\pages\admin-pages\" />
       <Folder Include="ClientApp\src\app\pages\client-pages\" />
       <Folder Include="ClientApp\src\app\pages\identity-pages\" />
     </ItemGroup>

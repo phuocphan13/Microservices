@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Platform.Database.Entity;
+namespace Platform.Database.Entity.SQL;
 
 public class BaseIdEntity
 {

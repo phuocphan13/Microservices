@@ -1,11 +1,14 @@
 public enum OrderStatus
 {
+    Nothing = 99,
+    
     Checkoutted = 1,
-    PaymentSucceeded = 2,
-    PaymentFailed = 3,
-    Cancelled = 4,
-    Shipped = 5,
-    Completed = 6,
+    Accepted = 2,
+    Shipped = 3,
+    Completed = 4,
+
+    PaymentFailed = 5,
+    Cancelled = 6,
     Returned = 7,
     Refunded = 8,
 }

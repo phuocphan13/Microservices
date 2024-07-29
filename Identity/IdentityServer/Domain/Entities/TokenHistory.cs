@@ -1,12 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Platform.Database.Entity.SQL;
 
 namespace IdentityServer.Domain.Entities;
 
-public class TokenHistory
+public class TokenHistory : BaseIdEntity
 {
+    //
     [Key]
-    public Guid Id { get; init; }
+    public Guid ExternalId { get; init; }
 
     [Required]
     public DateTime CreatedDate { get; set; }

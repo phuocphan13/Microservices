@@ -3,6 +3,8 @@ using System.Reflection;
 using FluentValidation;
 using MediatR;
 using Ordering.Application.Behaviours;
+using Ordering.Application.Services;
+using Ordering.Application.WorkerServices;
 
 namespace Ordering.Application;
 
@@ -16,6 +18,12 @@ public static class ApplicationServiceRegistration
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+
+        //Services
+        services.AddScoped<IOrderStatusService, OrderStatusService>();
+        
+        // Jobs
+        services.AddSingleton<IBasketStateJobService, BasketStateJobService>();
 
         return services;
     }

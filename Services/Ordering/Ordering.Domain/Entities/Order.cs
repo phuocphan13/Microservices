@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Platform.Database.Entity;
+using Platform.Database.Entity.SQL;
 
 namespace Ordering.Domain.Entities;
 
@@ -35,4 +35,6 @@ public class Order : EntityBase
     public List<DiscountItem> Discounts { get; set; } = new();
 
     public List<CouponItem> Coupons { get; set; } = new();
+
+    public List<OrderHistory> OrderHistories { get; set; } = new();
 }

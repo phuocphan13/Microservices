@@ -1,4 +1,4 @@
-namespace Platform.Database.Entity;
+namespace Platform.Database.Entity.SQL;
 
 public class EntityBase : BaseIdEntity
 {
