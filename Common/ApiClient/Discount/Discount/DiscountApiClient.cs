@@ -14,7 +14,7 @@ namespace ApiClient.Discount.Discount;
 
 public interface IDiscountApiClient
 {
-    Task<ApiStatusResult> InactiveDiscountAsync(string id, CancellationToken cancellationToken);
+    Task<ApiStatusResult> InactiveDiscountAsync(int id, CancellationToken cancellationToken);
 }
 
 public class DiscountApiClient : CommonApiClient, IDiscountApiClient
