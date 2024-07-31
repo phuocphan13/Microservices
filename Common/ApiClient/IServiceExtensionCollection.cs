@@ -4,6 +4,7 @@ using ApiClient.Catalog.Category;
 using ApiClient.Catalog.Product;
 using ApiClient.Catalog.SubCategory;
 using ApiClient.DirectApiClients.Catalog;
+using ApiClient.Discount.Coupon;
 using ApiClient.IdentityServer;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,6 +22,13 @@ public static class IServiceExtensionCollection
         return services;
     }
     
+    public static IServiceCollection AddDiscountApiClient(this IServiceCollection services)
+    {
+        services.AddScoped<ICouponApiClient, CouponApiClient>();
+
+        return services;
+    }
+
     public static IServiceCollection AddBasketApiClient(this IServiceCollection services)
     {
         services.AddScoped<IBasketApiClient, BasketApiClient>();

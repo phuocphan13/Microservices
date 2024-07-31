@@ -328,19 +328,16 @@
     },
     //Coupon API
     {
-      "DownstreamPathTemplate": "/CouponProtoService/GetAllCoupons",
+      "DownstreamPathTemplate": "/api/v1/Coupon/GetAllCoupons",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5003
+          "Port": 5002
         }
       ],
       "UpstreamPathTemplate": "/Coupon/GetAllCoupons",
-      "UpstreamHttpMethod": [ "POST" ],
-      "Grpc": {
-        "IsGrpc": true
-      }
+      "UpstreamHttpMethod": [ "GET" ]
     },
     //Order API
     {
