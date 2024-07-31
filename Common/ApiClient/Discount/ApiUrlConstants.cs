@@ -11,5 +11,8 @@ namespace ApiClient.Discount
         //Coupon
 
         public const string GetAllCoupons = "/Coupon/GetAllCoupons";
+
+        //Discount
+        public const string InactiveDiscount = "/Discount/InactiveDiscount";
     }
 }

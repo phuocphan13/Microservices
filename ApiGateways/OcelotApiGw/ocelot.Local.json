@@ -35,7 +35,7 @@
           "Host": "localhost",
           "Port": 5000
         }
-      ],
+      ], //
       "UpstreamPathTemplate": "/Product",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT" ],
       "RateLimitOptions": {
@@ -146,7 +146,7 @@
     },
     //Catalog : SubCategory
     {
-      "DownstreamPathTemplate": "/api/v1/SubCategory/GetSubCategories", //Link call to Call to "Catalog.API => Controller"
+      "DownstreamPathTemplate": "/api/v1/SubCategory/GetSubCategories", //Link call to Call to "Catalog.API => Controller" => http://localhost:5000/api/vi/Sub.../GetSub....
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -229,19 +229,7 @@
       "UpstreamPathTemplate": "/SubCategory/DeleteSubCategory/{id}",
       "UpstreamHttpMethod": [ "DELETE" ]
     },
-    //Discount - Grpc
-    {
-      "DownstreamPathTemplate": "/api/v1/Discount/Grpc/Protos/{id}", //Link call to Call to "Catalog.API => Controller"
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5000
-        }
-      ],
-      "UpstreamPathTemplate": "/Discount/Grpc/Protos/{id}", //Link Call From "Angular Client"
-      "UpstreamHttpMethod": [ "POST" ]
-    },
+
     //Catalog: Validation
     {
       "DownstreamPathTemplate": "/api/v1/Validation/ValidateCatalogCode",
@@ -325,6 +313,19 @@
       ],
       "UpstreamPathTemplate": "/Discount",
       "UpstreamHttpMethod": [ "PUT", "POST" ]
+    },
+    //Discount - Grpc
+    {
+      "DownstreamPathTemplate": "/api/v1/Discount/InactiveDiscount/{id}", //Link call to Call to "Catalog.API => Controller"
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/Discount/InactiveDiscount/{id}",
+      "UpstreamHttpMethod": [ "POST" ]
     },
     //Coupon API
     {

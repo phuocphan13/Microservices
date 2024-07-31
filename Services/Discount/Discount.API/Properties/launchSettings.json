@@ -16,7 +16,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:5002",
+      "applicationUrl": "http://localhost:5002", //Host and Port, Ocelot call this downstreamHostandPort.
       "dotnetRunMessages": true
     },
     "IIS Express": {
