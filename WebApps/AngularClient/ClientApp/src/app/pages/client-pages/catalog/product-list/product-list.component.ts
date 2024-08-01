@@ -14,8 +14,8 @@ export class ProductListComponent implements OnInit {
   constructor(private catalogService: CatalogService) {
   }
 
-  ngOnInit() {
-    this.getProductsAsync();
+  async ngOnInit() {
+    await this.getProductsAsync();
   }
 
   async getProductsAsync() {

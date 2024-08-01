@@ -28,6 +28,7 @@ import { ServiceModule } from "./core/service/service.module";
 import { SubCategoryService } from './core/service/catalog/subcategory.service';
 import { SubcategoryAdminComponent } from './pages/admin-pages/catalog-admin/subcategory-admin/subcategory-admin.component';
 import { SubcategoryModalComponent } from './core/shared/modals/catalog-modals/subcategory-modal/subcategory-modal.component';
+import { NgOptimizedImage } from "@angular/common";
 
 @NgModule({
   declarations: [
@@ -49,18 +50,19 @@ import { SubcategoryModalComponent } from './core/shared/modals/catalog-modals/s
     UnsavedConfirmModalComponent,
     LogInComponent,
   ],
-  imports: [
-    BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
-    HttpClientModule,
-    FormsModule,
-    AppRoutingModule,
-    NgbModule,
-    NgbPaginationModule,
-    NgbAlertModule,
-    RouterModule,
-    ReactiveFormsModule,
-    ServiceModule
-  ],
+    imports: [
+        BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
+        HttpClientModule,
+        FormsModule,
+        AppRoutingModule,
+        NgbModule,
+        NgbPaginationModule,
+        NgbAlertModule,
+        RouterModule,
+        ReactiveFormsModule,
+        ServiceModule,
+        NgOptimizedImage
+    ],
   providers: [
     CatalogService,
     CategoryService,

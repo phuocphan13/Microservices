@@ -14,8 +14,8 @@ import { SubCategoryService } from 'src/app/core/service/catalog/subcategory.ser
 })
 
 export class SubcategoryAdminComponent implements OnInit {
-
   subCategories: SubCategorySummary[] = [];
+
   ngbModalOptions: NgbModalOptions = {
     backdrop: 'static',
     keyboard: false,

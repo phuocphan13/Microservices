@@ -7,7 +7,7 @@ using Worker;
 using Worker.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-var isRebuildSchema = bool.Parse(builder.Configuration["Database:IsRebuildSchema"]);
+var isRebuildSchema = bool.Parse(builder.Configuration["ConnectionStrings:IsRebuildSchema"]);
 var isRebuildWorkerSchema = bool.Parse(builder.Configuration["Worker:IsRebuildSchema"]);
 
 // Add services to the container.

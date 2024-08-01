@@ -16,14 +16,6 @@ services:
       - "6379:6379"
     volumes:
       - ./basketdb/data:/data
-        
-  sagadb:
-    container_name: sagadb
-    restart: always
-    ports:
-      - "6380:6379"
-    volumes:
-      - ./sagadb/data:/data
 
   discountdb:
     container_name: discountdb
@@ -123,17 +115,25 @@ services:
     container_name: basket.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "CacheSettings:ConnectionString=basketdb:6379"
+      - "JwtSettings:Issuer=http://identityserver"
+      - "JwtSettings:Audience=http://ocelotapigw"
+      - "JwtSettings:Key=LuciferForTheHellLuciferForTheHellLuciferForTheHellLuciferForTheHell"
+      - "JwtSettings:LifeTime=8"
       - "GrpcSettings:DiscountUrl=http://discount.grpc"
+      - "CacheSettings:ConnectionString=basketdb:6379"
+      - "Microservices:CatalogApi=http://catalog.api"
+      - "Microservices:DiscountApi=http://discount.api"
+      - "Microservices:OrderingApi=http://ordering.api"
       - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
-      - "ApiSettings:JwtSettings:Issuer=http://identityserver"
-      - "ApiSettings:JwtSettings:Audience=http://ocelotapigw"
-      - "ApiSettings:JwtSettings:Key=LuciferForTheHellLuciferForTheHellLuciferForTheHellLuciferForTheHell"
-      - "ApiSettings:JwtSettings:LifeTime=8"
+      - "EventBusSettings:ConnectionString=Server=rabbitmqdb;Database=Outbox;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;"
+      - "EventBusSettings:IsRebuildSchema=false"
     depends_on:
+      - catalog.api
+      - discount.api
+      - ordering.api
       - basketdb
-      - sagadb
       - rabbitmq
+      - rabbitmqdb
     ports:
       - "8001:80"
 
@@ -142,9 +142,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "DatabaseSettings:Postgres:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
-      - "DatabaseSettings:IsRebuildSchema=false;"
+      - "DatabaseSettings:Postgres:IsRebuildSchema=false;"
+      - "ApiServices:OcelotApiGw=http://ocelotapigw"
     depends_on:
       - discountdb
+      - ocelotapigw
     ports:
       - "8002:80"
 
@@ -153,6 +155,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "DatabaseSettings:Postgres:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
+      - "DatabaseSettings:Postgres:IsRebuildSchema=false;"
       - ASPNETCORE_Kestrel__Certificates__Default__Password=13Lucifer
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_URLS=https://+:443
@@ -169,11 +172,17 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "ConnectionStrings:OrderingConnectionString=Server=orderdb;Database=OrderDb;User Id=sa;Password=SwN12345678;"
+      - "ConnectionStrings:IsRebuildSchema=false"
       - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+      - "EventBusSettings:ConnectionString=Server=rabbitmqdb;Database=Outbox;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;"
+      - "EventBusSettings:IsRebuildSchema=false"
+      - "Worker:WorkerConnectionString=Server=workerdb;Database=WorkerDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;"
+      - "Worker:IsRebuildSchema=false"
     depends_on:
       - orderdb
       - rabbitmq
-      - sagadb
+      - workerdb
+      - rabbitmqdb
     ports:
       - "8004:80"
 
@@ -181,10 +190,10 @@ services:
     container_name: ocelotapigw
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "ApiSettings:JwtSettings:Issuer=http://identityserver"
-      - "ApiSettings:JwtSettings:Audience=http://ocelotapigw"
-      - "ApiSettings:JwtSettings:Key=LuciferForTheHellLuciferForTheHellLuciferForTheHellLuciferForTheHell"
-      - "ApiSettings:JwtSettings:LifeTime=8"
+      - "JwtSettings:Issuer=http://identityserver"
+      - "JwtSettings:Audience=http://ocelotapigw"
+      - "JwtSettings:Key=LuciferForTheHellLuciferForTheHellLuciferForTheHellLuciferForTheHell"
+      - "JwtSettings:LifeTime=8"
     depends_on:
       - catalog.api
       - basket.api
@@ -223,3 +232,4 @@ services:
       - ocelotapigw
     ports:
       - "8500:80"
+  
