@@ -87,7 +87,7 @@ services:
     build:
       context: .
       dockerfile: WebApps/AngularClient/Dockerfile
-    command: sh -c "npm install && ng serve --host"
+    command: sh -c "npm install -f && ng serve --host"
     working_dir: /ClientApp
     ports:
       - "8001:80"

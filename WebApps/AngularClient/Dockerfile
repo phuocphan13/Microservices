@@ -18,7 +18,7 @@ COPY . /app/WebApps/AngularClient/ClientApp
 
 RUN npm install -g @angular/cli
 
-RUN npm install
+RUN npm install -f
 
 WORKDIR /src
 COPY ["Common/Core.Common/Core.Common.csproj", "Common/Core.Common/"]
