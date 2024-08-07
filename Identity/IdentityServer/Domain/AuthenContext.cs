@@ -16,8 +16,8 @@ public class AuthenContext : IdentityDbContext<Account, Role, Guid>
     }
 
     public virtual DbSet<Account> Account { get; set; } = null!;
-
     public virtual DbSet<Role> Role { get; set; } = null!;
-    
     public virtual DbSet<TokenHistory> TokenHistory { get; set; } = null!;
+    public virtual DbSet<Application> Application { get; set; } = null!;
+    public virtual DbSet<Feature> Feature { get; set; } = null!;
 }

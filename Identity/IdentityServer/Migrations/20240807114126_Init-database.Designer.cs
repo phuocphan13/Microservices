@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IdentityServer.Migrations
 {
     [DbContext(typeof(AuthenContext))]
-    [Migration("20240510134121_init-database")]
-    partial class initdatabase
+    [Migration("20240807114126_Init-database")]
+    partial class Initdatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -113,6 +113,95 @@ namespace IdentityServer.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("IdentityServer.Domain.Entities.Application", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<Guid>("ExternalId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("Application");
+                });
+
+            modelBuilder.Entity("IdentityServer.Domain.Entities.Feature", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<Guid>("ExternalId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("Feature");
+                });
+
             modelBuilder.Entity("IdentityServer.Domain.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -167,9 +256,11 @@ namespace IdentityServer.Migrations
 
             modelBuilder.Entity("IdentityServer.Domain.Entities.TokenHistory", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<Guid>("AccountId")
                         .HasColumnType("uniqueidentifier");
@@ -181,6 +272,9 @@ namespace IdentityServer.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ExternalId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -312,6 +406,28 @@ namespace IdentityServer.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("IdentityServer.Domain.Entities.Application", b =>
+                {
+                    b.HasOne("IdentityServer.Domain.Entities.Role", "Role")
+                        .WithMany("Applications")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("IdentityServer.Domain.Entities.Feature", b =>
+                {
+                    b.HasOne("IdentityServer.Domain.Entities.Application", "Application")
+                        .WithMany("Features")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("IdentityServer.Domain.Entities.Role", null)
@@ -361,6 +477,16 @@ namespace IdentityServer.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("IdentityServer.Domain.Entities.Application", b =>
+                {
+                    b.Navigation("Features");
+                });
+
+            modelBuilder.Entity("IdentityServer.Domain.Entities.Role", b =>
+                {
+                    b.Navigation("Applications");
                 });
 #pragma warning restore 612, 618
         }

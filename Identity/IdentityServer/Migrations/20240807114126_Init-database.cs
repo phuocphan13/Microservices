@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace IdentityServer.Migrations
 {
-    public partial class initdatabase : Migration
+    public partial class Initdatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -66,7 +66,9 @@ namespace IdentityServer.Migrations
                 name: "TokenHistory",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -81,6 +83,33 @@ namespace IdentityServer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TokenHistory", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Application",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Application", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Application_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -189,6 +218,37 @@ namespace IdentityServer.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Feature",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    ApplicationId = table.Column<int>(type: "int", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Feature", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Feature_Application_ApplicationId",
+                        column: x => x.ApplicationId,
+                        principalTable: "Application",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Application_RoleId",
+                table: "Application",
+                column: "RoleId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -227,6 +287,11 @@ namespace IdentityServer.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Feature_ApplicationId",
+                table: "Feature",
+                column: "ApplicationId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -247,13 +312,19 @@ namespace IdentityServer.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Feature");
+
+            migrationBuilder.DropTable(
                 name: "TokenHistory");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Application");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
         }
     }
 }

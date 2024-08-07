@@ -6,8 +6,6 @@ namespace IdentityServer.Domain.Entities;
 
 public class TokenHistory : BaseIdEntity
 {
-    //
-    [Key]
     public Guid ExternalId { get; init; }
 
     [Required]

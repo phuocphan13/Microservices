@@ -80,6 +80,7 @@ public class TokenHistoryService : ITokenHistoryService
         {
             var data = new TokenHistory()
             {
+                ExternalId = Guid.NewGuid(),
                 Token = token.Token,
                 CreatedBy = accountId.ToString(),
                 CreatedDate = DateTime.Now,

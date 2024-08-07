@@ -23,4 +23,6 @@ public class Role : IdentityRole<Guid>
 
     public bool IsActive { get; set; }
     public bool Deleted { get; set; }
+    
+    public List<Application> Applications { get; set; } = new();
 }
