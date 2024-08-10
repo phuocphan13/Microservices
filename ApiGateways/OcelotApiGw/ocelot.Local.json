@@ -9,8 +9,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "catalog.api",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 5000
         }
       ],
       "UpstreamPathTemplate": "/GetProducts",
@@ -246,7 +246,7 @@
     },
     //Basket API
     {
-      "DownstreamPathTemplate": "/api/v1/Basket/{userName}",
+      "DownstreamPathTemplate": "/api/v1/Basket/GetBasket/{userName}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -255,7 +255,10 @@
         }
       ],
       "UpstreamPathTemplate": "/Basket/{userName}",
-      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      }
     },
     {
       "DownstreamPathTemplate": "/api/v1/Basket",

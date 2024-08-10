@@ -13,8 +13,6 @@ public interface ITokenHistoryService
 
     Task<T?> GetTokenAsync<T>(Guid accountId, TokenTypeEnum type, CancellationToken cancellationToken = default)
         where T : TokenBase, new();
-
-    Task<bool> ValidateTokenAsync(Guid accountId, TokenTypeEnum type, string token, CancellationToken cancellationToken = default);
 }
 
 public class TokenHistoryService : ITokenHistoryService
@@ -26,28 +24,6 @@ public class TokenHistoryService : ITokenHistoryService
     {
         _tokenHistoryRepository = tokenHistoryRepository;
         _unitOfWork = unitOfWork;
-    }
-    
-    public async Task<bool> ValidateTokenAsync(Guid accountId, TokenTypeEnum type, string token, CancellationToken cancellationToken)
-    {
-        var tokenEntity = await GetTokenInternalAsync(accountId, type, cancellationToken);
-
-        if (tokenEntity is null)
-        {
-            return false;
-        }
-
-        if (tokenEntity.Token != token)
-        {
-            return false;
-        }
-
-        if (tokenEntity.ValidTo < DateTime.Now)
-        {
-            return false;
-        }
-
-        return true;
     }
 
     public async Task<T?> GetTokenAsync<T>(Guid accountId, TokenTypeEnum type, CancellationToken cancellationToken)

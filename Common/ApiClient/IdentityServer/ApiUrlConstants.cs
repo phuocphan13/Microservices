@@ -8,4 +8,9 @@ public static class ApiUrlConstants
     public const string Login = "/Identity/Login";
     
     public const string GenerateAccessTokenByRefreshToken = "/Identity/GenerateAccessTokenByRefreshToken";
+    
+    public const string ValidateToken = "/Identity/ValidationToken";
+    
+    //Identity
+    public const string HasPermission = "/Permission/HasPermission";
 }

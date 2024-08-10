@@ -6,11 +6,13 @@ public static class ServiceConstants
     {
         public const string Catalog = "Catalog";
         public const string Discount = "Discount";
+        public const string Identity = "Identity";
     }
     
     public static class ApiAppSettting
     {
         public const string Catalog = "CatalogApi";
         public const string Discount = "DiscountApi";
+        public const string Identity = "IdentityApi";
     }
 }

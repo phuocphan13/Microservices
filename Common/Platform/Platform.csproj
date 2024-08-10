@@ -15,4 +15,8 @@
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Core.Common\Core.Common.csproj" />
+    </ItemGroup>
+
 </Project>

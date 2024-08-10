@@ -10,7 +10,7 @@
       <PackageReference Include="Grpc.AspNetCore" Version="2.60.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
     <ItemGroup>
@@ -25,5 +25,10 @@
     <ItemGroup>
       <ProjectReference Include="..\Core.Common\Core.Common.csproj" />
       <ProjectReference Include="..\Platform\Platform.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="DirectApiClients\Identity\Parameters\" />
+      <Folder Include="IdentityServer\ApiClients\" />
     </ItemGroup>
 </Project>

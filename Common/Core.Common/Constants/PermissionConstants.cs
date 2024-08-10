@@ -1,4 +1,4 @@
-namespace IdentityServer.Common;
+namespace Core.Common.Constants;
 
 public static class PermissionConstants
 {
@@ -13,7 +13,7 @@ public static class PermissionConstants
             public const string OrderingApi = "CatalogApi";
         }
     }
-    
+
     public static class Feature
     {
         public static class CatalogApi

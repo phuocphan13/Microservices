@@ -12,8 +12,8 @@ builder.Services.AddStackExchangeRedisCache(option =>
     option.Configuration = builder.Configuration["CacheSettings:ConnectionString"];
 });
 
-builder.Services.AddCustomAuthenticate(builder.Configuration);
-builder.Services.AddAuthorization();
+// builder.Services.AddCustomAuthenticate(builder.Configuration);
+// builder.Services.AddAuthorization();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -36,8 +36,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseAuthentication();
-app.UseAuthorization();
+// app.UseAuthentication();
+// app.UseAuthorization();
 
 app.MapControllers();
 

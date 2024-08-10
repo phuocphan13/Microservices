@@ -20,15 +20,16 @@ public static class AuthenticateExtension
             {
                 o.RequireHttpsMetadata = false;
                 o.SaveToken = true;
+                
                 o.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidIssuer = configuration["JwtSettings:Issuer"],
                     ValidAudience = configuration["JwtSettings:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"])),
+                    ValidateIssuerSigningKey = true,
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true
                 };
             });
     }

@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ApiClient.Catalog.Product.Models;
 using Catalog.API.Services;
+using Core.Common.Constants;
+using IntegrationFramework.Authentication.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Platform.ApiBuilder;
 
 namespace Catalog.API.Controllers;
@@ -24,6 +27,7 @@ public class ProductController : ApiController
     }
 
     [HttpGet]
+    [Permission(PermissionConstants.Feature.CatalogApi.GetAllProducts)]
     public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
     {
         var result = await _productService.GetProductsAsync(cancellationToken);
@@ -37,6 +41,7 @@ public class ProductController : ApiController
     }
 
     [HttpGet("{id:length(24)}", Name = "GetProductById")]
+    [Permission(PermissionConstants.Feature.CatalogApi.GetProductById)]
     public async Task<IActionResult> GetProductById(string id, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(id))

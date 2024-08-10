@@ -16,10 +16,15 @@ builder.Services.AddIdentity<Account, Role>()
     .AddEntityFrameworkStores<AuthenContext>()
     .AddDefaultTokenProviders();
 
+// builder.Services.AddAuthentication(OAuthValidationDefaults.AuthenticationScheme)
+//     .AddOAuthValidation();
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Add services to the container.
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<ITokenHandleService, TokenHandleService>();
 builder.Services.AddScoped<ITokenHistoryService, TokenHistoryService>();
 
@@ -52,8 +57,6 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

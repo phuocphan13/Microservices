@@ -35,6 +35,7 @@ public class CommonApiClient
         {
             ServiceConstants.Api.Catalog => _configuration[$"Microservices:{ServiceConstants.ApiAppSettting.Catalog}"],
             ServiceConstants.Api.Discount => _configuration[$"Microservices:{ServiceConstants.ApiAppSettting.Discount}"],
+            ServiceConstants.Api.Identity => _configuration[$"Microservices:{ServiceConstants.ApiAppSettting.Identity}"],
             _ => string.Empty
         };
 

@@ -1,3 +1,5 @@
+using ApiClient.DirectApiClients.Identity.Models;
+using ApiClient.DirectApiClients.Identity.RequestBodies;
 using ApiClient.IdentityServer.Models.Request;
 using IdentityServer.Domain.Entities;
 using IdentityServer.Services;
@@ -79,5 +81,33 @@ public class IdentityController : ApiController
         }
         
         return Ok(token);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> ValidationToken([FromBody] ValidateTokenRequestBody request, CancellationToken cancellationToken)
+    {
+        if (request is null)
+        {
+            return BadRequest("Invalid request");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Token))
+        {
+            return BadRequest("Invalid token");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.UserName))
+        {
+            return BadRequest("Invalid username");
+        }
+
+        var user = await _userManager.FindByEmailAsync(request.UserName);
+
+        var result = await _tokenHandleService.ValidateAccessTokenAsync(user.Id, TokenTypeEnum.AccessToken, request.Token, cancellationToken);
+
+        return Ok(new TokenValidationModel()
+        {
+            IsValid = result
+        });
     }
 }

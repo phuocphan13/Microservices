@@ -1,9 +1,9 @@
+using ApiClient;
 using Catalog.API.Common.Extensions;
 using Catalog.API.Repositories;
 using Catalog.API.Services;
 using Catalog.API.Services.Grpc;
 using Discount.Grpc.Protos;
-using IdentityServer.Common;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
@@ -18,9 +18,12 @@ var isRebuildSchema = builder.Configuration.GetValue<bool>(Platform.Constants.Da
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddPlatformCommonServices();
 
-builder.Services.AddCustomAuthenticate(builder.Configuration);
+builder.Services
+    .AddPlatformCommonServices()
+    .AddIdentityInternalClient();
+    // .AddCustomAuthenticate(builder.Configuration);
+
 builder.Services.AddAuthorization();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -58,8 +61,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseAuthentication();
-app.UseAuthorization();
+// app.UseAuthentication();
+// app.UseAuthorization();
 
 app.MapControllers();
 

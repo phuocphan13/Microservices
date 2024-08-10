@@ -14,31 +14,67 @@ public interface ITokenHandleService
 {
     Task<LoginResponse?> LoginAsync(Account account, CancellationToken cancellationToken = default);
     Task<AccessTokenDetail?> GenerateAccessTokenByRefreshTokenAsync(Account account, string refreshToken, CancellationToken cancellationToken = default);
+    Task<bool> ValidateAccessTokenAsync(Guid accountId, TokenTypeEnum type, string token, CancellationToken cancellationToken = default);
 }
 
 public class TokenHandleService : ITokenHandleService
 {
-    private readonly IConfiguration _configuration;
     private readonly ITokenHistoryService _tokenHistoryService;
-    private readonly UserManager<Account> _userManager;
+    private readonly IConfiguration _configuration;
+    private readonly IRoleService _roleService;
 
-    public TokenHandleService(IConfiguration configuration, ITokenHistoryService tokenHistoryService, UserManager<Account> userManager)
+    public TokenHandleService(IConfiguration configuration, ITokenHistoryService tokenHistoryService, IRoleService roleService)
     {
         _configuration = configuration;
         _tokenHistoryService = tokenHistoryService;
-        _userManager = userManager;
+        _roleService = roleService;
+    }
+
+    public async Task<bool> ValidateAccessTokenAsync(Guid accountId, TokenTypeEnum type, string token, CancellationToken cancellationToken)
+    {
+        var tokenEntity = await _tokenHistoryService.GetTokenAsync<AccessTokenModel>(accountId, type, cancellationToken);
+
+        return ValidateTokenInternal(tokenEntity, token);
+    }
+
+    public async Task<bool> ValidateRefreshTokenAsync(Guid accountId, TokenTypeEnum type, string token, CancellationToken cancellationToken)
+    {
+        var tokenEntity = await _tokenHistoryService.GetTokenAsync<RefreshTokenModel>(accountId, type, cancellationToken);
+
+        return ValidateTokenInternal(tokenEntity, token);
+    }
+    
+    private bool ValidateTokenInternal<T>(T? tokenModel, string token)
+        where T : TokenBase
+    {
+        if (tokenModel is null)
+        {
+            return false;
+        }
+        
+        if (tokenModel.Token != token)
+        {
+            return false;
+        }
+
+        if (tokenModel.ExpiredAt < DateTime.Now)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public async Task<AccessTokenDetail?> GenerateAccessTokenByRefreshTokenAsync(Account account, string refreshToken, CancellationToken cancellationToken)
     {
-        var isValid = await _tokenHistoryService.ValidateTokenAsync(account.Id, TokenTypeEnum.RefreshToken, refreshToken, cancellationToken);
+        var isValid = await ValidateRefreshTokenAsync(account.Id, TokenTypeEnum.RefreshToken, refreshToken, cancellationToken);
 
         if (!isValid)
         {
             return null;
         }
         
-        var token = GenerateAccessTokenInternal(account.Id.ToString(), account.Email);
+        var token = await GenerateAccessTokenInternal(account.Id.ToString(), account.Email);
 
         return new AccessTokenDetail()
         {
@@ -49,8 +85,8 @@ public class TokenHandleService : ITokenHandleService
 
     public async Task<LoginResponse?> LoginAsync(Account account, CancellationToken cancellationToken)
     {
-        var accessToken = GenerateAccessTokenInternal(account.Id.ToString(), account.Email);
-        var refreshToken = GenerateRefreshTokenInternal();;
+        var accessToken = await GenerateAccessTokenInternal(account.Id.ToString(), account.Email);
+        var refreshToken = GenerateRefreshTokenInternal();
         
         await _tokenHistoryService.SaveAppUserTokenAsync(account.Id, TokenTypeEnum.AccessToken, accessToken, cancellationToken);
 
@@ -66,11 +102,13 @@ public class TokenHandleService : ITokenHandleService
         };
     }
 
-    private AccessTokenModel GenerateAccessTokenInternal(string accountId, string email)
+    public async Task<AccessTokenModel> GenerateAccessTokenInternal(string accountId, string email)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]);
         var lifeTime = TimeSpan.FromHours(int.Parse(_configuration["JwtSettings:LifeTime"]));
+
+        var roles = await _roleService.GetRoleByUserIdAsync(accountId);
 
         var claims = new List<Claim>()
         {
@@ -78,6 +116,7 @@ public class TokenHandleService : ITokenHandleService
             new(JwtRegisteredClaimNames.Sub, email),
             new(JwtRegisteredClaimNames.Email, email),
             new("userId", accountId),
+            new("role", string.Join("|", roles.Select(x => x.Name)))
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor()
@@ -99,7 +138,7 @@ public class TokenHandleService : ITokenHandleService
         };
     }
 
-    private RefreshTokenModel GenerateRefreshTokenInternal()
+    public RefreshTokenModel GenerateRefreshTokenInternal()
     {
         return new RefreshTokenModel()
         {
@@ -108,7 +147,7 @@ public class TokenHandleService : ITokenHandleService
         };
     }
 
-    private string GenerateRandomCode()
+    public string GenerateRandomCode()
     {
         var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();

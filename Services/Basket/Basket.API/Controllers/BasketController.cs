@@ -1,7 +1,6 @@
 ﻿using ApiClient.Basket.Events.CheckoutEvents;
 using AutoMapper;
 using Basket.API.Entitites;
-using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using ApiClient.Basket.Models;
 using Basket.API.Services;
@@ -19,7 +18,7 @@ public class BasketController : ApiController
     private readonly IMapper _mapper;
     private readonly IQueueService _queueService;
 
-    public BasketController(IBasketService basketService, ILogger<BasketController> logger, IMapper mapper, IPublishEndpoint publishEndpoint, IBus bus, IQueueService queueService)
+    public BasketController(IBasketService basketService, ILogger<BasketController> logger, IMapper mapper, IQueueService queueService)
         : base(logger)
     {
         _basketService = basketService ?? throw new ArgumentNullException(nameof(basketService));
@@ -28,7 +27,6 @@ public class BasketController : ApiController
         _queueService = queueService ?? throw new ArgumentNullException(nameof(queueService));
     }
 
-    // [Authorize]
     [HttpGet("{userId}")]
     public async Task<IActionResult> GetBasket(string userId, CancellationToken cancellationToken)
     {
