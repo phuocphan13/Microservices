@@ -21,9 +21,6 @@
       "FileCacheOptions": {
         "TtlSeconds": 30
       },
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer"
-      }
     },
     //Catalog API
     {

@@ -82,16 +82,6 @@ services:
       context: .
       dockerfile: Identity/IdentityServer/Dockerfile
       
-  angularclient:
-    image: ${DOCKER_REGISTRY-}angularclient
-    build:
-      context: .
-      dockerfile: WebApps/AngularClient/Dockerfile
-    command: sh -c "npm install -f && ng serve --host"
-    working_dir: /ClientApp
-    ports:
-      - "8001:80"
-      
 volumes:
   mongo_data:
   portainer_data:

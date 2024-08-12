@@ -3,7 +3,6 @@ using IdentityServer.Common;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Cache.CacheManager;
-using OcelotApiGw.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,12 +26,9 @@ builder.Services
 builder.Services
     .AddIdentityInternalClient();
 
-// builder.Services.AddTransient<ValidateTokenMiddleware>();
-
 builder.Services.AddCustomAuthenticate(builder.Configuration);
 
 var app = builder.Build();
-// app.UseMiddleware<ValidateTokenMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

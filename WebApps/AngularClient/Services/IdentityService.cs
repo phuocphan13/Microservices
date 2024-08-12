@@ -1,6 +1,6 @@
 using ApiClient.IdentityServer;
 using ApiClient.IdentityServer.Models;
-using ApiClient.IdentityServer.Models.Request;
+using ApiClient.IdentityServer.Models.RequestBodies;
 using ApiClient.IdentityServer.Models.Response;
 
 namespace AngularClient.Services;
@@ -8,8 +8,8 @@ namespace AngularClient.Services;
 public interface IIdentityService
 {
     Task<TokenResponse?> GenerateTokenAsync(GenerateTokenRequest request, CancellationToken cancellationToken = default);
-    Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
-    Task<AccessTokenDetail?> GenerateAccessTokenByRefreshTokenAsync(GenerateAccessTokenByRefreshTokenRequest request, CancellationToken cancellationToken = default);
+    Task<LoginResponse?> LoginAsync(LoginRequestBody request, CancellationToken cancellationToken = default);
+    Task<AccessTokenDetail?> GenerateAccessTokenByRefreshTokenAsync(GenerateAccessTokenByRefreshTokenRequestBody request, CancellationToken cancellationToken = default);
 }
 
 public class IdentityService : IIdentityService
@@ -35,7 +35,7 @@ public class IdentityService : IIdentityService
         return result.Result;
     }
 
-    public async Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
+    public async Task<LoginResponse?> LoginAsync(LoginRequestBody request, CancellationToken cancellationToken)
     {
         var result = await _identityApiClient.LoginAsync(request, cancellationToken);
 
@@ -47,7 +47,7 @@ public class IdentityService : IIdentityService
         return result.Result;
     }
     
-    public async Task<AccessTokenDetail?> GenerateAccessTokenByRefreshTokenAsync(GenerateAccessTokenByRefreshTokenRequest request, CancellationToken cancellationToken)
+    public async Task<AccessTokenDetail?> GenerateAccessTokenByRefreshTokenAsync(GenerateAccessTokenByRefreshTokenRequestBody request, CancellationToken cancellationToken)
     {
         var result = await _identityApiClient.GenerateAccessTokenByRefreshTokenAsync(request, cancellationToken);
 

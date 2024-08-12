@@ -1,5 +1,5 @@
 using ApiClient.Common;
-using ApiClient.IdentityServer.Models.Request;
+using ApiClient.IdentityServer.Models.RequestBodies;
 using ApiClient.IdentityServer.Models.Response;
 using Microsoft.Extensions.Configuration;
 using Platform.ApiBuilder;
@@ -9,8 +9,8 @@ namespace ApiClient.IdentityServer;
 
 public interface IIdentityApiClient
 {
-    Task<ApiDataResult<LoginResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
-    Task<ApiDataResult<AccessTokenDetail>> GenerateAccessTokenByRefreshTokenAsync(GenerateAccessTokenByRefreshTokenRequest request, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<LoginResponse>> LoginAsync(LoginRequestBody request, CancellationToken cancellationToken = default);
+    Task<ApiDataResult<AccessTokenDetail>> GenerateAccessTokenByRefreshTokenAsync(GenerateAccessTokenByRefreshTokenRequestBody request, CancellationToken cancellationToken = default);
 }
 
 public class IdentityApiClient : CommonApiClient, IIdentityApiClient
@@ -20,7 +20,7 @@ public class IdentityApiClient : CommonApiClient, IIdentityApiClient
     {
     }
 
-    public async Task<ApiDataResult<LoginResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<LoginResponse>> LoginAsync(LoginRequestBody request, CancellationToken cancellationToken)
     {
         var url = $"{GetIdentityServerBaseUrl()}/api{ApiUrlConstants.Login}";
 
@@ -29,7 +29,7 @@ public class IdentityApiClient : CommonApiClient, IIdentityApiClient
         return result;
     }
 
-    public async Task<ApiDataResult<AccessTokenDetail>> GenerateAccessTokenByRefreshTokenAsync(GenerateAccessTokenByRefreshTokenRequest request, CancellationToken cancellationToken)
+    public async Task<ApiDataResult<AccessTokenDetail>> GenerateAccessTokenByRefreshTokenAsync(GenerateAccessTokenByRefreshTokenRequestBody request, CancellationToken cancellationToken)
     {
         var url = $"{GetIdentityServerBaseUrl()}/api{ApiUrlConstants.GenerateAccessTokenByRefreshToken}";
 

@@ -5,7 +5,7 @@ namespace IdentityServer.Domain.Entities;
 
 public class Feature : EntityBase
 {
-    public Guid ExternalId { get; init; }
+    public Guid ExternalId { get; init; } = Guid.NewGuid();
 
     [MaxLength(256)]
     public string Name { get; set; } = null!;

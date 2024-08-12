@@ -194,11 +194,6 @@ services:
       - "JwtSettings:Audience=http://ocelotapigw"
       - "JwtSettings:Key=LuciferForTheHellLuciferForTheHellLuciferForTheHellLuciferForTheHell"
       - "JwtSettings:LifeTime=8"
-    depends_on:
-      - catalog.api
-      - basket.api
-      - discount.api
-      - ordering.api
     ports:
       - "8010:80"
         

@@ -24,6 +24,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Add services to the container.
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IFeatureService, FeatureService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<ITokenHandleService, TokenHandleService>();
 builder.Services.AddScoped<ITokenHistoryService, TokenHistoryService>();

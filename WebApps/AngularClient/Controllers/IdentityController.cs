@@ -1,6 +1,6 @@
 using AngularClient.Services;
 using ApiClient.IdentityServer.Models;
-using ApiClient.IdentityServer.Models.Request;
+using ApiClient.IdentityServer.Models.RequestBodies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AngularClient.Controllers;
@@ -30,7 +30,7 @@ public class IdentityController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Login([FromBody] LoginRequestBody request, CancellationToken cancellationToken)
     {
         if (request is null)
         {
@@ -58,7 +58,7 @@ public class IdentityController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> GenerateAccessTokenByRefreshToken([FromBody] GenerateAccessTokenByRefreshTokenRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GenerateAccessTokenByRefreshToken([FromBody] GenerateAccessTokenByRefreshTokenRequestBody request, CancellationToken cancellationToken)
     {
         if (request is null)
         {

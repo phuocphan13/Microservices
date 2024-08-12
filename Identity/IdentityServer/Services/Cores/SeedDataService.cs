@@ -1,6 +1,7 @@
 using Core.Common.Constants;
 using IdentityServer.Domain;
 using IdentityServer.Domain.Entities;
+using IdentityServer.Domain.Entities.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,8 +36,10 @@ public class SeedDataService : ISeedDataService
         var globalAdminRole = roles.First(x => x.Name == "GlobalAdmin");
         await SeedDataForUserRoleAsync(globalAdminRole, cancellationToken);
 
-        var applications = GetApplications(globalAdminRole);
+        var applications = GetApplications();
         await SeedDataForApplicationsAsync(applications, cancellationToken);
+        
+        await SeedDataForRolePermissionAsync(roles.First(x => x.Name == "CatalogStaff"), applications.First(x => x.Name == PermissionConstants.Application.Name.CatalogApi), cancellationToken);
 
         await _dbcontext.SaveChangesAsync(cancellationToken);
     }
@@ -91,64 +94,70 @@ public class SeedDataService : ISeedDataService
                 IsActive = true,
                 CreatedDate = DateTime.Now,
                 CreatedBy = "Lucifer",
+            },
+            new()
+            {
+                Name = "CatalogAdmin",
+                Description = "Catalog Admin Role",
+                IsActive = true,
+                CreatedDate = DateTime.Now,
+                CreatedBy = "Lucifer",
+            },
+            new()
+            {
+                Name = "CatalogStaff",
+                Description = "Catalog Staff Role",
+                IsActive = true,
+                CreatedDate = DateTime.Now,
+                CreatedBy = "Lucifer",
             }
         };
     }
 
-    private List<Application> GetApplications(Role role)
+    private List<Application> GetApplications()
     {
         return new List<Application>()
         {
             new()
             {
-                ExternalId = Guid.NewGuid(),
                 Name = PermissionConstants.Application.Name.CatalogApi,
                 Description = "Catalog Api",
                 IsActive = true,
                 CreatedDate = DateTime.Now,
                 CreatedBy = "Lucifer",
                 Features = GetListFeature("CatalogApi"),
-                Role = role
             },
             new()
             {
-                ExternalId = Guid.NewGuid(),
                 Name = PermissionConstants.Application.Name.DiscountApi,
                 Description = "Discount Api",
                 IsActive = true,
                 CreatedDate = DateTime.Now,
-                CreatedBy = "Lucifer",
-                Role = role
+                CreatedBy = "Lucifer"
             },
             new()
             {
-                ExternalId = Guid.NewGuid(),
                 Name = PermissionConstants.Application.Name.DiscountGrpc,
                 Description = "Discount Grpc",
                 IsActive = true,
                 CreatedDate = DateTime.Now,
-                CreatedBy = "Lucifer",
-                Role = role
+                CreatedBy = "Lucifer"
             },
             new()
             {
-                ExternalId = Guid.NewGuid(),
                 Name = PermissionConstants.Application.Name.BasketApi,
                 Description = "Basket Api",
                 IsActive = true,
                 CreatedDate = DateTime.Now,
-                CreatedBy = "Lucifer",
-                Role = role
+                CreatedBy = "Lucifer"
             },
             new()
             {
-                ExternalId = Guid.NewGuid(),
                 Name = PermissionConstants.Application.Name.OrderingApi,
                 Description = "Order Api",
                 IsActive = true,
                 CreatedDate = DateTime.Now,
-                CreatedBy = "Lucifer",
-                Role = role
+                CreatedBy = "Lucifer"
             },
         };
     }
@@ -161,31 +170,26 @@ public class SeedDataService : ISeedDataService
             {
                 new()
                 {
-                    ExternalId = Guid.NewGuid(),
                     Name = PermissionConstants.Feature.CatalogApi.GetAllProducts,
                     Description = "Get All Products",
                 },
                 new()
                 {
-                    ExternalId = Guid.NewGuid(),
                     Name = PermissionConstants.Feature.CatalogApi.GetProductById,
                     Description = "Get Product By Id",
                 },
                 new()
                 {
-                    ExternalId = Guid.NewGuid(),
                     Name = PermissionConstants.Feature.CatalogApi.CreateProduct,
                     Description = "Create Product",
                 },
                 new()
                 {
-                    ExternalId = Guid.NewGuid(),
                     Name = PermissionConstants.Feature.CatalogApi.UpdateProduct,
                     Description = "Update Product",
                 },
                 new()
                 {
-                    ExternalId = Guid.NewGuid(),
                     Name = PermissionConstants.Feature.CatalogApi.DeleteProduct,
                     Description = "Delete Product",
                 },
@@ -233,5 +237,18 @@ public class SeedDataService : ISeedDataService
         {
             await _dbcontext.Application.AddAsync(item, cancellationToken);
         }
+    }
+    
+    private async Task SeedDataForRolePermissionAsync(Role role, Application application, CancellationToken cancellationToken)
+    {
+        var rolePermission = new RolePermission()
+        {
+            RoleId = role.Id,
+            ApplicationId = application.ExternalId,
+            FeatureId = application.Features.First(x => x.Name == PermissionConstants.Feature.CatalogApi.GetAllProducts).ExternalId,
+            State = PermissionState.Allowed
+        };
+
+        await _dbcontext.RolePermission.AddAsync(rolePermission, cancellationToken);
     }
 }

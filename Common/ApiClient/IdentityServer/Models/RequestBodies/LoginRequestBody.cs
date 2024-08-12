@@ -1,6 +1,6 @@
-namespace ApiClient.IdentityServer.Models.Request;
+namespace ApiClient.IdentityServer.Models.RequestBodies;
 
-public class LoginRequest
+public class LoginRequestBody
 {
     public string? UserName { get; set; }
     public string? Password { get; set; }

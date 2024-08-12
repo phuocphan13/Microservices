@@ -43,27 +43,6 @@ public class TokenHandleService : ITokenHandleService
 
         return ValidateTokenInternal(tokenEntity, token);
     }
-    
-    private bool ValidateTokenInternal<T>(T? tokenModel, string token)
-        where T : TokenBase
-    {
-        if (tokenModel is null)
-        {
-            return false;
-        }
-        
-        if (tokenModel.Token != token)
-        {
-            return false;
-        }
-
-        if (tokenModel.ExpiredAt < DateTime.Now)
-        {
-            return false;
-        }
-
-        return true;
-    }
 
     public async Task<AccessTokenDetail?> GenerateAccessTokenByRefreshTokenAsync(Account account, string refreshToken, CancellationToken cancellationToken)
     {
@@ -102,7 +81,8 @@ public class TokenHandleService : ITokenHandleService
         };
     }
 
-    public async Task<AccessTokenModel> GenerateAccessTokenInternal(string accountId, string email)
+    #region Internal Functions
+    private async Task<AccessTokenModel> GenerateAccessTokenInternal(string accountId, string email)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]);
@@ -138,7 +118,28 @@ public class TokenHandleService : ITokenHandleService
         };
     }
 
-    public RefreshTokenModel GenerateRefreshTokenInternal()
+    private bool ValidateTokenInternal<T>(T? tokenModel, string token)
+        where T : TokenBase
+    {
+        if (tokenModel is null)
+        {
+            return false;
+        }
+
+        if (tokenModel.Token != token)
+        {
+            return false;
+        }
+
+        if (tokenModel.ExpiredAt < DateTime.Now)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private RefreshTokenModel GenerateRefreshTokenInternal()
     {
         return new RefreshTokenModel()
         {
@@ -147,7 +148,7 @@ public class TokenHandleService : ITokenHandleService
         };
     }
 
-    public string GenerateRandomCode()
+    private string GenerateRandomCode()
     {
         var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();
@@ -155,4 +156,5 @@ public class TokenHandleService : ITokenHandleService
 
         return Convert.ToBase64String(randomNumber);
     }
+    #endregion
 }

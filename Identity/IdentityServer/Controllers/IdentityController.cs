@@ -1,6 +1,6 @@
 using ApiClient.DirectApiClients.Identity.Models;
 using ApiClient.DirectApiClients.Identity.RequestBodies;
-using ApiClient.IdentityServer.Models.Request;
+using ApiClient.IdentityServer.Models.RequestBodies;
 using IdentityServer.Domain.Entities;
 using IdentityServer.Services;
 using Microsoft.AspNetCore.Identity;
@@ -22,7 +22,7 @@ public class IdentityController : ApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> GenerateAccessTokenByRefreshToken([FromBody] GenerateAccessTokenByRefreshTokenRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GenerateAccessTokenByRefreshToken([FromBody] GenerateAccessTokenByRefreshTokenRequestBody request, CancellationToken cancellationToken)
     {
         if (request is null)
         {
@@ -52,7 +52,7 @@ public class IdentityController : ApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Login([FromBody] LoginRequestBody request, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByNameAsync(request.UserName);
 
