@@ -10,7 +10,7 @@ services:
   sagadb:
     image: redis
   
-  catalogCache:
+  catalog_cache:
     image: redis
     
   discountdb:

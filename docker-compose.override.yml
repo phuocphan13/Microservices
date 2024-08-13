@@ -17,8 +17,8 @@ services:
     volumes:
       - ./basketdb/data:/data
         
-  catalogCache:
-    container_name: catalogCache
+  catalog_cache:
+    container_name: catalog_cache
     restart: always
     ports:
       - "6380:6379"
