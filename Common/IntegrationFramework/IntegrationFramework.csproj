@@ -12,4 +12,7 @@
       <ProjectReference Include="..\ApiClient\ApiClient.csproj" />
       <ProjectReference Include="..\Core.Common\Core.Common.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Common\AttributeHelpers\" />
+    </ItemGroup>
 </Project>

@@ -14,6 +14,7 @@ public class PermissionController : ApiController
     {
         _permissionService = permissionService;
     }
+    
     [HttpGet]
     public async Task<IActionResult> GetPermissions([FromQuery] string userId, CancellationToken cancellationToken)
     {

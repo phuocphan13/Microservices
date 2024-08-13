@@ -40,6 +40,7 @@ public class SeedDataService : ISeedDataService
         await SeedDataForApplicationsAsync(applications, cancellationToken);
         
         await SeedDataForRolePermissionAsync(roles.First(x => x.Name == "CatalogStaff"), applications.First(x => x.Name == PermissionConstants.Application.Name.CatalogApi), cancellationToken);
+        await SeedDataForRolePermissionAsync(globalAdminRole, applications.First(x => x.Name == PermissionConstants.Application.Name.IdentityApi), cancellationToken);
 
         await _dbcontext.SaveChangesAsync(cancellationToken);
     }
@@ -125,7 +126,7 @@ public class SeedDataService : ISeedDataService
                 IsActive = true,
                 CreatedDate = DateTime.Now,
                 CreatedBy = "Lucifer",
-                Features = GetListFeature("CatalogApi"),
+                Features = GetListFeature(PermissionConstants.Application.Name.CatalogApi),
             },
             new()
             {
@@ -159,6 +160,23 @@ public class SeedDataService : ISeedDataService
                 CreatedDate = DateTime.Now,
                 CreatedBy = "Lucifer"
             },
+            new()
+            {
+                Name = PermissionConstants.Application.Name.IdentityApi,
+                Description = "Identity Api",
+                IsActive = true,
+                CreatedDate = DateTime.Now,
+                CreatedBy = "Lucifer"
+            },
+            new()
+            {
+                Name = PermissionConstants.Application.Name.IdentityApi,
+                Description = "Identity Api",
+                IsActive = true,
+                CreatedDate = DateTime.Now,
+                CreatedBy = "Lucifer",
+                Features = GetListFeature(PermissionConstants.Application.Name.IdentityApi),
+            }
         };
     }
 
@@ -192,6 +210,19 @@ public class SeedDataService : ISeedDataService
                 {
                     Name = PermissionConstants.Feature.CatalogApi.DeleteProduct,
                     Description = "Delete Product",
+                },
+            },
+            PermissionConstants.Application.Name.IdentityApi => new List<Feature>()
+            {
+                new()
+                {
+                    Name = PermissionConstants.Feature.IdentityApi.CreateRole,
+                    Description = "Create Role",
+                },
+                new()
+                {
+                    Name = PermissionConstants.Feature.IdentityApi.RemoveRole,
+                    Description = "Remove Role",
                 },
             },
             _ => new()

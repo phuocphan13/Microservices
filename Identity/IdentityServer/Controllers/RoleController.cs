@@ -1,6 +1,8 @@
 using ApiClient.DirectApiClients.Identity.RequestBodies;
 using ApiClient.IdentityServer.Models.RequestBodies;
+using Core.Common.Constants;
 using IdentityServer.Services;
+using IntegrationFramework.Authentication.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Platform.ApiBuilder;
 
@@ -81,6 +83,51 @@ public class RoleController : ApiController
         }
 
         var result = await _roleService.AssignPermissionToRoleAsync(requestBody, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result.ErrorMessage);
+        }
+
+        return Ok(result);
+    }
+
+    [HttpPost]
+    // [Permission("")]
+    public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequestBody requestBody)
+    {
+        if (string.IsNullOrWhiteSpace(requestBody.Name))
+        {
+            return BadRequest("Invalid role name");
+        }
+
+        var isExisted = await _roleService.CheckRoleExistAsync(requestBody.Name, PropertyContstants.PropertyName.Name);
+
+        if (isExisted)
+        {
+            return BadRequest("Role name is existed");
+        }
+
+        var result = await _roleService.CreateRoleAsync(requestBody);
+
+        if (result is null)
+        {
+            return Problem("Role name is existed");
+        }
+
+        return Ok(result);
+    }
+    
+    [HttpDelete]
+    // [Permission("")]
+    public async Task<IActionResult> RemoveRole([FromBody] RemoveRoleRequestBody requestBody, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(requestBody.RoleId))
+        {
+            return BadRequest("Invalid role id");
+        }
+
+        var result = await _roleService.RemoveRoleAsync(requestBody, cancellationToken);
 
         if (!result.IsSuccess)
         {

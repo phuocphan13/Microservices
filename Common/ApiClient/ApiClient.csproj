@@ -29,6 +29,5 @@
 
     <ItemGroup>
       <Folder Include="DirectApiClients\Identity\Parameters\" />
-      <Folder Include="IdentityServer\ApiClients\" />
     </ItemGroup>
 </Project>

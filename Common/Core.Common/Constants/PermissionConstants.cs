@@ -11,6 +11,7 @@ public static class PermissionConstants
             public const string DiscountGrpc = "DiscountGrpc";
             public const string BasketApi = "BasketApi";
             public const string OrderingApi = "OrderingApi";
+            public const string IdentityApi = "IdentityApi";
         }
     }
 
@@ -23,6 +24,12 @@ public static class PermissionConstants
             public const string CreateProduct = "CreateProduct";
             public const string UpdateProduct = "UpdateProduct";
             public const string DeleteProduct = "DeleteProduct";
+        }
+        
+        public static class IdentityApi
+        {
+            public const string CreateRole = "CreateRole";
+            public const string RemoveRole = "RemoveRole";
         }
     }
 }

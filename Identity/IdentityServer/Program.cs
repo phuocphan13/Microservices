@@ -6,6 +6,7 @@ using IdentityServer.Services;
 using IdentityServer.Services.Cores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Platform;
 using Platform.Database.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,8 @@ builder.Services.AddIdentity<Account, Role>()
 
 // builder.Services.AddAuthentication(OAuthValidationDefaults.AuthenticationScheme)
 //     .AddOAuthValidation();
+
+builder.Services.AddPlatformCommonServices();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -49,7 +52,6 @@ if (isSeedData)
 {
     await SeedDataBuilder.RunSeedDataBuilder(app);
 }
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

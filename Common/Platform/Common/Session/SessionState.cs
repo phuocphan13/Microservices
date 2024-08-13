@@ -1,13 +1,13 @@
-using System.Globalization;
+using Core.Common.Helpers;
 using Microsoft.AspNetCore.Http;
-using Platform.Common.Security;
+using Newtonsoft.Json.Linq;
 
 namespace Platform.Common.Session;
 
 public interface ISessionState
 {
     string GetAccessToken();
-    Task<string> GetUserIdAsync(CancellationToken cancellationToken = default);
+    string GetUserIdAsync();
 }
 
 public class SessionState : ISessionState
@@ -16,7 +16,7 @@ public class SessionState : ISessionState
     private const string SessionVariable_LastActivity = "la";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private Principal principal = null!;
+    private JObject _payloadJObject = null!;
 
     private bool isLoaded;
     private ISession? session;
@@ -45,14 +45,13 @@ public class SessionState : ISessionState
         return authorizationToken;
     }
 
-    public async Task<string> GetUserIdAsync(CancellationToken cancellationToken)
+    public string GetUserIdAsync()
     {
-        await this.LoadAsync(cancellationToken);
-        return this.principal.Id;
+        this.LoadAsync();
+        return _payloadJObject.GetValue("userId")!.ToString();
     }
 
-    private async ValueTask LoadAsync(
-        CancellationToken cancellationToken)
+    private void LoadAsync()
     {
         if (this.isLoaded &&
             this.session is not null)
@@ -63,77 +62,59 @@ public class SessionState : ISessionState
         this.isLoaded = true;
         this.hasChanged = false;
 
-        await this.GetSession(cancellationToken);
+        GetPrincipal();
 
-        if (!this.principal.IsAuthenticated)
-        {
-            return;
-        }
+        // if (_payloadJObject is null)
+        // {
+        //     return;
+        // }
 
-        string? objectId = this.session?.GetString(SessionState.SessionVariable_ObjectId);
-
-        if (string.IsNullOrWhiteSpace(objectId) ||
-            objectId != this.principal.Id)
-        {
-            this.Clear();
-            await this.CommitAsync(cancellationToken);
-        }
-
-        string lastActivityString = this.session?.GetString(SessionState.SessionVariable_LastActivity) ?? string.Empty;
-        this.lastActivity = null;
-
-        if (!string.IsNullOrWhiteSpace(lastActivityString) &&
-            DateTime.TryParseExact(
-                lastActivityString,
-                "o",
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.RoundtripKind,
-                out DateTime lastActivityValue))
-        {
-            this.lastActivity = lastActivityValue;
-        }
+        // string? objectId = this.session?.GetString(SessionState.SessionVariable_ObjectId);
+        //
+        // if (string.IsNullOrWhiteSpace(objectId))
+        //     // ||
+        //     // objectId != this.principal.Id)
+        // {
+        //     this.Clear();
+        //     await this.CommitAsync(cancellationToken);
+        // }
+        //
+        // string lastActivityString = this.session?.GetString(SessionState.SessionVariable_LastActivity) ?? string.Empty;
+        // this.lastActivity = null;
+        //
+        // if (!string.IsNullOrWhiteSpace(lastActivityString) &&
+        //     DateTime.TryParseExact(
+        //         lastActivityString,
+        //         "o",
+        //         CultureInfo.InvariantCulture,
+        //         DateTimeStyles.RoundtripKind,
+        //         out DateTime lastActivityValue))
+        // {
+        //     this.lastActivity = lastActivityValue;
+        // }
     }
 
-    private async ValueTask<ISession> GetSession(CancellationToken cancellationToken)
+    private void GetPrincipal()
     {
         if (_httpContextAccessor.HttpContext is null)
         {
             throw new InvalidOperationException();
         }
 
-        this.GetPrincipal();
-
-        if (this.session is null)
-        {
-            this.session = _httpContextAccessor.HttpContext.Session;
-            await this.session.LoadAsync(cancellationToken);
-        }
-
-        return this.session;
-    }
-
-    private Principal GetPrincipal()
-    {
-        if (_httpContextAccessor.HttpContext is null)
-        {
-            throw new InvalidOperationException();
-        }
-
-        this.principal ??= new Principal(_httpContextAccessor.HttpContext.User);
-
-        return this.principal;
+        var header = _httpContextAccessor.HttpContext.Request.Headers;
+        var payload = RequestHeaderHelper.GetPayloadToken(header);
+        _payloadJObject = JsonHelpers.DeserializeFromBase64(payload);
     }
 
     private async Task CommitAsync(
         CancellationToken cancellationToken)
     {
-        await this.LoadAsync(cancellationToken);
+        this.LoadAsync();
 
         if (this.hasChanged && this.session is not null)
         {
             string lastActivityString = this.lastActivity?.ToString("o") ?? string.Empty;
 
-            this.session.SetString(SessionState.SessionVariable_ObjectId, this.principal.Id);
             this.session.SetString(SessionState.SessionVariable_LastActivity, lastActivityString);
 
             this.hasChanged = false;

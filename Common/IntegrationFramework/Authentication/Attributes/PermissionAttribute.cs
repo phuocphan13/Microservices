@@ -1,6 +1,5 @@
 using ApiClient.DirectApiClients.Identity;
 using Core.Common.Helpers;
-using IntegrationFramework.Common.AttributeHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;

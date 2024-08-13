@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace IntegrationFramework.Common.AttributeHelpers;
+namespace Core.Common.Helpers;
 
 public static class RequestHeaderHelper
 {
