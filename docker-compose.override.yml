@@ -16,6 +16,14 @@ services:
       - "6379:6379"
     volumes:
       - ./basketdb/data:/data
+        
+  catalogCache:
+    container_name: catalogCache
+    restart: always
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./basketdb/data:/data
 
   discountdb:
     container_name: discountdb

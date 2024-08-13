@@ -9,6 +9,9 @@ services:
     
   sagadb:
     image: redis
+  
+  catalogCache:
+    image: redis
     
   discountdb:
     image: postgres
