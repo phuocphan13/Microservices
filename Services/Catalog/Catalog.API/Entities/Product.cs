@@ -19,6 +19,8 @@ public class Product : BaseEntity
     public string? ImageFile { get; set; }
 
     public decimal Price { get; set; }
+    
+    public int Balance { get; set; }
 
     [BsonElement("CategoryId")]
     public string? CategoryId { get; set; }

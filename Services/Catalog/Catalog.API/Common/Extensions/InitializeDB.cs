@@ -149,7 +149,8 @@ public static class InitializeDB
                 ImageFile = "product-1.png",
                 Price = 950.00M,
                 CategoryId = CategorySmartPhoneId,
-                SubCategoryId = SubCategoryAppleId
+                SubCategoryId = SubCategoryAppleId,
+                Balance = 50
             },
             new()
             {
@@ -161,7 +162,8 @@ public static class InitializeDB
                 ImageFile = "product-2.png",
                 Price = 840.00M,
                 CategoryId = CategorySmartPhoneId,
-                SubCategoryId = SubCategorySamSungId
+                SubCategoryId = SubCategorySamSungId,
+                Balance = 60
             },
             new()
             {
@@ -173,7 +175,8 @@ public static class InitializeDB
                 ImageFile = "product-3.png",
                 Price = 650.00M,
                 CategoryId = CategorySmartPhoneId,
-                SubCategoryId = SubCategoryHauweiId
+                SubCategoryId = SubCategoryHauweiId,
+                Balance = 70
             },
             new()
             {
@@ -185,7 +188,8 @@ public static class InitializeDB
                 ImageFile = "product-4.png",
                 Price = 470.00M,
                 CategoryId = CategorySmartPhoneId,
-                SubCategoryId = SubCategoryXiaomiId
+                SubCategoryId = SubCategoryXiaomiId,
+                Balance = 80
             },
             new()
             {
@@ -197,7 +201,8 @@ public static class InitializeDB
                 ImageFile = "product-5.png",
                 Price = 380.00M,
                 CategoryId = CategorySmartPhoneId,
-                SubCategoryId = SubCategoryHTCId
+                SubCategoryId = SubCategoryHTCId,
+                Balance = 90
             },
             new()
             {
@@ -209,7 +214,8 @@ public static class InitializeDB
                 ImageFile = "product-6.png",
                 Price = 240.00M,
                 CategoryId = CategorySmartPhoneId,
-                SubCategoryId = SubCategoryLGId
+                SubCategoryId = SubCategoryLGId,
+                Balance = 100
             },
             new()
             {
@@ -221,7 +227,8 @@ public static class InitializeDB
                 ImageFile = "product-2.png",
                 Price = 800.00M,
                 CategoryId = CategoryLaptopPhoneId,
-                SubCategoryId = SubCategoryLGLaptopId
+                SubCategoryId = SubCategoryLGLaptopId,
+                Balance = 110
             },
         };
     }

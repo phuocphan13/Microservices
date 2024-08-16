@@ -1,9 +1,6 @@
 using ApiClient;
 using Catalog.API.Common.Extensions;
-using Catalog.API.Repositories;
-using Catalog.API.Services;
-using Catalog.API.Services.Grpc;
-using Discount.Grpc.Protos;
+using Catalog.API.Extensions.AppBuilder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
@@ -21,26 +18,10 @@ builder.Services.AddControllers();
 
 builder.Services
     .AddPlatformCommonServices()
-    .AddIdentityInternalClient();
-    // .AddCustomAuthenticate(builder.Configuration);
-
-builder.Services.AddAuthorization();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
-//Services
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
-builder.Services.AddScoped<ICatalogService, CatalogService>();
-
-builder.Services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();
-
-builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(x => x.Address = new Uri(builder.Configuration["GrpcSettings:DiscountUrl"]));
+    .AddIdentityInternalClient()
+    .AddServiceDependency()
+    .AddThirdParty(builder.Configuration)
+    .AddRedisServices();
 
 builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"C:\temp-keys\"))
     .UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration()
@@ -60,9 +41,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-// app.UseAuthentication();
-// app.UseAuthorization();
 
 app.MapControllers();
 

@@ -41,7 +41,7 @@ public class ProductController : ApiController
     }
 
     [HttpGet("{id:length(24)}", Name = "GetProductById")]
-    [Permission(PermissionConstants.Feature.CatalogApi.GetProductById)]
+    // [Permission(PermissionConstants.Feature.CatalogApi.GetProductById)]
     public async Task<IActionResult> GetProductById(string id, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(id))
