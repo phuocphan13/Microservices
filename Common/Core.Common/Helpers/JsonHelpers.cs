@@ -8,6 +8,7 @@ public static class JsonHelpers
     {
         var decoded = Convert.FromBase64String(value);
         var decodedPayload = System.Text.Encoding.Default.GetString(decoded);
+        
         return JObject.Parse(decodedPayload);
     }
 }

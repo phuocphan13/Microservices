@@ -22,16 +22,24 @@ public class PermissionAttribute : Attribute, IAuthorizationFilter
         var header = context.HttpContext.Request.Headers;
 
         var payload = RequestHeaderHelper.GetPayloadToken(header);
-        var payloadJObject = JsonHelpers.DeserializeFromBase64(payload);
-
-        if (payloadJObject.GetValue("userId") is null)
+        
+        if (string.IsNullOrWhiteSpace(payload))
         {
-            context.Result = new NotFoundResult();
+            context.Result = new ForbidResult();
 
             return;
         }
+        
+        var payloadJObject = JsonHelpers.DeserializeFromBase64(payload);
 
-        var userId = payloadJObject.GetValue("userId")!.ToString();
+        var userId = payloadJObject.GetValue("userId");
+
+        if (userId is null)
+        {
+            context.Result = new NotFoundObjectResult("UserId not found");
+
+            return;
+        }
 
         if (permissionService is null)
         {
@@ -40,7 +48,7 @@ public class PermissionAttribute : Attribute, IAuthorizationFilter
             return;
         }
 
-        var hasPermission = permissionService.HasPermissionAsync(userId, _featureName, context.HttpContext.RequestAborted).GetAwaiter().GetResult();
+        var hasPermission = permissionService.HasPermissionAsync(userId.ToString(), _featureName, context.HttpContext.RequestAborted).GetAwaiter().GetResult();
 
         if (hasPermission is null || !hasPermission.Result.HasPermission)
         {

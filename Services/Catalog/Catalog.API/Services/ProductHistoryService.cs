@@ -39,8 +39,8 @@ public class ProductHistoryService : IProductHistoryService
         {
             return false;
         }
-        
-        var productHistory = new ProductHistory
+
+        ProductHistory productHistory = new()
         {
             ProductId = product.Id,
             Balance = requestBody.Balance,
