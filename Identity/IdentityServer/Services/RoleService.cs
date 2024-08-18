@@ -194,7 +194,7 @@ public class RoleService : IRoleService
             Name = requestBody.Name,
             Description = requestBody.Description,
             NormalizedName = requestBody.Name.ToUpper(),
-            CreatedBy = _sessionState.GetUserIdAsync(),
+            CreatedBy = _sessionState.GetUserId(),
             CreatedDate = DateTime.UtcNow
         };
         

@@ -1,4 +1,6 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Platform.Common;
 using Platform.Common.Session;
 using Platform.Database.Redis;
@@ -16,10 +18,13 @@ public static class IServiceExtensionCollection
         return services;
     }
     
-    public static IServiceCollection AddRedisServices(this IServiceCollection services)
+    public static IServiceCollection AddRedisServices(this IServiceCollection services, IConfiguration configuration)
     {
         // services.AddSingleton<IRedisDb, RedisDb>();
         services.AddSingleton<IRedisDbFactory, RedisDbFactory>();
+
+        services.AddHealthChecks()
+            .AddRedis(configuration["CacheSettings:ConnectionString"], "Redis", HealthStatus.Unhealthy);
 
         return services;
     }

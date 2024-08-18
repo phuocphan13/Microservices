@@ -8,6 +8,8 @@ public interface IRedisDbFactory
     Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default) where T : class, new();
 
     Task<bool> SetAsync<T>(string key, T item, TimeSpan? expiry, CancellationToken cancellationToken = default) where T : class, new();
+
+    Task<List<string>> GetAllKeysAsync(CancellationToken cancellationToken = default);
 }
 
 public class RedisDbFactory : IRedisDbFactory, IDisposable
@@ -21,6 +23,25 @@ public class RedisDbFactory : IRedisDbFactory, IDisposable
     {
         _connectionString = configuration["CacheSettings:ConnectionString"];
         _defaultDb = int.Parse(configuration["CacheSettings:DefaultDb"]);
+    }
+    
+    public async Task<List<string>> GetAllKeysAsync(CancellationToken cancellationToken)
+    {
+        IRedisDb redisDb = await this.CreateAsync(
+            cancellationToken);
+        
+        List<string> keys = new();
+        
+        try
+        {
+            keys = await redisDb.GetAllKeys();
+        }
+        catch
+        {
+            // Exception is deliberately ignored
+        }
+
+        return keys;
     }
 
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken)

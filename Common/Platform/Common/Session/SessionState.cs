@@ -7,7 +7,7 @@ namespace Platform.Common.Session;
 public interface ISessionState
 {
     string GetAccessToken();
-    string GetUserIdAsync();
+    string GetUserId();
 }
 
 public class SessionState : ISessionState
@@ -45,7 +45,7 @@ public class SessionState : ISessionState
         return authorizationToken;
     }
 
-    public string GetUserIdAsync()
+    public string GetUserId()
     {
         this.LoadAsync();
         return _payloadJObject.GetValue("userId")!.ToString();

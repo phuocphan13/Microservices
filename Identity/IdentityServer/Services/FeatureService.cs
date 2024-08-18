@@ -50,7 +50,7 @@ public class FeatureService : IFeatureService
             Description = requestBody.Description,
             ApplicationId = application.Id,
             ExternalId = Guid.NewGuid(),
-            CreatedBy = _sessionState.GetUserIdAsync(),
+            CreatedBy = _sessionState.GetUserId(),
             CreatedDate = DateTime.UtcNow
         };
 

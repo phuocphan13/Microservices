@@ -1,10 +1,52 @@
 using ApiClient.Catalog.Product.Models;
 using Catalog.API.Entities;
+using Catalog.API.Models;
 
 namespace Catalog.API.Extensions;
 
 public static class ProductExtension
 {
+    public static ProductDetail ToDetailFromCachedModel(this ProductCachedModel product)
+    {
+        return new ProductDetail()
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            // Summary = product.Summary,
+            // ImageFile = product.ImageFile,
+        };
+    }
+
+    public static ProductSummary ToSummaryFromCachedModel(this ProductCachedModel product, string? categoryName, string? subCategoryName)
+    {
+        return new ProductSummary()
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            // Summary = product.Summary,
+            // ImageFile = product.ImageFile,
+        };
+    }
+    
+    public static ProductCachedModel ToCachedModel(this Product product)
+    {
+        return new ProductCachedModel()
+        {
+            Id = product.Id,
+            Name = product.Name!,
+            ProductCode = product.ProductCode!,
+            Price = product.Price,
+            Balance = product.Balance,
+            CategoryId = product.CategoryId,
+            SubCategoryId = product.SubCategoryId,
+            HasChange = false
+        };
+    }
+    
     public static ProductSummary ToSummary(this Product product, string? categoryName, string? subCategoryName)
     {
         return new ProductSummary()

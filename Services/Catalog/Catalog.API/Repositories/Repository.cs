@@ -9,6 +9,7 @@ namespace Catalog.API.Repositories;
 public interface IRepository<TEntity>
     where TEntity : BaseEntity
 {
+    Task<List<string>> GetEntityIdsAsync(CancellationToken cancellationToken = default);
     Task<List<TEntity>> GetEntitiesAsync(CancellationToken cancellationToken = default);
     Task<TEntity> GetEntityFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     Task<List<TEntity>> GetEntitiesQueryAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
@@ -28,6 +29,13 @@ public class Repository<TEntity> : IRepository<TEntity>
     {
         var database = new MongoClient(configuration.GetValue<string>(DatabaseConst.ConnectionSetting.MongoDB.ConnectionString)).GetDatabase(configuration.GetValue<string>(DatabaseConst.ConnectionSetting.MongoDB.DatabaseName));
         _collection = database.GetCollection<TEntity>(DatabaseExtensions.GetCollectionName(typeof(TEntity)));
+    }
+
+    public async Task<List<string>> GetEntityIdsAsync(CancellationToken cancellationToken)
+    {
+        var entities = await _collection.Find(x => true).ToListAsync(cancellationToken);
+
+        return entities.Select(x => x.Id).ToList();
     }
 
     public async Task<List<TEntity>> GetEntitiesAsync(CancellationToken cancellationToken)

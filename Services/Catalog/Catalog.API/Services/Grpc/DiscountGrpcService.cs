@@ -1,6 +1,7 @@
 using ApiClient.Discount.Models.Discount;
 using Catalog.API.Entities;
 using Catalog.API.Extensions.Grpc;
+using Catalog.API.Models;
 using Discount.Grpc.Protos;
 
 namespace Catalog.API.Services.Grpc;
@@ -10,7 +11,7 @@ public interface IDiscountGrpcService
     Task<DiscountDetail> GetDiscount(string productName);
     Task<DiscountDetail> GetDiscountByCatalogCode(DiscountEnum type, string catalogCode);
     Task<List<DiscountDetail>> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, IEnumerable<string> catalogCodes);
-    Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct);
+    Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<ProductCachedModel> entityProduct);
 }
 
 public class DiscountGrpcService : IDiscountGrpcService
@@ -85,7 +86,7 @@ public class DiscountGrpcService : IDiscountGrpcService
         return discounts;
     }
 
-    public async Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<Product> entityProduct)
+    public async Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<ProductCachedModel> entityProduct)
     {
         if(entityCategory is null || entityCategory.Count == 0) {
             throw new ArgumentException("Category list cannot be null or empty");
@@ -116,7 +117,17 @@ public class DiscountGrpcService : IDiscountGrpcService
             }
         }
 
-        var result = await _discountGrpcService.TotalDiscountAmountAsync(request);
+        AmountAfterDiscountResponse? result;
+
+        try
+        {
+            result = await _discountGrpcService.TotalDiscountAmountAsync(request);
+        }
+        catch
+        {
+            return new();
+        }
+        
 
         return result.ToListDetail();
     }

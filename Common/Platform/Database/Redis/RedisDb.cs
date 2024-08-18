@@ -10,6 +10,7 @@ public interface IRedisDb
     Task<bool> SetAsync<T>(string key, T item, TimeSpan? expiry = null) where T : class, new();
     Task<bool> RemoveAsync(string key);
     Task<bool> RefreshAsync(string key, TimeSpan? expiry = null);
+    Task<List<string>> GetAllKeys();
 }
 
 public sealed class RedisDb : IRedisDb
@@ -28,6 +29,28 @@ public sealed class RedisDb : IRedisDb
         ArgumentNullException.ThrowIfNull(database);
 
         this.database = database;
+    }
+
+    public async Task<List<string>> GetAllKeys()
+    {
+        var keys = new List<string>();
+        RedisResult? redisValue =  await this.database.ExecuteAsync("KEYS", "*");
+
+        if (redisValue is not null)
+        {
+            for (int i = 0; i < redisValue.Length; i++)
+            {
+                if (redisValue[i].IsNull)
+                {
+                    continue;
+                }
+
+                keys.Add(redisValue[i].ToString());
+            }
+            
+        }
+        
+        return keys;
     }
 
     public Task<RedisResult<T>> GetAsync<T>(string key)

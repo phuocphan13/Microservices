@@ -9,16 +9,18 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddServiceDependency(this IServiceCollection services)
     {
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddSingleton(typeof(IRepository<>), typeof(Repository<>));
 
         // Services
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<ISubCategoryService, SubCategoryService>();
         services.AddScoped<ICatalogService, CatalogService>();
+        
+        services.AddScoped<IProductHistoryService, ProductHistoryService>();
 
         // Cached Services
-        services.AddScoped<IProductCachedService, ProductCachedService>();
+        services.AddSingleton<IProductCachedService, ProductCachedService>();
         
         // Grpc
         services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();

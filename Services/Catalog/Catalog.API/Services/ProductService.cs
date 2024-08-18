@@ -1,6 +1,7 @@
 ﻿using ApiClient.Catalog.Product.Models;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
+using Catalog.API.Models;
 using Catalog.API.Repositories;
 using Catalog.API.Services.Caches;
 using Catalog.API.Services.Grpc;
@@ -55,7 +56,7 @@ public class ProductService : IProductService
 
     public async Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken)
     {
-        var entities = await _productRepository.GetEntitiesAsync(cancellationToken);
+        var entities = await _productCachedService.GetCachedProductsAsync(cancellationToken);
 
         var summaries = await GetProductSummariesInternalAsync(entities, cancellationToken);
 
@@ -68,8 +69,8 @@ public class ProductService : IProductService
 
         if (categoryEntity is not null)
         {
-            var entities = await _productRepository.GetEntitiesQueryAsync(x => x.CategoryId == categoryEntity.Id, cancellationToken);
-
+            var entities = await _productCachedService.QueryCachedProductsAsync(x => x.CategoryId == categoryEntity.Id, cancellationToken);
+            
             return await GetProductSummariesInternalAsync(entities, cancellationToken);
         }
 
@@ -78,35 +79,29 @@ public class ProductService : IProductService
 
     public async Task<ProductDetail?> GetProductByIdAsync(string id, CancellationToken cancellationToken)
     {
-        var a = await _productCachedService.GetCachedProductById("a", cancellationToken);
-        var entity = await _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var entity = await _productCachedService.GetCachedProductByIdAsync(id, cancellationToken);
 
         if (entity is null)
         {
             return null;
         }
-
+        
         var product = await MappingProductDetailInternalAsync(entity, cancellationToken);
         
         return product;
     }
 
-    private async Task GetProductInternalAsync(string id, CancellationToken cancellationToken)
-    {
-        
-    }
-
     public async Task<List<ProductSummary>?> GetProductsByListCodesAsync(List<string> codes, CancellationToken cancellationToken)
     {
-        var entities = await _productRepository.GetEntitiesQueryAsync(x => codes.Contains(x.ProductCode!), cancellationToken);
+        var entities = await _productCachedService.QueryCachedProductsAsync(x => codes.Contains(x.ProductCode), cancellationToken);
 
         if (entities is null || !entities.Any())
         {
             return null;
         }
-
+        
         var products = await GetProductSummariesInternalAsync(entities, cancellationToken);
-
+        
         return products;
     }
 
@@ -121,7 +116,7 @@ public class ProductService : IProductService
             return null;
         }
 
-        var result = await MappingProductDetailInternalAsync(product, cancellationToken);
+        var result = await MappingProductDetailInternalAsync(product.ToCachedModel(), cancellationToken);
         return result;
     }
 
@@ -138,8 +133,8 @@ public class ProductService : IProductService
             return null;
         }
 
-        var result = await MappingProductDetailInternalAsync(entity, cancellationToken);
-
+        var result = await MappingProductDetailInternalAsync(entity.ToCachedModel(), cancellationToken);
+        
         return result;
     }
 
@@ -159,11 +154,15 @@ public class ProductService : IProductService
     }
 
     #region Internal Functions
-    private async Task<List<ProductSummary>> GetProductSummariesInternalAsync(List<Product> entities, CancellationToken cancellationToken)
+    private async Task<List<ProductSummary>> GetProductSummariesInternalAsync(List<ProductCachedModel>? entities, CancellationToken cancellationToken)
     {
+        if (entities is null)
+        {
+            return new List<ProductSummary>();
+        }
+        
         var categoryIds = entities.Select(x => x.CategoryId);
         var subCategoryIds = entities.Select(x => x.SubCategoryId);
-        var productCode = entities.Select(x => x.ProductCode);
 
         var categories = await _categoryRepository.GetEntitiesQueryAsync(x => categoryIds.Contains(x.Id), cancellationToken);
         var subCategories = await _subCategoryRepository.GetEntitiesQueryAsync(x => subCategoryIds.Contains(x.Id), cancellationToken);
@@ -182,15 +181,15 @@ public class ProductService : IProductService
                 entity.Price -= discount.Amount;
             }
 
-            summaries.Add(entity.ToSummary(cate, subCate));
+            summaries.Add(entity.ToSummaryFromCachedModel(cate, subCate));
         }
 
         return summaries;
     }
 
-    private async Task<ProductDetail> MappingProductDetailInternalAsync(Product entity, CancellationToken cancellationToken)
+    private async Task<ProductDetail> MappingProductDetailInternalAsync(ProductCachedModel entity, CancellationToken cancellationToken)
     {
-        var product = entity.ToDetail();
+        var product = entity.ToDetailFromCachedModel();
 
         var category = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == entity.CategoryId, cancellationToken);
         var subCategory = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == entity.SubCategoryId, cancellationToken);

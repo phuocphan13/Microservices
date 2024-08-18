@@ -21,7 +21,7 @@ builder.Services
     .AddIdentityInternalClient()
     .AddServiceDependency()
     .AddThirdParty(builder.Configuration)
-    .AddRedisServices();
+    .AddRedisServices(builder.Configuration);
 
 builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"C:\temp-keys\"))
     .UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration()

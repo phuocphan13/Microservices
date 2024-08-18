@@ -15,6 +15,8 @@ public static class DatabaseConst
                 public const string Product = "Products";
                 public const string Category = "Categories";
                 public const string SubCategory = "SubCategories";
+
+                public const string ProductHistory = "ProductHistory";
             }
         }
         
