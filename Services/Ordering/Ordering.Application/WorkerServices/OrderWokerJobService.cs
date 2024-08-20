@@ -6,6 +6,8 @@ namespace Ordering.Application.WorkerServices;
 
 public class OrderWokerJobService : BackgroundService
 {
+    private const string JobName = "AcceptOrder";
+    
     private readonly IBasketStateJobService _basketStateJobService;
     private readonly IRunStateService _runStateService;
 
@@ -22,12 +24,12 @@ public class OrderWokerJobService : BackgroundService
             try
             {
                 var succeed = await _basketStateJobService.ChangeStateToAcceptedAsync(cancellationToken);
-                await _runStateService.SaveJobRunningInfoAsync("AcceptOrder", succeed, string.Empty, cancellationToken);
+                await _runStateService.SaveJobRunningInfoAsync(JobName, succeed, string.Empty, cancellationToken);
             }
             catch (Exception e)
             {
-                await _runStateService.SaveJobRunningInfoAsync("AcceptOrder", false, e.Message, cancellationToken);
+                await _runStateService.SaveJobRunningInfoAsync(JobName, false, e.Message, cancellationToken);
             }
-        }, cancellationToken);
+        }, TimeSpan.FromMinutes(5), cancellationToken);
     }
 }

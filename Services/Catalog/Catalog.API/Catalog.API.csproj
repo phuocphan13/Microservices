@@ -17,6 +17,7 @@
     <ProjectReference Include="..\..\..\Common\ApiClient\ApiClient.csproj" />
     <ProjectReference Include="..\..\..\Common\IntegrationFramework\IntegrationFramework.csproj" />
     <ProjectReference Include="..\..\..\Common\Platform\Platform.csproj" />
+    <ProjectReference Include="..\..\..\Common\Worker\Worker.csproj" />
     <ProjectReference Include="..\..\..\Identity\IdentityServer.Common\IdentityServer.Common.csproj" />
   </ItemGroup>
   

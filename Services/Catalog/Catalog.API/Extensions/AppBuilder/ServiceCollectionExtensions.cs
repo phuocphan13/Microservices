@@ -2,6 +2,7 @@ using Catalog.API.Repositories;
 using Catalog.API.Services;
 using Catalog.API.Services.Caches;
 using Catalog.API.Services.Grpc;
+using Catalog.API.Services.Workers;
 
 namespace Catalog.API.Extensions.AppBuilder;
 
@@ -24,6 +25,10 @@ public static class ServiceCollectionExtensions
         
         // Grpc
         services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();
+        
+        // Worker Services
+        services.AddHostedService<ProductCachedWorkerService>();
+        services.AddHostedService<RefreshCacheWorkerService>();
 
         return services;
     }

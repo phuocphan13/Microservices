@@ -11,4 +11,5 @@ public class ProductCachedModel
     public string? CategoryId { get; set; }
     public string? SubCategoryId { get; set; }
     public bool HasChange { get; set; }
+    public DateTime LastUpdated { get; set; }
 }

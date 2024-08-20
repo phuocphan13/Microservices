@@ -10,6 +10,7 @@ public interface IRedisDbFactory
     Task<bool> SetAsync<T>(string key, T item, TimeSpan? expiry, CancellationToken cancellationToken = default) where T : class, new();
 
     Task<List<string>> GetAllKeysAsync(CancellationToken cancellationToken = default);
+    Task<bool> RemoveAsync(string key, CancellationToken cancellationToken = default);
 }
 
 public class RedisDbFactory : IRedisDbFactory, IDisposable
@@ -70,6 +71,14 @@ public class RedisDbFactory : IRedisDbFactory, IDisposable
             cancellationToken);
 
         return await redisDb.SetAsync(key, item, expiry);
+    }
+    
+    public async Task<bool> RemoveAsync(string key, CancellationToken cancellationToken)
+    {
+        IRedisDb redisDb = await this.CreateAsync(
+            cancellationToken);
+
+        return await redisDb.RemoveAsync(key);
     }
 
     private async Task<IRedisDb> CreateAsync(CancellationToken cancellationToken)

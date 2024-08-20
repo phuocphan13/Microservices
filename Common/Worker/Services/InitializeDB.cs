@@ -7,7 +7,7 @@ namespace Worker.Services;
 public static class InitializeDB
 {
     public static async Task InitializeWorkerDbContextsAsync(
-        this IApplicationBuilder app,
+        this IApplicationBuilder _,
         bool isRebuildSchema = true,
         CancellationToken cancellationToken = default)
     {
@@ -33,6 +33,15 @@ public static class InitializeDB
                 CreatedDate = DateTime.Now,
                 CreatedBy = "Admin",
                 Name = "AcceptOrder",
+                LastModifiedDate = DateTime.Now,
+                LastModifiedBy = "Admin",
+            },
+            new()
+            {
+                ExternalId = Guid.NewGuid(),
+                CreatedDate = DateTime.Now,
+                CreatedBy = "Admin",
+                Name = "UpdateCache",
                 LastModifiedDate = DateTime.Now,
                 LastModifiedBy = "Admin",
             },

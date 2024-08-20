@@ -12,6 +12,7 @@ public interface IProductCachedService
     Task<List<ProductCachedModel>?> GetCachedProductsAsync(CancellationToken cancellationToken = default);
     Task<ProductCachedModel?> GetCachedProductByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<ProductCachedModel?> UpdateHasChangeProductAsync(string id, CancellationToken cancellationToken = default);
+    Task RefreshCachedProductsAsync(CancellationToken cancellationToken = default);
 }
 
 public class ProductCachedService : IProductCachedService
@@ -29,6 +30,14 @@ public class ProductCachedService : IProductCachedService
         _productRepository = productRepository;
 
         GetProductIdsAsync(default).GetAwaiter().GetResult();
+    }
+    
+    public async Task RefreshCachedProductsAsync(CancellationToken cancellationToken)
+    {
+        foreach (var id in _productIdsFilter)
+        {
+            await GetCachedProductByIdAsync(id, cancellationToken);
+        }
     }
     
     public async Task<List<ProductCachedModel>?> QueryCachedProductsAsync(Func<ProductCachedModel, bool> predicate, CancellationToken cancellationToken)
@@ -85,6 +94,7 @@ public class ProductCachedService : IProductCachedService
 
                 var cachedProduct = entity.ToCachedModel();
                 cachedProduct.HasChange = false;
+                cachedProduct.LastUpdated = DateTime.UtcNow;
 
                 await _redisCache.SetAsync(id, cachedProduct, null, cancellationToken);
 
