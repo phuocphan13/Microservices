@@ -23,8 +23,8 @@ public class ProductCachedWorkerService : BackgroundService
         {
             try
             {
-                await RefreshProductCachedAsync(cancellationToken);
-                await _runStateService.SaveJobRunningInfoAsync(JobName, true, string.Empty, cancellationToken);
+                // await RefreshProductCachedAsync(cancellationToken);
+                // await _runStateService.SaveJobRunningInfoAsync(JobName, true, string.Empty, cancellationToken);
             }
             catch (Exception e)
             {

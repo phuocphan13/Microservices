@@ -135,6 +135,7 @@ public class ProductCachedService : IProductCachedService
 
         if (product is null || product.HasChange)
         {
+            // 499 requests blocked
             await semaphore.WaitAsync(cancellationToken);
             try
             {

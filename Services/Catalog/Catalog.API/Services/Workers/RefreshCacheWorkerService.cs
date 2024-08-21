@@ -26,8 +26,8 @@ public class RefreshCacheWorkerService : BackgroundService
         {
             try
             {
-                await RefreshCachedAsync(cancellationToken);
-                await _runStateService.SaveJobRunningInfoAsync(JobName, true, string.Empty, cancellationToken);
+                // await RefreshCachedAsync(cancellationToken);
+                // await _runStateService.SaveJobRunningInfoAsync(JobName, true, string.Empty, cancellationToken);
             }
             catch (Exception e)
             {
