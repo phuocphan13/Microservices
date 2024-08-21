@@ -40,9 +40,8 @@ public static class IServiceExtensionCollection
         {
             x.AddEntityFrameworkOutbox<MessageDbContext>(o =>
             {
-                o.UseSqlServer();
-
                 o.DuplicateDetectionWindow = TimeSpan.FromSeconds(30);
+                o.UseSqlServer();
             });
 
             x.SetKebabCaseEndpointNameFormatter();

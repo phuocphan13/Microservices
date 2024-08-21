@@ -27,7 +27,7 @@ public class ProductController : ApiController
     }
 
     [HttpGet]
-    // [Permission(PermissionConstants.Feature.CatalogApi.GetAllProducts)]
+    [Permission(PermissionConstants.Feature.CatalogApi.GetAllProducts)]
     public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
     {
         var result = await _productService.GetProductsAsync(cancellationToken);
