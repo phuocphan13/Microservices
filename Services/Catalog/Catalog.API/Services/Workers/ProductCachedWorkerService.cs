@@ -9,12 +9,12 @@ public class ProductCachedWorkerService : BackgroundService
     private const string JobName = "UpdateCache";
     
     private readonly IRunStateService _runStateService;
-    private readonly IProductCachedService _productCachedService;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public ProductCachedWorkerService(IRunStateService runStateService, IProductCachedService productCachedService)
+    public ProductCachedWorkerService(IRunStateService runStateService, IServiceScopeFactory scopeFactory)
     {
         _runStateService = runStateService;
-        _productCachedService = productCachedService;
+        _scopeFactory = scopeFactory;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -23,8 +23,15 @@ public class ProductCachedWorkerService : BackgroundService
         {
             try
             {
-                // await RefreshProductCachedAsync(cancellationToken);
-                // await _runStateService.SaveJobRunningInfoAsync(JobName, true, string.Empty, cancellationToken);
+                var isRunning = await _runStateService.IsRunningAsync(JobName, cancellationToken);
+
+                if (!isRunning)
+                {
+                    return;
+                }
+                
+                await RefreshProductCachedAsync(cancellationToken);
+                await _runStateService.SaveJobRunningInfoAsync(JobName, true, string.Empty, cancellationToken);
             }
             catch (Exception e)
             {
@@ -35,6 +42,9 @@ public class ProductCachedWorkerService : BackgroundService
 
     private async Task RefreshProductCachedAsync(CancellationToken cancellationToken)
     {
-        await _productCachedService.RefreshCachedProductsAsync(cancellationToken);
+        using var scope = _scopeFactory.CreateScope();
+        var productCachedService = scope.ServiceProvider.GetRequiredService<IProductCachedService>();
+        
+        await productCachedService.RefreshCachedProductsAsync(cancellationToken);
     }
 }

@@ -110,7 +110,7 @@ public class DiscountGrpcService : IDiscountGrpcService
             {
                 foreach (var productItem in entityProduct.Where(x => x.SubCategoryId == subCategoryItem.Id))
                 {
-                    var combinatedCode = $"{productItem.ProductCode}.{subCategoryItem.SubCategoryCode}.{categoryItem.CategoryCode}";
+                    var combinatedCode = $"{productItem.Code}.{subCategoryItem.SubCategoryCode}.{categoryItem.CategoryCode}";
 
                     request.Codes.Add(combinatedCode);
                 }

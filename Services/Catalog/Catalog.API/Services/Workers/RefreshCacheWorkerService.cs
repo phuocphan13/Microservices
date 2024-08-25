@@ -10,14 +10,14 @@ public class RefreshCacheWorkerService : BackgroundService
     private const string JobName = "UpdateCache";
 
     private readonly IRunStateService _runStateService;
-    private readonly IProductCachedService _productCachedService;
     private readonly IRedisDbFactory _redisCache;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public RefreshCacheWorkerService(IRunStateService runStateService, IProductCachedService productCachedService, IRedisDbFactory redisCache)
+    public RefreshCacheWorkerService(IRunStateService runStateService, IRedisDbFactory redisCache, IServiceScopeFactory scopeFactory)
     {
         _runStateService = runStateService;
         _redisCache = redisCache;
-        _productCachedService = productCachedService;
+        _scopeFactory = scopeFactory;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -26,8 +26,15 @@ public class RefreshCacheWorkerService : BackgroundService
         {
             try
             {
-                // await RefreshCachedAsync(cancellationToken);
-                // await _runStateService.SaveJobRunningInfoAsync(JobName, true, string.Empty, cancellationToken);
+                var isRunning = await _runStateService.IsRunningAsync(JobName, cancellationToken);
+
+                if (!isRunning)
+                {
+                    return;
+                }
+                
+                await RefreshCachedAsync(cancellationToken);
+                await _runStateService.SaveJobRunningInfoAsync(JobName, true, string.Empty, cancellationToken);
             }
             catch (Exception e)
             {
@@ -38,7 +45,10 @@ public class RefreshCacheWorkerService : BackgroundService
     
     private async Task RefreshCachedAsync(CancellationToken cancellationToken)
     {
-        var products = await _productCachedService.GetCachedProductsAsync(cancellationToken);
+        using var scope = _scopeFactory.CreateScope();
+        var productCachedService = scope.ServiceProvider.GetRequiredService<IProductCachedService>();
+        
+        var products = await productCachedService.GetCachedProductsAsync(cancellationToken);
         
         if (products is null)
         {

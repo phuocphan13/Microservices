@@ -38,7 +38,7 @@ public static class ProductExtension
         {
             Id = product.Id,
             Name = product.Name!,
-            ProductCode = product.ProductCode!,
+            Code = product.ProductCode!,
             Price = product.Price,
             Balance = product.Balance,
             CategoryId = product.CategoryId,

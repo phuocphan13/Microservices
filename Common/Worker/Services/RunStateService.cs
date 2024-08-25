@@ -5,11 +5,36 @@ namespace Worker.Services;
 
 public interface IRunStateService
 {
+    Task<bool> IsRunningAsync(string jobName, CancellationToken cancellationToken = default);
     Task SaveJobRunningInfoAsync(string jobName, bool isSuccess, string errorMessage, CancellationToken cancellationToken = default);
 }
 
 public class RunStateService : IRunStateService
 {
+    public async Task<bool> IsRunningAsync(string jobName, CancellationToken cancellationToken)
+    {
+        var context = new WorkerContext();
+        
+        var job = await context.Jobs.AsNoTracking().FirstOrDefaultAsync(x => x.Name == jobName, cancellationToken);
+        
+        if (job is null)
+        {
+            return false;
+        }
+        
+        var lastRun = await context.JobRunHistories
+            .Where(x => x.JobExternalId == job.ExternalId)
+            .OrderByDescending(x => x.TimeStamp)
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        if (lastRun is null)
+        {
+            return false;
+        }
+        
+        return lastRun.TimeStamp > DateTime.UtcNow.AddMinutes(-30);
+    }
+    
     public async Task SaveJobRunningInfoAsync(string jobName, bool isSuccess, string errorMessage, CancellationToken cancellationToken)
     {
         var context = new WorkerContext();

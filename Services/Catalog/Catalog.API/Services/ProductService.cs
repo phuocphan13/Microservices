@@ -93,7 +93,7 @@ public class ProductService : IProductService
 
     public async Task<List<ProductSummary>?> GetProductsByListCodesAsync(List<string> codes, CancellationToken cancellationToken)
     {
-        var entities = await _productCachedService.QueryCachedProductsAsync(x => codes.Contains(x.ProductCode), cancellationToken);
+        var entities = await _productCachedService.QueryCachedProductsAsync(x => codes.Contains(x.Code), cancellationToken);
 
         if (entities is null || !entities.Any())
         {
@@ -174,7 +174,7 @@ public class ProductService : IProductService
         {
             var cate = categories.FirstOrDefault(x => x.Id == entity.CategoryId)?.Name;
             var subCate = subCategories.FirstOrDefault(x => x.Id == entity.SubCategoryId)?.Name;
-            var discount = discounts?.FirstOrDefault(x => x.CatalogCode == entity.ProductCode);
+            var discount = discounts?.FirstOrDefault(x => x.CatalogCode == entity.Code);
 
             if (discount is not null)
             {
