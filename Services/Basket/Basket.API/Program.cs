@@ -6,15 +6,6 @@ using Platform;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Config Redis
-builder.Services.AddStackExchangeRedisCache(option =>
-{
-    option.Configuration = builder.Configuration["CacheSettings:ConnectionString"];
-});
-
-// builder.Services.AddCustomAuthenticate(builder.Configuration);
-// builder.Services.AddAuthorization();
-
 // Add services to the container.
 builder.Services.AddControllers();
 

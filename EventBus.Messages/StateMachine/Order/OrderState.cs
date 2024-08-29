@@ -2,7 +2,7 @@ using MassTransit;
 
 namespace EventBus.Messages.StateMachine.Basket;
 
-public class BasketState : SagaStateMachineInstance, ISagaVersion
+public class OrderState : SagaStateMachineInstance, ISagaVersion
 {
     public Guid CorrelationId { get; set; }
     

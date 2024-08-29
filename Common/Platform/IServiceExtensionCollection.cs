@@ -11,6 +11,7 @@ public static class IServiceExtensionCollection
 {
     public static IServiceCollection AddPlatformCommonServices(this IServiceCollection services)
     {
+        services.AddHttpClient();
         services.AddHttpContextAccessor();
         services.AddScoped<ISessionState, SessionState>();
         services.AddScoped(typeof(IValidationResult<>), typeof(ValidationResult<>));

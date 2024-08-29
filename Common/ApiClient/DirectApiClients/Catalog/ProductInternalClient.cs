@@ -1,5 +1,6 @@
 using ApiClient.Catalog;
 using ApiClient.Catalog.Product.Models;
+using ApiClient.Catalog.ProductHistory.Models;
 using ApiClient.Common;
 using Microsoft.Extensions.Configuration;
 using Platform.ApiBuilder;
@@ -10,6 +11,7 @@ namespace ApiClient.DirectApiClients.Catalog;
 public interface IProductInternalClient
 {
     Task<ApiCollectionResult<ProductSummary>> GetProductsByListCodesAsync(IEnumerable<string> codes, CancellationToken cancellationToken = default);
+    Task<ApiStatusResult> ReduceProductBalanceAsync(List<ReduceProductBalanceRequestBody> requestBodies, CancellationToken cancellationToken = default);
 }
 
 public class ProductInternalClient : CommonApiClient, IProductInternalClient
@@ -32,6 +34,15 @@ public class ProductInternalClient : CommonApiClient, IProductInternalClient
         }
 
         var result = await GetCollectionAsync<ProductSummary>(url, cancellationToken);
+
+        return result;
+    }
+    
+    public async Task<ApiStatusResult> ReduceProductBalanceAsync(List<ReduceProductBalanceRequestBody> requestBodies, CancellationToken cancellationToken)
+    {
+        var url = $"{_baseUrl}{ApiUrlConstants.ReduceProductBalance}";
+
+        var result = await PostAsync(url, requestBodies, cancellationToken);
 
         return result;
     }

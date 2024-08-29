@@ -26,22 +26,17 @@ public static class IServiceExtensionCollection
 
     public static IServiceCollection AddMessageOutboxCosumer(this IServiceCollection services, IConfiguration configuration, Action<IBusRegistrationConfigurator>? busAction = default)
     {
-        services.AddDbContext<MessageDbContext>(x =>
-        {
-            var connectionString = configuration["EventBusSettings:ConnectionString"];
-
-            x.UseSqlServer(connectionString, options =>
-            {
-                options.MinBatchSize(1);
-            });
-        });
+        services.AddMessageDbContext(configuration);
         
         services.AddMassTransit(x =>
         {
-            x.AddEntityFrameworkOutbox<MessageDbContext>(o =>
+            x.AddEntityFrameworkOutbox<OrderMessageDbContext>(o =>
             {
+                o.QueryDelay = TimeSpan.FromSeconds(1);
                 o.DuplicateDetectionWindow = TimeSpan.FromSeconds(30);
                 o.UseSqlServer();
+                o.DisableInboxCleanupService();
+                o.UseBusOutbox();
             });
 
             x.SetKebabCaseEndpointNameFormatter();
@@ -49,10 +44,10 @@ public static class IServiceExtensionCollection
             // Add consumers
             busAction?.Invoke(x);
             
-            x.AddSagaStateMachine<BasketStateMachine, BasketState, BasketStateDefinition>()
+            x.AddSagaStateMachine<OrderStateMachine, OrderState, OrderStateDefinition>()
                 .EntityFrameworkRepository(r =>
                 {
-                    r.ExistingDbContext<MessageDbContext>();
+                    r.ExistingDbContext<OrderMessageDbContext>();
                     r.UseSqlServer();
                 });
 
@@ -76,33 +71,12 @@ public static class IServiceExtensionCollection
 
         return services;
     }
-    
-    private static IServiceCollection AddMessageDbContext(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddDbContext<MessageDbContext>(x =>
-        {
-            var connectionString = configuration["EventBusSettings:ConnectionString"];
 
-            x.UseSqlServer(connectionString, options =>
-            {
-                options.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
-                options.MigrationsHistoryTable($"__{nameof(MessageDbContext)}");
-
-                options.EnableRetryOnFailure(5);
-                options.MinBatchSize(1);
-            });
-        });
-
-        services.AddHostedService<RecreateDatabaseHostedService<MessageDbContext>>();
-
-        return services;
-    }
-    
     private static IServiceCollection AddMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMassTransit(x =>
         {
-            x.AddEntityFrameworkOutbox<MessageDbContext>(o =>
+            x.AddEntityFrameworkOutbox<OrderMessageDbContext>(o =>
             {
                 o.QueryDelay = TimeSpan.FromSeconds(1);
 
@@ -110,13 +84,34 @@ public static class IServiceExtensionCollection
                 o.DisableInboxCleanupService();
                 o.UseBusOutbox();
             });
-            
+
             x.UsingRabbitMq((_, cfg) =>
             {
                 cfg.Host(configuration["EventBusSettings:HostAddress"]);
                 cfg.AutoStart = true;
             });
         });
+
+        return services;
+    }
+    
+    private static IServiceCollection AddMessageDbContext(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddDbContext<OrderMessageDbContext>(x =>
+        {
+            var connectionString = configuration["EventBusSettings:ConnectionString"];
+
+            x.UseSqlServer(connectionString, options =>
+            {
+                options.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+                options.MigrationsHistoryTable($"__{nameof(OrderMessageDbContext)}");
+
+                options.EnableRetryOnFailure(5);
+                options.MinBatchSize(1);
+            });
+        });
+
+        services.AddHostedService<RecreateDatabaseHostedService<OrderMessageDbContext>>();
 
         return services;
     }

@@ -20,7 +20,7 @@ public static class InfrastructureServiceRegistration
 
         services.Configure<EmailSettings>(c => configuration.GetSection("EmailSettings"));
 
-        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<IEmailService, EmailService>();
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

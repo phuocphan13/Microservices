@@ -11,6 +11,9 @@ public class Order : EntityBase
     [MaxLength(256)]
     public string UserName { get; set; } = null!;
     
+    [MaxLength(36)]
+    public string ReceiptNumber { get; set; } = null!;
+    
     public OrderStatus Status { get; set; }
 
     public decimal TotalPrice { get; set; }

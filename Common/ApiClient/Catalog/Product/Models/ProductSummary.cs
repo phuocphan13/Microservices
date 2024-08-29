@@ -15,4 +15,6 @@ public class ProductSummary
     public decimal? Price { get; set; }
     
     public string? Code { get; set; }
+    
+    public int? Balance { get; set; }
 }

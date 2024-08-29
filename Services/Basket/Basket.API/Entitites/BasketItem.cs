@@ -11,4 +11,6 @@ public class BasketItem : BaseEntity
     public string SubCategoryCode { get; set; } = null!;
 
     public string ProductCode { get; set; } = null!;
+    
+    public string ErrorMessage { get; set; } = null!;
 }

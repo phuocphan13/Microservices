@@ -6,15 +6,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EventBus.Messages.Entities;
 
-public class MessageDbContext : SagaDbContext
+public class OrderMessageDbContext : SagaDbContext
 {
-    public MessageDbContext(DbContextOptions<MessageDbContext> options) : base(options)
+    public OrderMessageDbContext(DbContextOptions<OrderMessageDbContext> options) : base(options)
     {
     }
 
     protected override IEnumerable<ISagaClassMap> Configurations
     {
-        get { yield return new BasketStateMap(); }
+        get { yield return new OrderStateMap(); }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -30,13 +30,14 @@ public class MessageDbContext : SagaDbContext
 
     private static void MapRegistration(ModelBuilder modelBuilder)
     {
-        EntityTypeBuilder<Basket> registration = modelBuilder.Entity<Basket>();
+        EntityTypeBuilder<Order> registration = modelBuilder.Entity<Order>();
 
         registration.Property(x => x.Id);
         registration.HasKey(x => x.Id);
         
-        registration.Property(x => x.UserId);
-        registration.Property(x => x.UserName);
+        registration.Property(x => x.UserId).HasMaxLength(64);
+        registration.Property(x => x.UserName).HasMaxLength(128);
+        registration.Property(x => x.BasketKey).HasMaxLength(36);
         
         registration.Property(x => x.TotalPrice);
         registration.Property(x => x.Timestamp);

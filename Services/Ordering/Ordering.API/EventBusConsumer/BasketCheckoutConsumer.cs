@@ -31,9 +31,11 @@ public class BasketCheckoutConsumer : IConsumer<BasketCheckoutMessage>
             return;
         }
         
-        var checkState = await _basketMessageService.CheckBasketStateAsync(context.Message, BasketConstants.BasketState.Checkoutted, context.CancellationToken);
+        List<string> states = new() { OrderConstants.OrderState.Checkoutted, OrderConstants.OrderState.Accepted };
+        
+        var checkState = await _basketMessageService.CheckBasketStateAsync(context.Message, states, context.CancellationToken);
 
-        if (checkState is null or true)
+        if (checkState == true)
         {
             _logger.LogInformation("BasketCheckoutEvent already consumed. CorrelationId: {UserId}", context.Message.UserId);
             return;
