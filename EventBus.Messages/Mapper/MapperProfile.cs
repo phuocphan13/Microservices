@@ -9,8 +9,9 @@ public sealed class MapperProfile : Profile
 {
     public MapperProfile()
     {
-        CreateMap<BasketCheckoutMessage, Order>().ReverseMap();
+        CreateMap<BasketCheckoutMessage, Order>()
+            .ForMember(m => m.ReceiptNumber, opt => opt.MapFrom(src => src.BasketKey)).ReverseMap();
         CreateMap<ProductBalanceUpdateMessage, Order>()
-            .ForMember(m => m.BasketKey, opt => opt.MapFrom(src => src.ReceiptNumber)).ReverseMap();
+            .ForMember(m => m.ReceiptNumber, opt => opt.MapFrom(src => src.ReceiptNumber)).ReverseMap();
     }
 }

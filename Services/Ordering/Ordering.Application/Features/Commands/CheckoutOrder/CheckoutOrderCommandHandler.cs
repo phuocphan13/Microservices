@@ -1,6 +1,5 @@
 ﻿using ApiClient.Catalog.Product.Events;
 using ApiClient.Catalog.ProductHistory.Models;
-using ApiClient.DirectApiClients.Catalog;
 using AutoMapper;
 using EventBus.Messages.Services;
 using MediatR;
@@ -52,8 +51,6 @@ public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand,
                 ReceiptNumber = orderEntity.ReceiptNumber,
                 UserId = request.UserId,
                 UserName = request.UserName,
-                EventId = request.EventId,
-                MemberId = request.MemberId,
                 Products = orderEntity.OrderItems.Select(x => new ReduceProductBalanceRequestBody()
                 {
                     ProductCode = x.ProductCode!,

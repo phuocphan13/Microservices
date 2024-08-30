@@ -37,7 +37,7 @@ public class OrderMessageDbContext : SagaDbContext
         
         registration.Property(x => x.UserId).HasMaxLength(64);
         registration.Property(x => x.UserName).HasMaxLength(128);
-        registration.Property(x => x.BasketKey).HasMaxLength(36);
+        registration.Property(x => x.ReceiptNumber).HasMaxLength(36);
         
         registration.Property(x => x.TotalPrice);
         registration.Property(x => x.Timestamp);
@@ -47,7 +47,8 @@ public class OrderMessageDbContext : SagaDbContext
         registration.HasIndex(x => new
         {
             x.MemberId,
-            x.EventId
+            x.EventId,
+            x.ReceiptNumber
         }).IsUnique();
     }
 }

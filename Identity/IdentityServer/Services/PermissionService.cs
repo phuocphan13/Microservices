@@ -2,7 +2,6 @@ using ApiClient.DirectApiClients.Identity.Models;
 using IdentityServer.Domain;
 using IdentityServer.Domain.Entities;
 using IdentityServer.Domain.Entities.Enums;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Services;

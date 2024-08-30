@@ -38,25 +38,10 @@ public class OrderStateMachine : MassTransitStateMachine<OrderState>
                 .TransitionTo(Checkoutted));
 
         During(Checkoutted,
-            When(BasketCheckoutEvent)
-                .Then(context =>
-                {
-                    // Logic to send the message if it hasn't been sent
-                    // Remember to set the flag to true after sending
-                }));
-
-        During(Checkoutted,
             Ignore(BasketCheckoutEvent));
         
         During(Checkoutted,
             When(ProductBalanceUpdateEvent)
                 .TransitionTo(Accepted));
-
-        // DuringAny(
-        //     When(BasketCheckoutEvent)
-        //         .Then(context =>
-        //         {
-        //             context.Saga.Timestamp = context.Message.Timestamp;
-        //         }));
     }
 }

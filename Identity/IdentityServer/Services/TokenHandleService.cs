@@ -5,7 +5,6 @@ using System.Text;
 using ApiClient.IdentityServer.Models.Response;
 using IdentityServer.Domain.Entities;
 using IdentityServer.Models.Token;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer.Services;

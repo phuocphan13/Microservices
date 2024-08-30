@@ -13,7 +13,7 @@ public class Order
     public string UserName { get; set; } = null!;
     
     [MaxLength(36)]
-    public string BasketKey { get; set; } = null!;
+    public string ReceiptNumber { get; set; } = null!;
     
     public decimal TotalPrice { get; set; }
 

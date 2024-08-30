@@ -2,8 +2,6 @@ using ApiClient.Basket.Events;
 using AutoMapper;
 using EventBus.Messages.Entities;
 using EventBus.Messages.Exceptions;
-using EventBus.Messages.StateMachine.Basket;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventBus.Messages.Services;
@@ -11,7 +9,6 @@ namespace EventBus.Messages.Services;
 public interface IMessageService
 {
     Task<Order> SumbitOutboxAsync<T>(T message, CancellationToken cancellationToken = default) where T : BaseMessage;
-    Task<bool?> CheckStateMessageAsync(Guid correlationId, State state, CancellationToken cancellationToken = default);
 }
 
 public class MessageService : IMessageService
@@ -41,23 +38,10 @@ public class MessageService : IMessageService
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
         catch (DbUpdateException exception)
-            // when (exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
         {
             throw new DuplicateRegistrationException("Duplicate registration", exception);
         }
 
         return basket;
-    }
-    
-    public async Task<bool?> CheckStateMessageAsync(Guid correlationId, State state, CancellationToken cancellationToken)
-    {
-        var message = await _dbContext.Set<OrderState>().FirstOrDefaultAsync(x => x.CorrelationId == correlationId, cancellationToken);
-
-        if (message is null)
-        {
-            return null;
-        }
-
-        return message.CurrentState == state.ToString();
     }
 }

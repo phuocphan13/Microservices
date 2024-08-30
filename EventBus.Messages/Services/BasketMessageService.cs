@@ -1,7 +1,6 @@
 using ApiClient.Basket.Events.CheckoutEvents;
 using EventBus.Messages.Entities;
 using EventBus.Messages.StateMachine.Basket;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventBus.Messages.Services;

@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ApiClient.Catalog.Product.Models;
-using ApiClient.Catalog.ProductHistory.Models;
 using Catalog.API.Services;
-using Core.Common.Constants;
-using IntegrationFramework.Authentication.Attributes;
-using Microsoft.AspNetCore.Authorization;
 using Platform.ApiBuilder;
 
 namespace Catalog.API.Controllers;
