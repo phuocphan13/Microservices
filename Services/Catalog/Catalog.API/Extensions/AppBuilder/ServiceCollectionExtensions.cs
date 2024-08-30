@@ -1,6 +1,7 @@
 using Catalog.API.Repositories;
 using Catalog.API.Services;
 using Catalog.API.Services.Caches;
+using Catalog.API.Services.Caches.Filters;
 using Catalog.API.Services.Grpc;
 using Catalog.API.Services.Workers;
 
@@ -22,6 +23,7 @@ public static class ServiceCollectionExtensions
 
         // Cached Services
         services.AddSingleton<IProductCachedService, ProductCachedService>();
+        services.AddSingleton<IProductCachedFilter, ProductCachedFilter>();
         
         // Grpc
         services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();

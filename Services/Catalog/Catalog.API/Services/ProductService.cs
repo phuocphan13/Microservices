@@ -1,5 +1,6 @@
 ﻿using ApiClient.Catalog.Product.Models;
 using ApiClient.Catalog.ProductHistory.Models;
+using ApiClient.Common.Models.Paging;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Models;
@@ -12,6 +13,7 @@ namespace Catalog.API.Services;
 public interface IProductService
 {
     Task<bool> CheckExistingAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
+    Task<PagingCollection<ProductSummary>> GetPagingProductsAsync(PagingInfo pagingInfo, CancellationToken cancellationToken = default);
     Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken = default);
     Task<ProductDetail?> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<List<ProductSummary>> GetProductsByCategoryAsync(string category, CancellationToken cancellationToken = default);
@@ -90,6 +92,15 @@ public class ProductService : IProductService
         };
 
         return result;
+    }
+
+    public async Task<PagingCollection<ProductSummary>> GetPagingProductsAsync(PagingInfo pagingInfo, CancellationToken cancellationToken)
+    {
+        var entities = await _productCachedService.GetPagingProductsAsync(pagingInfo, cancellationToken);
+
+        var summaries = await GetProductSummariesInternalAsync(entities, cancellationToken);
+
+        return new PagingCollection<ProductSummary>(summaries); 
     }
 
     public async Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken)
@@ -192,7 +203,7 @@ public class ProductService : IProductService
     }
 
     #region Internal Functions
-    private async Task<List<ProductSummary>> GetProductSummariesInternalAsync(List<ProductCachedModel>? entities, CancellationToken cancellationToken)
+    private async Task<List<ProductSummary>> GetProductSummariesInternalAsync(IEnumerable<ProductCachedModel>? entities, CancellationToken cancellationToken)
     {
         if (entities is null)
         {

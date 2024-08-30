@@ -11,7 +11,7 @@ public interface IDiscountGrpcService
     Task<DiscountDetail> GetDiscount(string productName);
     Task<DiscountDetail> GetDiscountByCatalogCode(DiscountEnum type, string catalogCode);
     Task<List<DiscountDetail>> GetListDiscountsByCatalogCodeAsync(DiscountEnum type, IEnumerable<string> catalogCodes);
-    Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<ProductCachedModel> entityProduct);
+    Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, IEnumerable<ProductCachedModel> entityProduct);
 }
 
 public class DiscountGrpcService : IDiscountGrpcService
@@ -86,7 +86,7 @@ public class DiscountGrpcService : IDiscountGrpcService
         return discounts;
     }
 
-    public async Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, List<ProductCachedModel> entityProduct)
+    public async Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, IEnumerable<ProductCachedModel> entityProduct)
     {
         if (entityCategory is null || entityCategory.Count == 0) {
             throw new ArgumentException("Category list cannot be null or empty");
@@ -97,7 +97,7 @@ public class DiscountGrpcService : IDiscountGrpcService
             throw new ArgumentException("Sub-Category list cannot be null or empty");
         }
 
-        if (entityProduct is null || entityProduct.Count == 0)
+        if (entityProduct is null || !entityProduct.Any())
         {
             throw new ArgumentException("Product list cannot be null or empty");
         }
