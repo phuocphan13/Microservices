@@ -1,5 +1,6 @@
 using ApiClient.Basket.Events.CheckoutEvents;
 using ApiClient.Catalog.Product.Events;
+using ApiClient.Ordering.Events;
 using AutoMapper;
 using EventBus.Messages.Entities;
 
@@ -12,6 +13,8 @@ public sealed class MapperProfile : Profile
         CreateMap<BasketCheckoutMessage, Order>()
             .ForMember(m => m.ReceiptNumber, opt => opt.MapFrom(src => src.BasketKey)).ReverseMap();
         CreateMap<ProductBalanceUpdateMessage, Order>()
-            .ForMember(m => m.ReceiptNumber, opt => opt.MapFrom(src => src.ReceiptNumber)).ReverseMap();
+            .ReverseMap();
+        CreateMap<FailureOrderMessage, Order>()
+            .ReverseMap();
     }
 }

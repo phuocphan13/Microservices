@@ -7,5 +7,7 @@ public static class OrderConstants
         public const string Checkoutted = "Checkoutted";
 
         public const string Accepted = "Accepted";
+        
+        public const string Failed = "Failed";
     }
 }

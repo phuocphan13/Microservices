@@ -3,6 +3,7 @@ using AutoMapper;
 using EventBus.Messages.Entities;
 using EventBus.Messages.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Platform.Extensions;
 
 namespace EventBus.Messages.Services;
 
@@ -27,9 +28,14 @@ public class MessageService : IMessageService
     public async Task<Order> SumbitOutboxAsync<T>(T message, CancellationToken cancellationToken)
         where T: BaseMessage
     {
-        var basket = _mapper.Map<Order>(message);
+        var description = typeof(T).GetDescription();
 
-        await _dbContext.Set<Order>().AddAsync(basket, cancellationToken);
+        var proccess = EnumExtensions.GetEnumsByDescription<ProcessEnum>(description);
+        
+        var order = _mapper.Map<Order>(message);
+        order.Proccess = proccess;
+
+        await _dbContext.Set<Order>().AddAsync(order, cancellationToken);
 
         await _publishService.PublishMessageAsync(message, cancellationToken);
 
@@ -42,6 +48,6 @@ public class MessageService : IMessageService
             throw new DuplicateRegistrationException("Duplicate registration", exception);
         }
 
-        return basket;
+        return order;
     }
 }

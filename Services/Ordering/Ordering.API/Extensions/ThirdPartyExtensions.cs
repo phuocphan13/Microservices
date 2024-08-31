@@ -24,6 +24,7 @@ public static class ThirdPartyExtensions
         services.AddMessageOutboxCosumer(configuration, busAction: x =>
         {
             x.AddConsumer<BasketCheckoutConsumer>();
+            x.AddConsumer<FailureOrderConsumer>();
         });
         
         //Workers

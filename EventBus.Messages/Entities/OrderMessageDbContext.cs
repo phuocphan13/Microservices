@@ -39,7 +39,9 @@ public class OrderMessageDbContext : SagaDbContext
         registration.Property(x => x.UserName).HasMaxLength(128);
         registration.Property(x => x.ReceiptNumber).HasMaxLength(36);
         
-        registration.Property(x => x.TotalPrice);
+        registration.Property(x => x.Description).HasMaxLength(256);
+        registration.Property(x => x.Proccess);
+        
         registration.Property(x => x.Timestamp);
         registration.Property(x => x.MemberId).HasMaxLength(64);
         registration.Property(x => x.EventId).HasMaxLength(64);

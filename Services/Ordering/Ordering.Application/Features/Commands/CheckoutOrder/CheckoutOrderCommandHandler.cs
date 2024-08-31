@@ -1,5 +1,6 @@
 ﻿using ApiClient.Catalog.Product.Events;
 using ApiClient.Catalog.ProductHistory.Models;
+using ApiClient.Ordering.Events;
 using AutoMapper;
 using EventBus.Messages.Services;
 using MediatR;
@@ -42,7 +43,20 @@ public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand,
         
         await _orderRepository.InsertAsync(orderEntity, cancellationToken);
 
-        var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
+        var result = false;
+        try
+        {
+            result = await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception e)
+        {
+            await _queueService.SendFanoutMessageAsync(new FailureOrderMessage()
+            {
+                ReceiptNumber = orderEntity.ReceiptNumber,
+                UserId = request.UserId,
+                UserName = request.UserName,
+            }, cancellationToken);
+        }
 
         if (result)
         {
