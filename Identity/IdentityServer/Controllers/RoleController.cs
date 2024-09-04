@@ -2,7 +2,6 @@ using ApiClient.DirectApiClients.Identity.RequestBodies;
 using ApiClient.IdentityServer.Models.RequestBodies;
 using Core.Common.Constants;
 using IdentityServer.Services;
-using IntegrationFramework.Authentication.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Platform.ApiBuilder;
 

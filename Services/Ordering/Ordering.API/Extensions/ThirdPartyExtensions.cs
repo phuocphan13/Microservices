@@ -11,7 +11,11 @@ public static class ThirdPartyExtensions
 {
     public static IServiceCollection AddThirdParties(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
+        
+        // services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         
         //MassTransit configuration
         services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
@@ -20,6 +24,7 @@ public static class ThirdPartyExtensions
         services.AddMessageOutboxCosumer(configuration, busAction: x =>
         {
             x.AddConsumer<BasketCheckoutConsumer>();
+            x.AddConsumer<FailureOrderConsumer>();
         });
         
         //Workers

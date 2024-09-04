@@ -26,10 +26,12 @@ public class MappingProfile : Profile
         CreateMap<BasketItemSummary, OrderItem>().ReverseMap();
 
         CreateMap<Order, CheckoutOrderCommand>().ReverseMap()
+            .ForMember(dest => dest.ReceiptNumber, opt => opt.MapFrom(src => src.BasketKey))
             .ForMember(dest => dest.Coupons, opt => opt.MapFrom(src => src.CouponItems))
             .ForMember(dest => dest.Discounts, opt => opt.MapFrom(src => src.DiscountItems))
             .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.Items));
 
-        CreateMap<BasketCheckoutMessage, CheckoutOrderCommand>().ReverseMap();
+        CreateMap<BasketCheckoutMessage, CheckoutOrderCommand>()
+            .ReverseMap();
     }
 }

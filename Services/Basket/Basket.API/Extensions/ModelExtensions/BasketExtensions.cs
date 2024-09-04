@@ -11,6 +11,7 @@ public static class ShoppingBasketExtensions
     {
         var detail = new BasketDetail
         {
+            BasketKey = entity.BasketKey,
             UserId = entity.UserId,
             UserName = entity.UserName,
             TotalPrice = entity.TotalPrice,
@@ -73,6 +74,7 @@ public static class ShoppingBasketExtensions
     {
         return new()
         {
+            BasketKey = Guid.NewGuid().ToString(),
             UserId = requestBody.UserId,
             UserName = requestBody.UserName!,
             SessionDate = DateTime.UtcNow,

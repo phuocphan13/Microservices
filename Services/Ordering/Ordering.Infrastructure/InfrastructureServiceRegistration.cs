@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ordering.Application.Contracts.Infrastructure;
@@ -20,7 +19,7 @@ public static class InfrastructureServiceRegistration
 
         services.Configure<EmailSettings>(c => configuration.GetSection("EmailSettings"));
 
-        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<IEmailService, EmailService>();
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

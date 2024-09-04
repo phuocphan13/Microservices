@@ -9,6 +9,7 @@ namespace Catalog.API.Services;
 public interface IProductHistoryService
 {
     Task<bool> AddProductBalanceAsync(AddProductBalanceRequestBody requestBody, CancellationToken cancellationToken = default);
+    Task<bool> AddHistoriesAsync(List<AddProductBalanceRequestBody> requestBodies, CancellationToken cancellationToken = default);
 }
 
 public class ProductHistoryService : IProductHistoryService
@@ -25,6 +26,26 @@ public class ProductHistoryService : IProductHistoryService
         _productRepository = productRepository;
         _productCachedService = productCachedService;
         _sessionState = sessionState;
+    }
+
+    public async Task<bool> AddHistoriesAsync(List<AddProductBalanceRequestBody> requestBodies, CancellationToken cancellationToken)
+    {
+        foreach (var body in requestBodies)
+        {
+            ProductHistory productHistory = new()
+            {
+                ProductId = body.Id,
+                Balance = body.Balance,
+                CreatedDate = DateTime.UtcNow,
+                // CreatedBy = _sessionState.GetUserId()
+            };
+            
+            await _productHistoryRepository.CreateEntityAsync(productHistory, cancellationToken);
+
+            await _productCachedService.UpdateHasChangeProductAsync(body.Id, cancellationToken);
+        }
+
+        return true;
     }
 
     public async Task<bool> AddProductBalanceAsync(AddProductBalanceRequestBody requestBody, CancellationToken cancellationToken)

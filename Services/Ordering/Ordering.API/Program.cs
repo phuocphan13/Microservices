@@ -1,8 +1,10 @@
+using ApiClient;
 using EventBus.Messages;
 using Ordering.API.Extensions;
 using Ordering.Application;
 using Ordering.Infrastructure;
 using Ordering.Infrastructure.Persistence;
+using Platform;
 using Worker;
 using Worker.Services;
 
@@ -12,16 +14,15 @@ var isRebuildWorkerSchema = bool.Parse(builder.Configuration["Worker:IsRebuildSc
 
 // Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 builder.Services
+    .AddPlatformCommonServices()
     .AddApplicationServices()
     .AddEventBusServices()
     .AddWorkerServices(builder.Configuration)
     .AddThirdParties(builder.Configuration)
-    .AddInfrastructureServices(builder.Configuration);
+    .AddInfrastructureServices(builder.Configuration)
+    .AddCatalogInternalClient();
 
 var app = builder.Build();
 

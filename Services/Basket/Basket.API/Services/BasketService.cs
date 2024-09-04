@@ -1,42 +1,82 @@
+using ApiClient.Basket.Events.CheckoutEvents;
 using ApiClient.Basket.Models;
 using ApiClient.DirectApiClients.Catalog;
+using AutoMapper;
 using Basket.API.Extensions.ModelExtensions;
 using Basket.API.Repositories;
+using EventBus.Messages.Services;
 
 namespace Basket.API.Services;
 
 public interface IBasketService
 {
     Task<BasketSummary?> GetBasketAsync(string userId, CancellationToken cancellationToken = default);
-    Task<BasketDetail?> GetBasketDetailAsync(string userId, CancellationToken cancellationToken = default);
+    Task<BasketDetail?> GetBasketPreCheckoutAsync(string userId, CancellationToken cancellationToken = default);
     Task<BasketDetail> SaveBasketAsync(SaveBasketRequestBody basket, CancellationToken cancellationToken = default);
     Task DeleteBasketAsync(string userId, CancellationToken cancellationToken = default);
+    Task<bool> CheckoutBasketAsync(string userId, CancellationToken cancellationToken = default);
 }
 
 public class BasketService : IBasketService
 {
     private readonly IBasketRepository _basketRepository;
     private readonly IProductInternalClient _productInternalClient;
+    private readonly IMapper _mapper;
+    private readonly IQueueService _queueService;
 
-    public BasketService(IBasketRepository basketRepository, IProductInternalClient productInternalClient)
+    public BasketService(IBasketRepository basketRepository, IProductInternalClient productInternalClient, IMapper mapper, IQueueService queueService)
     {
         _basketRepository = basketRepository ?? throw new ArgumentNullException(nameof(basketRepository));
         _productInternalClient = productInternalClient ?? throw new ArgumentNullException(nameof(productInternalClient));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _queueService = queueService ?? throw new ArgumentNullException(nameof(queueService));
+    }
+
+    public async Task<bool> CheckoutBasketAsync(string userId, CancellationToken cancellationToken)
+    {
+        var entity = await _basketRepository.GetBasket(userId, cancellationToken);
+
+        if (entity is null)
+        {
+            return false;
+        }
+
+        var isError = entity.Items.Any(x => !string.IsNullOrWhiteSpace(x.ErrorMessage));
+
+        if (isError)
+        {
+            return false;
+        }
+
+        var eventMessage = _mapper.Map<BasketCheckoutMessage>(entity.ToDetail());
+
+        try
+        {
+            await _queueService.SendFanoutMessageAsync(eventMessage, cancellationToken);
+        }
+        catch
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public async Task<BasketSummary?> GetBasketAsync(string userId, CancellationToken cancellationToken)
     {
-        var basket = await GetBasketEntityAsync(userId, cancellationToken);
+        var entity = await _basketRepository.GetBasket(userId, cancellationToken);
 
-        if (basket is null)
+        if (entity is null)
         {
             return null;
         }
 
-        return basket.ToSummary();
+        await UpdateBasketItemsInternalAsync(entity, cancellationToken);
+
+        return entity.ToSummary();
     }
 
-    public async Task<BasketDetail?> GetBasketDetailAsync(string userId, CancellationToken cancellationToken)
+    public async Task<BasketDetail?> GetBasketPreCheckoutAsync(string userId, CancellationToken cancellationToken)
     {
         var basket = await GetBasketEntityAsync(userId, cancellationToken);
 
@@ -46,18 +86,6 @@ public class BasketService : IBasketService
         }
 
         return basket.ToDetail();
-    }
-    
-    private async Task<Entitites.Basket?> GetBasketEntityAsync(string userId, CancellationToken cancellationToken)
-    {
-        var basket = await _basketRepository.GetBasket(userId, cancellationToken);
-
-        if (basket is not null &&  basket.SessionDate < DateTime.Now.AddHours(-24))
-        {
-            await UpdateBasketItemsInternalAsync(basket, cancellationToken);
-        }
-
-        return basket;
     }
 
     public async Task<BasketDetail> SaveBasketAsync(SaveBasketRequestBody basket, CancellationToken cancellationToken)
@@ -73,6 +101,8 @@ public class BasketService : IBasketService
             entity.ToEntityFromUpdate(basket);
         }
 
+        await UpdateBasketItemsInternalAsync(entity, cancellationToken);
+        
         await _basketRepository.SaveBasket(entity, cancellationToken);
 
         return entity.ToDetail();
@@ -98,13 +128,22 @@ public class BasketService : IBasketService
 
                 if (product is not null)
                 {
-                    if (product.Price is not null)
-                    {
-                        item.Price = product.Price.Value;
-                    }
+                    item.UpdateBasketItem(product);
                 }
             }
         }
+    }
+
+    private async Task<Entitites.Basket?> GetBasketEntityAsync(string userId, CancellationToken cancellationToken)
+    {
+        var basket = await _basketRepository.GetBasket(userId, cancellationToken);
+
+        if (basket is not null && basket.SessionDate < DateTime.Now.AddHours(-24))
+        {
+            await UpdateBasketItemsInternalAsync(basket, cancellationToken);
+        }
+
+        return basket;
     }
     #endregion
 }

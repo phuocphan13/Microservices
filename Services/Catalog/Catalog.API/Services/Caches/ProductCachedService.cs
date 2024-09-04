@@ -1,13 +1,16 @@
+using ApiClient.Common.Models.Paging;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Models;
 using Catalog.API.Repositories;
+using Catalog.API.Services.Caches.Filters;
 using Platform.Database.Redis;
 
 namespace Catalog.API.Services.Caches;
 
 public interface IProductCachedService
 {
+    Task<List<ProductCachedModel>> GetPagingProductsAsync(PagingInfo pagingInfo, CancellationToken cancellationToken = default);
     Task<List<ProductCachedModel>?> QueryCachedProductsAsync(Func<ProductCachedModel, bool> predicate, CancellationToken cancellationToken = default);
     Task<List<ProductCachedModel>?> GetCachedProductsAsync(CancellationToken cancellationToken = default);
     Task<ProductCachedModel?> GetCachedProductByIdAsync(string id, CancellationToken cancellationToken = default);
@@ -20,11 +23,13 @@ public class ProductCachedService : CommonCacheService, IProductCachedService
     private readonly SemaphoreSlim semaphore = new(1, 1);
     private const string _productKey = "Products";
     private readonly IRepository<Product> _productRepository;
+    private readonly IProductCachedFilter _productCachedFilter;
 
-    public ProductCachedService(IRedisDbFactory redisCache, IRepository<Product> productRepository)
+    public ProductCachedService(IRedisDbFactory redisCache, IRepository<Product> productRepository, IProductCachedFilter productCachedFilter)
        : base(_productKey, redisCache)
     {
         _productRepository = productRepository;
+        _productCachedFilter = productCachedFilter;
     }
     
     public async Task RefreshCachedProductsAsync(CancellationToken cancellationToken)
@@ -34,6 +39,20 @@ public class ProductCachedService : CommonCacheService, IProductCachedService
         var productCacheds = products.Select(x => x.ToCachedModel()).ToList();
         
         await SetAllItemsCacheAsync(productCacheds, cancellationToken);
+    }
+    
+    public async Task<List<ProductCachedModel>> GetPagingProductsAsync(PagingInfo pagingInfo, CancellationToken cancellationToken)
+    {
+        var products = await GetCachedProductsAsync(cancellationToken);
+
+        if (products is null)
+        {
+            return new List<ProductCachedModel>();
+        }
+
+        var pagingCollection = new List<ProductCachedModel>(products.Skip(pagingInfo.Start ?? 0).Take(pagingInfo.Length ?? 10));
+
+        return pagingCollection;
     }
     
     public async Task<List<ProductCachedModel>?> QueryCachedProductsAsync(Func<ProductCachedModel, bool> predicate, CancellationToken cancellationToken)
@@ -52,7 +71,7 @@ public class ProductCachedService : CommonCacheService, IProductCachedService
     {
         List<ProductCachedModel>? products = await GetAllItemAsync<ProductCachedModel>(cancellationToken);
 
-        if (products is not null && products.Any())
+        if (products is not null && products.Any() && _productCachedFilter.ProductIds.Count == products.Count)
         {
             return products;
         }
@@ -63,7 +82,7 @@ public class ProductCachedService : CommonCacheService, IProductCachedService
         {
             products = await GetAllItemAsync<ProductCachedModel>(cancellationToken);
 
-            if (products is not null && products.Any())
+            if (products is not null && products.Any() && _productCachedFilter.ProductIds.Count == products.Count)
             {
                 return products;
             }

@@ -25,7 +25,16 @@ public class DiscountGrpcService : IDiscountGrpcService
             Id = productName
         };
 
-        var couponModel = await _discountGrpcService.GetDiscountAsync(discountRequest);
+        DiscountDetailModel couponModel;
+
+        try
+        {
+            couponModel = await _discountGrpcService.GetDiscountAsync(discountRequest);
+        }
+        catch (Exception)
+        {
+            couponModel = new DiscountDetailModel();
+        }
 
         return couponModel.ToDetail();
     }

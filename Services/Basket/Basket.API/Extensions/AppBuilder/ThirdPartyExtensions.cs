@@ -16,6 +16,11 @@ public static class ThirdPartyExtensions
 
         services.AddMessageOutbox(configuration);
         
+        services.AddStackExchangeRedisCache(option =>
+        {
+            option.Configuration = configuration["CacheSettings:ConnectionString"];
+        });
+        
         return services;
     }
 }

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EventBus.Messages.StateMachine.Basket;
 
-public class BasketStateMap : SagaClassMap<BasketState>
+public class OrderStateMap : SagaClassMap<OrderState>
 {
-    protected override void Configure(EntityTypeBuilder<BasketState> entity, ModelBuilder model)
+    protected override void Configure(EntityTypeBuilder<OrderState> entity, ModelBuilder model)
     {
         entity.Property(x => x.CorrelationId);
         entity.Property(x => x.UserId);

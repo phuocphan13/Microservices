@@ -85,6 +85,16 @@ public class CommonApiClient
         return await HttpResponseHelpers.TransformResponseToData<ApiDataResult<TResult>>(httpResponseMessage, cancellationToken);
     }
 
+    protected async Task<ApiStatusResult> PostAsync(string url, object requestBody, CancellationToken cancellationToken)
+    {
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url);
+        httpRequestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody), System.Text.Encoding.UTF8, "application/json");
+        var httpClient = HttpClientBuilder();
+        var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
+        
+        return TransferResponseMessageToStatusAsync(httpResponseMessage);
+    }
+
     protected async Task<ApiDataResult<TResult>> PutAsync<TResult>(string url, object requestBody, CancellationToken cancellationToken)
         where TResult : class, new()
     {

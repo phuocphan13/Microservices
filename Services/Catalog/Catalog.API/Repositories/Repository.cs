@@ -18,6 +18,7 @@ public interface IRepository<TEntity>
     Task<IEnumerable<TEntity>> CreateEntitiesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
     Task<bool> UpdateEntityAsync(TEntity product, CancellationToken cancellationToken = default);
     Task<bool> DeleteEntityAsync(string id, CancellationToken cancellationToken = default);
+    Task UpdateEntitiesAsync(List<TEntity> products, CancellationToken cancellationToken = default);
 }
 
 public class Repository<TEntity> : IRepository<TEntity>
@@ -99,6 +100,25 @@ public class Repository<TEntity> : IRepository<TEntity>
 
         var updateResult = await _collection.ReplaceOneAsync(g => g.Id == product.Id, product, options, cancellationToken);
         return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0;
+    }
+
+    public async Task UpdateEntitiesAsync(List<TEntity> products, CancellationToken cancellationToken)
+    {
+        var options = new BulkWriteOptions()
+        {
+            BypassDocumentValidation = false,
+        };
+        
+        var updates = new List<WriteModel<TEntity>>();
+        var filterBuilder = Builders<TEntity>.Filter;
+        
+        foreach (var doc in products)
+        {
+            var filter = filterBuilder.Where(x => x.Id == doc.Id);
+            updates.Add(new ReplaceOneModel<TEntity>(filter, doc));
+        }
+
+        await _collection.BulkWriteAsync(updates, options, cancellationToken);
     }
 
     public async Task<bool> DeleteEntityAsync(string id, CancellationToken cancellationToken)

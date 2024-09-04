@@ -1,12 +1,13 @@
+using System.ComponentModel;
 using ApiClient.Basket.Models;
+using ApiClient.Common.MessageQueue;
 
 namespace ApiClient.Basket.Events.CheckoutEvents;
 
+[Description(EventBusConstants.OrderProccess.Checkout)]
 public class BasketCheckoutMessage : BaseMessage
 {
-    public string UserId { get; set; } = null!;
-
-    public string UserName { get; set; } = null!;
+    public string BasketKey { get; set; } = null!;
     public decimal TotalPrice { get; set; }
 
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;

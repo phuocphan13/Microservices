@@ -11,5 +11,9 @@ public class BasketProfile : Profile
     {
         CreateMap<BasketCheckout, BasketCheckoutMessage>().ReverseMap();
         CreateMap<BasketDetail, BasketCheckoutMessage>().ReverseMap();
+        CreateMap<Basket.API.Entitites.Basket, BasketCheckoutMessage>().ReverseMap()
+            .ForMember(x => x.Items, opt => opt.MapFrom(src => src.Items))
+            .ForMember(x => x.Discounts, opt => opt.MapFrom(src => src.DiscountItems))
+            .ForMember(x => x.Coupons, opt => opt.MapFrom(src => src.CouponItems));
     }
 }

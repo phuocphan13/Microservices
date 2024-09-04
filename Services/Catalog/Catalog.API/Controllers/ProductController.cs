@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ApiClient.Catalog.Product.Models;
+using ApiClient.Common.Models.Paging;
 using Catalog.API.Services;
-using Core.Common.Constants;
-using IntegrationFramework.Authentication.Attributes;
-using Microsoft.AspNetCore.Authorization;
 using Platform.ApiBuilder;
 
 namespace Catalog.API.Controllers;
@@ -24,6 +22,24 @@ public class ProductController : ApiController
         _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
         _subCategoryService = subCategoryService ?? throw new ArgumentNullException(nameof(subCategoryService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetPagingProducts([FromQuery] PagingInfo pagingInfo, CancellationToken cancellationToken)
+    {
+        if (pagingInfo is null)
+        {
+            return BadRequest("Missing PagingInfo.");
+        }
+
+        var result = await _productService.GetPagingProductsAsync(pagingInfo, cancellationToken);
+
+        if (result is null)
+        {
+            return NotFound();
+        }
+
+        return base.Ok(result);
     }
 
     [HttpGet]

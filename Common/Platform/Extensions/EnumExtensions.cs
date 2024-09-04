@@ -18,4 +18,27 @@ public static class EnumExtensions
 
         return string.Empty;
     }
+
+    public static IEnumerable<T> GetValues<T>()
+    {
+        return Enum.GetValues(typeof(T)).Cast<T>();
+    }
+    
+    public static T GetEnumsByDescription<T>(string description)
+        where T: Enum
+    {
+        var enumValues = GetValues<T>();
+
+        foreach (var value in enumValues)
+        {
+            var enumDesc = value.GetEnumDescription();
+            
+            if (enumDesc == description)
+            {
+                return value;
+            }
+        }
+
+        throw new ArgumentException("Not found.", nameof(description));
+    }
 }

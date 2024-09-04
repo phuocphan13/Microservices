@@ -21,7 +21,9 @@ public class OrderContextSeed
         {
             new()
             {
-                UserName = "swn", 
+                UserName = "swn",
+                UserId = "1412C1C6-B2F3-4F3E-B75B-E9EBDF11C4D8",
+                ReceiptNumber = Guid.NewGuid().ToString(),
                 TotalPrice = 40M,
                 Address = "Sai Gon",
                 ClientName = "Lucifer",
@@ -31,7 +33,6 @@ public class OrderContextSeed
                 Status = OrderStatus.Checkoutted,
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.UtcNow,
-                UserId = "1412C1C6-B2F3-4F3E-B75B-E9EBDF11C4D8",
                 OrderItems = new()
                 {
                     new()

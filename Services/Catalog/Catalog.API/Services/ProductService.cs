@@ -1,4 +1,6 @@
 ﻿using ApiClient.Catalog.Product.Models;
+using ApiClient.Catalog.ProductHistory.Models;
+using ApiClient.Common.Models.Paging;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Models;
@@ -11,6 +13,7 @@ namespace Catalog.API.Services;
 public interface IProductService
 {
     Task<bool> CheckExistingAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
+    Task<PagingCollection<ProductSummary>> GetPagingProductsAsync(PagingInfo pagingInfo, CancellationToken cancellationToken = default);
     Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken = default);
     Task<ProductDetail?> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<List<ProductSummary>> GetProductsByCategoryAsync(string category, CancellationToken cancellationToken = default);
@@ -18,6 +21,7 @@ public interface IProductService
     Task<ProductDetail?> CreateProductAsync(CreateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<bool> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
+    Task<bool> ReduceProductBalanceAsync(List<ReduceProductBalanceRequestBody> requestBodies, CancellationToken cancellationToken = default);
 }
 
 public class ProductService : IProductService
@@ -27,18 +31,54 @@ public class ProductService : IProductService
     private readonly IRepository<SubCategory> _subCategoryRepository;
     private readonly IDiscountGrpcService _discountGrpcService;
     private readonly IProductCachedService _productCachedService;
+    private readonly IProductHistoryService _productHistoryService;
 
     public ProductService(
-        IRepository<Product> productRepository,
-        IRepository<Category> categoryRepository,
-        IRepository<SubCategory> subCategoryRepository,
-        IDiscountGrpcService discountGrpcService, IProductCachedService productCachedService)
+        IRepository<Product> productRepository, IRepository<Category> categoryRepository, IRepository<SubCategory> subCategoryRepository,
+        IDiscountGrpcService discountGrpcService, IProductCachedService productCachedService, IProductHistoryService productHistoryService)
     {
         _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
         _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
         _subCategoryRepository = subCategoryRepository ?? throw new ArgumentNullException(nameof(subCategoryRepository));
         _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
-        _productCachedService = productCachedService;
+        _productCachedService = productCachedService ?? throw new ArgumentNullException(nameof(productCachedService));
+        _productHistoryService = productHistoryService ?? throw new ArgumentNullException(nameof(productHistoryService));
+    }
+
+    public async Task<bool> ReduceProductBalanceAsync(List<ReduceProductBalanceRequestBody> requestBodies, CancellationToken cancellationToken)
+    {
+        var codes = requestBodies.Select(x => x.ProductCode).ToList();
+        var products = await _productRepository.GetEntitiesQueryAsync(x => codes.Contains(x.ProductCode!), cancellationToken);
+
+        if (products is null)
+        {
+            return false;
+        }
+        
+        List<AddProductBalanceRequestBody> addProductBalances = new();
+
+        foreach (var entity in products)
+        {
+            var body = requestBodies.FirstOrDefault(x => x.ProductCode == entity.ProductCode);
+
+            if (body is null)
+            {
+                continue;
+            }
+
+            entity.Balance -= body.Quantity;
+
+            addProductBalances.Add(new()
+            {
+                Balance = body.Quantity,
+                Id = entity.Id
+            });
+        }
+
+        await _productRepository.UpdateEntitiesAsync(products, cancellationToken);
+        await _productHistoryService.AddHistoriesAsync(addProductBalances, cancellationToken);
+
+        return true;
     }
 
     public async Task<bool> CheckExistingAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
@@ -52,6 +92,15 @@ public class ProductService : IProductService
         };
 
         return result;
+    }
+
+    public async Task<PagingCollection<ProductSummary>> GetPagingProductsAsync(PagingInfo pagingInfo, CancellationToken cancellationToken)
+    {
+        var entities = await _productCachedService.GetPagingProductsAsync(pagingInfo, cancellationToken);
+
+        var summaries = await GetProductSummariesInternalAsync(entities, cancellationToken);
+
+        return new PagingCollection<ProductSummary>(summaries); 
     }
 
     public async Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken)
@@ -154,7 +203,7 @@ public class ProductService : IProductService
     }
 
     #region Internal Functions
-    private async Task<List<ProductSummary>> GetProductSummariesInternalAsync(List<ProductCachedModel>? entities, CancellationToken cancellationToken)
+    private async Task<List<ProductSummary>> GetProductSummariesInternalAsync(IEnumerable<ProductCachedModel>? entities, CancellationToken cancellationToken)
     {
         if (entities is null)
         {

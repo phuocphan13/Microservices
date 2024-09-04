@@ -16,6 +16,7 @@ public class Basket
     
     public string UserId { get; set; } = null!;
     public string UserName { get; set; } = null!;
+    public string BasketKey { get; set; } = null!;
 
     public DateTime SessionDate { get; set; }
     

@@ -5,18 +5,22 @@ using Ordering.Application.Features.Commands.DeleteOrder;
 using Ordering.Application.Features.Commands.UpdateOrder;
 using Ordering.Application.Features.Queries.GetOrderList;
 using System.Net;
+using ApiClient.Catalog.Product.Events;
+using EventBus.Messages.Services;
 
 namespace Ordering.API.Controllers;
 
-[Route("api/v1/[controller]")]
+[Route("api/v1/[controller]/[action]")]
 [ApiController]
 public class OrderController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IQueueService _queueService;
 
-    public OrderController(IMediator mediator)
+    public OrderController(IMediator mediator, IQueueService queueService)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _queueService = queueService;
     }
 
     [HttpGet("{userName}", Name = "GetOrder")]
@@ -56,5 +60,20 @@ public class OrderController : ControllerBase
         var command = new DeleteOrderCommand() { Id = id };
         await _mediator.Send(command);
         return NoContent();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Test([FromQuery] string key, CancellationToken cancellationToken)
+    {
+        await _queueService.SendFanoutMessageAsync(new ProductBalanceUpdateMessage()
+        {
+            ReceiptNumber = key,
+            UserId = "test",
+            UserName = "test",
+            MemberId = "test",
+            EventId = "test"
+        }, cancellationToken);
+
+        return Ok();
     }
 }
