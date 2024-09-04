@@ -3,6 +3,7 @@ using Catalog.API.Services;
 using Catalog.API.Services.Caches;
 using Catalog.API.Services.Grpc;
 using Catalog.API.Services.Workers;
+using System.Runtime.ConstrainedExecution;
 
 namespace Catalog.API.Extensions.AppBuilder;
 
@@ -22,7 +23,8 @@ public static class ServiceCollectionExtensions
 
         // Cached Services
         services.AddSingleton<IProductCachedService, ProductCachedService>();
-        
+        services.AddSingleton<ISubCategoryCachedService, SubCategoryCachedService>();
+
         // Grpc
         services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();
         

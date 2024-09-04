@@ -1,6 +1,7 @@
 ﻿using ApiClient.Catalog.SubCategory.Models;
 using Catalog.API.Extensions;
 using Catalog.API.Repositories;
+using Catalog.API.Services.Caches;
 using SubCategory = Catalog.API.Entities.SubCategory;
 
 namespace Catalog.API.Services;
@@ -19,10 +20,12 @@ public interface ISubCategoryService
 public class SubCategoryService : ISubCategoryService
 {
     private readonly IRepository<SubCategory> _subCategoryRepository;
+    private readonly ISubCategoryCachedService _cachedService;
 
-    public SubCategoryService(IRepository<SubCategory> subCategoryRepository)
+    public SubCategoryService(IRepository<SubCategory> subCategoryRepository, ISubCategoryCachedService cachedService)
     {
         _subCategoryRepository = subCategoryRepository;
+        _cachedService = cachedService;
     }
 
     public async Task<bool> CheckExistingAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
@@ -58,19 +61,19 @@ public class SubCategoryService : ISubCategoryService
 
     public async Task<List<SubCategorySummary>> GetSubCategoriesAsync(CancellationToken cancellationToken)
     {
-        var entities = await _subCategoryRepository.GetEntitiesAsync(cancellationToken);
+        var entities = await _cachedService.GetCachedSubCategoriesAsync(cancellationToken);
 
         if (entities is null)
         {
             return new();
         }
         
-        return entities.Select(x => x.ToSummary()).ToList();
+        return entities.Select(x => x.ToSummaryFromCachedModel()).ToList();
     }
 
     public async Task<List<SubCategorySummary>> GetSubCategoriesByCategoryIdAsync(string categoryId, CancellationToken cancellationToken)
     {
-        var entities = await _subCategoryRepository.GetEntitiesQueryAsync(x => x.CategoryId == categoryId, cancellationToken);
+        var entities = await _subCategoryRepository.GetEntitiesQueryAsync(x => x.CategoryId.Contains(categoryId), cancellationToken);
         
         if (entities is null)
         {

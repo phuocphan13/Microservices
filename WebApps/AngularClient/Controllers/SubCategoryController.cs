@@ -115,5 +115,5 @@ public class SubCategoryController : ControllerBase
             }
 
             return Ok(result);
-        }
+    }
 }
