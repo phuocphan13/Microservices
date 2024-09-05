@@ -5,7 +5,9 @@ using System.Text;
 using ApiClient.IdentityServer.Models.Response;
 using IdentityServer.Domain.Entities;
 using IdentityServer.Models.Token;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Platform.Configurations.Options;
 
 namespace IdentityServer.Services;
 
@@ -19,14 +21,16 @@ public interface ITokenHandleService
 public class TokenHandleService : ITokenHandleService
 {
     private readonly ITokenHistoryService _tokenHistoryService;
-    private readonly IConfiguration _configuration;
     private readonly IRoleService _roleService;
+    private readonly JwtSettingsOptions _jwtSettings;
 
-    public TokenHandleService(IConfiguration configuration, ITokenHistoryService tokenHistoryService, IRoleService roleService)
+    public TokenHandleService(ITokenHistoryService tokenHistoryService, IRoleService roleService, IOptions<JwtSettingsOptions> jwtSettings)
     {
-        _configuration = configuration;
+        ArgumentNullException.ThrowIfNull(jwtSettings);
+        
         _tokenHistoryService = tokenHistoryService;
         _roleService = roleService;
+        _jwtSettings = jwtSettings.Value;
     }
 
     public async Task<bool> ValidateAccessTokenAsync(Guid accountId, TokenTypeEnum type, string token, CancellationToken cancellationToken)
@@ -84,8 +88,8 @@ public class TokenHandleService : ITokenHandleService
     private async Task<AccessTokenModel> GenerateAccessTokenInternal(string accountId, string email)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]);
-        var lifeTime = TimeSpan.FromHours(int.Parse(_configuration["JwtSettings:LifeTime"]));
+        var key = Encoding.UTF8.GetBytes(_jwtSettings.Key);
+        var lifeTime = TimeSpan.FromHours(_jwtSettings.LifeTime);
 
         var roles = await _roleService.GetRoleByUserIdAsync(accountId);
 
@@ -102,8 +106,8 @@ public class TokenHandleService : ITokenHandleService
         {
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.Add(lifeTime),
-            Issuer = _configuration["JwtSettings:Issuer"],
-            Audience = _configuration["JwtSettings:Audience"],
+            Issuer = _jwtSettings.Issuer,
+            Audience = _jwtSettings.Audience,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 

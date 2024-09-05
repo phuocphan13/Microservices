@@ -14,7 +14,7 @@ public class ProductController : ApiController
     private readonly ICategoryService _categoryService;
     private readonly ISubCategoryService _subCategoryService;
     private readonly ILogger<ProductController> _logger;
-
+    
     public ProductController(IProductService productService, ICategoryService categoryService, 
         ISubCategoryService subCategoryService, ILogger<ProductController> logger) : base(logger)
     {

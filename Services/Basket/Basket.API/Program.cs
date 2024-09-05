@@ -13,7 +13,8 @@ builder.Services
     .AddServiceDependency()
     .AddThirdParty(builder.Configuration)
     .AddCatalogInternalClient()
-    .AddEventBusServices();
+    .AddEventBusServices()
+    .AddOptions(builder.Configuration);
 
 //builder.Services.AddMassTransitHostedService();
 

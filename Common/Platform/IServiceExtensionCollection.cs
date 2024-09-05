@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Platform.Common;
 using Platform.Common.Session;
+using Platform.Configurations.Builders;
 using Platform.Database.Redis;
 
 namespace Platform;
@@ -26,6 +27,18 @@ public static class IServiceExtensionCollection
 
         services.AddHealthChecks()
             .AddRedis(configuration["CacheSettings:ConnectionString"], "Redis", HealthStatus.Unhealthy);
+
+        return services;
+    }
+    
+    public static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMongoDbOptions(configuration);
+        services.AddGrpcSettingsOptions(configuration);
+        services.AddCacheSettingsOptions(configuration);
+        services.AddWorkerOptions(configuration);
+        services.AddJwtSettingsOptions(configuration);
+        services.AddEventBusSettingsOptions(configuration);
 
         return services;
     }

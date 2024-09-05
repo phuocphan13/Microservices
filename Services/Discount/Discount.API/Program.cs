@@ -16,7 +16,8 @@ builder.Services.AddSwaggerGen();
 builder.Services
     .AddCatalogApiClient()
     .AddPlatformCommonServices()
-    .AddDiscountCommonServices();
+    .AddDiscountCommonServices()
+    .AddOptions(builder.Configuration);
 
 var app = builder.Build();
 

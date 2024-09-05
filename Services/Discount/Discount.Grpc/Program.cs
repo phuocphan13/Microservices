@@ -20,7 +20,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services
     .AddDiscountCommonServices()
     .AddPlatformCommonServices()
-    .AddCatalogApiClient();
+    .AddCatalogApiClient()
+    .AddOptions(builder.Configuration);
 
 var app = builder.Build();
 

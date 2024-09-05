@@ -20,7 +20,9 @@ builder.Services.AddIdentity<Account, Role>()
 // builder.Services.AddAuthentication(OAuthValidationDefaults.AuthenticationScheme)
 //     .AddOAuthValidation();
 
-builder.Services.AddPlatformCommonServices();
+builder.Services
+    .AddOptions(builder.Configuration)
+    .AddPlatformCommonServices();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

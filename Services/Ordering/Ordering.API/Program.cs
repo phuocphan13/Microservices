@@ -22,7 +22,8 @@ builder.Services
     .AddWorkerServices(builder.Configuration)
     .AddThirdParties(builder.Configuration)
     .AddInfrastructureServices(builder.Configuration)
-    .AddCatalogInternalClient();
+    .AddCatalogInternalClient()
+    .AddOptions(builder.Configuration);
 
 var app = builder.Build();
 
