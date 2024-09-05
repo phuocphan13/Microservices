@@ -11,30 +11,11 @@ using Platform.Database.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AuthenContext>(options => options.UseSqlServer(builder.Configuration["Configuration:ConnectionString"]));
-
-builder.Services.AddIdentity<Account, Role>()
-    .AddEntityFrameworkStores<AuthenContext>()
-    .AddDefaultTokenProviders();
-
-// builder.Services.AddAuthentication(OAuthValidationDefaults.AuthenticationScheme)
-//     .AddOAuthValidation();
-
 builder.Services
     .AddOptions(builder.Configuration)
-    .AddPlatformCommonServices();
-
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// Add services to the container.
-builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IFeatureService, FeatureService>();
-builder.Services.AddScoped<IPermissionService, PermissionService>();
-builder.Services.AddScoped<ITokenHandleService, TokenHandleService>();
-builder.Services.AddScoped<ITokenHistoryService, TokenHistoryService>();
-
-builder.Services.AddScoped<ISeedDataService, SeedDataService>();
+    .AddPlatformCommonServices()
+    .AddServiceDependency()
+    .AddDatabase(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
