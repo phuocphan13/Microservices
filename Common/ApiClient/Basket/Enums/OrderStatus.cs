@@ -1,6 +1,7 @@
 public enum OrderStatus
 {
     Nothing = 99,
+    Failed = 0,
     
     Checkoutted = 1,
     Accepted = 2,

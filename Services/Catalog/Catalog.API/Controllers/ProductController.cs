@@ -18,10 +18,15 @@ public class ProductController : ApiController
     public ProductController(IProductService productService, ICategoryService categoryService, 
         ISubCategoryService subCategoryService, ILogger<ProductController> logger) : base(logger)
     {
-        _productService = productService ?? throw new ArgumentNullException(nameof(productService));
-        _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
-        _subCategoryService = subCategoryService ?? throw new ArgumentNullException(nameof(subCategoryService));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        ArgumentNullException.ThrowIfNull(productService);
+        ArgumentNullException.ThrowIfNull(categoryService);
+        ArgumentNullException.ThrowIfNull(subCategoryService);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        _productService = productService;
+        _categoryService = categoryService;
+        _subCategoryService = subCategoryService;
+        _logger = logger;
     }
     
     [HttpGet]

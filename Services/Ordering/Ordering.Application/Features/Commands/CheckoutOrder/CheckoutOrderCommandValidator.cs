@@ -7,12 +7,13 @@ public class CheckoutOrderCommandValidator : AbstractValidator<CheckoutOrderComm
     public CheckoutOrderCommandValidator()
     {
         RuleFor(x => x.UserName)
-            .NotEmpty().WithMessage("{UserName} is required.")
+            .NotEmpty().WithMessage("UserName is required.")
             .NotNull()
             .MaximumLength(50).WithMessage("{UserName} must not exceed 50 characters.");
 
-        RuleFor(x => x.TotalPrice)
-            .NotEmpty().WithMessage("{TotalPrice} is required.")
-            .GreaterThan(0).WithMessage("{TOtalPrice} shoulbe greater than 0.");
+        RuleFor(x => x.BasketKey)
+            .NotEmpty().WithMessage("BasketKey is required.")
+            .NotNull()
+            .MaximumLength(50).WithMessage("{BasketKey} must not exceed 50 characters.");
     }
 }
