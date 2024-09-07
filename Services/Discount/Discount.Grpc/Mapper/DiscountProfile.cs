@@ -44,7 +44,7 @@ public class DiscountProfile : Profile
         {
             CombinationCodeRequestBody model = new CombinationCodeRequestBody
             {
-                CombineCode = code.ToString(),
+                CombineCode = code.ToString()
             };
             combineCodeModelList.Add(model);
         }

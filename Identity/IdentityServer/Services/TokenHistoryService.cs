@@ -8,7 +8,7 @@ namespace IdentityServer.Services;
 
 public interface ITokenHistoryService
 {
-    Task<bool> SaveAppUserTokenAsync<T>(Guid accountId, TokenTypeEnum type, T accessToken, CancellationToken cancellationToken = default)
+    Task<bool> SaveAppUserTokenAsync<T>(Guid accountId, TokenTypeEnum type, T token, CancellationToken cancellationToken = default)
         where T: TokenBase, new();
 
     Task<T?> GetTokenAsync<T>(Guid accountId, TokenTypeEnum type, CancellationToken cancellationToken = default)

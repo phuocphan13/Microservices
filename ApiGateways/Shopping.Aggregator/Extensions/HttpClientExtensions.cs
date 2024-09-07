@@ -4,6 +4,11 @@ namespace Shopping.Aggregator.Extensions;
 
 public static class HttpClientExtensions
 {
+    private static readonly JsonSerializerOptions jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+    
     public static async Task<T?> ReadContentAs<T>(this HttpResponseMessage response)
     {
         if (!response.IsSuccessStatusCode)
@@ -11,6 +16,6 @@ public static class HttpClientExtensions
 
         var dataAsString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        return JsonSerializer.Deserialize<T>(dataAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return JsonSerializer.Deserialize<T>(dataAsString, jsonOptions);
     }
 }

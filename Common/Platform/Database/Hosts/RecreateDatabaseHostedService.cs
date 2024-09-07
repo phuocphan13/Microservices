@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Platform.Extensions;
 
 namespace Platform.Database.Hosts;
 
@@ -26,7 +27,7 @@ public class RecreateDatabaseHostedService<TDbContext> :
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var isRebuildSchema = bool.Parse(_configuration["EventBusSettings:IsRebuildSchema"]);
+        var isRebuildSchema = bool.Parse(_configuration.GetConfigurationValue("EventBusSettings:IsRebuildSchema"));
         
         if (!isRebuildSchema)
         {

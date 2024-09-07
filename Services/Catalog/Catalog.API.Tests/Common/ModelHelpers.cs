@@ -50,7 +50,7 @@ public static class ModelHelpers
                 Price = CommonHelpers.GenerateRandomDecimal(),
                 Summary = CommonHelpers.GenerateRandomString(),
                 CategoryId = string.IsNullOrWhiteSpace(category) ? CommonHelpers.GenerateBsonId() : category,
-                SubCategoryId = string.IsNullOrWhiteSpace(subCategory) ? CommonHelpers.GenerateBsonId() : subCategory,
+                SubCategoryId = string.IsNullOrWhiteSpace(subCategory) ? CommonHelpers.GenerateBsonId() : subCategory
             };
         }
 
@@ -101,7 +101,7 @@ public static class ModelHelpers
                 Price = CommonHelpers.GenerateRandomDecimal(),
                 Summary = CommonHelpers.GenerateRandomString(),
                 CategoryId = string.IsNullOrWhiteSpace(categoryId) ? CommonHelpers.GenerateBsonId() : categoryId,
-                SubCategoryId = string.IsNullOrWhiteSpace(subCategoryId) ? CommonHelpers.GenerateBsonId() : subCategoryId,
+                SubCategoryId = string.IsNullOrWhiteSpace(subCategoryId) ? CommonHelpers.GenerateBsonId() : subCategoryId
             };
 
             initAction?.Invoke(entity);
@@ -143,7 +143,7 @@ public static class ModelHelpers
                 Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id,
                 CategoryCode = CommonHelpers.GenerateRandomString(),
                 Description = CommonHelpers.GenerateRandomString(),
-                Name = CommonHelpers.GenerateRandomString(),
+                Name = CommonHelpers.GenerateRandomString()
             };
         }
 
@@ -154,7 +154,7 @@ public static class ModelHelpers
             {
                 Description = CommonHelpers.GenerateRandomString(),
                 Name = CommonHelpers.GenerateRandomString(),
-                CategoryCode = CommonHelpers.GenerateRandomString(),
+                CategoryCode = CommonHelpers.GenerateRandomString()
             };
         }
 
@@ -184,7 +184,7 @@ public static class ModelHelpers
             {
                 Id = string.IsNullOrWhiteSpace(id) ? CommonHelpers.GenerateBsonId() : id,
                 Description = CommonHelpers.GenerateRandomString(),
-                Name = CommonHelpers.GenerateRandomString(),
+                Name = CommonHelpers.GenerateRandomString()
             };
 
             initAction?.Invoke(entity);

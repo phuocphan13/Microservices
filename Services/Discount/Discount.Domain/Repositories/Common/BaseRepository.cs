@@ -4,6 +4,7 @@ using Discount.Domain.Extensions;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Platform.Constants;
+using Platform.Extensions;
 
 namespace Discount.Domain.Repositories.Common;
 
@@ -30,7 +31,7 @@ public class BaseRepository : IBaseRepository
 
     private NpgsqlConnection InitializaCollection()
     {
-        var connection = new NpgsqlConnection(_configuration[DatabaseConst.ConnectionSetting.Postgres.ConnectionString]);
+        var connection = new NpgsqlConnection(_configuration.GetConfigurationValue(DatabaseConst.ConnectionSetting.Postgres.ConnectionString));
 
         return connection;
     }
@@ -54,7 +55,7 @@ public class BaseRepository : IBaseRepository
 
         var entity = await connection.QueryAsync<TEntity>(sql, param);
 
-        return entity?.ToList();
+        return entity.ToList();
     }
 
     public async Task<TEntity?> QueryFirstOrDefaultAsync<TEntity>(string query, object param)

@@ -15,5 +15,5 @@ public class Application : EntityBase
     [MaxLength(512)]
     public string Description { get; set; } = null!;
     
-    public List<Feature> Features { get; set; } = new();
+    public List<Feature> Features { get; set; } = [];
 }

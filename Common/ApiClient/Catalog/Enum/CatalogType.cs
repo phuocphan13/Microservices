@@ -2,6 +2,8 @@ using System.ComponentModel;
 
 public enum CatalogType
 {
+    Unknown = 0,
+    
     [Description("Category")] 
     Category = 1,
 

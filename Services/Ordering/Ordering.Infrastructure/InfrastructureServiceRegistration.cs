@@ -7,6 +7,7 @@ using Ordering.Infrastructure.Database;
 using Ordering.Infrastructure.Mail;
 using Ordering.Infrastructure.Persistence;
 using Platform.Database.Helpers;
+using Platform.Extensions;
 
 namespace Ordering.Infrastructure;
 
@@ -15,9 +16,9 @@ public static class InfrastructureServiceRegistration
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<OrderContext>(options =>
-            options.UseSqlServer(configuration["ConnectionStrings:OrderingConnectionString"]));
+            options.UseSqlServer(configuration.GetConfigurationValue("ConnectionStrings:OrderingConnectionString")));
 
-        services.Configure<EmailSettings>(c => configuration.GetSection("EmailSettings"));
+        services.Configure<EmailSettings>(_ => configuration.GetSection("EmailSettings"));
 
         // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<IEmailService, EmailService>();

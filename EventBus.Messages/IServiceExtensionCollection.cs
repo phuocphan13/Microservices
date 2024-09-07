@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Platform.Database.Hosts;
+using Platform.Extensions;
 
 namespace EventBus.Messages;
 
@@ -53,7 +54,7 @@ public static class IServiceExtensionCollection
 
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host(configuration["EventBusSettings:HostAddress"]);
+                cfg.Host(configuration.GetConfigurationValue("EventBusSettings:HostAddress"));
                 cfg.ConfigureEndpoints(context);
             });
         });
@@ -87,7 +88,7 @@ public static class IServiceExtensionCollection
 
             x.UsingRabbitMq((_, cfg) =>
             {
-                cfg.Host(configuration["EventBusSettings:HostAddress"]);
+                cfg.Host(configuration.GetConfigurationValue("EventBusSettings:HostAddress"));
                 cfg.AutoStart = true;
             });
         });
@@ -99,7 +100,7 @@ public static class IServiceExtensionCollection
     {
         services.AddDbContext<OrderMessageDbContext>(x =>
         {
-            var connectionString = configuration["EventBusSettings:ConnectionString"];
+            var connectionString = configuration.GetConfigurationValue("EventBusSettings:ConnectionString");
 
             x.UseSqlServer(connectionString, options =>
             {

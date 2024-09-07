@@ -3,6 +3,8 @@ using ApiClient.Common.MessageQueue;
 
 public enum ProcessEnum
 {
+    Unknown = 0,
+    
     [Description(EventBusConstants.OrderProccess.Checkout)]
     Checkoutte = 1,    
     
@@ -13,5 +15,5 @@ public enum ProcessEnum
     Retry = 3,
     
     [Description("Failed")]
-    Failed = 4,
+    Failed = 4
 }

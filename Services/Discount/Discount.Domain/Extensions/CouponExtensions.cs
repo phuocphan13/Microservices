@@ -25,7 +25,7 @@ public static class CouponExtensions
             Value = requestBody.Value,
             Type = (CouponEnum)requestBody.Type,
             FromDate = requestBody.FromDate,
-            ToDate = requestBody.ToDate,
+            ToDate = requestBody.ToDate
         };
     }
 

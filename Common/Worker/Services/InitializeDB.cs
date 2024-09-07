@@ -36,8 +36,8 @@ public static class InitializeDB
 
     private static List<Job> GetJobs()
     {
-        return new List<Job>
-        {
+        return
+        [
             new()
             {
                 ExternalId = Guid.NewGuid(),
@@ -45,7 +45,7 @@ public static class InitializeDB
                 CreatedBy = "Admin",
                 Name = "AcceptOrder",
                 LastModifiedDate = DateTime.Now,
-                LastModifiedBy = "Admin",
+                LastModifiedBy = "Admin"
             },
             new()
             {
@@ -54,8 +54,8 @@ public static class InitializeDB
                 CreatedBy = "Admin",
                 Name = "UpdateCache",
                 LastModifiedDate = DateTime.Now,
-                LastModifiedBy = "Admin",
-            },
-        };
+                LastModifiedBy = "Admin"
+            }
+        ];
     }
 }

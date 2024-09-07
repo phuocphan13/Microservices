@@ -12,9 +12,9 @@ public class BasketCheckoutMessage : BaseMessage
 
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 
-    public ICollection<BasketItemSummary> Items { get; set; } = new List<BasketItemSummary>();
+    public ICollection<BasketItemSummary> Items { get; set; } = [];
     
-    public ICollection<DiscountItemSummary> DiscountItems { get; set; } = new List<DiscountItemSummary>();
+    public ICollection<DiscountItemSummary> DiscountItems { get; set; } = [];
     
-    public ICollection<CouponItemSummary> CouponItems { get; set; } = new List<CouponItemSummary>();
+    public ICollection<CouponItemSummary> CouponItems { get; set; } = [];
 }

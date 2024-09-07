@@ -3,5 +3,5 @@
 public class AmountDiscountRepositoryModel
 {
     public string Type { get; set; } = null!;
-    public List<string> CatalogCodes { get; set; } = new();
+    public ICollection<string> CatalogCodes { get; set; } = [];
 }

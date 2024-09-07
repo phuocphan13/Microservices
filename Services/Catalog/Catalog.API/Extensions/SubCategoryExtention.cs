@@ -13,7 +13,7 @@ public static class SubCategoryExtention
             Name = subCategory.Name,
             SubCategoryCode = subCategory.SubCategoryCode,
             Description = subCategory.Description,
-            CategoryId = subCategory.CategoryId,
+            CategoryId = subCategory.CategoryId
         };
     }
 
@@ -24,7 +24,7 @@ public static class SubCategoryExtention
             Name = requestBody.Name,
             Description = requestBody.Description,
             SubCategoryCode = requestBody.SubCategoryCode,
-            CategoryId = requestBody.CategoryId,
+            CategoryId = requestBody.CategoryId
         };
     }
 
@@ -44,7 +44,7 @@ public static class SubCategoryExtention
             Name = subCategory.Name,
             SubCategoryCode = subCategory.SubCategoryCode,
             Description = subCategory.Description,
-            CategoryId = subCategory.CategoryId,
+            CategoryId = subCategory.CategoryId
         };  
     }    
 }

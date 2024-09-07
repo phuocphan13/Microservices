@@ -67,7 +67,7 @@ public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand,
             {
                 ReceiptNumber = orderEntity.ReceiptNumber,
                 UserId = request.UserId,
-                UserName = request.UserName,
+                UserName = request.UserName
             }, cancellationToken);
         }
 

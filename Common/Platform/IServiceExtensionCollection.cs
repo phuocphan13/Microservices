@@ -5,6 +5,7 @@ using Platform.Common;
 using Platform.Common.Session;
 using Platform.Configurations.Builders;
 using Platform.Database.Redis;
+using Platform.Extensions;
 
 namespace Platform;
 
@@ -26,7 +27,7 @@ public static class IServiceExtensionCollection
         services.AddSingleton<IRedisDbFactory, RedisDbFactory>();
 
         services.AddHealthChecks()
-            .AddRedis(configuration["CacheSettings:ConnectionString"], "Redis", HealthStatus.Unhealthy);
+            .AddRedis(configuration.GetConfigurationValue("CacheSettings:ConnectionString"), "Redis", HealthStatus.Unhealthy);
 
         return services;
     }

@@ -1,5 +1,5 @@
 public enum TokenTypeEnum
 {
     AccessToken = 1,
-    RefreshToken = 2,
+    RefreshToken = 2
 }

@@ -75,7 +75,7 @@ public class RunStateService : IRunStateService
             CreatedBy = "Admin",
             Name = jobName,
             LastModifiedDate = DateTime.Now,
-            LastModifiedBy = "Admin",
+            LastModifiedBy = "Admin"
         };
         
         await context.Jobs.AddAsync(job, cancellationToken);

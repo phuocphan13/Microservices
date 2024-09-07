@@ -13,7 +13,7 @@ public static class ProductExtension
             Id = product.Id,
             Name = product.Name,
             Description = product.Description,
-            Price = product.Price,
+            Price = product.Price
             // Summary = product.Summary,
             // ImageFile = product.ImageFile,
         };
@@ -73,7 +73,7 @@ public static class ProductExtension
             Description = product.Description,
             Price = product.Price,
             Summary = product.Summary,
-            ImageFile = product.ImageFile,
+            ImageFile = product.ImageFile
         };
     }
 

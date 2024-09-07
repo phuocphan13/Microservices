@@ -11,5 +11,5 @@ public enum OrderStatus
     PaymentFailed = 5,
     Cancelled = 6,
     Returned = 7,
-    Refunded = 8,
+    Refunded = 8
 }

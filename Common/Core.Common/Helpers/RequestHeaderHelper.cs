@@ -6,7 +6,7 @@ public static class RequestHeaderHelper
 {
     public static string GetAuthorizationToken(IHeaderDictionary header)
     {
-        var authorization = header["Authorization"];
+        var authorization = header.Authorization;
 
         if (string.IsNullOrWhiteSpace(authorization))
         {

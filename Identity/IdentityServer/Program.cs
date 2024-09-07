@@ -1,13 +1,6 @@
-using IdentityServer.Domain;
-using IdentityServer.Domain.Entities;
-using IdentityServer.Domain.Helpers;
 using IdentityServer.Extensions.Builder;
-using IdentityServer.Services;
-using IdentityServer.Services.Cores;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Platform;
-using Platform.Database.Helpers;
+using Platform.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,17 +17,18 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-var isRebuildSchema = bool.Parse(builder.Configuration["Configuration:IsRebuildSchema"]);
+var isRebuildSchema = bool.Parse(builder.Configuration.GetConfigurationValue("Configuration:IsRebuildSchema"));
 if (isRebuildSchema)
 {
     MigrationBuilder.RunMigrationBuilder(app);
 }
 
-var isSeedData = bool.Parse(builder.Configuration["Configuration:IsSeedData"]);
+var isSeedData = bool.Parse(builder.Configuration.GetConfigurationValue("Configuration:IsSeedData"));
 if (isSeedData)
 {
     await SeedDataBuilder.RunSeedDataBuilder(app);
 }
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

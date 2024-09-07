@@ -10,7 +10,7 @@ public static class RoleExtensions
           return new()
           {
                ExternalId = role.Id.ToString(),
-               Name = role.Name,
+               Name = role.Name!,
                Description = role.Description ?? string.Empty
           };
      }

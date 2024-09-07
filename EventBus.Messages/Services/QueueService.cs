@@ -1,6 +1,7 @@
 using ApiClient.Basket.Events;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
+using Platform.Extensions;
 
 namespace EventBus.Messages.Services;
 
@@ -42,7 +43,7 @@ public class QueueService : IQueueService
             return;
         }
 
-        var exchangeUri = $"{_configuration["EventBusSettings:HostAddress"]}/{directQueue}";
+        var exchangeUri = $"{_configuration.GetConfigurationValue("EventBusSettings:HostAddress")}/{directQueue}";
 
         var endpoint = await _bus.GetSendEndpoint(new Uri(exchangeUri));
         await endpoint.Send(message, cancellationToken);

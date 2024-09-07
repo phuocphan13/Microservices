@@ -1,3 +1,4 @@
+using System.Globalization;
 using ApiClient.DirectApiClients.Identity.Models;
 using ApiClient.IdentityServer.Models.RequestBodies;
 using ApiClient.IdentityServer.Models.Response;
@@ -41,6 +42,12 @@ public class RoleService : IRoleService
     public async Task<List<Role>> GetRoleByUserIdAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
+
+        if (user is null)
+        {
+            return [];
+        }
+
         var roleNames = await _userManager.GetRolesAsync(user);
 
         var roles = new List<Role>();
@@ -49,12 +56,17 @@ public class RoleService : IRoleService
         {
             var role = await _roleManager.FindByNameAsync(name);
 
+            if (role is null)
+            {
+                continue;
+            }
+
             roles.Add(role);
         }
 
         return roles;
     }
-    
+
     public async Task<AssignRoleToUserDetail> AssignRoleToUserAsync(string userId, string roleId)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -78,15 +90,15 @@ public class RoleService : IRoleService
                 ErrorMessage = "Role not found"
             };
         }
-        
-        var result = await _userManager.AddToRoleAsync(user, role.Name);
+
+        var result = await _userManager.AddToRoleAsync(user, role.Name!);
 
         return new()
         {
             IsSuccess = result.Succeeded
         };
     }
-    
+
     public async Task<RemoveRoleToUserDetail> RemoveRoleToUserAsync(string userId, string roleId)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -110,15 +122,15 @@ public class RoleService : IRoleService
                 ErrorMessage = "Role not found"
             };
         }
-        
-        var result = await _userManager.RemoveFromRoleAsync(user, role.Name);
+
+        var result = await _userManager.RemoveFromRoleAsync(user, role.Name!);
 
         return new()
         {
             IsSuccess = result.Succeeded
         };
     }
-    
+
     public async Task<AssignPermissionToRoleDetail> AssignPermissionToRoleAsync(AssignPermissionToRoleRequestBody requestBody, CancellationToken cancellationToken)
     {
         var role = await _roleManager.FindByIdAsync(requestBody.RoleId);
@@ -147,7 +159,7 @@ public class RoleService : IRoleService
             };
         }
 
-        if (!application.Features.Any())
+        if (application.Features.Count == 0)
         {
             return new()
             {
@@ -155,12 +167,12 @@ public class RoleService : IRoleService
                 ErrorMessage = "Feature is not belong to Application"
             };
         }
-        
+
         var rolePermission = await _authenContext.RolePermission
             .Where(x => x.RoleId == role.Id && x.ApplicationId == application.ExternalId && x.FeatureId == application.Features.First().ExternalId)
             .AsNoTracking()
             .AnyAsync(cancellationToken);
-        
+
         if (rolePermission)
         {
             return new()
@@ -193,11 +205,11 @@ public class RoleService : IRoleService
         {
             Name = requestBody.Name,
             Description = requestBody.Description,
-            NormalizedName = requestBody.Name.ToUpper(),
+            NormalizedName = requestBody.Name.ToUpper(CultureInfo.InvariantCulture),
             CreatedBy = _sessionState.GetUserId(),
             CreatedDate = DateTime.UtcNow
         };
-        
+
         var result = await _roleManager.CreateAsync(role);
 
         if (!result.Succeeded)
@@ -212,6 +224,15 @@ public class RoleService : IRoleService
     {
         var role = await _roleManager.FindByIdAsync(requestBody.RoleId);
         
+        if (role is null)
+        {
+            return new()
+            {
+                IsSuccess = false,
+                ErrorMessage = "Role not found"
+            };
+        }
+
         var rolePermissions = await _authenContext.RolePermission
             .Where(x => x.RoleId == Guid.Parse(requestBody.RoleId))
             .ToListAsync(cancellationToken);
@@ -228,7 +249,7 @@ public class RoleService : IRoleService
                 ErrorMessage = "Remove role permission failed"
             };
         }
-        
+
         var result = await _roleManager.DeleteAsync(role);
 
         return new()
@@ -237,16 +258,16 @@ public class RoleService : IRoleService
             ErrorMessage = result.Succeeded ? string.Empty : result.Errors.First().Description
         };
     }
-    
+
     public async Task<bool> CheckRoleExistAsync(string roleValue, string propertyName)
     {
-        Role role = null!;
-        
-        if(propertyName == PropertyContstants.PropertyName.Name)
+        Role? role = null;
+
+        if (propertyName == PropertyContstants.PropertyName.Name)
         {
             role = await _roleManager.FindByNameAsync(roleValue);
         }
-        else if(propertyName == PropertyContstants.PropertyName.Id)
+        else if (propertyName == PropertyContstants.PropertyName.Id)
         {
             role = await _roleManager.FindByIdAsync(roleValue);
         }

@@ -36,7 +36,7 @@ public class ProductHistoryService : IProductHistoryService
             {
                 ProductId = body.Id,
                 Balance = body.Balance,
-                CreatedDate = DateTime.UtcNow,
+                CreatedDate = DateTime.UtcNow
                 // CreatedBy = _sessionState.GetUserId()
             };
             
@@ -65,7 +65,7 @@ public class ProductHistoryService : IProductHistoryService
         {
             ProductId = product.Id,
             Balance = requestBody.Balance,
-            CreatedDate = DateTime.UtcNow,
+            CreatedDate = DateTime.UtcNow
             // CreatedBy = _sessionState.GetUserId()
         };
 

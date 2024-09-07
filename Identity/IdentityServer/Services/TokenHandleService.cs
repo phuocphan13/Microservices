@@ -56,7 +56,7 @@ public class TokenHandleService : ITokenHandleService
             return null;
         }
         
-        var token = await GenerateAccessTokenInternal(account.Id.ToString(), account.Email);
+        var token = await GenerateAccessTokenInternal(account.Id.ToString(), account.Email!);
 
         return new AccessTokenDetail()
         {
@@ -67,7 +67,7 @@ public class TokenHandleService : ITokenHandleService
 
     public async Task<LoginResponse?> LoginAsync(Account account, CancellationToken cancellationToken)
     {
-        var accessToken = await GenerateAccessTokenInternal(account.Id.ToString(), account.Email);
+        var accessToken = await GenerateAccessTokenInternal(account.Id.ToString(), account.Email!);
         var refreshToken = GenerateRefreshTokenInternal();
         
         await _tokenHistoryService.SaveAppUserTokenAsync(account.Id, TokenTypeEnum.AccessToken, accessToken, cancellationToken);
@@ -121,7 +121,7 @@ public class TokenHandleService : ITokenHandleService
         };
     }
 
-    private bool ValidateTokenInternal<T>(T? tokenModel, string token)
+    private static bool ValidateTokenInternal<T>(T? tokenModel, string token)
         where T : TokenBase
     {
         if (tokenModel is null)
@@ -151,7 +151,7 @@ public class TokenHandleService : ITokenHandleService
         };
     }
 
-    private string GenerateRandomCode()
+    private static string GenerateRandomCode()
     {
         var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();
