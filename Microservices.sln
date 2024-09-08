@@ -81,6 +81,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging.Api", "Services\Log
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTelemetryFramework", "Common\OpenTelemetryFramework\OpenTelemetryFramework.csproj", "{59445C97-0A22-4910-9369-0AE5F24E7DDF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configs", "Configs", "{1BD08471-6321-46D7-9CFC-2FA577E98558}"
+	ProjectSection(SolutionItems) = preProject
+		Configs\grafana-datasource.yml = Configs\grafana-datasource.yml
+		Configs\jaeger.yml = Configs\jaeger.yml
+		Configs\otel-collector-config.yml = Configs\otel-collector-config.yml
+		Configs\prometheus.yml = Configs\prometheus.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

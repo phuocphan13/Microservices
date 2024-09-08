@@ -96,9 +96,6 @@ services:
     
   otel-collector:
     image: otel/opentelemetry-collector-contrib-dev:latest
-    
-  node_exporter:
-    image: quay.io/prometheus/node-exporter:v1.5.0
       
 volumes:
   mongo_data:
