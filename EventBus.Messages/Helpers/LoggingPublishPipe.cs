@@ -7,7 +7,7 @@ public class LoggingPublishPipe<T> : IPipe<PublishContext<T>>
 {
     public async Task Send(PublishContext<T> context)
     {
-        // Store Logging
+        // Store Logging.Api
         Console.WriteLine($"Publishing message: {typeof(T).Name} - {context.Message}");
 
         await Task.CompletedTask;

@@ -8,4 +8,5 @@ public static class OptionConstants
     public const string Worker = "Worker";
     public const string JwtSettings = "JwtSettings"; 
     public const string EventBusSettings = "EventBusSettings"; 
+    public const string OpenTelemetry = "OpenTelemetry";
 }

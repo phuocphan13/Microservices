@@ -84,6 +84,21 @@ services:
     build:
       context: .
       dockerfile: Identity/IdentityServer/Dockerfile
+  
+  jaeger:
+    image: jaegertracing/all-in-one:1.49
+    
+  prometheus:
+    image: prom/prometheus:latest
+    
+  grafana:
+    image: grafana/grafana-oss:latest
+    
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib-dev:latest
+    
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.5.0
       
 volumes:
   mongo_data:

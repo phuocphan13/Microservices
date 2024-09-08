@@ -3,7 +3,7 @@
 // using Catalog.API.Controllers;
 // using Catalog.API.Extensions;
 // using Catalog.API.Services;
-// using Microsoft.Extensions.Logging;
+// using Microsoft.Extensions.Logging.Api;
 // using Catalog.API.Tests.Common;
 // using Microsoft.AspNetCore.Mvc;
 // using Platform.ApiBuilder;

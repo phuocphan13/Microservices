@@ -1,4 +1,12 @@
 version: '3.4'
+    
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  jaeger-data:
+    driver: local
 
 services:
   catalogdb:
@@ -235,4 +243,51 @@ services:
       - ocelotapigw
     ports:
       - "8500:80"
+        
+  jaeger:
+    container_name: "jaeger"
+    ports:
+      - "16686:16686"
   
+  prometheus:
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+  
+  grafana:
+    container_name: grafana
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+    volumes:
+      - grafana-data:/var/lib/grafana
+  
+  otel-collector:
+    container_name: otel-collector
+    command: [ "--config=/etc/otel-collector-config.yml" ]
+    volumes:
+      - ./config/otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "1888:1888"   # pprof extension
+      - "8888:8888"   # Prometheus metrics exposed by the collector
+      - "8889:8889"   # Prometheus exporter metrics
+      - "13133:13133" # health_check extension
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # Http gRPC receiver
+      - "55679:55679" # zpages extension
+      - "14250:14250"   # Jaeger receiver
+        
+  node_exporter:
+    container_name: node_exporter
+    command: '--path.rootfs=/host'
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
