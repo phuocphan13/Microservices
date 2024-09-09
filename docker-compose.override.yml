@@ -7,6 +7,8 @@ volumes:
     driver: local
   jaeger-data:
     driver: local
+  elasticsearch-data:
+    driver: local
 
 services:
   catalogdb:
@@ -281,3 +283,12 @@ services:
       - "4318:4318"   # Http gRPC receiver
       - "55679:55679" # zpages extension
       - "14250:14250"   # Jaeger receiver
+        
+  elasticsearch:
+    container_name: elasticsearch
+    ports:
+      - "5601:5601"
+      - "9200:9200"
+      - "5044:5044"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data

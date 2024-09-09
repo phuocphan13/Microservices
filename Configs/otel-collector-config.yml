@@ -14,6 +14,12 @@ exporters:
     endpoint: jaeger:4317
     tls:
       insecure: true
+      
+  logging:
+  
+  elasticsearch:
+    endpoints:
+      - "http://elasticsearch:9200"
 
 processors:
   batch:
@@ -33,3 +39,7 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [otlp/jaeger]
+    logs:
+      receivers: [ otlp ]
+      processors: [ batch ]
+      exporters: [ logging, elasticsearch ]

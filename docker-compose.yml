@@ -96,6 +96,9 @@ services:
     
   otel-collector:
     image: otel/opentelemetry-collector-contrib-dev:latest
+    
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.0
       
 volumes:
   mongo_data:
