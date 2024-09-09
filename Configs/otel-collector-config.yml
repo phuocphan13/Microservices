@@ -14,12 +14,9 @@ exporters:
     endpoint: jaeger:4317
     tls:
       insecure: true
-      
-  logging:
   
   elasticsearch:
-    endpoints:
-      - "http://elasticsearch:9200"
+    endpoints: http://elasticsearch:9200
 
 processors:
   batch:
@@ -29,17 +26,17 @@ extensions:
     endpoint: otel-collector:13133
 
 service:
-  extensions: [health_check]
+  extensions: [ health_check ]
   pipelines:
     metrics:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [prometheus]
+      receivers: [ otlp ]
+      processors: [ batch ]
+      exporters: [ prometheus ]
     traces:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [otlp/jaeger]
+      receivers: [ otlp ]
+      processors: [ batch ]
+      exporters: [ otlp/jaeger ]
     logs:
       receivers: [ otlp ]
       processors: [ batch ]
-      exporters: [ logging, elasticsearch ]
+      exporters: [ elasticsearch ]
