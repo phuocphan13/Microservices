@@ -21,15 +21,25 @@ public static class IServiceExtensionCollection
         var openTelemetryOptions = hostBuilder.Configuration.GetSection(OptionConstants.OpenTelemetry).Get<OpenTelemetryOptions>();
 
         ArgumentNullException.ThrowIfNull(openTelemetryOptions);
-        
+
+        var resourceBuilder = ResourceBuilder
+            .CreateDefault()
+            .AddService(openTelemetryOptions.ServiceName, serviceVersion: openTelemetryOptions.ServiceVersion);
+
         hostBuilder.Logging.AddOpenTelemetry(logging =>
         {
-            // The rest of your setup code goes here
-            logging.AddOtlpExporter(opt =>
-            {
-                opt.Endpoint = new Uri(openTelemetryOptions.Endpoint);
-                opt.Protocol = OtlpExportProtocol.HttpProtobuf;
-            });
+            logging.IncludeFormattedMessage = true;
+            logging.IncludeScopes = true;
+            logging.ParseStateValues = true;
+
+            logging
+                .SetResourceBuilder(resourceBuilder)
+                .AddOtlpExporter(opt =>
+                {
+                    // opt.Endpoint = new Uri("http://192.168.2.11:4318");
+                    opt.Endpoint = new Uri(openTelemetryOptions.Endpoint);
+                    // opt.Protocol = OtlpExportProtocol.HttpProtobuf;
+                });
         });
     }
     

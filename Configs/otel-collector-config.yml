@@ -17,6 +17,7 @@ exporters:
   
   elasticsearch:
     endpoints: http://elasticsearch:9200
+    index: "otel-v1-catalog-api"
 
 processors:
   batch:
