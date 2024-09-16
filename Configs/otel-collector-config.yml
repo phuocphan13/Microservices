@@ -9,14 +9,13 @@ receivers:
 exporters:
   prometheus:
     endpoint: otel-collector:8889
-  
   otlp/jaeger:
     endpoint: jaeger:4317
     tls:
       insecure: true
-  
   elasticsearch:
-    endpoints: http://elasticsearch:9200
+    endpoints: http://192.168.2.11:9200
+    index: "otel-v1-catalog-api"
 
 processors:
   batch:

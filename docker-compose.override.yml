@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.5'
     
 volumes:
   prometheus-data:
@@ -290,5 +290,8 @@ services:
       - "5601:5601"
       - "9200:9200"
       - "5044:5044"
+      - "9300:9300"    
+    environment:
+      - discovery.type=single-node
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
