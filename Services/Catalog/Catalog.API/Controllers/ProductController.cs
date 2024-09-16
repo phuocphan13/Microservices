@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using ApiClient.Catalog.Product.Models;
 using ApiClient.Common.Models.Paging;
 using Catalog.API.Services;
@@ -27,6 +28,8 @@ public class ProductController : ApiController
         _categoryService = categoryService;
         _subCategoryService = subCategoryService;
         _logger = logger;
+        
+        _logger.LogInformation("ProductController is created.");
     }
     
     [HttpGet]
@@ -44,6 +47,9 @@ public class ProductController : ApiController
             return NotFound();
         }
 
+        _logger.LogInformation("Get all products paging successfully.");
+        _logger.Log(LogLevel.Information, "Get all products paging successfully.");
+
         return base.Ok(result);
     }
 
@@ -57,6 +63,10 @@ public class ProductController : ApiController
         {
             return NotFound();
         }
+
+        _logger.LogInformation("Get all products successfully.");
+        _logger.Log(LogLevel.Information, "Get all products paging successfully.");
+        _logger.GetProducts();
 
         return Ok(result);
     }
@@ -236,4 +246,36 @@ public class ProductController : ApiController
 
         return string.Empty;
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Test(CancellationToken cancellationToken)
+    {
+        var client = new HttpClient();
+        var jsonContent =
+            """
+            
+                    {
+                        "query": {
+                            "match_all": {}
+                        }
+                    }
+            """;
+
+        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        // string url = "http://192.168.2.11:9200/logs-otel/_search?pretty";
+        string url = "http://192.168.2.11:9200/_cat/indices?v";
+
+        var response = await client.GetAsync(url, cancellationToken);
+
+        var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        return Ok(responseString);
+    }
+}
+
+public static partial class Log
+{
+    [LoggerMessage(LogLevel.Information, "Get Product Success Luficer")]
+    public static partial void GetProducts(this ILogger logger);
 }

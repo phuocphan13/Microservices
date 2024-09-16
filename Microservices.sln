@@ -89,6 +89,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configs", "Configs", "{1BD0
 		Configs\prometheus.yml = Configs\prometheus.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging.Domain", "Services\Logging\Logging.Domain\Logging.Domain.csproj", "{2BC4553F-264C-40ED-989D-2F969860602B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -203,6 +205,10 @@ Global
 		{59445C97-0A22-4910-9369-0AE5F24E7DDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59445C97-0A22-4910-9369-0AE5F24E7DDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59445C97-0A22-4910-9369-0AE5F24E7DDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BC4553F-264C-40ED-989D-2F969860602B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BC4553F-264C-40ED-989D-2F969860602B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BC4553F-264C-40ED-989D-2F969860602B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BC4553F-264C-40ED-989D-2F969860602B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -240,6 +246,7 @@ Global
 		{204F7913-53DF-4A4B-9323-D2522D969FE3} = {95DAA397-B304-4A73-A479-4FC515A3664A}
 		{46E0B277-BC38-4C14-BDB3-FC782B0693BE} = {204F7913-53DF-4A4B-9323-D2522D969FE3}
 		{59445C97-0A22-4910-9369-0AE5F24E7DDF} = {A0E2C293-4F44-4498-A802-6846E8F23A98}
+		{2BC4553F-264C-40ED-989D-2F969860602B} = {204F7913-53DF-4A4B-9323-D2522D969FE3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C4BB872B-A5B8-4E0D-8B6D-79FB8B7CB8D7}
