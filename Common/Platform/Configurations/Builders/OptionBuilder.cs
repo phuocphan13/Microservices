@@ -16,6 +16,11 @@ public static class OptionBuilder
         services.Configure<GrpcSettingsOptions>(configuration.GetSection(OptionConstants.GrpcSettings));
     }
 
+    public static void AddLoggingDbOptions(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<LoggingDbOptions>(configuration.GetSection(OptionConstants.LoggingDbOptions));
+    }
+
     public static void AddCacheSettingsOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<CacheSettingsOptions>(configuration.GetSection(OptionConstants.CacheSettings));

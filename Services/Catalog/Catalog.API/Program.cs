@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using OpenTelemetryFramework;
 using Platform;
-using Platform.Configurations.Builders;
 using Worker;
 
 var builder = WebApplication.CreateBuilder(args);

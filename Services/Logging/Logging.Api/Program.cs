@@ -1,4 +1,7 @@
 using Logging.Extensions;
+using Logging.Middlewares;
+using Worker;
+using Platform;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,9 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
 
 builder.Services
-    .AddServiceDependencies();
+    .AddPlatformCommonServices()
+    .AddWorkerServices(builder.Configuration)
+    .AddServiceDependencies()
+    .AddOptions(builder.Configuration);
 
 var app = builder.Build();
 
@@ -19,6 +26,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapControllers();
+
+app.UseMigrationMiddleware();
 app.UseHttpsRedirection();
 
 app.Run();

@@ -8,7 +8,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
-using OpenTelemetryFramework.Tracing;
+using OpenTelemetryFramework.Tracings;
 using Platform.Configurations;
 using Platform.Configurations.Options;
 
@@ -36,7 +36,6 @@ public static class IServiceExtensionCollection
                 .SetResourceBuilder(resourceBuilder)
                 .AddOtlpExporter(opt =>
                 {
-                    // opt.Endpoint = new Uri("http://192.168.2.11:4318");
                     opt.Endpoint = new Uri(openTelemetryOptions.Endpoint);
                     // opt.Protocol = OtlpExportProtocol.HttpProtobuf;
                 });
@@ -62,9 +61,9 @@ public static class IServiceExtensionCollection
                         serviceVersion: openTelemetryOptions.ServiceVersion);
                 });
 
-            tracing.AddAspNetCoreInstrumentation()
+            tracing
+                .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
-                .AddEntityFrameworkCoreInstrumentation()
                 .AddEntityFrameworkCoreInstrumentation()
                 .AddOtlpExporter(otlpOptions =>
                 {

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace OpenTelemetryFramework.Tracing;
+namespace OpenTelemetryFramework.Tracings;
 
 public static class ActivitySourceProvider
 {

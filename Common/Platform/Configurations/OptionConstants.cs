@@ -9,4 +9,5 @@ public static class OptionConstants
     public const string JwtSettings = "JwtSettings"; 
     public const string EventBusSettings = "EventBusSettings"; 
     public const string OpenTelemetry = "OpenTelemetry";
+    public const string LoggingDbOptions = "LoggingDb";
 }

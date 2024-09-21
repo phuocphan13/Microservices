@@ -15,6 +15,9 @@ services:
     
   discountdb:
     image: postgres
+    
+  loggingdb:
+    image: mysql:latest
 
   orderdb:
     image: mcr.microsoft.com/mssql/server:2017-latest

@@ -33,7 +33,7 @@ public static class IServiceExtensionCollection
         {
             x.AddEntityFrameworkOutbox<OrderMessageDbContext>(o =>
             {
-                o.QueryDelay = TimeSpan.FromSeconds(1);
+                o.QueryDelay = TimeSpan.FromSeconds(30);
                 o.DuplicateDetectionWindow = TimeSpan.FromSeconds(30);
                 o.UseSqlServer();
                 o.DisableInboxCleanupService();
@@ -79,7 +79,7 @@ public static class IServiceExtensionCollection
         {
             x.AddEntityFrameworkOutbox<OrderMessageDbContext>(o =>
             {
-                o.QueryDelay = TimeSpan.FromSeconds(1);
+                o.QueryDelay = TimeSpan.FromSeconds(30);
 
                 o.UseSqlServer();
                 o.DisableInboxCleanupService();

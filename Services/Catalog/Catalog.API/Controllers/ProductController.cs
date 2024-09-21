@@ -28,8 +28,6 @@ public class ProductController : ApiController
         _categoryService = categoryService;
         _subCategoryService = subCategoryService;
         _logger = logger;
-        
-        _logger.LogInformation("ProductController is created.");
     }
     
     [HttpGet]
@@ -48,7 +46,6 @@ public class ProductController : ApiController
         }
 
         _logger.LogInformation("Get all products paging successfully.");
-        _logger.Log(LogLevel.Information, "Get all products paging successfully.");
 
         return base.Ok(result);
     }
@@ -65,8 +62,6 @@ public class ProductController : ApiController
         }
 
         _logger.LogInformation("Get all products successfully.");
-        _logger.Log(LogLevel.Information, "Get all products paging successfully.");
-        _logger.GetProducts();
 
         return Ok(result);
     }

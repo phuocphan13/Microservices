@@ -94,6 +94,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{4A0AE81A-0D62-49F6-922D-A4A80F521E2C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Https", "Https", "{48D1538C-2CB0-4299-8565-F106F068AC87}"
+	ProjectSection(SolutionItems) = preProject
+		Tools\Https\ElasticSearch.http = Tools\Https\ElasticSearch.http
+		Tools\Https\CatalogApi.http = Tools\Https\CatalogApi.http
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
