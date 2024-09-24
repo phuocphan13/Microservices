@@ -9,9 +9,12 @@ namespace Catalog.API.Services;
 public interface ISubCategoryService
 {
     Task<bool> CheckExistingAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
-    Task<SubCategoryDetail?> GetSubCategoryBySeachAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
+    Task<SubCategoryDetail?> GetSubCategoryBySearchAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
+    //Task<SubCategoryDetail?> GetSubCategoryByIdOrNameAsync(string id, string name, CancellationToken cancellationToken = default);
     Task<List<SubCategorySummary>> GetSubCategoriesAsync(CancellationToken cancellationToken = default);
     Task<List<SubCategorySummary>> GetSubCategoriesByCategoryIdAsync(string categoryId, CancellationToken cancellationToken = default);
+    Task<SubCategoryDetail?> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken = default);
+    Task<SubCategoryDetail?> GetSubCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
     Task<bool> DeleteSubCategoryAsync(string id, CancellationToken cancellationToken = default);
     Task<SubCategoryDetail?> CreateSubCategoryAsync(CreateSubCategoryRequestBody body, CancellationToken cancellationToken = default);
     Task<SubCategoryDetail?> UpdateSubCategoryAsync(UpdateSubCategoryRequestBody body, CancellationToken cancellationToken = default);
@@ -41,23 +44,37 @@ public class SubCategoryService : ISubCategoryService
         return result;
     }
 
-    public async Task<SubCategoryDetail?> GetSubCategoryBySeachAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
+    public async Task<SubCategoryDetail?> GetSubCategoryBySearchAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
     {
-        SubCategory? data = propertyName switch
-        {
-            PropertyName.Id => await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == search, cancellationToken),
-            PropertyName.Name => await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == search, cancellationToken),
-            PropertyName.Code => await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.SubCategoryCode == search, cancellationToken),
-            _ => null
-        };
+        //SubCategory? data = propertyName switch
+        //{
+        //    PropertyName.Id => await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == search, cancellationToken),
+        //    PropertyName.Name => await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == search, cancellationToken),
+        //    PropertyName.Code => await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.SubCategoryCode == search, cancellationToken),
+        //    _ => null
+        //};
 
-        if (data is null)
+        var entity = await _cachedService.GetSubCategoryCachedBySearchAsync(search, propertyName, cancellationToken);
+
+        if (entity is null)
         {
             return null;
         }
 
-        return data.ToDetail();
+        return entity.ToDetailFromCachedModel();
     }
+
+    //public async Task<SubCategoryDetail?> GetSubCategoryByIdOrNameAsync(string id, string name, CancellationToken cancellationToken = default)
+    //{
+    //    var entity = await _cachedService.GetSubCategoryCachedBySearchAsync(id, name, cancellationToken);
+
+    //    if (entity is null) 
+    //    {
+    //        return null;
+    //    }
+
+    //    return entity.ToDetailFromCachedModel();
+    //}
 
     public async Task<List<SubCategorySummary>> GetSubCategoriesAsync(CancellationToken cancellationToken)
     {
@@ -81,6 +98,28 @@ public class SubCategoryService : ISubCategoryService
         }
 
         return entities.Select(x => x.ToSummary()).ToList();
+    }
+
+    public async Task<SubCategoryDetail?> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var entity = await _cachedService.GetCachedSubCategoriesByIdAsync(id, cancellationToken);
+        if (entity is null) 
+        {
+            return new();
+        }
+
+        return entity.ToDetailFromCachedModel();
+    }
+
+    public async Task<SubCategoryDetail?> GetSubCategoryByNameAsync(string name, CancellationToken cancellationToken = default)
+    {
+        var entity = await _cachedService.GetCachedSubCategoriesByNameAsync(name, cancellationToken);
+        if (entity is null)
+        {
+            return new();
+        }
+
+        return entity.ToDetailFromCachedModel();
     }
 
     public async Task<bool> DeleteSubCategoryAsync(string id, CancellationToken cancellationToken)

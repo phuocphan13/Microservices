@@ -1,4 +1,4 @@
-using Catalog.API.Models.Cached;
+﻿using Catalog.API.Models.Cached;
 using MassTransit;
 using Platform.Database.Redis;
 using System.Collections.Generic;
@@ -35,13 +35,21 @@ public class CommonCacheService
         return items?.FirstOrDefault(x => x.Id == id);
     }
 
-    //protected async Task<T?> GetItemCachedApproximateIdAsync<T> (string id, CancellationToken cancellationToken)
-    //    where T : List<BaseCachedModel>, new()
-    //{
-    //    var items = await GetAllItemAsync<T>(cancellationToken);
+    protected async Task<T?> GetItemCacheByNameAsync<T>(string name, CancellationToken cancellationToken) where T : BaseCachedModel, new()
+    {
+        var item = await GetAllItemAsync<T>(cancellationToken);
 
-    //    return items?.Where(x => x.Id.Contains(id));
-    //}
+        return item?.FirstOrDefault(x => x.Name == name);
+    }
+
+    //Search gần đúng like '%abc%'
+    protected async Task<List<T>?> GetItemCachedApproximateIdAsync<T>(string id, CancellationToken cancellationToken)
+        where T :BaseCachedModel, new()
+    {
+        var items = await GetAllItemAsync<T>(cancellationToken);
+
+        return items?.Where(x => x.Id.Contains(id)).ToList();
+    }
 
     protected async Task SetAllItemsCacheAsync<T>(List<T> items, CancellationToken cancellationToken)
         where T : BaseCachedModel, new()

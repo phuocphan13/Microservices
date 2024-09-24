@@ -6,13 +6,14 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Platform;
 using Worker;
+using Worker.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // builder.Services.AddHealthChecks();
 
 var isRebuildSchema = builder.Configuration.GetValue<bool>(Platform.Constants.DatabaseConst.ConnectionSetting.MongoDB.IsRebuildSchema);
-
+var isRebuildWorkerSchema = builder.Configuration.GetValue<bool>("Worker:IsRebuildSchema");
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -25,12 +26,12 @@ builder.Services
     .AddRedisServices(builder.Configuration)
     .AddWorkerServices(builder.Configuration);
 
-builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"C:\temp-keys\"))
-    .UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration()
-    {
-        EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
-        ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
-    });
+//builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"C:\temp-keys\"))
+//    .UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration()
+//    {
+//        EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+//        ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+//    });
 
 var app = builder.Build();
 
@@ -47,6 +48,7 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 await app.InitializePlatformDbContextsAsync(builder.Configuration, isRebuildSchema);
+await app.InitializeWorkerDbContextsAsync(isRebuildWorkerSchema);
 
 await app.RunAsync();
 

@@ -85,10 +85,7 @@
       "UpstreamHttpMethod": [
         "GET",
         "DELETE"
-      ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer"
-      }
+      ]
     },
     {
       "DownstreamPathTemplate": "/api/v1/Basket",

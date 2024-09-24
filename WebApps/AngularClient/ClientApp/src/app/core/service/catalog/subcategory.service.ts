@@ -19,8 +19,18 @@ export class SubCategoryService {
     }
 
     //GET SUBCATEGORY BY CATEGORY ID
-    async getSubCategoryByCatagoryIdAsync (id: string): Promise<SubCategorySummary[]> {
+    async getSubCategoryByCatagoryIdAsync (id: string): Promise<SubCategorySummary> {
         return await this.apiService.getAsync(`${environment.baseApiUrl}/${this.apiName}/GetSubCategoriesByCategoryId/${id}`, new HttpParams());
+    }
+
+    //GET SUBCATEGORY BY ID
+    async getSubCategoryByIdAsync (id: string): Promise<SubCategorySummary> {
+        return await this.apiService.getAsync(`${environment.baseApiUrl}/${this.apiName}/GetSubCategoryById/${id}`, new HttpParams());
+    }
+
+    //GET SUBCATEGORY BY NAME
+    async getSubCategoryByNameAsync (name: string): Promise<SubCategorySummary[]> {
+        return await this.apiService.getAsync(`${environment.baseApiUrl}/${this.apiName}/GetSubCategoryByName/${name}`, new HttpParams());
     }
 
     //CREAT Sub-Category

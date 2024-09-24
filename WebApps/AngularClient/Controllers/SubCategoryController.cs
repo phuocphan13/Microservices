@@ -42,7 +42,7 @@ public class SubCategoryController : ControllerBase
                 return NotFound();
             }    
             return Ok(result);
-        }
+    }
 
     [HttpGet("{name}")]
     public async Task<IActionResult> GetSubCategoryByName (string name, CancellationToken cancellationToken)
@@ -59,7 +59,7 @@ public class SubCategoryController : ControllerBase
             }    
 
             return Ok(result);
-        }
+    }
 
     [HttpGet("{categoryId}")]
     public async Task<IActionResult> GetSubCategoriesByCategoryId (string categoryId, CancellationToken cancellationToken)

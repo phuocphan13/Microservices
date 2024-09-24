@@ -39,7 +39,7 @@ public class SubCategoryController : ApiController
             return BadRequest("Id cannot be empty.");
         }
 
-        var result = await _subCategoryService.GetSubCategoryBySeachAsync(id, PropertyName.Id, cancellationToken);
+        var result = await _subCategoryService.GetSubCategoryBySearchAsync(id, PropertyName.Id, cancellationToken);
 
         if (result is null)
         {
@@ -57,7 +57,7 @@ public class SubCategoryController : ApiController
             return BadRequest("Missing Name.");
         }
 
-        var result = await _subCategoryService.GetSubCategoryBySeachAsync(name, PropertyName.Name, cancellationToken);
+        var result = await _subCategoryService.GetSubCategoryBySearchAsync(name, PropertyName.Id, cancellationToken);
         if (result is null)
         {
             return NotFound();

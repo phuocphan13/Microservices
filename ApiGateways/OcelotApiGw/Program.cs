@@ -3,6 +3,7 @@ using IdentityServer.Common;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Cache.CacheManager;
+using Platform;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,19 +20,20 @@ builder
         logginBuilder.AddDebug();
     });
 
+builder.Services.AddPlatformCommonServices();
 builder.Services
     .AddOcelot()
     .AddCacheManager(settings => settings.WithDictionaryHandle());
 
-builder.Services
-    .AddIdentityInternalClient();
+//builder.Services
+//    .AddIdentityInternalClient();
 
-builder.Services.AddCustomAuthenticate(builder.Configuration);
+//builder.Services.AddCustomAuthenticate(builder.Configuration);
 
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
 
 
 await app.UseOcelot();

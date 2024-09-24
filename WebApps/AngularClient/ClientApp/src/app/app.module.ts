@@ -29,6 +29,7 @@ import { SubCategoryService } from './core/service/catalog/subcategory.service';
 import { SubcategoryAdminComponent } from './pages/admin-pages/catalog-admin/subcategory-admin/subcategory-admin.component';
 import { SubcategoryModalComponent } from './core/shared/modals/catalog-modals/subcategory-modal/subcategory-modal.component';
 import { NgOptimizedImage } from "@angular/common";
+import {SupcategorySearchComponent} from './pages/client-pages/subcategory/supcategory-search/supcategory-search.component'
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { NgOptimizedImage } from "@angular/common";
     CategoryAdminComponent,
     CategoryModalComponent,
     SubcategoryAdminComponent,
+    SupcategorySearchComponent,
     SubcategoryModalComponent,
     BasicGridComponent,
     ConfirmationModalComponent,
