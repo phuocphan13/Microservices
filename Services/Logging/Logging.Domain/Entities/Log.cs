@@ -1,11 +1,10 @@
 using Logging.Domain.Enums;
+using Platform.Database.Entity.SQL;
 
 namespace Logging.Domain.Entities;
 
-public sealed class Log
+public sealed class Log : BaseIdEntity
 {
-    public int Id { get; set; }
-
     public string Text { get; set; } = null!;
     
     public DateTime CreatedAt { get; set; }

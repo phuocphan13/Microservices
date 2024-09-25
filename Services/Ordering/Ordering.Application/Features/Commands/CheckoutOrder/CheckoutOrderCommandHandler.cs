@@ -43,8 +43,8 @@ public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand,
         var orderEntity = _mapper.Map<Order>(request);
         orderEntity.AddAuditInfo();
         
-        orderEntity.OrderHistories = new List<OrderHistory>()
-        {
+        orderEntity.OrderHistories =
+        [
             new()
             {
                 CreatedDate = DateTime.Now,
@@ -52,7 +52,7 @@ public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand,
                 CurrentStatus = OrderStatus.Checkoutted,
                 Order = orderEntity
             }
-        };
+        ];
         
         await _orderRepository.InsertAsync(orderEntity, cancellationToken);
 

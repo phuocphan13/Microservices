@@ -14,11 +14,11 @@ public interface IMessageService
 
 public class MessageService : IMessageService
 {
-    private readonly OrderMessageDbContext _dbContext;
+    private readonly OutboxMessageDbContext _dbContext;
     private readonly IPublishService _publishService;
     private readonly IMapper _mapper;
 
-    public MessageService(OrderMessageDbContext dbContext, IPublishService publishService, IMapper mapper)
+    public MessageService(OutboxMessageDbContext dbContext, IPublishService publishService, IMapper mapper)
     {
         _dbContext = dbContext;
         _publishService = publishService;

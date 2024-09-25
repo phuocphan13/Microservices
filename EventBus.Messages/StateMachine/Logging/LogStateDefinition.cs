@@ -1,13 +1,13 @@
 using EventBus.Messages.Entities;
 using MassTransit;
 
-namespace EventBus.Messages.StateMachine.Basket;
+namespace EventBus.Messages.StateMachine.Logging;
 
-public class OrderStateDefinition : SagaDefinition<OrderState>
+public class LogStateDefinition : SagaDefinition<LogState>
 {
     protected override void ConfigureSaga(
         IReceiveEndpointConfigurator endpointConfigurator,
-        ISagaConfigurator<OrderState> consumerConfigurator, IRegistrationContext context)
+        ISagaConfigurator<LogState> consumerConfigurator, IRegistrationContext context)
     {
         endpointConfigurator.UseMessageRetry(r => r.Intervals(10, 50, 100, 1000, 1000, 1000, 1000, 1000));
 
