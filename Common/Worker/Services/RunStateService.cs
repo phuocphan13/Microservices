@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Platform.Configurations.Options;
 using Worker.Entities;
 
 namespace Worker.Services;
@@ -11,9 +13,16 @@ public interface IRunStateService
 
 public class RunStateService : IRunStateService
 {
+    private readonly IOptions<WorkerOptions> _workerOptions;
+
+    public RunStateService(IOptions<WorkerOptions> workerOptions)
+    {
+        _workerOptions = workerOptions;
+    }
+
     public async Task<bool> IsRunningAsync(string jobName, CancellationToken cancellationToken)
     {
-        var context = new WorkerContext();
+        var context = new WorkerContext(_workerOptions);
         
         var job = await context.Jobs.AsNoTracking().FirstOrDefaultAsync(x => x.Name == jobName, cancellationToken);
         
@@ -37,7 +46,7 @@ public class RunStateService : IRunStateService
     
     public async Task SaveJobRunningInfoAsync(string jobName, bool isSuccess, string errorMessage, CancellationToken cancellationToken)
     {
-        var context = new WorkerContext();
+        var context = new WorkerContext(_workerOptions);
         
         var job = await context.Jobs.FirstOrDefaultAsync(x => x.Name == jobName, cancellationToken) 
                   ?? await CreateJobAsync(jobName, cancellationToken);
@@ -57,7 +66,7 @@ public class RunStateService : IRunStateService
     
     private async Task<Job> CreateJobAsync(string jobName, CancellationToken cancellationToken)
     {
-        var context = new WorkerContext();
+        var context = new WorkerContext(_workerOptions);
         
         var job = new Job
         {
@@ -66,7 +75,7 @@ public class RunStateService : IRunStateService
             CreatedBy = "Admin",
             Name = jobName,
             LastModifiedDate = DateTime.Now,
-            LastModifiedBy = "Admin",
+            LastModifiedBy = "Admin"
         };
         
         await context.Jobs.AddAsync(job, cancellationToken);

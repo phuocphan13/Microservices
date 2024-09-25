@@ -11,7 +11,7 @@ public static class DiscountExtensions
         {
             // Amount = model.Amount,
             Description = model.Description,
-            Id = model.Id,
+            Id = model.Id
         };
     }
 }

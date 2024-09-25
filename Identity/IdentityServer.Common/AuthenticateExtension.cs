@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Platform.Extensions;
 
 namespace IdentityServer.Common;
 
@@ -23,13 +24,13 @@ public static class AuthenticateExtension
                 
                 o.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidIssuer = configuration["JwtSettings:Issuer"],
-                    ValidAudience = configuration["JwtSettings:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"])),
+                    ValidIssuer = configuration.GetConfigurationValue("JwtSettings:Issuer"),
+                    ValidAudience = configuration.GetConfigurationValue("JwtSettings:Audience"),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetConfigurationValue("JwtSettings:Key"))),
                     ValidateIssuerSigningKey = true,
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidateLifetime = true,
+                    ValidateLifetime = true
                 };
             });
     }

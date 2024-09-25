@@ -23,7 +23,12 @@ public static class ApiUrlBuilder
 
     public static string AddDataInUrl(this string url, string key, string value)
     {
-        var paramPlace = "{" + key.ToLower() + "}";
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return string.Empty;
+        }
+
+        var paramPlace = "{" + key.ToLowerInvariant() + "}";
         url = url.Replace(paramPlace, value);
         
         return url;

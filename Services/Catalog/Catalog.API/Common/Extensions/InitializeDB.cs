@@ -131,7 +131,7 @@ public static class InitializeDB
                 Name = "LG",
                 Description = "LG Description",
                 CategoryId = CategoryLaptopPhoneId
-            },
+            }
         };
     }
 
@@ -229,7 +229,7 @@ public static class InitializeDB
                 CategoryId = CategoryLaptopPhoneId,
                 SubCategoryId = SubCategoryLGLaptopId,
                 Balance = 110
-            },
+            }
         };
     }
 }

@@ -1,4 +1,18 @@
 version: '3.4'
+    
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  jaeger-data:
+    driver: local
+  elasticsearch-data:
+    driver: local
+  loggingdb:
+    driver: local
+  mysql_workbench:
+    driver: local
 
 services:
   catalogdb:
@@ -23,7 +37,7 @@ services:
     ports:
       - "6380:6379"
     volumes:
-      - ./basketdb/data:/data
+      - ./catalog_cache/data:/data
 
   discountdb:
     container_name: discountdb
@@ -36,6 +50,19 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+        
+  loggingdb:
+    container_name: loggingdb
+    restart: always
+    environment:
+      - MYSQL_DATABASE=Logging
+      - MYSQL_USER=root
+      - MYSQL_ROOT_PASSWORD=SwN12345678
+    ports:
+      - '3306:3306'
+    volumes:
+      - loggingdb:/var/lib/mysql
+      - ./loggingdb/init.sql:/docker-entrypoint-initdb.d/init.sql
       
   orderdb:
     container_name: orderdb
@@ -89,7 +116,7 @@ services:
     ports:
       - "5050:80"
     volumes:
-      - pgadmin_data:/root/.pgadmin 
+      - pgadmin_data:/root/.pgadmin
 
   portainer:
     container_name: portainer
@@ -235,4 +262,53 @@ services:
       - ocelotapigw
     ports:
       - "8500:80"
+        
+  jaeger:
+    container_name: "jaeger"
+    ports:
+      - "16686:16686"
   
+  prometheus:
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    volumes:
+      - ./Configs/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+  
+  grafana:
+    container_name: grafana
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+    volumes:
+      - grafana-data:/var/lib/grafana
+  
+  otel-collector:
+    container_name: otel-collector
+    command: [ "--config=/etc/otel-collector-config.yml" ]
+    volumes:
+      - ./Configs/otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "1888:1888"   # pprof extension
+      - "8888:8888"   # Prometheus metrics exposed by the collector
+      - "8889:8889"   # Prometheus exporter metrics
+      - "13133:13133" # health_check extension
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # Http gRPC receiver
+      - "55679:55679" # zpages extension
+      - "14250:14250"   # Jaeger receiver
+        
+  elasticsearch:
+    container_name: elasticsearch
+    ports:
+      - "5601:5601"
+      - "9200:9200"
+      - "5044:5044"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data

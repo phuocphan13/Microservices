@@ -2,6 +2,8 @@ using System.ComponentModel;
 
 public enum DiscountEnum
 {
+    Unknown = 0,
+
     [Description("All")]
     All = 1,
 
@@ -12,5 +14,5 @@ public enum DiscountEnum
     SubCategory = 3,
 
     [Description("Product")]
-    Product = 4,
+    Product = 4
 }

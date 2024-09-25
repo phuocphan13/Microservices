@@ -31,9 +31,9 @@ public class BasketCheckoutConsumer : IConsumer<BasketCheckoutMessage>
             return;
         }
         
-        List<string> states = new() { OrderConstants.OrderState.Checkoutted, OrderConstants.OrderState.Accepted };
+        List<string> states = [ OrderConstants.OrderState.Checkoutted, OrderConstants.OrderState.Accepted ];
         
-        var checkState = await _basketMessageService.CheckBasketStateAsync(context.Message, states, context.CancellationToken);
+        var checkState = await _basketMessageService.CheckBasketStateAsync(context.Message.BasketKey, states, context.CancellationToken);
 
         if (checkState == true)
         {
@@ -62,6 +62,12 @@ public class BasketCheckoutConsumer : IConsumer<BasketCheckoutMessage>
         {
             _logger.LogError("");
             return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(message.BasketKey))
+        {
+            _logger.LogError("");
+            isValid = false;
         }
 
         if (string.IsNullOrWhiteSpace(message.UserId))

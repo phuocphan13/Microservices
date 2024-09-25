@@ -34,7 +34,7 @@ public class PermissionService : IPermissionService
             .Include(x => x.Features.Where(x => x.Name == feature))
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (application is null || !application.Features.Any())
+        if (application is null || application.Features.Count == 0)
         {
             return new()
             {

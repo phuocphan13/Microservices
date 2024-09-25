@@ -1,5 +1,6 @@
 using Discount.Grpc.Protos;
 using EventBus.Messages;
+using Platform.Extensions;
 
 namespace Basket.API.Extensions.AppBuilder;
 
@@ -12,13 +13,13 @@ public static class ThirdPartyExtensions
         services.AddSwaggerGen();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-        services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(x => x.Address = new Uri(configuration["GrpcSettings:DiscountUrl"]));
+        services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(x => x.Address = new Uri(configuration.GetConfigurationValue("GrpcSettings:DiscountUrl")));
 
         services.AddMessageOutbox(configuration);
         
         services.AddStackExchangeRedisCache(option =>
         {
-            option.Configuration = configuration["CacheSettings:ConnectionString"];
+            option.Configuration = configuration.GetConfigurationValue("CacheSettings:ConnectionString");
         });
         
         return services;

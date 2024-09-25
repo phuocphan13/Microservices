@@ -1,16 +1,21 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Platform.Configurations.Options;
 
 namespace Worker.Entities;
 
 public class WorkerContext : DbContext
 {
-    public WorkerContext()
+    private readonly WorkerOptions _workerOptions;
+    
+    public WorkerContext(IOptions<WorkerOptions> workerOptions)
     {
-
+        _workerOptions = workerOptions.Value;
     }
 
-    public WorkerContext(DbContextOptions options) : base(options)
+    public WorkerContext(DbContextOptions options, IOptions<WorkerOptions> workerOptions) : base(options)
     {
+        _workerOptions = workerOptions.Value;
     }
 
     public virtual DbSet<Job> Jobs { get; set; } = null!;
@@ -21,8 +26,8 @@ public class WorkerContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Server=127.0.0.1,1436;Database=WorkerDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;");
-            //optionsBuilder.UseSqlServer("Server=192.168.2.11,1436;Database=WorkerDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;");
+            // optionsBuilder.UseSqlServer("Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer(_workerOptions.WorkerConnectionString);
         }
 
         base.OnConfiguring(optionsBuilder);

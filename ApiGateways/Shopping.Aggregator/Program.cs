@@ -1,16 +1,17 @@
+using Platform.Extensions;
 using Shopping.Aggregator.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddHttpClient<ICatalogService, CatalogService>(c =>
-                c.BaseAddress = new Uri(builder.Configuration["ApiSettings:CatalogUrl"]));
+                c.BaseAddress = new Uri(builder.Configuration.GetConfigurationValue("ApiSettings:CatalogUrl")));
 
 builder.Services.AddHttpClient<IBasketService, BasketService>(c =>
-    c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BasketUrl"]));
+    c.BaseAddress = new Uri(builder.Configuration.GetConfigurationValue("ApiSettings:BasketUrl")));
 
 builder.Services.AddHttpClient<IOrderService, OrderService>(c =>
-    c.BaseAddress = new Uri(builder.Configuration["ApiSettings:OrderingUrl"]));
+    c.BaseAddress = new Uri(builder.Configuration.GetConfigurationValue("ApiSettings:OrderingUrl")));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

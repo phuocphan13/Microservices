@@ -35,14 +35,14 @@ public class SessionState : ISessionState
             throw new InvalidOperationException();
         }
 
-        var authorizationToken = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+        var authorizationToken = _httpContextAccessor.HttpContext.Request.Headers.Authorization;
 
         if (string.IsNullOrWhiteSpace(authorizationToken))
         {
             // throw new InvalidOperationException();
         }
 
-        return authorizationToken;
+        return authorizationToken!;
     }
 
     public string GetUserId()

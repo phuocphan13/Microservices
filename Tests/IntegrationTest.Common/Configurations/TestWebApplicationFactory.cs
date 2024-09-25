@@ -1,13 +1,10 @@
 using Catalog.API.Common.Consts;
 using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using IntegrationTest.Common.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Platform.Constants;
 using Testcontainers.MongoDb;
 using Testcontainers.PostgreSql;
@@ -18,7 +15,7 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
 {
     private readonly INetwork _networkBuilder = new NetworkBuilder().Build();
     
-    public readonly List<IContainer> _containers = new();
+    public readonly List<IContainer> _containers = [];
     
     public WebApplicationFactory<TProgram> Instance { get; private set; } = default!;
 
@@ -32,7 +29,7 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
         // Disable Testcontainers logs if CI environment
         if (envName.Equals("CI", StringComparison.OrdinalIgnoreCase))
         {
-            TestcontainersSettings.Logger = new NullLogger<ILoggerFactory>();
+            // TestcontainersSettings. = new NullLogger<ILoggerFactory>();
         }
             
         return Task.CompletedTask;

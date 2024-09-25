@@ -1,0 +1,23 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    orgId: 1
+    url: http://prometheus:8080
+    basicAuth: false
+    isDefault: false
+    version: 1
+    editable: false
+    jsonData:
+      tlsSkipVerify: true
+
+  - name: Jaeger
+    type: jaeger
+    url: http://jaeger:16686
+    access: proxy
+    orgId: 1
+    version: 1
+    apiVersion: 1
+    isDefault: false

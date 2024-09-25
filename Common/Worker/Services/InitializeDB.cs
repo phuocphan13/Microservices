@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Platform.Configurations.Options;
 using Worker.Entities;
 
 namespace Worker.Services;
@@ -7,13 +10,21 @@ namespace Worker.Services;
 public static class InitializeDB
 {
     public static async Task InitializeWorkerDbContextsAsync(
-        this IApplicationBuilder _,
+        this IApplicationBuilder app,
         bool isRebuildSchema = true,
         CancellationToken cancellationToken = default)
     {
+        using var scope = app.ApplicationServices.CreateScope();
+        var workerOptions = scope.ServiceProvider.GetService<IOptions<WorkerOptions>>();
+
+        if (workerOptions is null)
+        {
+            return;
+        }
+        
         if (isRebuildSchema)
         {
-            var dbContext = new WorkerContext();
+            var dbContext = new WorkerContext(workerOptions);
             await dbContext.Database.MigrateAsync(cancellationToken);
 
             var jobs = GetJobs();
@@ -25,8 +36,8 @@ public static class InitializeDB
 
     private static List<Job> GetJobs()
     {
-        return new List<Job>
-        {
+        return
+        [
             new()
             {
                 ExternalId = Guid.NewGuid(),
@@ -34,7 +45,7 @@ public static class InitializeDB
                 CreatedBy = "Admin",
                 Name = "AcceptOrder",
                 LastModifiedDate = DateTime.Now,
-                LastModifiedBy = "Admin",
+                LastModifiedBy = "Admin"
             },
             new()
             {
@@ -43,8 +54,8 @@ public static class InitializeDB
                 CreatedBy = "Admin",
                 Name = "UpdateCache",
                 LastModifiedDate = DateTime.Now,
-                LastModifiedBy = "Admin",
-            },
-        };
+                LastModifiedBy = "Admin"
+            }
+        ];
     }
 }

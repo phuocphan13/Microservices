@@ -4,9 +4,9 @@ public class BaseBasketRequestBody
 {
     public string UserId { get; set; } = null!;
     public string? UserName { get; set; }
-    public List<BasketItemSummary> Items { get; set; } = new();
+    public ICollection<BasketItemSummary> Items { get; set; } = [];
 
-    public IEnumerable<DiscountItemSummary> Discounts { get; set; } = new List<DiscountItemSummary>();
+    public ICollection<DiscountItemSummary> Discounts { get; set; } = [];
 
-    public IEnumerable<CouponItemSummary> Counpons { get; set; } = new List<CouponItemSummary>();
+    public ICollection<CouponItemSummary> Counpons { get; set; } = [];
 }

@@ -109,7 +109,7 @@ public abstract partial class ApiController : Controller
     {
         ApiStatusResult<T> result = new()
         {
-            Additional = additional,
+            Additional = additional
         };
 
         this.InitializeApiStatusResult(result, statusCode, message, errorCode);
