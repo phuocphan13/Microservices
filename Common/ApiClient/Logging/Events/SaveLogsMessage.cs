@@ -1,6 +1,4 @@
-using System.ComponentModel;
 using ApiClient.Basket.Events;
-using ApiClient.Common.MessageQueue;
 
 namespace ApiClient.Logging.Events;
 

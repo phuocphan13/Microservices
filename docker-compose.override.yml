@@ -224,7 +224,7 @@ services:
   ocelotapigw:
     container_name: ocelotapigw
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Local
       - "JwtSettings:Issuer=http://identityserver"
       - "JwtSettings:Audience=http://ocelotapigw"
       - "JwtSettings:Key=LuciferForTheHellLuciferForTheHellLuciferForTheHellLuciferForTheHell"

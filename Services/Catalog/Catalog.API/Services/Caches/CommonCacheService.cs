@@ -1,4 +1,4 @@
-using Catalog.API.Models.Cached;
+﻿using Catalog.API.Models.Cached;
 using Platform.Database.Redis;
 
 namespace Catalog.API.Services.Caches;
@@ -32,7 +32,24 @@ public class CommonCacheService
 
         return items?.FirstOrDefault(x => x.Id == id);
     }
-    
+
+    protected async Task<T?> GetItemCacheByNameAsync<T>(string name, CancellationToken cancellationToken) 
+        where T : BaseCachedModel, new()
+    {
+        var item = await GetAllItemAsync<T>(cancellationToken);
+
+        return item?.FirstOrDefault(x => x.Name == name);
+    }
+
+    //Search gần đúng like '%abc%'
+    protected async Task<List<T>?> GetItemCachedApproximateIdAsync<T>(string id, CancellationToken cancellationToken)
+        where T :BaseCachedModel, new()
+    {
+        var items = await GetAllItemAsync<T>(cancellationToken);
+
+        return items?.Where(x => x.Id.Contains(id)).ToList();
+    }
+
     protected async Task SetAllItemsCacheAsync<T>(List<T> items, CancellationToken cancellationToken)
         where T : BaseCachedModel, new()
     {
@@ -47,12 +64,9 @@ public class CommonCacheService
 
         var items = await GetAllItemAsync<T>(cancellationToken);
 
-        if (items is null || !items.Any())
+        if (items is null || items.Count == 0)
         {
-            items = new List<T>
-            {
-                item
-            };
+            items = [ item ];
         }
         else
         {

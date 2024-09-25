@@ -1,10 +1,44 @@
 ﻿using ApiClient.Catalog.SubCategory.Models;
+using Catalog.API.Models;
 using SubCategory = Catalog.API.Entities.SubCategory;
 
 namespace Catalog.API.Extensions;
 
 public static class SubCategoryExtention
 {
+    public static SubCategoryDetail ToDetailFromCachedModel(this SubCategoryCachedModel subCategory)
+    {
+        return new SubCategoryDetail()
+        {
+            Id = subCategory.Id,
+            Name = subCategory.Name,
+            Description = subCategory.Description,
+        };
+    }
+
+    public static SubCategorySummary ToSummaryFromCachedModel(this SubCategoryCachedModel subCategory)
+    {
+        return new SubCategorySummary()
+        {
+            Id = subCategory.Id,
+            Name = subCategory.Name,
+            SubCategoryCode = subCategory.Code,
+            Description = subCategory.Description            
+        };
+    }
+
+    public static SubCategoryCachedModel ToCachedModel(this SubCategory subCategory) 
+    {
+        return new SubCategoryCachedModel()
+        {
+            Id= subCategory.Id,
+            Name = subCategory.Name!,
+            Code = subCategory.SubCategoryCode!,
+            Description = subCategory.Description,
+            HasChange = false        
+        };
+    }
+
     public static SubCategorySummary ToSummary(this SubCategory subCategory)
     {
         return new SubCategorySummary()

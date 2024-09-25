@@ -21,9 +21,6 @@
       ],
       "FileCacheOptions": {
         "TtlSeconds": 30
-      },
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer"
       }
     },
     //Catalog API
@@ -255,10 +252,7 @@
         }
       ],
       "UpstreamPathTemplate": "/Basket/{userName}",
-      "UpstreamHttpMethod": [ "GET", "DELETE" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer"
-      }
+      "UpstreamHttpMethod": [ "GET", "DELETE" ]
     },
     {
       "DownstreamPathTemplate": "/api/v1/Basket",
