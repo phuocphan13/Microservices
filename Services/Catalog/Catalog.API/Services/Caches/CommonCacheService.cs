@@ -1,7 +1,5 @@
 ﻿using Catalog.API.Models.Cached;
-using MassTransit;
 using Platform.Database.Redis;
-using System.Collections.Generic;
 
 namespace Catalog.API.Services.Caches;
 
@@ -35,7 +33,8 @@ public class CommonCacheService
         return items?.FirstOrDefault(x => x.Id == id);
     }
 
-    protected async Task<T?> GetItemCacheByNameAsync<T>(string name, CancellationToken cancellationToken) where T : BaseCachedModel, new()
+    protected async Task<T?> GetItemCacheByNameAsync<T>(string name, CancellationToken cancellationToken) 
+        where T : BaseCachedModel, new()
     {
         var item = await GetAllItemAsync<T>(cancellationToken);
 
@@ -65,12 +64,9 @@ public class CommonCacheService
 
         var items = await GetAllItemAsync<T>(cancellationToken);
 
-        if (items is null || !items.Any())
+        if (items is null || items.Count == 0)
         {
-            items = new List<T>
-            {
-                item
-            };
+            items = [ item ];
         }
         else
         {

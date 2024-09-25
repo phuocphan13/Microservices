@@ -1,31 +1,25 @@
-﻿
-
-using Catalog.API.Entities;
-using Catalog.API.Repositories;
+﻿using Catalog.API.Repositories;
 using Platform.Database.Redis;
 using Catalog.API.Models;
 using Catalog.API.Extensions;
-using System.Collections.Generic;
-using static Catalog.API.Common.Consts.ResponseMessages;
-using IdentityModel;
-using static Core.Common.Constants.PermissionConstants.Application;
-using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.API.Services.Caches;
 
 public interface ISubCategoryCachedService
 {
     Task<List<SubCategoryCachedModel>?> QueryCachedSubCategoriesAsync(Func<SubCategoryCachedModel, bool> predicate, CancellationToken cancellationToken = default );
-    Task<SubCategoryCachedModel>? GetSubCategoryCachedBySearchAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
+    Task<SubCategoryCachedModel?> GetSubCategoryCachedBySearchAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
     Task<List<SubCategoryCachedModel>?> GetCachedSubCategoriesAsync (CancellationToken cancellationToken = default );
-    Task<SubCategoryCachedModel>? GetCachedSubCategoriesByIdAsync (string id, CancellationToken cancellationToken= default );
-    Task<SubCategoryCachedModel>? GetCachedSubCategoriesByNameAsync(string name, CancellationToken cancellationToken = default);
+    Task<SubCategoryCachedModel?> GetCachedSubCategoriesByIdAsync (string id, CancellationToken cancellationToken= default );
+    Task<SubCategoryCachedModel?> GetCachedSubCategoriesByNameAsync(string name, CancellationToken cancellationToken = default);
 }
 
 public class SubCategoryCachedService : CommonCacheService, ISubCategoryCachedService
 {
-    private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+    private readonly SemaphoreSlim semaphore = new(1, 1);
+    
     private const string _subCategoryKey = "SubCategory";
+    
     private readonly IRepository<Entities.SubCategory> _subCategoriesRepository;
 
     public SubCategoryCachedService(IRedisDbFactory redisCache, IRepository<Entities.SubCategory> subCategoriesRepository)
@@ -56,7 +50,7 @@ public class SubCategoryCachedService : CommonCacheService, ISubCategoryCachedSe
     {
         List<SubCategoryCachedModel>? subCategories = await GetAllItemAsync<SubCategoryCachedModel>(cancellationToken);
 
-        if (subCategories is not null && subCategories.Any()) {
+        if (subCategories is not null && subCategories.Count != 0) {
             return subCategories;
         }
 
@@ -65,12 +59,13 @@ public class SubCategoryCachedService : CommonCacheService, ISubCategoryCachedSe
         try
         {
             subCategories = await GetAllItemAsync<SubCategoryCachedModel>(cancellationToken);
-            if (subCategories is not null && subCategories.Any())
+            
+            if (subCategories is not null && subCategories.Count != 0)
             {
                 return subCategories;
             }
 
-            subCategories = new();
+            subCategories = [];
 
             var subCategoryEntities = await _subCategoriesRepository.GetEntitiesAsync(cancellationToken);
             var subCategoryCached = subCategoryEntities.Select(x => x.ToCachedModel()).ToList();
@@ -86,10 +81,9 @@ public class SubCategoryCachedService : CommonCacheService, ISubCategoryCachedSe
     }
     //hàm tìm theo 3 điều kiện
     // gọi tới 3 thằng trong common
-    public async Task<SubCategoryCachedModel>? GetSubCategoryCachedBySearchAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
+    public async Task<SubCategoryCachedModel?> GetSubCategoryCachedBySearchAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
     {
-        var data = new SubCategoryCachedModel();
-        data = propertyName switch
+        var data = propertyName switch
         {
             PropertyName.Id => await GetItemCachedByIdAsync<SubCategoryCachedModel>(search, cancellationToken),
             PropertyName.Name => await GetItemCacheByNameAsync<SubCategoryCachedModel>(search, cancellationToken),
@@ -128,7 +122,7 @@ public class SubCategoryCachedService : CommonCacheService, ISubCategoryCachedSe
     }
     
 
-    public async Task<SubCategoryCachedModel>? GetCachedSubCategoriesByIdAsync(string id, CancellationToken cancellationToken)
+    public async Task<SubCategoryCachedModel?> GetCachedSubCategoriesByIdAsync(string id, CancellationToken cancellationToken)
     {
         var subCategory = await GetItemCachedByIdAsync<SubCategoryCachedModel>(id, cancellationToken);
 
@@ -161,7 +155,7 @@ public class SubCategoryCachedService : CommonCacheService, ISubCategoryCachedSe
         return subCategory;
     }
 
-    public async Task<SubCategoryCachedModel>? GetCachedSubCategoriesByNameAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<SubCategoryCachedModel?> GetCachedSubCategoriesByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         var subCategory = await GetItemCacheByNameAsync<SubCategoryCachedModel>(name, cancellationToken);
 

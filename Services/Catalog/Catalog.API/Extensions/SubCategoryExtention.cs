@@ -1,5 +1,4 @@
-﻿using ApiClient.Catalog.Product.Models;
-using ApiClient.Catalog.SubCategory.Models;
+﻿using ApiClient.Catalog.SubCategory.Models;
 using Catalog.API.Models;
 using SubCategory = Catalog.API.Entities.SubCategory;
 
@@ -28,15 +27,16 @@ public static class SubCategoryExtention
         };
     }
 
-    public static SubCategoryCachedModel ToCachedModel (this SubCategory subCategory) 
+    public static SubCategoryCachedModel ToCachedModel(this SubCategory subCategory) 
     {
         return new SubCategoryCachedModel()
         {
             Id= subCategory.Id,
-            Name = subCategory.Name,
-            Code = subCategory.SubCategoryCode,
+            Name = subCategory.Name!,
+            Code = subCategory.SubCategoryCode!,
             Description = subCategory.Description,
-            HasChange = false        };
+            HasChange = false        
+        };
     }
 
     public static SubCategorySummary ToSummary(this SubCategory subCategory)

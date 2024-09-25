@@ -1,4 +1,3 @@
-using System.Configuration;
 using Logging.Domain.Repositories;
 using Logging.Services;
 

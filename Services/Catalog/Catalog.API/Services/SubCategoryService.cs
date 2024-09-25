@@ -10,7 +10,6 @@ public interface ISubCategoryService
 {
     Task<bool> CheckExistingAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
     Task<SubCategoryDetail?> GetSubCategoryBySearchAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
-    //Task<SubCategoryDetail?> GetSubCategoryByIdOrNameAsync(string id, string name, CancellationToken cancellationToken = default);
     Task<List<SubCategorySummary>> GetSubCategoriesAsync(CancellationToken cancellationToken = default);
     Task<List<SubCategorySummary>> GetSubCategoriesByCategoryIdAsync(string categoryId, CancellationToken cancellationToken = default);
     Task<SubCategoryDetail?> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken = default);
@@ -46,14 +45,6 @@ public class SubCategoryService : ISubCategoryService
 
     public async Task<SubCategoryDetail?> GetSubCategoryBySearchAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
     {
-        //SubCategory? data = propertyName switch
-        //{
-        //    PropertyName.Id => await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == search, cancellationToken),
-        //    PropertyName.Name => await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == search, cancellationToken),
-        //    PropertyName.Code => await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.SubCategoryCode == search, cancellationToken),
-        //    _ => null
-        //};
-
         var entity = await _cachedService.GetSubCategoryCachedBySearchAsync(search, propertyName, cancellationToken);
 
         if (entity is null)
@@ -64,25 +55,13 @@ public class SubCategoryService : ISubCategoryService
         return entity.ToDetailFromCachedModel();
     }
 
-    //public async Task<SubCategoryDetail?> GetSubCategoryByIdOrNameAsync(string id, string name, CancellationToken cancellationToken = default)
-    //{
-    //    var entity = await _cachedService.GetSubCategoryCachedBySearchAsync(id, name, cancellationToken);
-
-    //    if (entity is null) 
-    //    {
-    //        return null;
-    //    }
-
-    //    return entity.ToDetailFromCachedModel();
-    //}
-
     public async Task<List<SubCategorySummary>> GetSubCategoriesAsync(CancellationToken cancellationToken)
     {
         var entities = await _cachedService.GetCachedSubCategoriesAsync(cancellationToken);
 
         if (entities is null)
         {
-            return new();
+            return [];
         }
         
         return entities.Select(x => x.ToSummaryFromCachedModel()).ToList();
@@ -90,11 +69,11 @@ public class SubCategoryService : ISubCategoryService
 
     public async Task<List<SubCategorySummary>> GetSubCategoriesByCategoryIdAsync(string categoryId, CancellationToken cancellationToken)
     {
-        var entities = await _subCategoryRepository.GetEntitiesQueryAsync(x => x.CategoryId.Contains(categoryId), cancellationToken);
+        var entities = await _subCategoryRepository.GetEntitiesQueryAsync(x => !string.IsNullOrWhiteSpace(x.CategoryId) && x.CategoryId.Contains(categoryId), cancellationToken);
         
         if (entities is null)
         {
-            return new();
+            return [];
         }
 
         return entities.Select(x => x.ToSummary()).ToList();
@@ -103,6 +82,7 @@ public class SubCategoryService : ISubCategoryService
     public async Task<SubCategoryDetail?> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         var entity = await _cachedService.GetCachedSubCategoriesByIdAsync(id, cancellationToken);
+        
         if (entity is null) 
         {
             return new();
@@ -114,6 +94,7 @@ public class SubCategoryService : ISubCategoryService
     public async Task<SubCategoryDetail?> GetSubCategoryByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         var entity = await _cachedService.GetCachedSubCategoriesByNameAsync(name, cancellationToken);
+        
         if (entity is null)
         {
             return new();
@@ -145,14 +126,6 @@ public class SubCategoryService : ISubCategoryService
     public async Task<SubCategoryDetail?> UpdateSubCategoryAsync(UpdateSubCategoryRequestBody body, CancellationToken cancellationToken)
     {
         var subCategory = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == body.Id, cancellationToken);
-        
-        //Todo: Move this logic to Controller
-        // var isExisted = await _subCategoryRepository.AnyAsync(x => (x.Name == body.Name || x.SubCategoryCode == body.SubCategoryCode) && x.Id != body.Id, cancellationToken);
-        // if (isExisted)
-        // {
-        //     apiDataResult.Message = ResponseMessages.SubCategory.SubCategoryExisted;
-        //     return apiDataResult;
-        // }
 
         subCategory.ToUpdateSubCategory(body);
 

@@ -1,7 +1,6 @@
 using Dapper;
 using Logging.Domain.Consts;
 using Logging.Domain.Entities;
-using Logging.Domain.Enums;
 using Microsoft.Extensions.Options;
 using Platform.Configurations.Options;
 
