@@ -2,3 +2,4 @@
 GET http://localhost:5000/api/v1/product/getproducts
 
 ###
+GET http://localhost:5000/api/v1/SubCategory/GetSubCategories

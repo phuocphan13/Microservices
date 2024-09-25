@@ -6,5 +6,5 @@ public sealed class MongoDbOptions
 
     public string DatabaseName { get; set; } = string.Empty;
 
-    public string IsRebuildSchema { get; set; } = string.Empty;
+    public bool IsRebuildSchema { get; set; }
 }
