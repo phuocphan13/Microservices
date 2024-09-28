@@ -40,6 +40,7 @@ public static class IServiceExtensionCollection
         services.AddWorkerOptions(configuration);
         services.AddJwtSettingsOptions(configuration);
         services.AddEventBusSettingsOptions(configuration);
+        services.AddLoggingDbOptions(configuration);
 
         return services;
     }

@@ -20,9 +20,13 @@ public class CatalogService : ICatalogService
         IRepository<SubCategory> subCategoryRepository,
         IRepository<Product> productRepository)
     {
-        _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
-        _subCategoryRepository = subCategoryRepository ?? throw new ArgumentNullException(nameof(subCategoryRepository));
-        _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
+        ArgumentNullException.ThrowIfNull(categoryRepository);
+        ArgumentNullException.ThrowIfNull(categoryRepository);
+        ArgumentNullException.ThrowIfNull(productRepository);
+        
+        _categoryRepository = categoryRepository;
+        _subCategoryRepository = subCategoryRepository;
+        _productRepository = productRepository;
     }
     
     public async Task<ApiStatusResult> ValidateCatalogCodeAsync(string? catalogCode, DiscountEnum type, CancellationToken cancellationToken)
@@ -47,6 +51,10 @@ public class CatalogService : ICatalogService
             }
             case DiscountEnum.All:
                 break;
+            case DiscountEnum.Unknown:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
 
         return new ApiStatusResult()

@@ -11,9 +11,9 @@ public interface IBasketMessageService
 
 public class BasketMessageService : IBasketMessageService
 {
-    private readonly OrderMessageDbContext _dbContext;
+    private readonly OutboxMessageDbContext _dbContext;
 
-    public BasketMessageService(OrderMessageDbContext dbContext)
+    public BasketMessageService(OutboxMessageDbContext dbContext)
     {
         _dbContext = dbContext;
     }

@@ -1,0 +1,41 @@
+<div class="header">
+  SUB-CATEGORY SEARCH
+</div><div class="search-container">
+    <div class="container">
+        <div class="search-menu">
+            <div class="part-search">
+                <img class="search-icon" src="/assets/image/search.png">
+                    <input class="txtbox-search" placeholder="Search Subcategory..." [(ngModel)]="searchKey">
+                        <button class="btn-transparent" (click)="onclickSearchButton()">Search</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>SubCategoryCode</th>
+              <th>CategoryId</th>
+              <th class="table-action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor ="let sucategory of subCategories; let i = index">
+              <td>{{ i+1 }}</td>
+              <td>{{ sucategory.name }}</td>
+              <td>{{ sucategory.description }}</td>
+              <td>{{ sucategory.subCategoryCode }}</td>
+              <td>{{ sucategory.categoryId }}</td>
+              <td class="table-action">
+                <a><i class="far fa-eye"></i></a>
+                <a><i class="far fa-edit"></i></a>
+                <a><i class="fas fa-trash"></i></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+</div>

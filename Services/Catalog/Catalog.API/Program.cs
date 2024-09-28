@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using OpenTelemetryFramework;
 using Platform;
-using Platform.Configurations.Builders;
 using Worker;
+using Worker.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // builder.Services.AddHealthChecks();
 
 var isRebuildSchema = builder.Configuration.GetValue<bool>(Platform.Constants.DatabaseConst.ConnectionSetting.MongoDB.IsRebuildSchema);
-
+var isRebuildWorkerSchema = builder.Configuration.GetValue<bool>("Worker:IsRebuildSchema");
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -56,6 +56,7 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 await app.InitializePlatformDbContextsAsync(builder.Configuration, isRebuildSchema);
+await app.InitializeWorkerDbContextsAsync(isRebuildWorkerSchema);
 
 await app.RunAsync();
 

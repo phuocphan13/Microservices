@@ -10,4 +10,10 @@ public class LogController : ApiController
     public LogController(ILogger<ApiController> logger) : base(logger)
     {
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Test(CancellationToken cancellationToken)
+    {
+        return Ok();
+    }
 }

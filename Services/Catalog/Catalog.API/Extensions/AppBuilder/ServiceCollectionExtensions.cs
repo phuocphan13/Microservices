@@ -23,6 +23,8 @@ public static class ServiceCollectionExtensions
 
         // Cached Services
         services.AddSingleton<IProductCachedService, ProductCachedService>();
+        services.AddSingleton<ISubCategoryCachedService, SubCategoryCachedService>();
+
         services.AddSingleton<IProductCachedFilter, ProductCachedFilter>();
         
         // Grpc

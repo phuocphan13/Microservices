@@ -23,4 +23,8 @@
     <ItemGroup>
       <ProjectReference Include="..\Platform\Platform.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Logs\" />
+    </ItemGroup>
 </Project>

@@ -31,9 +31,9 @@ public static class IServiceExtensionCollection
         
         services.AddMassTransit(x =>
         {
-            x.AddEntityFrameworkOutbox<OrderMessageDbContext>(o =>
+            x.AddEntityFrameworkOutbox<OutboxMessageDbContext>(o =>
             {
-                o.QueryDelay = TimeSpan.FromSeconds(1);
+                o.QueryDelay = TimeSpan.FromSeconds(30);
                 o.DuplicateDetectionWindow = TimeSpan.FromSeconds(30);
                 o.UseSqlServer();
                 o.DisableInboxCleanupService();
@@ -48,7 +48,7 @@ public static class IServiceExtensionCollection
             x.AddSagaStateMachine<OrderStateMachine, OrderState, OrderStateDefinition>()
                 .EntityFrameworkRepository(r =>
                 {
-                    r.ExistingDbContext<OrderMessageDbContext>();
+                    r.ExistingDbContext<OutboxMessageDbContext>();
                     r.UseSqlServer();
                 });
 
@@ -77,9 +77,9 @@ public static class IServiceExtensionCollection
     {
         services.AddMassTransit(x =>
         {
-            x.AddEntityFrameworkOutbox<OrderMessageDbContext>(o =>
+            x.AddEntityFrameworkOutbox<OutboxMessageDbContext>(o =>
             {
-                o.QueryDelay = TimeSpan.FromSeconds(1);
+                o.QueryDelay = TimeSpan.FromSeconds(30);
 
                 o.UseSqlServer();
                 o.DisableInboxCleanupService();
@@ -98,21 +98,21 @@ public static class IServiceExtensionCollection
     
     private static IServiceCollection AddMessageDbContext(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<OrderMessageDbContext>(x =>
+        services.AddDbContext<OutboxMessageDbContext>(x =>
         {
             var connectionString = configuration.GetConfigurationValue("EventBusSettings:ConnectionString");
 
             x.UseSqlServer(connectionString, options =>
             {
                 options.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
-                options.MigrationsHistoryTable($"__{nameof(OrderMessageDbContext)}");
+                options.MigrationsHistoryTable($"__{nameof(OutboxMessageDbContext)}");
 
                 options.EnableRetryOnFailure(5);
                 options.MinBatchSize(1);
             });
         });
 
-        services.AddHostedService<RecreateDatabaseHostedService<OrderMessageDbContext>>();
+        services.AddHostedService<RecreateDatabaseHostedService<OutboxMessageDbContext>>();
 
         return services;
     }

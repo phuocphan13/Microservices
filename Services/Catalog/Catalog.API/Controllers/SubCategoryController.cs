@@ -39,7 +39,7 @@ public class SubCategoryController : ApiController
             return BadRequest("Id cannot be empty.");
         }
 
-        var result = await _subCategoryService.GetSubCategoryBySeachAsync(id, PropertyName.Id, cancellationToken);
+        var result = await _subCategoryService.GetSubCategoryBySearchAsync(id, PropertyName.Id, cancellationToken);
 
         if (result is null)
         {
@@ -57,7 +57,8 @@ public class SubCategoryController : ApiController
             return BadRequest("Missing Name.");
         }
 
-        var result = await _subCategoryService.GetSubCategoryBySeachAsync(name, PropertyName.Name, cancellationToken);
+        var result = await _subCategoryService.GetSubCategoryBySearchAsync(name, PropertyName.Id, cancellationToken);
+        
         if (result is null)
         {
             return NotFound();
@@ -121,13 +122,14 @@ public class SubCategoryController : ApiController
             return BadRequest(validationMsg);
         }
 
-        var subCategory = await _subCategoryService.GetSubCategoriesAsync(cancellationToken);
-        //var isExisted = await _subCategoryRepository.AnyAsync(x => (x.Name == body.Name || x.SubCategoryCode == body.SubCategoryCode) && x.Id != body.Id, cancellationToken);
-        foreach (var item in subCategory)
+        // Todo Trung: Check only by Name and Code instead if Sub-Catagory is already exist
+        var subCategories = await _subCategoryService.GetSubCategoriesAsync(cancellationToken);
+        
+        foreach (var item in subCategories)
         {
             if ((item.Name == requestBody.Name || item.SubCategoryCode == requestBody.SubCategoryCode) && item.Id != requestBody.Id)
             {
-                return BadRequest("Updated information already exists."); ;
+                return BadRequest("Updated information already exists.");
             }
         }    
 
