@@ -36,7 +36,7 @@ public class BaseRepository
         return result;
     }
     
-    protected async Task<bool> CreateAsync(string query, DynamicParameters parameters)
+    protected async Task<bool> CreateAsync(string query, DynamicParameters? parameters)
     {
         var connection = GetConnection();
         var result = await connection.ExecuteAsync(query, parameters, null, null, CommandType.Text);

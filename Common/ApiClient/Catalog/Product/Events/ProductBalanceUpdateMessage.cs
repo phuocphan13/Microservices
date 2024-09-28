@@ -6,7 +6,7 @@ using ApiClient.Common.MessageQueue;
 namespace ApiClient.Catalog.Product.Events;
 
 [Description(EventBusConstants.OrderProccess.Accepted)]
-public class ProductBalanceUpdateMessage : BaseMessage
+public class ProductBalanceUpdateMessage : BaseOrderingMessage
 {
     public string ReceiptNumber { get; set; } = null!;
 

@@ -15,6 +15,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\Platform\Platform.csproj" />
       <ProjectReference Include="..\..\..\Common\Worker\Worker.csproj" />
+      <ProjectReference Include="..\..\..\EventBus.Messages\EventBus.Messages.csproj" />
       <ProjectReference Include="..\Logging.Domain\Logging.Domain.csproj" />
     </ItemGroup>
 
