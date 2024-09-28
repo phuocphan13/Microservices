@@ -15,7 +15,7 @@ exporters:
       insecure: true
   elasticsearch:
     endpoints: http://192.168.2.11:9200
-    index: "otel-v1-catalog-api"
+    index: "otel-v1-api"
 
 processors:
   batch:
