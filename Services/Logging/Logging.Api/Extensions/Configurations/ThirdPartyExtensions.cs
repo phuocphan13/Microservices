@@ -3,6 +3,7 @@ using EventBus.Messages.Extensions;
 using Logging.Consumers;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Platform;
 
 namespace Logging.Extensions.Configurations;
 
@@ -24,6 +25,8 @@ public static class ThirdPartyExtensions
         {
             x.AddConsumer<SaveLogConsumer>();
         });
+
+        services.AddElasticServices();
         
         return services;
     }

@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" />
+      <PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.15.2" />
       <PackageReference Include="MassTransit" Version="8.2.5" />
       <PackageReference Include="MassTransit.Abstractions" Version="8.2.5" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />

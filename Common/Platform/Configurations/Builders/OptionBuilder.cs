@@ -18,7 +18,7 @@ public static class OptionBuilder
 
     public static void AddLoggingDbOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<LoggingDbOptions>(configuration.GetSection(OptionConstants.LoggingDbOptions));
+        services.Configure<LoggingDbOptions>(configuration.GetSection(OptionConstants.LoggingDb));
     }
 
     public static void AddCacheSettingsOptions(this IServiceCollection services, IConfiguration configuration)
@@ -39,5 +39,10 @@ public static class OptionBuilder
     public static void AddEventBusSettingsOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<EventBusSettingsOptions>(configuration.GetSection(OptionConstants.EventBusSettings));
+    }
+
+    public static void AddLogElasticSearchDbOptions(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<LogElasticSearchDbOptions>(configuration.GetSection(OptionConstants.LogElasticSearchDb));
     }
 }

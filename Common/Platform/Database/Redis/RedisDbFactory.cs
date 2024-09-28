@@ -34,7 +34,7 @@ public class RedisDbFactory : IRedisDbFactory, IDisposable
         IRedisDb redisDb = await this.CreateAsync(
             cancellationToken);
         
-        List<string> keys = new();
+        List<string> keys = [];
         
         try
         {
@@ -97,8 +97,7 @@ public class RedisDbFactory : IRedisDbFactory, IDisposable
             if (connectionMultiplexer is null)
             {
                 connectionMultiplexer = await ConnectionMultiplexer.ConnectAsync(_connectionString)
-                    .ContinueWith(
-                        t => t.Result as IConnectionMultiplexer,
+                    .ContinueWith(IConnectionMultiplexer (t) => t.Result,
                         CancellationToken.None,
                         TaskContinuationOptions.None,
                         TaskScheduler.Default);
