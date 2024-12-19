@@ -2,7 +2,6 @@
 
 namespace Catalog.API.Models;
 
-
 public class SubCategoryCachedModel : BaseCachedModel
 {
 

@@ -79,7 +79,7 @@ public class SubCategoryService : ISubCategoryService
         return entities.Select(x => x.ToSummary()).ToList();
     }
 
-    public async Task<SubCategoryDetail?> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<SubCategoryDetail?> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken)
     {
         var entity = await _cachedService.GetCachedSubCategoriesByIdAsync(id, cancellationToken);
         
@@ -91,7 +91,7 @@ public class SubCategoryService : ISubCategoryService
         return entity.ToDetailFromCachedModel();
     }
 
-    public async Task<SubCategoryDetail?> GetSubCategoryByNameAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<SubCategoryDetail?> GetSubCategoryByNameAsync(string name, CancellationToken cancellationToken)
     {
         var entity = await _cachedService.GetCachedSubCategoriesByNameAsync(name, cancellationToken);
         
