@@ -1,7 +1,5 @@
 ﻿using Catalog.API.Models.Cached;
-using MassTransit;
 using Platform.Database.Redis;
-using System.Collections.Generic;
 
 namespace Catalog.API.Services.Caches;
 

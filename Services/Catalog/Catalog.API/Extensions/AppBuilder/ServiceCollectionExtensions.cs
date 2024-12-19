@@ -4,7 +4,6 @@ using Catalog.API.Services.Caches;
 using Catalog.API.Services.Caches.Filters;
 using Catalog.API.Services.Grpc;
 using Catalog.API.Services.Workers;
-using System.Runtime.ConstrainedExecution;
 
 namespace Catalog.API.Extensions.AppBuilder;
 

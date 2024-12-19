@@ -1,15 +1,7 @@
-﻿
-
-using Catalog.API.Entities;
-using Catalog.API.Repositories;
+﻿using Catalog.API.Repositories;
 using Platform.Database.Redis;
 using Catalog.API.Models;
 using Catalog.API.Extensions;
-using System.Collections.Generic;
-using static Catalog.API.Common.Consts.ResponseMessages;
-using IdentityModel;
-using static Core.Common.Constants.PermissionConstants.Application;
-using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.API.Services.Caches;
 
