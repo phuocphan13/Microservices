@@ -4,6 +4,7 @@ using EventBus.Messages;
 using EventBus.Messages.Extensions;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Platform.Extensions;
 
 namespace Catalog.API.Extensions.AppBuilder;
 
@@ -11,7 +12,7 @@ public static class ThirdPartyExtensions
 {
     public static IServiceCollection AddThirdParty(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(x => x.Address = new Uri(configuration["GrpcSettings:DiscountUrl"]));
+        services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(x => x.Address = new Uri(configuration.GetConfigurationValue("GrpcSettings:DiscountUrl")));
 
         //MassTransit configuration
         services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);

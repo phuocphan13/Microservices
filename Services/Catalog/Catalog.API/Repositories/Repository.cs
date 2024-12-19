@@ -95,7 +95,7 @@ public class Repository<TEntity> : IRepository<TEntity>
     {
         var options = new ReplaceOptions()
         {
-            BypassDocumentValidation = false,
+            BypassDocumentValidation = false
         };
 
         var updateResult = await _collection.ReplaceOneAsync(g => g.Id == product.Id, product, options, cancellationToken);
@@ -106,7 +106,7 @@ public class Repository<TEntity> : IRepository<TEntity>
     {
         var options = new BulkWriteOptions()
         {
-            BypassDocumentValidation = false,
+            BypassDocumentValidation = false
         };
         
         var updates = new List<WriteModel<TEntity>>();

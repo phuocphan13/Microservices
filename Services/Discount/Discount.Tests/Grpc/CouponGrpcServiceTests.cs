@@ -29,14 +29,14 @@ public class CouponGrpcServiceTests
         {
             Id = int.Parse(id),
             Description = description,
-            Value = 20,
+            Value = 20
         };
 
         var couponModel = new CouponDetailModel
         {
             Id = int.Parse(id),
             Description = description,
-            Value = 20.ToString(),
+            Value = 20.ToString()
         };
 
         var couponService = new Mock<ICouponService>();

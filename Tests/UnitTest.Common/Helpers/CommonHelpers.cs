@@ -4,7 +4,7 @@ namespace UnitTest.Common.Helpers;
 
 public static class CommonHelpers
 {
-    private static readonly Random _random = new Random();
+    private static readonly Random _random = new();
 
     public static string GenerateBsonId()
     {

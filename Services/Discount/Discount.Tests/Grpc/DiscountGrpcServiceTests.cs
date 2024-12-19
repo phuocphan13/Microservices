@@ -28,14 +28,14 @@ public class DiscountGrpcServiceTests
         {
             Id = int.Parse(id),
             Amount = 10,
-            Description = description,
+            Description = description
         };
         
         var discountModel = new DiscountDetailModel
         {
             Id = int.Parse(id),
             Amount = 10,
-            Description = description,
+            Description = description
         };
 
         var discountService = new Mock<IDiscountService>();
@@ -66,21 +66,21 @@ public class DiscountGrpcServiceTests
         {
             Id = int.Parse(id),
             Amount = 10,
-            Description = description,
+            Description = description
         };
 
         var discountModel = new DiscountDetailModel()
         {
             Id = int.Parse(id),
             Amount = 10,
-            Description = description,
+            Description = description
         };
 
         var request = new CreateDiscountRequest()
         {
             Amount = 10,
             Description = description,
-            Code = code,
+            Code = code
         };
 
         var requestBody = new CreateDiscountRequestBody()
@@ -120,7 +120,7 @@ public class DiscountGrpcServiceTests
             new()
             {
                 CatalogCode = "Pro1",
-                Amount = 30,
+                Amount = 30
             }
         };
         

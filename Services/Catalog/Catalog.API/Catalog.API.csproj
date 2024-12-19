@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -9,13 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.28.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\ApiClient\ApiClient.csproj" />
     <ProjectReference Include="..\..\..\Common\IntegrationFramework\IntegrationFramework.csproj" />
+    <ProjectReference Include="..\..\..\Common\OpenTelemetryFramework\OpenTelemetryFramework.csproj" />
     <ProjectReference Include="..\..\..\Common\Platform\Platform.csproj" />
     <ProjectReference Include="..\..\..\Common\Worker\Worker.csproj" />
     <ProjectReference Include="..\..\..\EventBus.Messages\EventBus.Messages.csproj" />
@@ -29,13 +30,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\..\..\.dockerignore">
-      <Link>.dockerignore</Link>
-    </Content>
+    <Folder Include="Data\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <Content Include="..\..\..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
   </ItemGroup>
 
 </Project>

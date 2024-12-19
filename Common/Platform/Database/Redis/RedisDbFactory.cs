@@ -1,4 +1,5 @@
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Platform.Configurations.Options;
 using StackExchange.Redis;
 
 namespace Platform.Database.Redis;
@@ -20,10 +21,12 @@ public class RedisDbFactory : IRedisDbFactory, IDisposable
     private readonly string _connectionString;
     private readonly int _defaultDb;
 
-    public RedisDbFactory(IConfiguration configuration)
+    public RedisDbFactory(IOptions<CacheSettingsOptions> cacheSettings)
     {
-        _connectionString = configuration["CacheSettings:ConnectionString"];
-        _defaultDb = int.Parse(configuration["CacheSettings:DefaultDb"]);
+        ArgumentNullException.ThrowIfNull(cacheSettings);
+        
+        _connectionString = cacheSettings.Value.ConnectionString;
+        _defaultDb = cacheSettings.Value.DefaultDb;
     }
     
     public async Task<List<string>> GetAllKeysAsync(CancellationToken cancellationToken)
@@ -31,7 +34,7 @@ public class RedisDbFactory : IRedisDbFactory, IDisposable
         IRedisDb redisDb = await this.CreateAsync(
             cancellationToken);
         
-        List<string> keys = new();
+        List<string> keys = [];
         
         try
         {
@@ -94,8 +97,7 @@ public class RedisDbFactory : IRedisDbFactory, IDisposable
             if (connectionMultiplexer is null)
             {
                 connectionMultiplexer = await ConnectionMultiplexer.ConnectAsync(_connectionString)
-                    .ContinueWith(
-                        t => t.Result as IConnectionMultiplexer,
+                    .ContinueWith(IConnectionMultiplexer (t) => t.Result,
                         CancellationToken.None,
                         TaskContinuationOptions.None,
                         TaskScheduler.Default);

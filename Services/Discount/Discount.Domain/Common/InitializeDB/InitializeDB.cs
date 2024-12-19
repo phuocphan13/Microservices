@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Platform.Constants;
+using Platform.Extensions;
 
 namespace Discount.Domain.Common.InitializeDB;
 
@@ -14,7 +15,7 @@ public static class InitializeDB
     {
         if (isRebuildSchema)
         {
-            var connection = new NpgsqlConnection(configuration[DatabaseConst.ConnectionSetting.Postgres.ConnectionString]);
+            var connection = new NpgsqlConnection(configuration.GetConfigurationValue(DatabaseConst.ConnectionSetting.Postgres.ConnectionString));
             
             await ConfigureDB.DropTable<Entities.Coupon>(connection);
             await ConfigureDB.CreateTable<Entities.Coupon>(connection);
@@ -28,8 +29,8 @@ public static class InitializeDB
 
     private static List<Entities.Coupon> GenerateCoupons()
     {
-        return new List<Entities.Coupon>()
-        {
+        return
+        [
             new()
             {
                 Type = CouponEnum.Percent,
@@ -38,7 +39,7 @@ public static class InitializeDB
                 Description = "Happy Monday Description",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             },
             new()
             {
@@ -48,7 +49,7 @@ public static class InitializeDB
                 Description = "Happy Tuesday Description",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             },
             new()
             {
@@ -58,9 +59,9 @@ public static class InitializeDB
                 Description = "Happy Wednesday Description",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             }
-        };
+        ];
     }
 
     private static List<Entities.Discount> GenerateDiscounts()
@@ -75,7 +76,7 @@ public static class InitializeDB
                 CatalogCode = "CategoryCode-1",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             },
             new()
             {
@@ -85,7 +86,7 @@ public static class InitializeDB
                 CatalogCode = "CategoryCode-2",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             },
             new()
             {
@@ -95,7 +96,7 @@ public static class InitializeDB
                 CatalogCode = "CategoryCode-1",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             },
             new()
             {
@@ -105,7 +106,7 @@ public static class InitializeDB
                 CatalogCode = "CategoryCode-2",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             },
             new()
             {
@@ -115,7 +116,7 @@ public static class InitializeDB
                 CatalogCode = "ProductCode-1",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             },
             new()
             {
@@ -125,7 +126,7 @@ public static class InitializeDB
                 CatalogCode = "ProductCode-2",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             },
              new()
             {
@@ -135,7 +136,7 @@ public static class InitializeDB
                 CatalogCode = "ProductCode-25",
                 CreatedBy = "Admin",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             }
         };
     }

@@ -4,6 +4,7 @@ using Catalog.API.Extensions.AppBuilder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using OpenTelemetryFramework;
 using Platform;
 using Worker;
 using Worker.Services;
@@ -18,13 +19,18 @@ var isRebuildWorkerSchema = builder.Configuration.GetValue<bool>("Worker:IsRebui
 
 builder.Services.AddControllers();
 
+builder.AddOpenTelemetryLogs();
+
 builder.Services
     .AddPlatformCommonServices()
     .AddIdentityInternalClient()
     .AddServiceDependency()
     .AddThirdParty(builder.Configuration)
     .AddRedisServices(builder.Configuration)
-    .AddWorkerServices(builder.Configuration);
+    .AddWorkerServices(builder.Configuration)
+    .AddOptions(builder.Configuration)
+    .AddOpenTelemetryTracing(builder.Configuration)
+    .AddOpenTelemetryMetrics(builder.Configuration);
 
 //builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"C:\temp-keys\"))
 //    .UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration()
@@ -44,6 +50,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.MapControllers();
 

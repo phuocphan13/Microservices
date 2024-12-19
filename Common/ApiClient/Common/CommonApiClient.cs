@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Platform.ApiBuilder;
 using Platform.ApiBuilder.Helpers;
 using Platform.Common.Session;
+using Platform.Extensions;
 
 namespace ApiClient.Common;
 
@@ -21,21 +22,21 @@ public class CommonApiClient
 
     protected string GetIdentityServerBaseUrl()
     {
-        return _configuration["ApiServices:IdentityServiceApi"];
+        return _configuration.GetConfigurationValue("ApiServices:IdentityServiceApi");
     }
 
     protected string GetBaseUrl()
     {
-        return _configuration["ApiServices:OcelotApiGw"];
+        return _configuration.GetConfigurationValue("ApiServices:OcelotApiGw");
     }
 
     protected string GetServiceUrl(string serviceName)
     {
         string url = serviceName switch
         {
-            ServiceConstants.Api.Catalog => _configuration[$"Microservices:{ServiceConstants.ApiAppSettting.Catalog}"],
-            ServiceConstants.Api.Discount => _configuration[$"Microservices:{ServiceConstants.ApiAppSettting.Discount}"],
-            ServiceConstants.Api.Identity => _configuration[$"Microservices:{ServiceConstants.ApiAppSettting.Identity}"],
+            ServiceConstants.Api.Catalog => _configuration.GetConfigurationValue($"Microservices:{ServiceConstants.ApiAppSettting.Catalog}"),
+            ServiceConstants.Api.Discount => _configuration.GetConfigurationValue($"Microservices:{ServiceConstants.ApiAppSettting.Discount}"),
+            ServiceConstants.Api.Identity => _configuration.GetConfigurationValue($"Microservices:{ServiceConstants.ApiAppSettting.Identity}"),
             _ => string.Empty
         };
 
@@ -44,8 +45,8 @@ public class CommonApiClient
 
     protected async Task<ApiStatusResult> GetStatusAsync(string url, CancellationToken cancellationToken)
     {
-        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-        var httpClient = HttpClientBuilder();
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(url));
+        using var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         return TransferResponseMessageToStatusAsync(httpResponseMessage);
@@ -54,8 +55,8 @@ public class CommonApiClient
     protected async Task<ApiDataResult<TResult>> GetSingleAsync<TResult>(string url, CancellationToken cancellationToken)
         where TResult : class, new()
     {
-        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-        var httpClient = HttpClientBuilder();
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(url));
+        using var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         var result = await HttpResponseHelpers.TransformResponseToData<ApiDataResult<TResult>>(httpResponseMessage, cancellationToken);
@@ -65,8 +66,8 @@ public class CommonApiClient
 
     protected async Task<ApiCollectionResult<TResult>> GetCollectionAsync<TResult>(string url, CancellationToken cancellationToken)
     {
-        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-        var httpClient = HttpClientBuilder();
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(url));
+        using var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         var result = await HttpResponseHelpers.TransformResponseToData<ApiCollectionResult<TResult>>(httpResponseMessage, cancellationToken);
@@ -77,9 +78,9 @@ public class CommonApiClient
     protected async Task<ApiDataResult<TResult>> PostAsync<TResult>(string url, object requestBody, CancellationToken cancellationToken)
         where TResult : class, new()
     {
-        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url);
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(url));
         httpRequestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody), System.Text.Encoding.UTF8, "application/json");
-        var httpClient = HttpClientBuilder();
+        using var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         return await HttpResponseHelpers.TransformResponseToData<ApiDataResult<TResult>>(httpResponseMessage, cancellationToken);
@@ -87,9 +88,9 @@ public class CommonApiClient
 
     protected async Task<ApiStatusResult> PostAsync(string url, object requestBody, CancellationToken cancellationToken)
     {
-        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url);
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(url));
         httpRequestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody), System.Text.Encoding.UTF8, "application/json");
-        var httpClient = HttpClientBuilder();
+        using var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
         
         return TransferResponseMessageToStatusAsync(httpResponseMessage);
@@ -98,9 +99,9 @@ public class CommonApiClient
     protected async Task<ApiDataResult<TResult>> PutAsync<TResult>(string url, object requestBody, CancellationToken cancellationToken)
         where TResult : class, new()
     {
-        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, url);
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri(url));
         httpRequestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody), System.Text.Encoding.UTF8, "application/json");
-        var httpClient = HttpClientBuilder();
+        using var httpClient = HttpClientBuilder();
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         return await HttpResponseHelpers.TransformResponseToData<ApiDataResult<TResult>>(httpResponseMessage, cancellationToken);
@@ -108,9 +109,9 @@ public class CommonApiClient
 
     protected async Task<ApiStatusResult> DeleteAsync(string url, CancellationToken cancellationToken)
     {
-        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, url);
-        var httpClient = HttpClientBuilder();
-        var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, new Uri(url));
+        using var httpClient = HttpClientBuilder();
+        var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
 
         return TransferResponseMessageToStatusAsync(httpResponseMessage);
     }

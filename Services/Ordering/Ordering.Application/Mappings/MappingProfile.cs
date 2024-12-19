@@ -1,7 +1,9 @@
 ﻿using ApiClient.Basket.Events.CheckoutEvents;
 using ApiClient.Basket.Models;
+using ApiClient.Ordering.Events;
 using AutoMapper;
 using Ordering.Application.Features.Commands.CheckoutOrder;
+using Ordering.Application.Features.Commands.FailureOrder;
 using Ordering.Application.Features.Commands.UpdateOrder;
 using Ordering.Application.Features.Queries.GetOrderList;
 using Ordering.Domain.Entities;
@@ -32,6 +34,8 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.Items));
 
         CreateMap<BasketCheckoutMessage, CheckoutOrderCommand>()
+            .ReverseMap();
+        CreateMap<FailureOrderMessage, FailureOrderCommand>()
             .ReverseMap();
     }
 }

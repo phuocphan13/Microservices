@@ -28,15 +28,16 @@ public static class SubCategoryExtention
         };
     }
 
-    public static SubCategoryCachedModel ToCachedModel (this SubCategory subCategory) 
+    public static SubCategoryCachedModel ToCachedModel(this SubCategory subCategory) 
     {
         return new SubCategoryCachedModel()
         {
             Id= subCategory.Id,
-            Name = subCategory.Name,
-            Code = subCategory.SubCategoryCode,
+            Name = subCategory.Name!,
+            Code = subCategory.SubCategoryCode!,
             Description = subCategory.Description,
-            HasChange = false        };
+            HasChange = false        
+        };
     }
 
     public static SubCategorySummary ToSummary(this SubCategory subCategory)
@@ -47,7 +48,7 @@ public static class SubCategoryExtention
             Name = subCategory.Name,
             SubCategoryCode = subCategory.SubCategoryCode,
             Description = subCategory.Description,
-            CategoryId = subCategory.CategoryId,
+            CategoryId = subCategory.CategoryId
         };
     }
 
@@ -58,7 +59,7 @@ public static class SubCategoryExtention
             Name = requestBody.Name,
             Description = requestBody.Description,
             SubCategoryCode = requestBody.SubCategoryCode,
-            CategoryId = requestBody.CategoryId,
+            CategoryId = requestBody.CategoryId
         };
     }
 
@@ -78,7 +79,7 @@ public static class SubCategoryExtention
             Name = subCategory.Name,
             SubCategoryCode = subCategory.SubCategoryCode,
             Description = subCategory.Description,
-            CategoryId = subCategory.CategoryId,
+            CategoryId = subCategory.CategoryId
         };  
     }    
 }

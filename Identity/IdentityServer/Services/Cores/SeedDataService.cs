@@ -45,17 +45,17 @@ public class SeedDataService : ISeedDataService
         await _dbcontext.SaveChangesAsync(cancellationToken);
     }
 
-    private List<Account> GetAccounts()
+    private static List<Account> GetAccounts()
     {
-        return new List<Account>()
-        {
+        return
+        [
             new()
             {
                 UserName = "UserA",
                 FullName = "User A",
                 Email = "UserA@ms.com",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             },
             new()
             {
@@ -63,7 +63,7 @@ public class SeedDataService : ISeedDataService
                 FullName = "User B",
                 Email = "UserB@ms.com",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             },
             new()
             {
@@ -71,22 +71,22 @@ public class SeedDataService : ISeedDataService
                 FullName = "Admin",
                 Email = "Admin@ms.com",
                 CreatedDate = DateTime.Now,
-                IsActive = true,
+                IsActive = true
             }
-        };
+        ];
     }
 
-    private List<Role> GetRoles()
+    private static List<Role> GetRoles()
     {
-        return new List<Role>()
-        {
+        return
+        [
             new()
             {
                 Name = "GlobalAdmin",
                 Description = "Global Admin Role",
                 IsActive = true,
                 CreatedDate = DateTime.Now,
-                CreatedBy = "Lucifer",
+                CreatedBy = "Lucifer"
             },
             new()
             {
@@ -94,7 +94,7 @@ public class SeedDataService : ISeedDataService
                 Description = "Admin Role",
                 IsActive = true,
                 CreatedDate = DateTime.Now,
-                CreatedBy = "Lucifer",
+                CreatedBy = "Lucifer"
             },
             new()
             {
@@ -102,7 +102,7 @@ public class SeedDataService : ISeedDataService
                 Description = "Catalog Admin Role",
                 IsActive = true,
                 CreatedDate = DateTime.Now,
-                CreatedBy = "Lucifer",
+                CreatedBy = "Lucifer"
             },
             new()
             {
@@ -110,15 +110,15 @@ public class SeedDataService : ISeedDataService
                 Description = "Catalog Staff Role",
                 IsActive = true,
                 CreatedDate = DateTime.Now,
-                CreatedBy = "Lucifer",
+                CreatedBy = "Lucifer"
             }
-        };
+        ];
     }
 
     private List<Application> GetApplications()
     {
-        return new List<Application>()
-        {
+        return
+        [
             new()
             {
                 Name = PermissionConstants.Application.Name.CatalogApi,
@@ -126,7 +126,7 @@ public class SeedDataService : ISeedDataService
                 IsActive = true,
                 CreatedDate = DateTime.Now,
                 CreatedBy = "Lucifer",
-                Features = GetListFeature(PermissionConstants.Application.Name.CatalogApi),
+                Features = GetListFeature(PermissionConstants.Application.Name.CatalogApi)
             },
             new()
             {
@@ -175,57 +175,57 @@ public class SeedDataService : ISeedDataService
                 IsActive = true,
                 CreatedDate = DateTime.Now,
                 CreatedBy = "Lucifer",
-                Features = GetListFeature(PermissionConstants.Application.Name.IdentityApi),
+                Features = GetListFeature(PermissionConstants.Application.Name.IdentityApi)
             }
-        };
+        ];
     }
 
-    private List<Feature> GetListFeature(string applicationName)
+    private static List<Feature> GetListFeature(string applicationName)
     {
         return applicationName switch
         {
-            PermissionConstants.Application.Name.CatalogApi => new List<Feature>()
-            {
+            PermissionConstants.Application.Name.CatalogApi =>
+            [
                 new()
                 {
                     Name = PermissionConstants.Feature.CatalogApi.GetAllProducts,
-                    Description = "Get All Products",
+                    Description = "Get All Products"
                 },
                 new()
                 {
                     Name = PermissionConstants.Feature.CatalogApi.GetProductById,
-                    Description = "Get Product By Id",
+                    Description = "Get Product By Id"
                 },
                 new()
                 {
                     Name = PermissionConstants.Feature.CatalogApi.CreateProduct,
-                    Description = "Create Product",
+                    Description = "Create Product"
                 },
                 new()
                 {
                     Name = PermissionConstants.Feature.CatalogApi.UpdateProduct,
-                    Description = "Update Product",
+                    Description = "Update Product"
                 },
                 new()
                 {
                     Name = PermissionConstants.Feature.CatalogApi.DeleteProduct,
-                    Description = "Delete Product",
-                },
-            },
-            PermissionConstants.Application.Name.IdentityApi => new List<Feature>()
-            {
+                    Description = "Delete Product"
+                }
+            ],
+            PermissionConstants.Application.Name.IdentityApi =>
+            [
                 new()
                 {
                     Name = PermissionConstants.Feature.IdentityApi.CreateRole,
-                    Description = "Create Role",
+                    Description = "Create Role"
                 },
                 new()
                 {
                     Name = PermissionConstants.Feature.IdentityApi.RemoveRole,
-                    Description = "Remove Role",
-                },
-            },
-            _ => new()
+                    Description = "Remove Role"
+                }
+            ],
+            _ => [ ]
         };
     }
 
@@ -233,7 +233,7 @@ public class SeedDataService : ISeedDataService
     {
         var entities = await _dbcontext.Account.ToListAsync(cancellationToken);
 
-        if (entities.Any())
+        if (entities.Count != 0)
         {
             return;
         }
@@ -258,7 +258,7 @@ public class SeedDataService : ISeedDataService
         
         foreach (var acc in accounts)
         {
-            await _userManager.AddToRoleAsync(acc, role.Name);
+            await _userManager.AddToRoleAsync(acc, role.Name!);
         }
     }
 

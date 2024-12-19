@@ -7,7 +7,7 @@ import {ProductDetail} from "../../models/catalog/product-models/product-detail.
 
 @Injectable()
 export class CatalogService {
-  apiName: string = "Catalog";
+  apiName: string = "Product";
 
   constructor(public apiService: ApiService) {
 

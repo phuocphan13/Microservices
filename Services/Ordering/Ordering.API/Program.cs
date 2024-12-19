@@ -5,12 +5,13 @@ using Ordering.Application;
 using Ordering.Infrastructure;
 using Ordering.Infrastructure.Persistence;
 using Platform;
+using Platform.Extensions;
 using Worker;
 using Worker.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-var isRebuildSchema = bool.Parse(builder.Configuration["ConnectionStrings:IsRebuildSchema"]);
-var isRebuildWorkerSchema = bool.Parse(builder.Configuration["Worker:IsRebuildSchema"]);
+var isRebuildSchema = bool.Parse(builder.Configuration.GetConfigurationValue("ConnectionStrings:IsRebuildSchema"));
+var isRebuildWorkerSchema = bool.Parse(builder.Configuration.GetConfigurationValue("Worker:IsRebuildSchema"));
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -22,7 +23,8 @@ builder.Services
     .AddWorkerServices(builder.Configuration)
     .AddThirdParties(builder.Configuration)
     .AddInfrastructureServices(builder.Configuration)
-    .AddCatalogInternalClient();
+    .AddCatalogInternalClient()
+    .AddOptions(builder.Configuration);
 
 var app = builder.Build();
 

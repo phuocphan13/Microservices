@@ -52,7 +52,7 @@ public class DiscountGrpcService : IDiscountGrpcService
     {
         var request = new GetListDiscountRequest()
         {
-            Type = (int)type,
+            Type = (int)type
         };
 
         foreach (var code in catalogCodes)
@@ -80,7 +80,7 @@ public class DiscountGrpcService : IDiscountGrpcService
         {
             CatalogCode = x.CatalogName,
             Description = x.Description,
-            Amount = x.Amount,
+            Amount = x.Amount
         }).ToList();
 
         return discounts;

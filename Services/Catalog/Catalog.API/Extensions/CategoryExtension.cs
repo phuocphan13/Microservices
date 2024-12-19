@@ -12,7 +12,7 @@ public static class CategoryExtension
         {
             Name = requestBody.Name,
             Description = requestBody.Description,
-            CategoryCode = requestBody.CategoryCode,
+            CategoryCode = requestBody.CategoryCode
         };
     }
 
@@ -30,7 +30,7 @@ public static class CategoryExtension
             Id = category.Id,
             Name = category.Name,
             Description = category.Description,
-            CategoryCode = category.CategoryCode,
+            CategoryCode = category.CategoryCode
         };
     }
 
@@ -41,7 +41,7 @@ public static class CategoryExtension
             Id = category.Id,
             Name = category.Name,
             Description = category.Description,
-            CategoryCode = category.CategoryCode,
+            CategoryCode = category.CategoryCode
         };
     }
 }

@@ -7,26 +7,16 @@ using Platform;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder
-    .Host
-    .ConfigureAppConfiguration((hostingContext, config) =>
-    {
-        config.AddJsonFile($"ocelot.{hostingContext.HostingEnvironment.EnvironmentName}.json", false, true);
-    })
-    .ConfigureLogging((hostingContext, logginBuilder) =>
-    {
-        logginBuilder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-        logginBuilder.AddConsole();
-        logginBuilder.AddDebug();
-    });
+builder.Configuration.AddJsonFile($"ocelot.{builder.Environment.EnvironmentName}.json", false, true);
 
 builder.Services.AddPlatformCommonServices();
 builder.Services
     .AddOcelot()
     .AddCacheManager(settings => settings.WithDictionaryHandle());
 
-//builder.Services
-//    .AddIdentityInternalClient();
+builder.Services
+    .AddPlatformCommonServices()
+    .AddIdentityInternalClient();
 
 //builder.Services.AddCustomAuthenticate(builder.Configuration);
 

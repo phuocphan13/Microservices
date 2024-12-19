@@ -40,13 +40,11 @@ export class SupcategorySearchComponent implements OnInit {
   }
 
   async onclickSearchButton() {
-    if(this.searchKey == "")
-      {
-        await this.getSubCategoriesAsync();
-      }
-    else if (this.searchKey != "")
-      {    
-        await this.getSubCategoryByIdAsync();
-      }
+    if(this.searchKey == "") {
+      await this.getSubCategoriesAsync();
+    }
+    else if (this.searchKey != "") {
+      await this.getSubCategoryByIdAsync();
+    }
   }
 }

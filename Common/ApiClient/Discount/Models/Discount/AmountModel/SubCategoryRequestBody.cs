@@ -2,5 +2,5 @@
 
 public class SubCategoryRequestBody : CatalogItem
 {
-    public List<ProductRequestBody> Products { get; set; } = new();
+    public ICollection<ProductRequestBody> Products { get; set; } = [];
 }

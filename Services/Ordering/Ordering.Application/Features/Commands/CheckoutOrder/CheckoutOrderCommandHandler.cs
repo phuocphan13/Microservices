@@ -4,6 +4,7 @@ using ApiClient.Ordering.Events;
 using AutoMapper;
 using EventBus.Messages.Services;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Ordering.Application.Helpers;
 using Ordering.Domain.Entities;
 using Platform.Database.Helpers;
@@ -16,22 +17,34 @@ public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand,
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IQueueService _queueService;
+    private readonly ILogger<CheckoutOrderCommandHandler> _logger;
 
-    public CheckoutOrderCommandHandler(IRepository<Order> orderRepository, IMapper mapper, IUnitOfWork unitOfWork, IQueueService queueService)
+    public CheckoutOrderCommandHandler(IRepository<Order> orderRepository, IMapper mapper, IUnitOfWork unitOfWork, IQueueService queueService, ILogger<CheckoutOrderCommandHandler> logger)
     {
         _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _queueService = queueService;
+        _logger = logger;
     }
 
     public async Task<bool> Handle(CheckoutOrderCommand request, CancellationToken cancellationToken)
     {
+        CheckoutOrderCommandValidator validator = new();
+        
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+        {
+            _logger.LogError(string.Join(" ,", validationResult.Errors.Select(x => x.ErrorMessage)));
+            return false;
+        }
+        
         var orderEntity = _mapper.Map<Order>(request);
         orderEntity.AddAuditInfo();
         
-        orderEntity.OrderHistories = new List<OrderHistory>()
-        {
+        orderEntity.OrderHistories =
+        [
             new()
             {
                 CreatedDate = DateTime.Now,
@@ -39,7 +52,7 @@ public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand,
                 CurrentStatus = OrderStatus.Checkoutted,
                 Order = orderEntity
             }
-        };
+        ];
         
         await _orderRepository.InsertAsync(orderEntity, cancellationToken);
 
@@ -48,13 +61,13 @@ public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand,
         {
             result = await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             await _queueService.SendFanoutMessageAsync(new FailureOrderMessage()
             {
                 ReceiptNumber = orderEntity.ReceiptNumber,
                 UserId = request.UserId,
-                UserName = request.UserName,
+                UserName = request.UserName
             }, cancellationToken);
         }
 

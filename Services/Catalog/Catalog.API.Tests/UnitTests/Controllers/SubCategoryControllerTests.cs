@@ -6,7 +6,7 @@
 // using Catalog.API.Tests.Common;
 // using Microsoft.AspNetCore.Mvc;
 // using System.Net;
-// using Microsoft.Extensions.Logging;
+// using Microsoft.Extensions.Logging.Api;
 // using UnitTest.Common.Helpers;
 //
 // namespace Catalog.API.Tests.UnitTests.Controllers;

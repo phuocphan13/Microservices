@@ -3,7 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Platform.Common;
 using Platform.Common.Session;
+using Platform.Configurations.Builders;
+using Platform.Database.ElasticSearch;
 using Platform.Database.Redis;
+using Platform.Extensions;
 
 namespace Platform;
 
@@ -25,7 +28,28 @@ public static class IServiceExtensionCollection
         services.AddSingleton<IRedisDbFactory, RedisDbFactory>();
 
         services.AddHealthChecks()
-            .AddRedis(configuration["CacheSettings:ConnectionString"], "Redis", HealthStatus.Unhealthy);
+            .AddRedis(configuration.GetConfigurationValue("CacheSettings:ConnectionString"), "Redis", HealthStatus.Unhealthy);
+
+        return services;
+    }
+    
+    public static IServiceCollection AddElasticServices(this IServiceCollection services)
+    {
+        services.AddSingleton<ElasticFactory>();
+
+        return services;
+    }
+    
+    public static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMongoDbOptions(configuration);
+        services.AddGrpcSettingsOptions(configuration);
+        services.AddCacheSettingsOptions(configuration);
+        services.AddWorkerOptions(configuration);
+        services.AddJwtSettingsOptions(configuration);
+        services.AddEventBusSettingsOptions(configuration);
+        services.AddLoggingDbOptions(configuration);
+        services.AddLogElasticSearchDbOptions(configuration);
 
         return services;
     }

@@ -54,7 +54,7 @@ public class IdentityController : ApiController
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginRequestBody request, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByNameAsync(request.UserName);
+        var user = await _userManager.FindByNameAsync(request.UserName!);
 
         if (user is null)
         {
@@ -66,7 +66,7 @@ public class IdentityController : ApiController
             return BadRequest("Username đã bị vô hiệu.");
         }
 
-        var result = await _userManager.CheckPasswordAsync(user, request.Password);
+        var result = await _userManager.CheckPasswordAsync(user, request.Password!);
 
         if (!result)
         {
@@ -103,7 +103,7 @@ public class IdentityController : ApiController
 
         var user = await _userManager.FindByEmailAsync(request.UserName);
 
-        var result = await _tokenHandleService.ValidateAccessTokenAsync(user.Id, TokenTypeEnum.AccessToken, request.Token, cancellationToken);
+        var result = await _tokenHandleService.ValidateAccessTokenAsync(user!.Id, TokenTypeEnum.AccessToken, request.Token, cancellationToken);
 
         return Ok(new TokenValidationModel()
         {

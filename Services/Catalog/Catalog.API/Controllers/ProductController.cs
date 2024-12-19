@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using ApiClient.Catalog.Product.Models;
 using ApiClient.Common.Models.Paging;
 using Catalog.API.Services;
@@ -14,14 +15,19 @@ public class ProductController : ApiController
     private readonly ICategoryService _categoryService;
     private readonly ISubCategoryService _subCategoryService;
     private readonly ILogger<ProductController> _logger;
-
+    
     public ProductController(IProductService productService, ICategoryService categoryService, 
         ISubCategoryService subCategoryService, ILogger<ProductController> logger) : base(logger)
     {
-        _productService = productService ?? throw new ArgumentNullException(nameof(productService));
-        _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
-        _subCategoryService = subCategoryService ?? throw new ArgumentNullException(nameof(subCategoryService));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        ArgumentNullException.ThrowIfNull(productService);
+        ArgumentNullException.ThrowIfNull(categoryService);
+        ArgumentNullException.ThrowIfNull(subCategoryService);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        _productService = productService;
+        _categoryService = categoryService;
+        _subCategoryService = subCategoryService;
+        _logger = logger;
     }
     
     [HttpGet]
@@ -39,6 +45,8 @@ public class ProductController : ApiController
             return NotFound();
         }
 
+        _logger.LogInformation("Get all products paging successfully.");
+
         return base.Ok(result);
     }
 
@@ -53,10 +61,12 @@ public class ProductController : ApiController
             return NotFound();
         }
 
+        _logger.LogInformation("Get all products successfully.");
+
         return Ok(result);
     }
 
-    [HttpGet("{id:length(24)}", Name = "GetProductById")]
+    [HttpGet("{id}")]
     // [Permission(PermissionConstants.Feature.CatalogApi.GetProductById)]
     public async Task<IActionResult> GetProductById(string id, CancellationToken cancellationToken)
     {
@@ -76,7 +86,7 @@ public class ProductController : ApiController
         return Ok(result);
     }
 
-    [Route("[action]/{category}", Name = "GetProductByCategory")]
+    [Route("[action]/{category}")]
     [HttpGet]
     public async Task<IActionResult> GetProductByCategory(string category, CancellationToken cancellationToken)
     {
@@ -87,7 +97,7 @@ public class ProductController : ApiController
 
         var result = await _productService.GetProductsByCategoryAsync(category, cancellationToken);
 
-        if (result is null || !result.Any())
+        if (result is null || result.Count == 0)
         {
             _logger.LogError($"Product with category: {category}, not found.");
             return NotFound();
@@ -99,14 +109,14 @@ public class ProductController : ApiController
     [HttpGet]
     public async Task<IActionResult> GetProductsByListCodes([FromQuery] List<string> codes, CancellationToken cancellationToken)
     {
-        if (codes is null || !codes.Any())
+        if (codes is null || codes.Count == 0)
         {
             return BadRequest("Missing Codes.");
         }
 
         var result = await _productService.GetProductsByListCodesAsync(codes, cancellationToken);
 
-        if (result is null || !result.Any())
+        if (result is null || result.Count == 0)
         {
             _logger.LogError($"Product with codes: {string.Join(",", codes)}, not found.");
             return NotFound();
@@ -231,4 +241,36 @@ public class ProductController : ApiController
 
         return string.Empty;
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Test(CancellationToken cancellationToken)
+    {
+        var client = new HttpClient();
+        var jsonContent =
+            """
+            
+                    {
+                        "query": {
+                            "match_all": {}
+                        }
+                    }
+            """;
+
+        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        // string url = "http://192.168.2.11:9200/logs-otel/_search?pretty";
+        string url = "http://192.168.2.11:9200/_cat/indices?v";
+
+        var response = await client.GetAsync(url, cancellationToken);
+
+        var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        return Ok(responseString);
+    }
+}
+
+public static partial class Log
+{
+    [LoggerMessage(LogLevel.Information, "Get Product Success Luficer")]
+    public static partial void GetProducts(this ILogger logger);
 }
