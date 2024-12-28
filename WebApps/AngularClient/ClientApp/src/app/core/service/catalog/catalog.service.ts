@@ -4,6 +4,7 @@ import {environment} from "src/environments/environment";
 import {ApiService} from "../api.service";
 import {ProductSummary} from "../../models/catalog/product-models/product-summary.model";
 import {ProductDetail} from "../../models/catalog/product-models/product-detail.model";
+//import * as internal from "stream";
 
 @Injectable()
 export class CatalogService {
@@ -17,8 +18,12 @@ export class CatalogService {
     return await this.apiService.getAsync(`${environment.baseApiUrl}/${this.apiName}/GetProducts`, new HttpParams());
   }
 
+  async getProductsPagingAsync(start: any, length: any): Promise<ProductSummary[]> {
+    return await this.apiService.getAsync(`${environment.baseApiUrl}/${this.apiName}/GetProductPaging?Start=${start}&Length=${length}`, new HttpParams());
+  }
+
   async getProductByIdAsync(id: string): Promise<ProductDetail> {
-    return await this.apiService.getAsync(`${environment.baseApiUrl}/${this.apiName}/GetProductById/${id}`, new HttpParams());
+    return await this.apiService.getAsync(`${environment.baseApiUrl}/${this.apiName}/GetProductById/`, new HttpParams());
   }
 
   async getProductByCategoryAsync(category: string): Promise<ProductSummary> {
@@ -36,4 +41,6 @@ export class CatalogService {
   async deleteProductAsync(id: string): Promise<boolean> {
     return await this.apiService.postAsync(`${environment.baseApiUrl}/${this.apiName}/DeleteProduct`, id, new HttpParams());
   }
+
+
 }

@@ -1,5 +1,5 @@
 ###
-GET http://192.168.2.11:9200/_cat/indices?v
+GET http://127.0.0.1:9200/_cat/indices?v
 
 <> 2024-09-16T174347.200.txt
 <> 2024-09-16T174135.200.txt
@@ -20,7 +20,7 @@ GET http://192.168.2.11:9200/_cat/indices?v
 <> 2024-09-16T163003.200.json
 
 ###
-GET http://192.168.2.11:9200/otel-v1-api/_search?pretty=true
+GET http://127.0.0.1:9200/otel-v1-api/_search?pretty=true
 
 <> 2024-09-16T174651.200.json
 <> 2024-09-16T174627.200.json
@@ -46,7 +46,7 @@ GET http://192.168.2.11:9200/otel-v1-api/_search?pretty=true
 
 
 ###
-POST http://192.168.2.11:9200/otel-v1-api/_doc
+POST http://127.0.0.1:9200/otel-v1-api/_doc
 Content-Type: application/json
 
 {

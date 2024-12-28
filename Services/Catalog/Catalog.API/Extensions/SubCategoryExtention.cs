@@ -16,14 +16,16 @@ public static class SubCategoryExtention
         };
     }
 
-    public static SubCategorySummary ToSummaryFromCachedModel(this SubCategoryCachedModel subCategory)
+    public static SubCategorySummary ToSummaryFromCachedModel(this SubCategoryCachedModel subCategory, string? categoryName, string? categoryId)
     {
         return new SubCategorySummary()
         {
             Id = subCategory.Id,
             Name = subCategory.Name,
             SubCategoryCode = subCategory.Code,
-            Description = subCategory.Description            
+            Description = subCategory.Description,
+            CategoryName = categoryName,
+            CategoryId = categoryId
         };
     }
 

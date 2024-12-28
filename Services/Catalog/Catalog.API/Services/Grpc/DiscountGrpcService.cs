@@ -86,7 +86,7 @@ public class DiscountGrpcService : IDiscountGrpcService
         return discounts;
     }
 
-    public async Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category> entityCategory, List<SubCategory> entitySubCategory, IEnumerable<ProductCachedModel> entityProduct)
+    public async Task<List<DiscountSummary>> GetAmountsAfterDiscountAsync(List<Category>? entityCategory, List<SubCategory> entitySubCategory, IEnumerable<ProductCachedModel> entityProduct)
     {
         if (entityCategory is null || entityCategory.Count == 0) {
             throw new ArgumentException("Category list cannot be null or empty");

@@ -68,6 +68,18 @@
       "UpstreamPathTemplate": "/Product/GetProductByCategory/{category}",
       "UpstreamHttpMethod": [ "GET" ]
     },
+    {
+      "DownstreamPathTemplate": "/api/v1/Product/GetPagingProductsa?Start={start}&Length={lenght}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/Product/GetPagingProducts?Start={start}&Length={lenght}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
     //Catalog:Category
     {
       "DownstreamPathTemplate": "/api/v1/Category/GetCategories",
@@ -152,6 +164,18 @@
         }
       ],
       "UpstreamPathTemplate": "/SubCategory/GetSubCategories", //Link Call From "Angular Client"
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/SubCategory/GetPagingSubCategories?Start={start}&Length={lenght}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/SubCategory/GetPagingSubCategories?Start={start}&Length={lenght}",
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
