@@ -98,7 +98,7 @@ public class SubCategoryService : ISubCategoryService
         return entities.Select(x => x.ToSummary()).ToList();
     }
 
-    public async Task<SubCategoryDetail?> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<SubCategoryDetail?> GetSubCategoryByIdAsync(string id, CancellationToken cancellationToken)
     {
         var entity = await _cachedService.GetCachedSubCategoriesByIdAsync(id, cancellationToken);
         

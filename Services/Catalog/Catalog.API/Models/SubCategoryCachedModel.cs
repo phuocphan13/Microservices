@@ -2,7 +2,6 @@
 
 namespace Catalog.API.Models;
 
-
 public class SubCategoryCachedModel : BaseCachedModel
 {
     public string? CategoryId { get; set; }
