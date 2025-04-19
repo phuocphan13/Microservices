@@ -18,7 +18,7 @@ builder.Services
     .AddPlatformCommonServices()
     .AddIdentityInternalClient();
 
-//builder.Services.AddCustomAuthenticate(builder.Configuration);
+builder.Services.AddCustomAuthenticate(builder.Configuration);
 
 var app = builder.Build();
 

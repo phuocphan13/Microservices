@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>ReportManager.Infrastructuer</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ReportManager.Application\ReportManager.Application.csproj" />
+      <ProjectReference Include="..\ReportManager.Domain\ReportManager.Domain.csproj" />
+    </ItemGroup>
+
+</Project>
