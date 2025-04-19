@@ -29,7 +29,8 @@ import { SubCategoryService } from './core/service/catalog/subcategory.service';
 import { SubcategoryAdminComponent } from './pages/admin-pages/catalog-admin/subcategory-admin/subcategory-admin.component';
 import { SubcategoryModalComponent } from './core/shared/modals/catalog-modals/subcategory-modal/subcategory-modal.component';
 import { NgOptimizedImage } from "@angular/common";
-import {SupcategorySearchComponent} from './pages/client-pages/subcategory/supcategory-search/supcategory-search.component'
+import { SupcategorySearchComponent} from './pages/client-pages/subcategory/supcategory-search/supcategory-search.component';
+import { PaginationComponent } from './core/shared/pagination/pagination.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import {SupcategorySearchComponent} from './pages/client-pages/subcategory/supca
     ConfirmationModalComponent,
     UnsavedConfirmModalComponent,
     LogInComponent,
+    PaginationComponent
   ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

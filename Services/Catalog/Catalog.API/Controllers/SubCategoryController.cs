@@ -1,4 +1,5 @@
 ﻿using ApiClient.Catalog.SubCategory.Models;
+using ApiClient.Common.Models.Paging;
 using Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Platform.ApiBuilder;
@@ -17,6 +18,25 @@ public class SubCategoryController : ApiController
         _subCategoryService = subCategoryService ?? throw new ArgumentNullException(nameof(subCategoryService));
         _categoryService = categoryService;
     }
+
+    [HttpGet]
+    public async Task<ActionResult> GetPagingSubCategories([FromQuery] PagingInfo pagingInfo, CancellationToken cancellationToken)
+    {
+        if (pagingInfo == null)
+        {
+            return BadRequest("Missing PagingInfo.");
+        }
+
+        var result = await _subCategoryService.GetPagingSubCategoriesAsync(pagingInfo, cancellationToken);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
 
     [HttpGet]
     public async Task<IActionResult> GetSubCategories(CancellationToken cancellationToken)

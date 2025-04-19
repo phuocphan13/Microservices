@@ -19,7 +19,7 @@ public class LogController : ApiController
     [HttpGet]
     public async Task<IActionResult> Test(CancellationToken cancellationToken)
     {
-        await _elasticFactory.GetAllByIndexAsync(cancellationToken);
+        //await _elasticFactory.GetAllByIndexAsync(cancellationToken);
         return Ok();
     }
 }

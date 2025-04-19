@@ -2,3 +2,10 @@
     text-align: end;
     padding: 30px;
 }
+
+.pagination li:hover{
+    cursor: pointer;
+}
+		table tbody tr {
+			display: none;
+		}

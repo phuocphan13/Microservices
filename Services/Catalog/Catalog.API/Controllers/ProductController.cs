@@ -62,7 +62,7 @@ public class ProductController : ApiController
         }
 
         _logger.LogInformation("Get all products successfully.");
-
+         
         return Ok(result);
     }
 
@@ -259,7 +259,7 @@ public class ProductController : ApiController
         var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
         // string url = "http://192.168.2.11:9200/logs-otel/_search?pretty";
-        string url = "http://192.168.2.11:9200/_cat/indices?v";
+        string url = "http://127.0.0.1:9200/_cat/indices?v";
 
         var response = await client.GetAsync(url, cancellationToken);
 

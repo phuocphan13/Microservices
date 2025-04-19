@@ -24,7 +24,7 @@ public class SubCategoryService : ISubCategoryService
     {
         _subCategoryApiClient = subCategoryApiClient;
     }
-
+    //Số 2
     public async Task<List<SubCategorySummary>?> GetSubCategoriesAsync(CancellationToken cancellationToken)
     {
         var result = await _subCategoryApiClient.GetSubCategories(cancellationToken);

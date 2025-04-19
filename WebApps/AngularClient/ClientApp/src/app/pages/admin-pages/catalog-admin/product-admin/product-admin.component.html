@@ -13,17 +13,19 @@
                 <tr>
                   <th>#</th>
                   <th>Name</th>
-                  <th>Code</th>
+                  <th>Category</th>
+                  <th>SubCategory</th>
                   <th>Description</th>
                   <th class="table-action">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let row of data">
-                  <td>{{ row.column1 }}</td>
-                  <td>{{ row.column2 }}</td>
-                  <td>{{ row.column3 }}</td>
-                  <td>{{ row.column4 }}</td>
+                <tr *ngFor="let row of products || []; let i = index">
+                  <td>{{ i+1 }}</td>
+                  <td>{{ row.name }}</td>
+                  <td>{{ row.category }}</td>
+                  <td>{{ row.subCategory }}</td>
+                  <td>{{ row.description }}</td>
                   <td class="table-action">
                     <a (click)="onClickAction('view')" class="action-click"><i class="far fa-eye"></i></a>
                     <a (click)="onClickAction('edit')" class="action-click"><i class="far fa-edit"></i></a>
@@ -32,6 +34,16 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div>
+            <app-pagination 
+              [totalItems]="totalItems"
+              [itemsPerPage]="length"
+              [(currentPage)]="currentPage"
+              (pageChanged)="onPageChanged($event)"
+            ></app-pagination>
+
+            <p>Current Page: {{ currentPage }}</p>
           </div>
     </div>
 </div>

@@ -1,5 +1,6 @@
 using AngularClient.Services;
 using ApiClient.Catalog.Product.Models;
+using ApiClient.Common.Models.Paging;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AngularClient.Controllers;
@@ -19,6 +20,19 @@ public class ProductController : ControllerBase
     public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
     {
         var result = await _catalogService.GetProductsAsync(cancellationToken);
+
+        if (result is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetProductPaging([FromQuery] PagingInfo pagingInfo, CancellationToken cancellationToken)
+    {
+        var result = await _catalogService.ProductPagingAsync(pagingInfo, cancellationToken);
 
         if (result is null)
         {

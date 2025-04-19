@@ -14,7 +14,7 @@ public class SubCategoryController : ControllerBase
     {
             _subCategoryService = subCategoryService;
         }
-
+    // Số 1
     [HttpGet]
     public async Task<IActionResult> GetSubCategories(CancellationToken cancellationToken) 
     {

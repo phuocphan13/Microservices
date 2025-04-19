@@ -1,5 +1,7 @@
 using ApiClient.Catalog.Product.Models;
+using ApiClient.Catalog.SubCategory.Models;
 using ApiClient.Common;
+using ApiClient.Common.Models.Paging;
 using Microsoft.Extensions.Configuration;
 using Platform.ApiBuilder;
 using Platform.Common.Session;
@@ -8,6 +10,7 @@ namespace ApiClient.Catalog.Product;
 
 public interface IProductApiClient
 {
+    Task<ApiCollectionResult<ProductSummary>> GetPagingProducts(PagingInfo pagingInfo, CancellationToken cancellationToken = default);
     Task<ApiCollectionResult<ProductSummary>> GetProducts(CancellationToken cancellationToken = default);
     Task<ApiDataResult<ProductDetail>> GetProductByIdAsync(string id, CancellationToken cancellationToken = default);
     Task<ApiCollectionResult<ProductSummary>> GetProductByCategoryAsync(string category, CancellationToken cancellationToken = default);
@@ -29,6 +32,17 @@ public class ProductApiClient : CommonApiClient, IProductApiClient
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetProducts}";
 
         var result = await GetCollectionAsync<ProductSummary>(url, cancellationToken);
+
+        return result;
+    }
+
+    public async Task<ApiCollectionResult<ProductSummary>> GetPagingProducts(PagingInfo pagingInfo, CancellationToken cancellationToken = default)
+    {
+        var url = $"{GetBaseUrl()}{ApiUrlConstants.ProductPaging}";
+        url = url.AddQueryStringParameter(nameof(pagingInfo.Start), pagingInfo.Start?.ToString())
+                 .AddQueryStringParameter(nameof(pagingInfo.Length), pagingInfo.Length?.ToString());
+
+        var result =  await GetCollectionAsync<ProductSummary>(url, cancellationToken);
 
         return result;
     }

@@ -34,8 +34,7 @@ public class OrderContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            // optionsBuilder.UseSqlServer("Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;");
-            optionsBuilder.UseSqlServer("Server=192.168.2.11,1433;Database=OrderDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;");
         }
         
         base.OnConfiguring(optionsBuilder);

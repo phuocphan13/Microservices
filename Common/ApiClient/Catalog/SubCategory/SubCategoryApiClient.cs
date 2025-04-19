@@ -1,13 +1,18 @@
 ﻿using ApiClient.Catalog.SubCategory.Models;
 using ApiClient.Common;
+using ApiClient.Common.Models.Paging;
+using Elastic.Clients.Elasticsearch;
 using Microsoft.Extensions.Configuration;
 using Platform.ApiBuilder;
 using Platform.Common.Session;
+using System.Xml.Linq;
+using static Core.Common.Constants.PermissionConstants.Application;
 
 namespace ApiClient.Catalog.SubCategory;
 
 public interface ISubCategoryApiClient
 {
+    Task<ApiCollectionResult<SubCategorySummary>> GetPagingSubCategories(PagingInfo pagingInfo , CancellationToken cancellationToken = default);
     Task<ApiCollectionResult<SubCategorySummary>> GetSubCategories(CancellationToken cancellationToken = default);
     Task<ApiDataResult<SubCategorySummary>> GetSubCategoryByName(string name, CancellationToken cancellationToken = default);
     Task<ApiDataResult<SubCategorySummary>> GetSubCategoryById(string id, CancellationToken cancellationToken = default);
@@ -23,7 +28,17 @@ public class SubCategoryApiClient : CommonApiClient, ISubCategoryApiClient
         : base(httpClientFactory, configuration, sessionState)
     {
     }
+    //Số 3
+    public async Task<ApiCollectionResult<SubCategorySummary>> GetPagingSubCategories(PagingInfo pagingInfo, CancellationToken cancellationToken)
+    {
+        var url = $"{GetBaseUrl()}{ApiUrlConstants.SubCategoryPaging}";
+        url = url.AddDataInUrl(nameof(pagingInfo.Start), pagingInfo.Start.ToString())
+                 .AddDataInUrl(nameof(pagingInfo.Length), pagingInfo.Length.ToString());
 
+        var result = await GetCollectionAsync<SubCategorySummary>(url, cancellationToken);
+
+        return result;
+    }
     public async Task<ApiCollectionResult<SubCategorySummary>> GetSubCategories(CancellationToken cancellationToken)
     {
         var url = $"{GetBaseUrl()}{ApiUrlConstants.GetSubCategories}";

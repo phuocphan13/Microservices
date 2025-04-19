@@ -1,0 +1,57 @@
+
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+      <!-- botton lùi trang -->
+      <li class="page-item" [class.disabled]="firstPage()">
+        <button class="page-link" (click)="previousPage()" [disabled]="firstPage()">Previous</button>
+      </li>
+  
+      <!-- botton số trang -->
+      <li
+        class="page-item"
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+        [class.active]="currentPage === i + 1"
+      >
+        <button class="page-link" (click)="moveToPage(i + 1)">{{ i + 1 }}</button>
+      </li>
+  
+      <!-- botton tới trang -->
+      <li class="page-item" [class.disabled]="lastPage()">
+        <button class="page-link" (click)="nextPage()" [disabled]="lastPage()">Next</button>
+      </li>
+    </ul>
+  </nav>
+  
+
+
+
+
+
+
+
+<!-- <div class="pagination">
+    <a href="#">&laquo;</a>  
+    <a href="#">1</a> 
+    <a class="active" href="#">2</a> 
+    <a href="#">3</a> 
+    <a href="#">4</a>
+    <a href="#">5</a>
+    <a href="#">6</a>
+    <a href="#">&raquo;</a>
+</div> -->
+
+<!-- 
+Input
+Button trái phải 
+Số hiển thị dựa trên data 
+    - truyền vào số lượng phần tử dựa trên cái điều kiện search
+    - hard code số lượng phần tử mỗi trang
+    - tính số lượng trang
+
+
+output 3 action
+- trái phải
+- theo số  
+-->
+
+

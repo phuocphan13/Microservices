@@ -2,11 +2,12 @@
 using Platform.Database.Redis;
 using Catalog.API.Models;
 using Catalog.API.Extensions;
-
+using ApiClient.Common.Models.Paging;
 namespace Catalog.API.Services.Caches;
 
 public interface ISubCategoryCachedService
 {
+    Task<List<SubCategoryCachedModel>> GetPagingSubCategoriesAsync(PagingInfo pagingInfo, CancellationToken cancellationToken = default);
     Task<List<SubCategoryCachedModel>?> QueryCachedSubCategoriesAsync(Func<SubCategoryCachedModel, bool> predicate, CancellationToken cancellationToken = default );
     Task<SubCategoryCachedModel?> GetSubCategoryCachedBySearchAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
     Task<List<SubCategoryCachedModel>?> GetCachedSubCategoriesAsync (CancellationToken cancellationToken = default );
@@ -33,6 +34,20 @@ public class SubCategoryCachedService : CommonCacheService, ISubCategoryCachedSe
         var supCategories = await _subCategoriesRepository.GetEntitiesAsync (cancellationToken);
         var subCategoryCached = supCategories.Select(x => x.ToCachedModel()).ToList();
         await SetAllItemsCacheAsync (subCategoryCached, cancellationToken);
+    }
+
+    public async Task<List<SubCategoryCachedModel>> GetPagingSubCategoriesAsync(PagingInfo pagingInfo, CancellationToken cancellationToken)
+    {
+        var subCategories = await GetCachedSubCategoriesAsync(cancellationToken);
+
+        if(subCategories == null)
+        {
+            return new List<SubCategoryCachedModel>();
+        }
+
+        var pagingCollection = new List<SubCategoryCachedModel>(subCategories.Skip(pagingInfo.Start ?? 0).Take(pagingInfo.Length ?? 10));
+
+        return pagingCollection;
     }
 
     public async Task<List<SubCategoryCachedModel>?> QueryCachedSubCategoriesAsync(Func<SubCategoryCachedModel, bool> predicate, CancellationToken cancellationToken)

@@ -18,6 +18,8 @@ public static class ApiUrlConstants
     
     public const string ReduceProductBalance = "/Product/ReduceProductBalance";
 
+    public const string ProductPaging = "/Product/GetPagingProducts";
+
     //Url for Category
 
     public const string GetCategories = "/Category/GetCategories";
@@ -47,6 +49,8 @@ public static class ApiUrlConstants
     public const string UpdateSubCategory = "/SubCategory/UpdateSubCategory";
 
     public const string DeleteSubCategory = "/SubCategory/DeleteSubCategory/{id}";
+
+    public const string SubCategoryPaging = "/SubCategory/GetPagingSubCategories";
 
     //Validation
     public const string ValidateCatalogCode = "/Validation/ValidateCatalogCode";
