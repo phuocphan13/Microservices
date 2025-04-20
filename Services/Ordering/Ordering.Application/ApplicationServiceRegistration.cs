@@ -3,6 +3,11 @@ using System.Reflection;
 using FluentValidation;
 using MediatR;
 using Ordering.Application.Behaviours;
+using Ordering.Application.Features.Commands.CheckoutOrder;
+using Ordering.Application.Features.Commands.DeleteOrder;
+using Ordering.Application.Features.Commands.FailureOrder;
+using Ordering.Application.Features.Commands.UpdateOrder;
+using Ordering.Application.Features.Queries.GetOrderList;
 using Ordering.Application.Services;
 using Ordering.Application.WorkerServices;
 
@@ -14,7 +19,17 @@ public static class ApplicationServiceRegistration
     {
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        services.AddMediatR(Assembly.GetExecutingAssembly());
+        services.AddMediatR(cfg =>
+        {
+            // Commands
+            cfg.RegisterServicesFromAssemblyContaining<CheckoutOrderCommandHandler>();
+            cfg.RegisterServicesFromAssemblyContaining<DeleteOrderCommandHandler>();
+            cfg.RegisterServicesFromAssemblyContaining<FailureOrderCommandHandler>();
+            cfg.RegisterServicesFromAssemblyContaining<UpdateOrderCommandHandler>();
+
+            // Queries
+            cfg.RegisterServicesFromAssemblyContaining<GetOrdersListQueryHandler>();
+        });
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));

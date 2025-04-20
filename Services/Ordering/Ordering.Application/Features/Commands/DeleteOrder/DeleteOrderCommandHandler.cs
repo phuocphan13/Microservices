@@ -1,24 +1,18 @@
-﻿using AutoMapper;
-using MediatR;
-using Microsoft.Extensions.Logging;
+﻿using MediatR;
 using Ordering.Application.Exceptions;
 using Ordering.Domain.Entities;
 using Platform.Database.Helpers;
 
 namespace Ordering.Application.Features.Commands.DeleteOrder;
 
-public class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand>
+public class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand, Unit>
 {
     private readonly IRepository<Order> _orderRepository;
-    private readonly IMapper _mapper;
-    private readonly ILogger<DeleteOrderCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
-    public DeleteOrderCommandHandler(IRepository<Order> orderRepository, IMapper mapper, ILogger<DeleteOrderCommandHandler> logger, IUnitOfWork unitOfWork)
+    public DeleteOrderCommandHandler(IRepository<Order> orderRepository, IUnitOfWork unitOfWork)
     {
         _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 

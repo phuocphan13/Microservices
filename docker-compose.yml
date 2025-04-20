@@ -3,6 +3,9 @@ version: '3.5'
 services:
   catalogdb:
     image: mongo
+    
+  reportinggatewaydb:
+    image: mongo
 
   basketdb:
     image: redis

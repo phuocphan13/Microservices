@@ -1,11 +1,11 @@
-using Catalog.API.Entities;
-using Catalog.API.Repositories;
 using IntegrationTest.Common.Configurations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Platform.Constants;
+using Platform.Database.Entity.MongoDb;
+using Platform.Database.MongoDb;
 
 namespace Catalog.API.Tests.Extensions;
 

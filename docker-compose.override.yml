@@ -22,6 +22,14 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+        
+  reportinggatewaydb:
+    container_name: reportinggatewaydb
+    restart: always
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
 
   basketdb:
     container_name: basketdb

@@ -4,9 +4,9 @@ using ApiClient.Common.Models.Paging;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Models;
-using Catalog.API.Repositories;
 using Catalog.API.Services.Caches;
 using Catalog.API.Services.Grpc;
+using Platform.Database.MongoDb;
 
 namespace Catalog.API.Services;
 

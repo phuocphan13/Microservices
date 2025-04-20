@@ -17,15 +17,13 @@ public static class IServiceExtensionCollection
     {
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         
-        services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IQueueService, QueueService>();
-        services.AddScoped<IPublishService, PublishService>();
         services.AddScoped<IBasketMessageService, BasketMessageService>();
         
         return services;
     }
 
-    public static IServiceCollection AddMessageOutboxCosumer(this IServiceCollection services, IConfiguration configuration, Action<IBusRegistrationConfigurator>? busAction = default)
+    public static IServiceCollection AddMessageOutboxCosumer(this IServiceCollection services, IConfiguration configuration, Action<IBusRegistrationConfigurator>? busAction = null, Action<IBusRegistrationConfigurator>? sagaAction = null)
     {
         services.AddMessageDbContext(configuration);
         
@@ -44,13 +42,8 @@ public static class IServiceExtensionCollection
             
             // Add consumers
             busAction?.Invoke(x);
-            
-            x.AddSagaStateMachine<OrderStateMachine, OrderState, OrderStateDefinition>()
-                .EntityFrameworkRepository(r =>
-                {
-                    r.ExistingDbContext<OutboxMessageDbContext>();
-                    r.UseSqlServer();
-                });
+
+            sagaAction?.Invoke(x);
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -64,8 +57,6 @@ public static class IServiceExtensionCollection
 
     public static IServiceCollection AddMessageOutbox(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IMessageService, MessageService>();
-        
         services
             .AddMessageDbContext(configuration)
             .AddMassTransit(configuration);

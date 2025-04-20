@@ -1,12 +1,22 @@
+using EventBus.Messages;
+using Platform;
+using ReportingGateway.Api.Extensions;
+using ReportingGateway.Application;
+using ReportingGateway.Domain;
+using ReportingGateway.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services
+    .AddPlatformCommonServices()
+    .AddDependencyApplication()
+    .AddDependencyDomain()
+    .AddEventBusServices()
+    .AddDependencyInfrastructure(builder.Configuration)
+    .AddThirdParties(builder.Configuration);
 
 var app = builder.Build();
 
@@ -16,6 +26,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapControllers();
 
 app.UseHttpsRedirection();
 

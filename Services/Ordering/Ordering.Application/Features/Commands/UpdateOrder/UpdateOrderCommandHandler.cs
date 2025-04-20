@@ -8,7 +8,7 @@ using Platform.Database.Helpers;
 
 namespace Ordering.Application.Features.Commands.UpdateOrder;
 
-public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand>
+public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Unit>
 {
     private readonly IRepository<Order> _orderRepository;
     private readonly IMapper _mapper;

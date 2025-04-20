@@ -1,4 +1,4 @@
-namespace Catalog.API.Common;
+namespace Platform.Database.MongoDb;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class BsonCollectionAttribute : Attribute

@@ -1,9 +1,6 @@
 using ApiClient;
 using Catalog.API.Common.Extensions;
 using Catalog.API.Extensions.AppBuilder;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using OpenTelemetryFramework;
 using Platform;
 using Worker;

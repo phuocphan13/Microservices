@@ -1,5 +1,5 @@
 using Catalog.API.Entities;
-using Catalog.API.Repositories;
+using Platform.Database.MongoDb;
 
 namespace Catalog.API.Services.Caches.Filters;
 

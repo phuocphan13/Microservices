@@ -3,9 +3,8 @@ using ApiClient.Common.Models.Paging;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Models;
-using Catalog.API.Repositories;
 using Catalog.API.Services.Caches;
-using System.Collections.Generic;
+using Platform.Database.MongoDb;
 using SubCategory = Catalog.API.Entities.SubCategory;
 
 namespace Catalog.API.Services;

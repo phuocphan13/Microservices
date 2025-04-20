@@ -2,7 +2,7 @@
 using ApiClient.Catalog.Models.Catalog.Category;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
-using Catalog.API.Repositories;
+using Platform.Database.MongoDb;
 
 namespace Catalog.API.Services;
 

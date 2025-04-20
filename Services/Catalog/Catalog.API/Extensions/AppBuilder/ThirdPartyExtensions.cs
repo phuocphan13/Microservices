@@ -1,7 +1,9 @@
 using Catalog.API.Consumers;
 using Discount.Grpc.Protos;
 using EventBus.Messages;
+using EventBus.Messages.Entities;
 using EventBus.Messages.Extensions;
+using EventBus.Messages.StateMachine.Basket;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Platform.Extensions;
@@ -21,6 +23,14 @@ public static class ThirdPartyExtensions
         services.AddMessageOutboxCosumer(configuration, busAction: x =>
         {
             x.AddConsumer<ProductBalanceUpdateConsumer>();
+        }, sagaAction: x =>
+        {
+            x.AddSagaStateMachine<OrderStateMachine, OrderState, OrderStateDefinition>()
+                .EntityFrameworkRepository(r =>
+                {
+                    r.ExistingDbContext<OutboxMessageDbContext>();
+                    r.UseSqlServer();
+                });
         });
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

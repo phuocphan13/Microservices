@@ -1,5 +1,7 @@
 using EventBus.Messages;
+using EventBus.Messages.Entities;
 using EventBus.Messages.Extensions;
+using EventBus.Messages.StateMachine.Basket;
 using Logging.Consumers;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -24,6 +26,14 @@ public static class ThirdPartyExtensions
         services.AddMessageOutboxCosumer(configuration, busAction: x =>
         {
             x.AddConsumer<SaveLogConsumer>();
+        }, sagaAction: x =>
+        {
+            x.AddSagaStateMachine<OrderStateMachine, OrderState, OrderStateDefinition>()
+                .EntityFrameworkRepository(r =>
+                {
+                    r.ExistingDbContext<OutboxMessageDbContext>();
+                    r.UseSqlServer();
+                });
         });
 
         services.AddElasticServices();

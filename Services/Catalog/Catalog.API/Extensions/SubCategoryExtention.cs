@@ -1,5 +1,4 @@
-﻿using ApiClient.Catalog.Product.Models;
-using ApiClient.Catalog.SubCategory.Models;
+﻿using ApiClient.Catalog.SubCategory.Models;
 using Catalog.API.Models;
 using SubCategory = Catalog.API.Entities.SubCategory;
 

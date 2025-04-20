@@ -1,8 +1,8 @@
 using ApiClient.Catalog.ProductHistory.Models;
 using Catalog.API.Entities;
-using Catalog.API.Repositories;
 using Catalog.API.Services.Caches;
 using Platform.Common.Session;
+using Platform.Database.MongoDb;
 
 namespace Catalog.API.Services;
 

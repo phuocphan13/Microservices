@@ -2,8 +2,8 @@ using ApiClient.Common.Models.Paging;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Models;
-using Catalog.API.Repositories;
 using Catalog.API.Services.Caches.Filters;
+using Platform.Database.MongoDb;
 using Platform.Database.Redis;
 
 namespace Catalog.API.Services.Caches;

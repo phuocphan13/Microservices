@@ -10,4 +10,8 @@
       <ProjectReference Include="..\ReportingGateway.Domain\ReportingGateway.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Interfaces\" />
+    </ItemGroup>
+
 </Project>

@@ -1,5 +1,7 @@
 using EventBus.Messages;
+using EventBus.Messages.Entities;
 using EventBus.Messages.Extensions;
+using EventBus.Messages.StateMachine.Basket;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Ordering.API.EventBusConsumer;
@@ -25,6 +27,14 @@ public static class ThirdPartyExtensions
         {
             x.AddConsumer<BasketCheckoutConsumer>();
             x.AddConsumer<FailureOrderConsumer>();
+        }, sagaAction: x =>
+        {
+            x.AddSagaStateMachine<OrderStateMachine, OrderState, OrderStateDefinition>()
+                .EntityFrameworkRepository(r =>
+                {
+                    r.ExistingDbContext<OutboxMessageDbContext>();
+                    r.UseSqlServer();
+                });
         });
         
         //Workers

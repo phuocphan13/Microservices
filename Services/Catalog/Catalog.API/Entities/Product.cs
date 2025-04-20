@@ -1,6 +1,7 @@
-﻿using Catalog.API.Common;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson.Serialization.Attributes;
 using Platform.Constants;
+using Platform.Database.Entity.MongoDb;
+using Platform.Database.MongoDb;
 
 namespace Catalog.API.Entities;
 

@@ -1,4 +1,4 @@
-namespace Catalog.API.Common.Extensions;
+namespace Platform.Database.MongoDb;
 
 public static class DatabaseExtensions
 {

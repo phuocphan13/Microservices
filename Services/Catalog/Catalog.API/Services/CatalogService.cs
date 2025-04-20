@@ -1,6 +1,6 @@
 using Catalog.API.Entities;
-using Catalog.API.Repositories;
 using Platform.ApiBuilder;
+using Platform.Database.MongoDb;
 
 namespace Catalog.API.Services;
 

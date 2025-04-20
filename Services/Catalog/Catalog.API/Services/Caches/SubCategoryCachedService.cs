@@ -1,8 +1,9 @@
-﻿using Catalog.API.Repositories;
-using Platform.Database.Redis;
+﻿using Platform.Database.Redis;
 using Catalog.API.Models;
-using Catalog.API.Extensions;
 using ApiClient.Common.Models.Paging;
+using Catalog.API.Extensions;
+using Platform.Database.MongoDb;
+
 namespace Catalog.API.Services.Caches;
 
 public interface ISubCategoryCachedService
