@@ -9,7 +9,7 @@ public class DiscountItem : BaseIdEntity
 
     [MaxLength(256)]
     public string CatalogCode { get; set; } = null!;
-
+    
     public decimal Amount { get; set; }
 
     public int OrderId { get; set; }

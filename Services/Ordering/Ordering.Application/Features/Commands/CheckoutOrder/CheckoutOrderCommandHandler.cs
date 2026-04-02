@@ -63,7 +63,7 @@ public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand,
         }
         catch (Exception)
         {
-            await _queueService.SendFanoutMessageAsync(new FailureOrderMessage()
+            await _queueService.SendMessageAsync(new FailureOrderMessage()
             {
                 ReceiptNumber = orderEntity.ReceiptNumber,
                 UserId = request.UserId,
@@ -73,7 +73,7 @@ public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand,
 
         if (result)
         {
-            await _queueService.SendFanoutMessageAsync(new ProductBalanceUpdateMessage()
+            await _queueService.SendMessageAsync(new ProductBalanceUpdateMessage()
             {
                 ReceiptNumber = orderEntity.ReceiptNumber,
                 UserId = request.UserId,

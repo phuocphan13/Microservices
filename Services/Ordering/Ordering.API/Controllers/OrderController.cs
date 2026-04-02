@@ -65,14 +65,14 @@ public class OrderController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Test([FromQuery] string key, CancellationToken cancellationToken)
     {
-        await _queueService.SendFanoutMessageAsync(new ProductBalanceUpdateMessage()
-        {
-            ReceiptNumber = key,
-            UserId = "test",
-            UserName = "test",
-            MemberId = "test",
-            EventId = "test"
-        }, cancellationToken);
+        // await _queueService.SendFanoutMessageAsync(new ProductBalanceUpdateMessage()
+        // {
+        //     ReceiptNumber = key,
+        //     UserId = "test",
+        //     UserName = "test",
+        //     MemberId = "test",
+        //     EventId = "test"
+        // }, cancellationToken);
 
         return Ok();
     }

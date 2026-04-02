@@ -33,11 +33,11 @@ public class Order : EntityBase
     [MaxLength(256)]
     public string? Description { get; set; }
 
-    public List<OrderItem> OrderItems { get; set; } = new();
+    public List<OrderItem>? OrderItems { get; set; } = [];
 
-    public List<DiscountItem> Discounts { get; set; } = new();
+    public List<DiscountItem>? Discounts { get; set; } = [ ];
 
-    public List<CouponItem> Coupons { get; set; } = new();
+    public List<CouponItem>? Coupons { get; set; } = [ ];
 
-    public List<OrderHistory> OrderHistories { get; set; } = new();
+    public List<OrderHistory>? OrderHistories { get; set; } = [ ];
 }

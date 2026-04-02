@@ -48,6 +48,6 @@ if (isRebuildSchema)
     });
 }
 
-await app.InitializeWorkerDbContextsAsync(isRebuildWorkerSchema);
+// await app.InitializeWorkerDbContextsAsync(isRebuildWorkerSchema);
 
 app.Run();

@@ -18,7 +18,7 @@ public class GetOrdersListQueryHandler : IRequestHandler<GetOrdersListQuery, Lis
 
     public async Task<List<OrdersVm>> Handle(GetOrdersListQuery request, CancellationToken cancellationToken)
     {
-        var orderList = await _orderRepository.GetAllListAsync(x => x.UserId == request.UserId, cancellationToken);
+        var orderList = await _orderRepository.GetAllListAsync(x => x.UserName == request.UserName, cancellationToken);
 
         var orderVmList = _mapper.Map<List<OrdersVm>>(orderList);
 

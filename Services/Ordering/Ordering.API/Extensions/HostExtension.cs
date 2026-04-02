@@ -41,6 +41,7 @@ public static class HostExtensions
     {
         if (context is not null)
         {
+            context.Database.EnsureDeleted();
             context.Database.Migrate();
             seeder(context, services);
         }

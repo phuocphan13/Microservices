@@ -23,27 +23,14 @@ public static class IServiceExtensionCollection
         return services;
     }
 
-    public static IServiceCollection AddMessageOutboxCosumer(this IServiceCollection services, IConfiguration configuration, Action<IBusRegistrationConfigurator>? busAction = null, Action<IBusRegistrationConfigurator>? sagaAction = null)
+    public static IServiceCollection AddMessageOutboxCosumer(this IServiceCollection services, IConfiguration configuration, Action<IBusRegistrationConfigurator>? busAction = null)
     {
-        services.AddMessageDbContext(configuration);
-        
         services.AddMassTransit(x =>
         {
-            x.AddEntityFrameworkOutbox<OutboxMessageDbContext>(o =>
-            {
-                o.QueryDelay = TimeSpan.FromSeconds(30);
-                o.DuplicateDetectionWindow = TimeSpan.FromSeconds(30);
-                o.UseSqlServer();
-                o.DisableInboxCleanupService();
-                o.UseBusOutbox();
-            });
-
             x.SetKebabCaseEndpointNameFormatter();
             
             // Add consumers
             busAction?.Invoke(x);
-
-            sagaAction?.Invoke(x);
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -64,18 +51,18 @@ public static class IServiceExtensionCollection
         return services;
     }
 
-    private static IServiceCollection AddMassTransit(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMassTransit(x =>
         {
-            x.AddEntityFrameworkOutbox<OutboxMessageDbContext>(o =>
-            {
-                o.QueryDelay = TimeSpan.FromSeconds(30);
-
-                o.UseSqlServer();
-                o.DisableInboxCleanupService();
-                o.UseBusOutbox();
-            });
+            // x.AddEntityFrameworkOutbox<OutboxMessageDbContext>(o =>
+            // {
+            //     o.QueryDelay = TimeSpan.FromSeconds(30);
+            //
+            //     o.UseSqlServer();
+            //     o.DisableInboxCleanupService();
+            //     o.UseBusOutbox();
+            // });
 
             x.UsingRabbitMq((_, cfg) =>
             {

@@ -1,34 +1,23 @@
-version: '3.5'
-
 services:
   catalogdb:
-    image: mongo
-    
-  reportinggatewaydb:
     image: mongo
 
   basketdb:
     image: redis
     
-  sagadb:
-    image: redis
+#  sagadb:
+#    image: redis
   
   catalog_cache:
     image: redis
     
   discountdb:
-    image: postgres
-    
-  loggingdb:
-    image: mysql:latest
+    image: postgres:14.22-trixie
 
   orderdb:
     image: mcr.microsoft.com/mssql/server:2017-latest
     
   authendb:
-    image: mcr.microsoft.com/mssql/server:2017-latest
-  
-  rabbitmqdb:
     image: mcr.microsoft.com/mssql/server:2017-latest
     
   workerdb:
@@ -38,7 +27,7 @@ services:
     image: rabbitmq:3-management-alpine
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:snapshot
 
   portainer:
     image: portainer/portainer-ce
@@ -73,38 +62,38 @@ services:
       context: .
       dockerfile: Services/Ordering/Ordering.API/Dockerfile
 
-  ocelotapigw:
-    image: ${DOCKER_REGISTRY-}ocelotapigw
-    build:
-      context: .
-      dockerfile: ApiGateways/OcelotApiGw/Dockerfile
-
-  shopping.aggregator:
-    image: ${DOCKER_REGISTRY-}shoppingaggregator
-    build:
-      context: .
-      dockerfile: ApiGateways/Shopping.Aggregator/Dockerfile
-
   identityserver:
     image: ${DOCKER_REGISTRY-}identityserver
     build:
       context: .
       dockerfile: Identity/IdentityServer/Dockerfile
+
+#  ocelotapigw:
+#    image: ${DOCKER_REGISTRY-}ocelotapigw
+#    build:
+#      context: .
+#      dockerfile: ApiGateways/OcelotApiGw/Dockerfile
+
+#  shopping.aggregator:
+#    image: ${DOCKER_REGISTRY-}shoppingaggregator
+#    build:
+#      context: .
+#      dockerfile: ApiGateways/Shopping.Aggregator/Dockerfile
   
-  jaeger:
-    image: jaegertracing/all-in-one:1.49
-    
-  prometheus:
-    image: prom/prometheus:latest
-    
-  grafana:
-    image: grafana/grafana-oss:latest
-    
-  otel-collector:
-    image: otel/opentelemetry-collector-contrib-dev:latest
-    
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.2
+#  jaeger:
+#    image: jaegertracing/all-in-one:1.49
+#    
+#  prometheus:
+#    image: prom/prometheus:latest
+#    
+#  grafana:
+#    image: grafana/grafana-oss:latest
+#    
+#  otel-collector:
+#    image: otel/opentelemetry-collector-contrib-dev:latest
+#    
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.2
       
 volumes:
   mongo_data:

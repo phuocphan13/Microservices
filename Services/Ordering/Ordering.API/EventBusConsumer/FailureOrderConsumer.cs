@@ -33,13 +33,13 @@ public class FailureOrderConsumer : IConsumer<FailureOrderMessage>
 
         List<string> states = new() { OrderConstants.OrderState.Failed };
 
-        var checkState = await _basketMessageService.CheckBasketStateAsync(context.Message.ReceiptNumber, states, context.CancellationToken);
-
-        if (checkState == true)
-        {
-            _logger.LogInformation("FailureOrderEvent already consumed. CorrelationId: {UserId}", context.Message.UserId);
-            return;
-        }
+        // var checkState = await _basketMessageService.CheckBasketStateAsync(context.Message.ReceiptNumber, states, context.CancellationToken);
+        //
+        // if (checkState == true)
+        // {
+        //     _logger.LogInformation("FailureOrderEvent already consumed. CorrelationId: {UserId}", context.Message.UserId);
+        //     return;
+        // }
 
         var isValid = ValidateMessage(context.Message);
 

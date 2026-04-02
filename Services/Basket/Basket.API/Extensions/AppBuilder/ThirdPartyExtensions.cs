@@ -15,7 +15,7 @@ public static class ThirdPartyExtensions
 
         services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(x => x.Address = new Uri(configuration.GetConfigurationValue("GrpcSettings:DiscountUrl")));
 
-        services.AddMessageOutbox(configuration);
+        services.AddMassTransit(configuration);
         
         services.AddStackExchangeRedisCache(option =>
         {

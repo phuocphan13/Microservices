@@ -33,13 +33,13 @@ public class BasketCheckoutConsumer : IConsumer<BasketCheckoutMessage>
         
         List<string> states = [ OrderConstants.OrderState.Checkoutted, OrderConstants.OrderState.Accepted ];
         
-        var checkState = await _basketMessageService.CheckBasketStateAsync(context.Message.BasketKey, states, context.CancellationToken);
-
-        if (checkState == true)
-        {
-            _logger.LogInformation("BasketCheckoutEvent already consumed. CorrelationId: {UserId}", context.Message.UserId);
-            return;
-        }
+        // var checkState = await _basketMessageService.CheckBasketStateAsync(context.Message.BasketKey, states, context.CancellationToken);
+        //
+        // if (checkState == true)
+        // {
+        //     _logger.LogInformation("BasketCheckoutEvent already consumed. CorrelationId: {UserId}", context.Message.UserId);
+        //     return;
+        // }
 
         var isValid = ValidateMessage(context.Message);
 

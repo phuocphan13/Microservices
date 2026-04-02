@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddSwaggerGen();
 
 builder.Services
     .AddPlatformCommonServices()
@@ -15,8 +16,6 @@ builder.Services
     .AddCatalogInternalClient()
     .AddEventBusServices()
     .AddOptions(builder.Configuration);
-
-//builder.Services.AddMassTransitHostedService();
 
 var app = builder.Build();
 

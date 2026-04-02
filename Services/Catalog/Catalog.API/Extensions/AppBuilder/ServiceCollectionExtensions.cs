@@ -32,8 +32,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();
         
         // Worker Services
-        services.AddHostedService<ProductCachedWorkerService>();
-        services.AddHostedService<RefreshCacheWorkerService>();
+        // services.AddHostedService<ProductCachedWorkerService>();
+        // services.AddHostedService<RefreshCacheWorkerService>();
 
         return services;
     }

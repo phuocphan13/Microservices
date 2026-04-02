@@ -41,7 +41,8 @@ public class OrderContextSeed
                         Price = 20M,
                         Quantity = 2
                     }
-                }
+                },
+                
             }
         };
     }

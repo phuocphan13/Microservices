@@ -26,14 +26,6 @@ public static class ThirdPartyExtensions
         services.AddMessageOutboxCosumer(configuration, busAction: x =>
         {
             x.AddConsumer<SaveLogConsumer>();
-        }, sagaAction: x =>
-        {
-            x.AddSagaStateMachine<OrderStateMachine, OrderState, OrderStateDefinition>()
-                .EntityFrameworkRepository(r =>
-                {
-                    r.ExistingDbContext<OutboxMessageDbContext>();
-                    r.UseSqlServer();
-                });
         });
 
         services.AddElasticServices();

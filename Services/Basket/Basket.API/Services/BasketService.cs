@@ -52,7 +52,7 @@ public class BasketService : IBasketService
 
         try
         {
-            await _queueService.SendFanoutMessageAsync(eventMessage, cancellationToken);
+            await _queueService.SendMessageAsync(eventMessage, cancellationToken); 
         }
         catch
         {

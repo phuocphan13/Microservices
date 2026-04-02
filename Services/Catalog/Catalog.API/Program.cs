@@ -8,10 +8,6 @@ using Worker.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// builder.Services.AddHealthChecks();
-
-var isRebuildSchema = builder.Configuration.GetValue<bool>(Platform.Constants.DatabaseConst.ConnectionSetting.MongoDB.IsRebuildSchema);
-var isRebuildWorkerSchema = builder.Configuration.GetValue<bool>("Worker:IsRebuildSchema");
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -24,7 +20,7 @@ builder.Services
     .AddServiceDependency()
     .AddThirdParty(builder.Configuration)
     .AddRedisServices(builder.Configuration)
-    .AddWorkerServices(builder.Configuration)
+    // .AddWorkerServices(builder.Configuration)
     .AddOptions(builder.Configuration)
     .AddOpenTelemetryTracing(builder.Configuration)
     .AddOpenTelemetryMetrics(builder.Configuration);
@@ -51,9 +47,6 @@ if (app.Environment.IsDevelopment())
 // app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.MapControllers();
-
-await app.InitializePlatformDbContextsAsync(builder.Configuration, isRebuildSchema);
-await app.InitializeWorkerDbContextsAsync(isRebuildWorkerSchema);
 
 await app.RunAsync();
 

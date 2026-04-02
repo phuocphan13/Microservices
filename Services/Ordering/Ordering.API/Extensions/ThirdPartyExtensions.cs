@@ -27,18 +27,10 @@ public static class ThirdPartyExtensions
         {
             x.AddConsumer<BasketCheckoutConsumer>();
             x.AddConsumer<FailureOrderConsumer>();
-        }, sagaAction: x =>
-        {
-            x.AddSagaStateMachine<OrderStateMachine, OrderState, OrderStateDefinition>()
-                .EntityFrameworkRepository(r =>
-                {
-                    r.ExistingDbContext<OutboxMessageDbContext>();
-                    r.UseSqlServer();
-                });
         });
         
         //Workers
-        services.AddHostedService<OrderWokerJobService>();
+        // services.AddHostedService<OrderWokerJobService>();
         
         return services;
     }
