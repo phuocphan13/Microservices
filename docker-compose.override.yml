@@ -110,9 +110,11 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - "DatabaseSettings:MongoDb:ConnectionString=mongodb://catalogdb:27017"
       - "DatabaseSettings:MongoDb:DatabaseName=ProductDb"
-      - "DatabaseSettings:MongoDb:IsRebuildSchema=false"
+      - "DatabaseSettings:MongoDb:IsRebuildSchema=true"
       - "GrpcSettings:DiscountUrl=http://discount.grpc"
       - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+      - "CacheSettings:ConnectionString=catalog_cache:6379"
+      - "CacheSettings:DefaultDb=0"
 #      - ASPNETCORE_URLS=https://+:443
 #      - ASPNETCORE_Kestrel__Certificates__Default__Password=13Lucifer
 #      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx

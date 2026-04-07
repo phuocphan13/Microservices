@@ -1,18 +1,13 @@
 using ApiClient;
-using Catalog.API.Common.Extensions;
 using Catalog.API.Extensions.AppBuilder;
-using OpenTelemetryFramework;
 using Platform;
-using Worker;
-using Worker.Services;
+using CatalogExtension = Catalog.API.Common.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-
-builder.AddOpenTelemetryLogs();
 
 builder.Services
     .AddPlatformCommonServices()
@@ -21,9 +16,12 @@ builder.Services
     .AddThirdParty(builder.Configuration)
     .AddRedisServices(builder.Configuration)
     // .AddWorkerServices(builder.Configuration)
-    .AddOptions(builder.Configuration)
-    .AddOpenTelemetryTracing(builder.Configuration)
-    .AddOpenTelemetryMetrics(builder.Configuration);
+    .AddOptions(builder.Configuration);
+
+CatalogExtension.InitializeDB
+    .InitializePlatformDbContextsAsync(builder.Configuration)
+    .GetAwaiter()
+    .GetResult();
 
 //builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"C:\temp-keys\"))
 //    .UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration()

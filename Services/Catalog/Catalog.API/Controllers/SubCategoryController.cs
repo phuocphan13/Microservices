@@ -7,7 +7,7 @@ using Platform.ApiBuilder;
 namespace Catalog.API.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]/[action]")]
+[Route("api/v1/[controller]")]
 public class SubCategoryController : ApiController
 {
     private readonly ISubCategoryService _subCategoryService;
@@ -19,15 +19,10 @@ public class SubCategoryController : ApiController
         _categoryService = categoryService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult> GetPagingSubCategories([FromQuery] PagingInfo pagingInfo, CancellationToken cancellationToken)
+    [HttpGet("GetAllSubCategories")]
+    public async Task<IActionResult> GetSubCategories(CancellationToken cancellationToken)
     {
-        if (pagingInfo == null)
-        {
-            return BadRequest("Missing PagingInfo.");
-        }
-
-        var result = await _subCategoryService.GetPagingSubCategoriesAsync(pagingInfo, cancellationToken);
+        var result = await _subCategoryService.GetAllSubCategoriesAsync(cancellationToken);
 
         if (result == null)
         {
@@ -37,11 +32,15 @@ public class SubCategoryController : ApiController
         return Ok(result);
     }
 
-
     [HttpGet]
-    public async Task<IActionResult> GetSubCategories(CancellationToken cancellationToken)
+    public async Task<ActionResult> GetPagingSubCategories([FromQuery] PagingInfo pagingInfo, CancellationToken cancellationToken)
     {
-        var result = await _subCategoryService.GetSubCategoriesAsync(cancellationToken);
+        if (pagingInfo == null)
+        {
+            return BadRequest("Missing PagingInfo.");
+        }
+
+        var result = await _subCategoryService.GetPagingSubCategoriesAsync(pagingInfo, cancellationToken);
 
         if (result == null)
         {
@@ -143,7 +142,7 @@ public class SubCategoryController : ApiController
         }
 
         // Todo Trung: Check only by Name and Code instead if Sub-Catagory is already exist
-        var subCategories = await _subCategoryService.GetSubCategoriesAsync(cancellationToken);
+        var subCategories = await _subCategoryService.GetSubCategoriesFromCachedAsync(cancellationToken);
         
         foreach (var item in subCategories)
         {

@@ -1,6 +1,8 @@
-﻿using Platform.Database.Redis;
+﻿using ApiClient.Catalog.SubCategory.Models;
+using Platform.Database.Redis;
 using Catalog.API.Models;
 using ApiClient.Common.Models.Paging;
+using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Platform.Database.MongoDb;
 
@@ -22,12 +24,14 @@ public class SubCategoryCachedService : CommonCacheService, ISubCategoryCachedSe
     
     private const string _subCategoryKey = "SubCategory";
     
-    private readonly IRepository<Entities.SubCategory> _subCategoriesRepository;
+    private readonly IRepository<SubCategory> _subCategoriesRepository;
+    private readonly IRepository<Category> _categoriesRepository;
 
-    public SubCategoryCachedService(IRedisDbFactory redisCache, IRepository<Entities.SubCategory> subCategoriesRepository)
+    public SubCategoryCachedService(IRedisDbFactory redisCache, IRepository<SubCategory> subCategoriesRepository, IRepository<Category> categoriesRepository)
         : base(_subCategoryKey, redisCache)
     {
         _subCategoriesRepository = subCategoriesRepository;
+        _categoriesRepository = categoriesRepository;
     }
 
     public async Task RefreshCachedSubCategoriesAsync (CancellationToken cancellationToken)
@@ -95,6 +99,7 @@ public class SubCategoryCachedService : CommonCacheService, ISubCategoryCachedSe
 
         return subCategories;
     }
+    
     //hàm tìm theo 3 điều kiện
     // gọi tới 3 thằng trong common
     public async Task<SubCategoryCachedModel?> GetSubCategoryCachedBySearchAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
