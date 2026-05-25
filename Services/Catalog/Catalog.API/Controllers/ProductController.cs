@@ -1,8 +1,8 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ApiClient.Catalog.Product.Models;
 using ApiClient.Common.Models.Paging;
 using Catalog.API.Services;
+using Catalog.API.Services.Caches;
 using Platform.ApiBuilder;
 
 namespace Catalog.API.Controllers;
@@ -11,23 +11,22 @@ namespace Catalog.API.Controllers;
 [Route("api/v1/[controller]/[action]")]
 public class ProductController : ApiController
 {
+    private readonly IProductCachedService _productCachedService;
     private readonly IProductService _productService;
     private readonly ICategoryService _categoryService;
     private readonly ISubCategoryService _subCategoryService;
     private readonly ILogger<ProductController> _logger;
     
-    public ProductController(IProductService productService, ICategoryService categoryService, 
-        ISubCategoryService subCategoryService, ILogger<ProductController> logger) : base(logger)
+    public ProductController(IProductCachedService productCachedService, ILogger<ProductController> logger, IProductService productService, ICategoryService categoryService, ISubCategoryService subCategoryService) : base(logger)
     {
-        ArgumentNullException.ThrowIfNull(productService);
-        ArgumentNullException.ThrowIfNull(categoryService);
-        ArgumentNullException.ThrowIfNull(subCategoryService);
+        ArgumentNullException.ThrowIfNull(productCachedService);
         ArgumentNullException.ThrowIfNull(logger);
 
+        _productCachedService = productCachedService;
+        _logger = logger;
         _productService = productService;
         _categoryService = categoryService;
         _subCategoryService = subCategoryService;
-        _logger = logger;
     }
     
     [HttpGet]
@@ -38,7 +37,7 @@ public class ProductController : ApiController
             return BadRequest("Missing PagingInfo.");
         }
 
-        var result = await _productService.GetPagingProductsAsync(pagingInfo, cancellationToken);
+        var result = await _productCachedService.GetPagingProductsAsync(pagingInfo, cancellationToken);
 
         if (result is null)
         {
@@ -54,7 +53,7 @@ public class ProductController : ApiController
     //[Permission(PermissionConstants.Feature.CatalogApi.GetAllProducts)]
     public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
     {
-        var result = await _productService.GetProductsAsync(cancellationToken);
+        var result = await _productCachedService.GetCachedProductsAsync(cancellationToken);
 
         if (result is null)
         {
@@ -75,7 +74,7 @@ public class ProductController : ApiController
             return BadRequest("Missing Id.");
         }
 
-        var result = await _productService.GetProductByIdAsync(id, cancellationToken);
+        var result = await _productCachedService.GetCachedProductByIdAsync(id, cancellationToken);
 
         if (result is null)
         {
@@ -138,9 +137,9 @@ public class ProductController : ApiController
             return BadRequest("Name is not allowed null.");
         }
 
-        var isExsited = await _productService.CheckExistingAsync(requestBody.Name, PropertyName.Name, cancellationToken);
+        var isExisted = await _productService.CheckExistingAsync(requestBody.Name, PropertyName.Name, cancellationToken);
 
-        if (isExsited)
+        if (isExisted)
         {
             return BadRequest("Product name is existed.");
         }
@@ -175,9 +174,9 @@ public class ProductController : ApiController
             return BadRequest("Product Id is not allowed null.");
         }
 
-        var isExsited = await _productService.CheckExistingAsync(requestBody.Id, PropertyName.Id, cancellationToken);
+        var isExisted = await _productService.CheckExistingAsync(requestBody.Id, PropertyName.Id, cancellationToken);
 
-        if (!isExsited)
+        if (!isExisted)
         {
             return BadRequest("Product is not existed.");
         }
@@ -220,9 +219,9 @@ public class ProductController : ApiController
             return "Category Id is not allowed null.";
         }
         
-        var category = await _categoryService.GetCategoryBySeachAsync(requestBody.CategoryId, PropertyName.Id, cancellationToken);
+        var category = await _categoryService.CheckExistingAsync(requestBody.CategoryId, PropertyName.Id, cancellationToken);
 
-        if (category is null)
+        if (!category)
         {
             return "Category is not existed.";
         }
@@ -241,36 +240,4 @@ public class ProductController : ApiController
 
         return string.Empty;
     }
-
-    [HttpGet]
-    public async Task<IActionResult> Test(CancellationToken cancellationToken)
-    {
-        var client = new HttpClient();
-        var jsonContent =
-            """
-            
-                    {
-                        "query": {
-                            "match_all": {}
-                        }
-                    }
-            """;
-
-        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
-        // string url = "http://192.168.2.11:9200/logs-otel/_search?pretty";
-        string url = "http://127.0.0.1:9200/_cat/indices?v";
-
-        var response = await client.GetAsync(url, cancellationToken);
-
-        var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
-
-        return Ok(responseString);
-    }
-}
-
-public static partial class Log
-{
-    [LoggerMessage(LogLevel.Information, "Get Product Success Luficer")]
-    public static partial void GetProducts(this ILogger logger);
 }

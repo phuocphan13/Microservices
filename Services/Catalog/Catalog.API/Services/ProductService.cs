@@ -3,8 +3,6 @@ using ApiClient.Catalog.ProductHistory.Models;
 using ApiClient.Common.Models.Paging;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
-using Catalog.API.Models;
-using Catalog.API.Services.Caches;
 using Catalog.API.Services.Grpc;
 using Platform.Database.MongoDb;
 
@@ -22,6 +20,7 @@ public interface IProductService
     Task<ProductDetail?> UpdateProductAsync(UpdateProductRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<bool> DeleteProductAsync(string id, CancellationToken cancellationToken = default);
     Task<bool> ReduceProductBalanceAsync(List<ReduceProductBalanceRequestBody> requestBodies, CancellationToken cancellationToken = default);
+    Task<List<ProductDetail>> GetProductDetailsAsync(CancellationToken cancellationToken = default);
 }
 
 public class ProductService : IProductService
@@ -30,18 +29,16 @@ public class ProductService : IProductService
     private readonly IRepository<Category> _categoryRepository;
     private readonly IRepository<SubCategory> _subCategoryRepository;
     private readonly IDiscountGrpcService _discountGrpcService;
-    private readonly IProductCachedService _productCachedService;
     private readonly IProductHistoryService _productHistoryService;
 
     public ProductService(
         IRepository<Product> productRepository, IRepository<Category> categoryRepository, IRepository<SubCategory> subCategoryRepository,
-        IDiscountGrpcService discountGrpcService, IProductCachedService productCachedService, IProductHistoryService productHistoryService)
+        IDiscountGrpcService discountGrpcService, IProductHistoryService productHistoryService)
     {
         _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
         _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
         _subCategoryRepository = subCategoryRepository ?? throw new ArgumentNullException(nameof(subCategoryRepository));
         _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
-        _productCachedService = productCachedService ?? throw new ArgumentNullException(nameof(productCachedService));
         _productHistoryService = productHistoryService ?? throw new ArgumentNullException(nameof(productHistoryService));
     }
 
@@ -96,7 +93,7 @@ public class ProductService : IProductService
 
     public async Task<PagingCollection<ProductSummary>> GetPagingProductsAsync(PagingInfo pagingInfo, CancellationToken cancellationToken)
     {
-        var entities = await _productCachedService.GetPagingProductsAsync(pagingInfo, cancellationToken);
+        var entities = await _productRepository.GetEntitiesPagingAsync(pagingInfo.Start, pagingInfo.Length, cancellationToken);
 
         var summaries = await GetProductSummariesInternalAsync(entities, cancellationToken);
 
@@ -105,11 +102,20 @@ public class ProductService : IProductService
 
     public async Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken)
     {
-        var entities = await _productCachedService.GetCachedProductsAsync(cancellationToken);
+        var entities = await _productRepository.GetEntitiesAsync(cancellationToken);
 
         var summaries = await GetProductSummariesInternalAsync(entities, cancellationToken);
 
         return summaries;
+    }
+
+    public async Task<List<ProductDetail>> GetProductDetailsAsync(CancellationToken cancellationToken)
+    {
+        var entities = await _productRepository.GetEntitiesAsync(cancellationToken);
+
+        var details = await MappingProductDetailsInternalAsync(entities, cancellationToken);
+
+        return details;
     }
 
     public async Task<List<ProductSummary>> GetProductsByCategoryAsync(string category, CancellationToken cancellationToken)
@@ -118,33 +124,33 @@ public class ProductService : IProductService
 
         if (categoryEntity is not null)
         {
-            var entities = await _productCachedService.QueryCachedProductsAsync(x => x.CategoryId == categoryEntity.Id, cancellationToken);
+            var entities = await _productRepository.GetEntitiesQueryAsync(x => x.CategoryId == categoryEntity.Id, cancellationToken);
             
             return await GetProductSummariesInternalAsync(entities, cancellationToken);
         }
 
-        return new List<ProductSummary>();
+        return [ ];
     }
 
     public async Task<ProductDetail?> GetProductByIdAsync(string id, CancellationToken cancellationToken)
     {
-        var entity = await _productCachedService.GetCachedProductByIdAsync(id, cancellationToken);
+        var entity = await _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (entity is null)
         {
             return null;
         }
         
-        var product = await MappingProductDetailInternalAsync(entity, cancellationToken);
+        var product = await MappingProductDetailInternalAsync(entity.ToDetail(), cancellationToken);
         
         return product;
     }
 
     public async Task<List<ProductSummary>?> GetProductsByListCodesAsync(List<string> codes, CancellationToken cancellationToken)
     {
-        var entities = await _productCachedService.QueryCachedProductsAsync(x => codes.Contains(x.Code), cancellationToken);
+        var entities = await _productRepository.GetEntitiesQueryAsync(x => !string.IsNullOrWhiteSpace(x.ProductCode) && codes.Contains(x.ProductCode), cancellationToken);
 
-        if (entities is null || !entities.Any())
+        if (entities is null || entities.Count == 0)
         {
             return null;
         }
@@ -165,7 +171,7 @@ public class ProductService : IProductService
             return null;
         }
 
-        var result = await MappingProductDetailInternalAsync(product.ToCachedModel(), cancellationToken);
+        var result = await MappingProductDetailInternalAsync(product.ToDetail(), cancellationToken);
         return result;
     }
 
@@ -182,7 +188,7 @@ public class ProductService : IProductService
             return null;
         }
 
-        var result = await MappingProductDetailInternalAsync(entity.ToCachedModel(), cancellationToken);
+        var result = await MappingProductDetailInternalAsync(entity.ToDetail(), cancellationToken);
         
         return result;
     }
@@ -203,15 +209,15 @@ public class ProductService : IProductService
     }
 
     #region Internal Functions
-    private async Task<List<ProductSummary>> GetProductSummariesInternalAsync(IEnumerable<ProductCachedModel>? entities, CancellationToken cancellationToken)
+    private async Task<List<ProductSummary>> GetProductSummariesInternalAsync(IEnumerable<Product>? entities, CancellationToken cancellationToken)
     {
         if (entities is null)
         {
-            return new List<ProductSummary>();
+            return [ ];
         }
         
-        var categoryIds = entities.Select(x => x.CategoryId);
-        var subCategoryIds = entities.Select(x => x.SubCategoryId);
+        var categoryIds = entities.Select(x => x.CategoryId).Distinct();
+        var subCategoryIds = entities.Select(x => x.SubCategoryId).Distinct();
 
         var categories = await _categoryRepository.GetEntitiesQueryAsync(x => categoryIds.Contains(x.Id), cancellationToken);
         var subCategories = await _subCategoryRepository.GetEntitiesQueryAsync(x => subCategoryIds.Contains(x.Id), cancellationToken);
@@ -224,30 +230,55 @@ public class ProductService : IProductService
         {
             var cate = categories.FirstOrDefault(x => x.Id == entity.CategoryId)?.Name;
             var subCate = subCategories.FirstOrDefault(x => x.Id == entity.SubCategoryId)?.Name;
-            var discount = discounts?.FirstOrDefault(x => x.CatalogCode == entity.Code);
+            
+            var discount = discounts?.FirstOrDefault(x => x.CatalogCode == entity.ProductCode);
 
             if (discount is not null)
             {
                 entity.Price -= discount.Amount;
             }
 
-            summaries.Add(entity.ToSummaryFromCachedModel(cate, subCate));
+            summaries.Add(entity.ToSummary(cate, subCate));
         }
 
         return summaries;
     }
 
-    private async Task<ProductDetail> MappingProductDetailInternalAsync(ProductCachedModel entity, CancellationToken cancellationToken)
+    private async Task<List<ProductDetail>> MappingProductDetailsInternalAsync(List<Product> entities, CancellationToken cancellationToken)
     {
-        var product = entity.ToDetailFromCachedModel();
+        var categoryIds = entities.Select(x => x.CategoryId).Distinct();
+        var subCategoryIds = entities.Select(x => x.SubCategoryId).Distinct();
+        
+        var categories = await _categoryRepository.GetEntitiesQueryAsync(x => categoryIds.Contains(x.Id), cancellationToken);
+        var subCategories = await _subCategoryRepository.GetEntitiesQueryAsync(x => subCategoryIds.Contains(x.Id), cancellationToken);
+        
+        var listDetails = new List<ProductDetail>();
 
-        var category = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == entity.CategoryId, cancellationToken);
-        var subCategory = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == entity.SubCategoryId, cancellationToken);
+        foreach (var entity in entities)
+        {
+            var detail = entity.ToDetail();
+            
+            var category = categories.FirstOrDefault(x => x.Id == entity.CategoryId);
+            var subCategory = subCategories.FirstOrDefault(x => x.Id == entity.SubCategoryId);
+            
+            detail.Category = category is null ? string.Empty : category.Name;
+            detail.SubCategory = subCategory is null ? string.Empty : subCategory.Name;
 
-        product.Category = category is null ? string.Empty : category.Name;
-        product.SubCategory = subCategory is null ? string.Empty : subCategory.Name;
+            listDetails.Add(detail);
+        }
 
-        return product;
+        return listDetails;
+    }
+
+    private async Task<ProductDetail> MappingProductDetailInternalAsync(ProductDetail detail, CancellationToken cancellationToken)
+    {
+        var category = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == detail.CategoryId, cancellationToken);
+        var subCategory = await _subCategoryRepository.GetEntityFirstOrDefaultAsync(x => x.Id == detail.SubCategoryId, cancellationToken);
+
+        detail.Category = category is null ? string.Empty : category.Name;
+        detail.SubCategory = subCategory is null ? string.Empty : subCategory.Name;
+
+        return detail;
     }
     #endregion
 }

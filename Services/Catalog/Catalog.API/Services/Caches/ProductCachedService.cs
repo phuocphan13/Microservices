@@ -1,20 +1,15 @@
+using ApiClient.Catalog.Product.Models;
 using ApiClient.Common.Models.Paging;
-using Catalog.API.Entities;
-using Catalog.API.Extensions;
-using Catalog.API.Models;
-using Catalog.API.Services.Caches.Filters;
-using Platform.Database.MongoDb;
 using Platform.Database.Redis;
 
 namespace Catalog.API.Services.Caches;
 
 public interface IProductCachedService
 {
-    Task<List<ProductCachedModel>> GetPagingProductsAsync(PagingInfo pagingInfo, CancellationToken cancellationToken = default);
-    Task<List<ProductCachedModel>?> QueryCachedProductsAsync(Func<ProductCachedModel, bool> predicate, CancellationToken cancellationToken = default);
-    Task<List<ProductCachedModel>?> GetCachedProductsAsync(CancellationToken cancellationToken = default);
-    Task<ProductCachedModel?> GetCachedProductByIdAsync(string id, CancellationToken cancellationToken = default);
-    Task<ProductCachedModel?> UpdateHasChangeProductAsync(string id, CancellationToken cancellationToken = default);
+    Task<List<ProductDetail>> GetPagingProductsAsync(PagingInfo pagingInfo, CancellationToken cancellationToken = default);
+    Task<List<ProductDetail>?> QueryCachedProductsAsync(Func<ProductDetail, bool> predicate, CancellationToken cancellationToken = default);
+    Task<List<ProductDetail>> GetCachedProductsAsync(CancellationToken cancellationToken = default);
+    Task<ProductDetail?> GetCachedProductByIdAsync(string id, CancellationToken cancellationToken = default);
     Task RefreshCachedProductsAsync(CancellationToken cancellationToken = default);
 }
 
@@ -22,42 +17,38 @@ public class ProductCachedService : CommonCacheService, IProductCachedService
 {
     private readonly SemaphoreSlim semaphore = new(1, 1);
     private const string _productKey = "Products";
-    private readonly IRepository<Product> _productRepository;
-    private readonly IProductCachedFilter _productCachedFilter;
+    private readonly IProductService _productService;
 
-    public ProductCachedService(IRedisDbFactory redisCache, IRepository<Product> productRepository, IProductCachedFilter productCachedFilter)
+    public ProductCachedService(IRedisDbFactory redisCache, IProductService productService)
        : base(_productKey, redisCache)
     {
-        _productRepository = productRepository;
-        _productCachedFilter = productCachedFilter;
+        _productService = productService;
     }
     
     public async Task RefreshCachedProductsAsync(CancellationToken cancellationToken)
     {
-        var products = await _productRepository.GetEntitiesAsync(cancellationToken);
+        var products = await _productService.GetProductDetailsAsync(cancellationToken);
         
-        var productCacheds = products.Select(x => x.ToCachedModel()).ToList();
-        
-        await SetAllItemsCacheAsync(productCacheds, cancellationToken);
+        await SetAllItemsCacheAsync(products, cancellationToken);
     }
     
-    public async Task<List<ProductCachedModel>> GetPagingProductsAsync(PagingInfo pagingInfo, CancellationToken cancellationToken)
+    public async Task<List<ProductDetail>> GetPagingProductsAsync(PagingInfo pagingInfo, CancellationToken cancellationToken)
     {
         var products = await GetCachedProductsAsync(cancellationToken);
 
         if (products is null)
         {
-            return new List<ProductCachedModel>();
+            return [ ];
         }
 
-        var pagingCollection = new List<ProductCachedModel>(products.Skip(pagingInfo.Start ?? 0).Take(pagingInfo.Length ?? 10));
+        var pagingCollection = new List<ProductDetail>(products.Skip(pagingInfo.Start ?? 0).Take(pagingInfo.Length ?? 10));
 
         return pagingCollection;
     }
     
-    public async Task<List<ProductCachedModel>?> QueryCachedProductsAsync(Func<ProductCachedModel, bool> predicate, CancellationToken cancellationToken)
+    public async Task<List<ProductDetail>?> QueryCachedProductsAsync(Func<ProductDetail, bool> predicate, CancellationToken cancellationToken)
     {
-        List<ProductCachedModel>? products = await GetCachedProductsAsync(cancellationToken);
+        List<ProductDetail>? products = await GetCachedProductsAsync(cancellationToken);
 
         if (products is null)
         {
@@ -67,11 +58,11 @@ public class ProductCachedService : CommonCacheService, IProductCachedService
         return products.Where(predicate).ToList();
     }
 
-    public async Task<List<ProductCachedModel>?> GetCachedProductsAsync(CancellationToken cancellationToken)
+    public async Task<List<ProductDetail>> GetCachedProductsAsync(CancellationToken cancellationToken)
     {
-        List<ProductCachedModel>? products = await GetAllItemAsync<ProductCachedModel>(cancellationToken);
+        List<ProductDetail>? products = await GetAllItemAsync<ProductDetail>(cancellationToken);
 
-        if (products is not null && products.Any() && _productCachedFilter.ProductIds.Count == products.Count)
+        if (products is not null && products.Count != 0)
         {
             return products;
         }
@@ -80,20 +71,18 @@ public class ProductCachedService : CommonCacheService, IProductCachedService
         
         try
         {
-            products = await GetAllItemAsync<ProductCachedModel>(cancellationToken);
+            products = await GetAllItemAsync<ProductDetail>(cancellationToken);
 
-            if (products is not null && products.Any() && _productCachedFilter.ProductIds.Count == products.Count)
+            if (products is not null && products.Count != 0)
             {
                 return products;
             }
 
-            products = new();
+            products = [ ];
             
-            var productEntities = await _productRepository.GetEntitiesAsync(cancellationToken);
+            var productEntities = await _productService.GetProductDetailsAsync(cancellationToken);
             
-            var productCacheds = productEntities.Select(x => x.ToCachedModel()).ToList();
-
-            await SetAllItemsCacheAsync(productCacheds, cancellationToken);
+            await SetAllItemsCacheAsync(productEntities, cancellationToken);
         }
         finally
         {
@@ -104,31 +93,31 @@ public class ProductCachedService : CommonCacheService, IProductCachedService
         return products;
     }
 
-    public async Task<ProductCachedModel?> GetCachedProductByIdAsync(string id, CancellationToken cancellationToken)
+    public async Task<ProductDetail?> GetCachedProductByIdAsync(string id, CancellationToken cancellationToken)
     {
-        var product = await GetItemCachedByIdAsync<ProductCachedModel>(id, cancellationToken);
+        var product = await GetItemCachedByIdAsync(id, cancellationToken);
 
-        if (product is null || product.HasChange)
+        if (product is null)
         {
             // 499 requests blocked
             await semaphore.WaitAsync(cancellationToken);
             try
             {
-                product = await GetItemCachedByIdAsync<ProductCachedModel>(id, cancellationToken);
+                product = await GetItemCachedByIdAsync(id, cancellationToken);
 
                 if (product is not null)
                 {
                     return product;
                 }
 
-                var entity = await _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+                var entity = await _productService.GetProductByIdAsync(id, cancellationToken);
 
                 if (entity is null)
                 {
                     return null;
                 }
 
-                product = await SetItemCacheAsync(entity.ToCachedModel(), cancellationToken); 
+                product = await SetItemCacheAsync(entity, cancellationToken); 
             }
             finally
             {
@@ -138,11 +127,18 @@ public class ProductCachedService : CommonCacheService, IProductCachedService
 
         return product;
     }
-
-    public async Task<ProductCachedModel?> UpdateHasChangeProductAsync(string id, CancellationToken cancellationToken)
+    
+    private async Task<ProductDetail?> GetItemCachedByIdAsync(string id, CancellationToken cancellationToken)
     {
-        var product = await UpdateHasChangeItemAsync<ProductCachedModel>(id, cancellationToken);
-        
-        return product;
+        var items = await GetAllItemAsync<ProductDetail>(cancellationToken);
+
+        if (items is null)
+        {
+            return null;
+        }
+
+        var item = items.FirstOrDefault(x => x.Id == id);
+
+        return item;
     }
 }

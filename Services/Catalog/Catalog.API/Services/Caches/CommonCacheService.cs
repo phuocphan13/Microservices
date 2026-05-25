@@ -25,43 +25,15 @@ public class CommonCacheService
         return await _redisCache.GetAsync<List<T>>(_key, cancellationToken);
     }
 
-    protected async Task<T?> GetItemCachedByIdAsync<T>(string id, CancellationToken cancellationToken)
-        where T: BaseCachedModel, new()
-    {
-        var items = await GetAllItemAsync<T>(cancellationToken);
-
-        return items?.FirstOrDefault(x => x.Id == id);
-    }
-
-    protected async Task<T?> GetItemCacheByNameAsync<T>(string name, CancellationToken cancellationToken) 
-        where T : BaseCachedModel, new()
-    {
-        var item = await GetAllItemAsync<T>(cancellationToken);
-
-        return item?.FirstOrDefault(x => x.Name == name);
-    }
-
-    //Search gần đúng like '%abc%'
-    protected async Task<List<T>?> GetItemCachedApproximateIdAsync<T>(string id, CancellationToken cancellationToken)
-        where T :BaseCachedModel, new()
-    {
-        var items = await GetAllItemAsync<T>(cancellationToken);
-
-        return items?.Where(x => x.Id.Contains(id)).ToList();
-    }
-
     protected async Task SetAllItemsCacheAsync<T>(List<T> items, CancellationToken cancellationToken)
-        where T : BaseCachedModel, new()
+        where T : class, new()
     {
-        await _redisCache.SetAsync(_key, items, null, cancellationToken);
+        await _redisCache.SetAsync(_key, items, TimeSpan.FromMinutes(5), cancellationToken);
     }
     
     protected async Task<T> SetItemCacheAsync<T>(T item, CancellationToken cancellationToken)
-        where T : BaseCachedModel, new()
+        where T : class, new()
     {
-        item.HasChange = false;
-        item.LastUpdated = DateTime.UtcNow;
-
         var items = await GetAllItemAsync<T>(cancellationToken);
 
         if (items is null || items.Count == 0)
@@ -70,34 +42,10 @@ public class CommonCacheService
         }
         else
         {
-            var cachedItem = items.FirstOrDefault(x => x.Id == item.Id);
-
-            if (cachedItem is not null)
-            {
-                items.Remove(cachedItem);
-            }
-
             items.Add(item);
         }
 
         await _redisCache.SetAsync(_key, items, null, cancellationToken);
-
-        return item;
-    }
-    
-    protected async Task<T?> UpdateHasChangeItemAsync<T>(string id, CancellationToken cancellationToken)
-        where T : BaseCachedModel, new()
-    {
-        var item = await GetItemCachedByIdAsync<T>(id, cancellationToken);
-
-        if (item is null)
-        {
-            return null;
-        }
-
-        item.HasChange = true;
-
-        await _redisCache.SetAsync(id, item, null, cancellationToken);
 
         return item;
     }

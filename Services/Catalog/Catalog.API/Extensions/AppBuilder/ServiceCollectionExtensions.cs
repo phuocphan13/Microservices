@@ -3,7 +3,6 @@ using Catalog.API.Services;
 using Catalog.API.Services.Caches;
 using Catalog.API.Services.Caches.Filters;
 using Catalog.API.Services.Grpc;
-using Catalog.API.Services.Workers;
 using Platform.Database.MongoDb;
 
 namespace Catalog.API.Extensions.AppBuilder;
@@ -24,16 +23,11 @@ public static class ServiceCollectionExtensions
 
         // Cached Services
         services.AddSingleton<IProductCachedService, ProductCachedService>();
-        services.AddSingleton<ISubCategoryCachedService, SubCategoryCachedService>();
 
         services.AddSingleton<IProductCachedFilter, ProductCachedFilter>();
         
         // Grpc
         services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();
-        
-        // Worker Services
-        // services.AddHostedService<ProductCachedWorkerService>();
-        // services.AddHostedService<RefreshCacheWorkerService>();
 
         return services;
     }

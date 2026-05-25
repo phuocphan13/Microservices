@@ -50,7 +50,7 @@ public class SubCategoryController : ApiController
         return Ok(result);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("GetSubCategoryById/{id}")]
     public async Task<IActionResult> GetSubCategoryById(string id, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -68,7 +68,7 @@ public class SubCategoryController : ApiController
         return Ok(result);
     }
 
-    [HttpGet("{name}")]
+    [HttpGet("GetSubCategoryByName/{name}")]
     public async Task<IActionResult> GetSubCategoryByName(string name, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -141,8 +141,7 @@ public class SubCategoryController : ApiController
             return BadRequest(validationMsg);
         }
 
-        // Todo Trung: Check only by Name and Code instead if Sub-Catagory is already exist
-        var subCategories = await _subCategoryService.GetSubCategoriesFromCachedAsync(cancellationToken);
+        var subCategories = await _subCategoryService.GetAllSubCategoriesAsync(cancellationToken);
         
         foreach (var item in subCategories)
         {
@@ -175,7 +174,7 @@ public class SubCategoryController : ApiController
         return Ok(result);
     }
 
-    [HttpGet("{categoryId}")]
+    [HttpGet("GetSubCategoriesByCategoryId/{categoryId}")]
     public async Task<IActionResult> GetSubCategoriesByCategoryId(string categoryId, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(categoryId))

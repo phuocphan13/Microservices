@@ -73,6 +73,8 @@ public class RedisDbFactory : IRedisDbFactory, IDisposable
         IRedisDb redisDb = await this.CreateAsync(
             cancellationToken);
 
+        expiry ??= TimeSpan.FromMinutes(5);
+
         return await redisDb.SetAsync(key, item, expiry);
     }
     

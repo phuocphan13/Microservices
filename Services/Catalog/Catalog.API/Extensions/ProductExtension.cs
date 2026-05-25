@@ -29,7 +29,8 @@ public static class ProductExtension
             Price = product.Price,
             Balance = product.Balance,
             Category = categoryName,
-            SubCategory = subCategoryName
+            SubCategory = subCategoryName,
+            Code = product.Code
             // Summary = product.Summary,
             // ImageFile = product.ImageFile,
         };

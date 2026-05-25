@@ -9,7 +9,7 @@ namespace Catalog.API.Services;
 public interface ICategoryService
 {
     Task<bool> CheckExistingAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
-    Task<CategoryDetail?> GetCategoryBySeachAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
+    Task<CategoryDetail?> GetCategoryBySearchAsync(string search, PropertyName propertyName, CancellationToken cancellationToken = default);
     Task<List<CategorySummary>> GetCategoriesAsync(CancellationToken cancellationToken = default);
     Task<CategoryDetail?> CreateCategoryAsync(CreateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
     Task<CategoryDetail?> UpdateCategoryAsync(UpdateCategoryRequestBody requestBody, CancellationToken cancellationToken = default);
@@ -44,7 +44,7 @@ public class CategoryService : ICategoryService
         return await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.CategoryCode == categoryCode || x.Name == categoryName, cancellationToken);
     }
 
-    public async Task<CategoryDetail?> GetCategoryBySeachAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
+    public async Task<CategoryDetail?> GetCategoryBySearchAsync(string search, PropertyName propertyName, CancellationToken cancellationToken)
     {
         Category? data = propertyName switch
         {
@@ -68,7 +68,7 @@ public class CategoryService : ICategoryService
 
         if (entities is null)
         {
-            return new();
+            return [ ];
         }
 
         return entities.Select(x => x.ToSummary()).ToList();

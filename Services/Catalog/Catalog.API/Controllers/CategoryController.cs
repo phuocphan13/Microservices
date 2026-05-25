@@ -39,7 +39,7 @@ public class CategoryController : ApiController
             return BadRequest("The Name field cannot be null");
         }
 
-        var result = await _categoryService.GetCategoryBySeachAsync(name, PropertyName.Name, cancellationToken);
+        var result = await _categoryService.GetCategoryBySearchAsync(name, PropertyName.Name, cancellationToken);
 
         if (result is null)
         {
@@ -57,7 +57,7 @@ public class CategoryController : ApiController
             return BadRequest("The Id filed cannot be null");
         }
 
-        var result = await _categoryService.GetCategoryBySeachAsync(id, PropertyName.Id, cancellationToken);
+        var result = await _categoryService.GetCategoryBySearchAsync(id, PropertyName.Id, cancellationToken);
 
         if (result is null)
         {
@@ -85,7 +85,7 @@ public class CategoryController : ApiController
             return BadRequest("Category Code is not allowed null.");
         }
 
-        var existingCategory = await _categoryService.GetCategoryByCodeOrNameAsync(requestBody.CategoryCode, requestBody.Name);
+        var existingCategory = await _categoryService.GetCategoryByCodeOrNameAsync(requestBody.CategoryCode, requestBody.Name, cancellationToken);
         if (existingCategory != null)
         {
             return Problem("Category code or name already exists.");

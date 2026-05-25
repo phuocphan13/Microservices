@@ -16,15 +16,13 @@ public class ProductHistoryService : IProductHistoryService
 {
     private readonly IRepository<ProductHistory> _productHistoryRepository;
     private readonly IRepository<Product> _productRepository;
-    private readonly IProductCachedService _productCachedService;
     private readonly ISessionState _sessionState;
 
     public ProductHistoryService(IRepository<ProductHistory> productHistoryRepository, IRepository<Product> productRepository, 
-        IProductCachedService productCachedService, ISessionState sessionState)
+        ISessionState sessionState)
     {
         _productHistoryRepository = productHistoryRepository;
         _productRepository = productRepository;
-        _productCachedService = productCachedService;
         _sessionState = sessionState;
     }
 
@@ -41,8 +39,6 @@ public class ProductHistoryService : IProductHistoryService
             };
             
             await _productHistoryRepository.CreateEntityAsync(productHistory, cancellationToken);
-
-            await _productCachedService.UpdateHasChangeProductAsync(body.Id, cancellationToken);
         }
 
         return true;
@@ -70,8 +66,6 @@ public class ProductHistoryService : IProductHistoryService
         };
 
         await _productHistoryRepository.CreateEntityAsync(productHistory, cancellationToken);
-
-        await _productCachedService.UpdateHasChangeProductAsync(requestBody.Id, cancellationToken);
 
         return true;
     }

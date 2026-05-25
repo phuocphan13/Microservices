@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using Platform.Constants;
 using Platform.Database.Entity.MongoDb;
-using StackExchange.Redis.KeyspaceIsolation;
 
 namespace Platform.Database.MongoDb;
 
@@ -20,6 +19,7 @@ public interface IRepository<TEntity>
     Task<bool> UpdateEntityAsync(TEntity product, CancellationToken cancellationToken = default);
     Task<bool> DeleteEntityAsync(string id, CancellationToken cancellationToken = default);
     Task UpdateEntitiesAsync(List<TEntity> products, CancellationToken cancellationToken = default);
+    Task<List<TEntity>> GetEntitiesPagingAsync(int? start, int? length, CancellationToken cancellationToken);
 }
 
 public class RepositoryBase<TEntity> : IRepository<TEntity>
@@ -27,10 +27,17 @@ public class RepositoryBase<TEntity> : IRepository<TEntity>
 {
     private readonly IMongoCollection<TEntity> _collection;
 
-    public RepositoryBase(IConfiguration configuration)
+    protected RepositoryBase(IConfiguration configuration)
     {
         var database = new MongoClient(configuration.GetValue<string>(DatabaseConst.ConnectionSetting.MongoDB.ConnectionString)).GetDatabase(configuration.GetValue<string>(DatabaseConst.ConnectionSetting.MongoDB.DatabaseName));
         _collection = database.GetCollection<TEntity>(DatabaseExtensions.GetCollectionName(typeof(TEntity)));
+    }
+
+    public async Task<List<TEntity>> GetEntitiesPagingAsync(int? start, int? length, CancellationToken cancellationToken)
+    {
+        var entities = await _collection.Find(x => true).Skip(start ?? 0).Limit(length ?? 10).ToListAsync(cancellationToken);
+
+        return entities;
     }
 
     public async Task<List<string>> GetEntityIdsAsync(CancellationToken cancellationToken)
