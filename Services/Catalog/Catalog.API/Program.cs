@@ -1,5 +1,6 @@
 using ApiClient;
 using Catalog.API.Extensions.AppBuilder;
+using OpenTelemetryFramework;
 using Platform;
 using CatalogExtension = Catalog.API.Common.Extensions;
 
@@ -29,6 +30,12 @@ CatalogExtension.InitializeDB
 //        EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
 //        ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
 //    });
+
+builder.Services
+    .AddSigNoz(builder.Configuration);
+
+builder
+    .AddSigNozLogging(builder.Configuration);
 
 var app = builder.Build();
 

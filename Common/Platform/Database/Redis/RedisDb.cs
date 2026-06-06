@@ -117,7 +117,9 @@ public sealed class RedisDb : IRedisDb
         RedisKey redisKey = new(key);
         RedisValue redisValue = new(data);
 
-        return this.database.StringSetAsync(redisKey, redisValue, expiry);
+        expiry ??= TimeSpan.FromMinutes(15);
+        Expiration expiration = new(expiry.Value);
+        return this.database.StringSetAsync(redisKey, redisValue, expiration);
     }
 
     public Task<bool> RemoveAsync(

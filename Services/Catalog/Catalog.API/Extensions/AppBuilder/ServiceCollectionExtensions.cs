@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProductHistoryService, ProductHistoryService>();
 
         // Cached Services
-        services.AddSingleton<IProductCachedService, ProductCachedService>();
+        services.AddScoped<IProductCachedService, ProductCachedService>();
 
         services.AddSingleton<IProductCachedFilter, ProductCachedFilter>();
         

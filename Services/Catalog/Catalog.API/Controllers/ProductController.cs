@@ -3,6 +3,8 @@ using ApiClient.Catalog.Product.Models;
 using ApiClient.Common.Models.Paging;
 using Catalog.API.Services;
 using Catalog.API.Services.Caches;
+using Core.Common.Constants;
+using IntegrationFramework.Authentication.Attributes;
 using Platform.ApiBuilder;
 
 namespace Catalog.API.Controllers;
@@ -50,7 +52,7 @@ public class ProductController : ApiController
     }
 
     [HttpGet]
-    //[Permission(PermissionConstants.Feature.CatalogApi.GetAllProducts)]
+    [Permission(PermissionConstants.Feature.CatalogApi.GetAllProducts)]
     public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
     {
         var result = await _productCachedService.GetCachedProductsAsync(cancellationToken);

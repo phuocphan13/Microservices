@@ -20,7 +20,7 @@
       ],
       "FileCacheOptions": {
         "TtlSeconds": 30
-      },
+      }
     },
     //Catalog API
     {

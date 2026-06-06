@@ -7,102 +7,151 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
-using OpenTelemetryFramework.Tracings;
-using Platform.Configurations;
-using Platform.Configurations.Options;
 
 namespace OpenTelemetryFramework;
 
 public static class IServiceExtensionCollection
 {
-    public static void AddOpenTelemetryLogs(this WebApplicationBuilder hostBuilder)
+    public static IServiceCollection AddSigNoz(this IServiceCollection services, IConfiguration configuration)
     {
-        var openTelemetryOptions = hostBuilder.Configuration.GetSection(OptionConstants.OpenTelemetry).Get<OpenTelemetryOptions>();
-
-        ArgumentNullException.ThrowIfNull(openTelemetryOptions);
-
-        var resourceBuilder = ResourceBuilder
-            .CreateDefault()
-            .AddService(openTelemetryOptions.ServiceName, serviceVersion: openTelemetryOptions.ServiceVersion);
-
-        hostBuilder.Logging.AddOpenTelemetry(logging =>
+        var serviceName = configuration["SigNoz:ServiceName"] ?? throw new ArgumentNullException("SigNoz:ServiceName");
+        
+        services.AddOpenTelemetry()
+            .ConfigureResource(resource =>
+                resource.AddService(serviceName: serviceName))
+            .WithTracing(tracing => tracing
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddSqlClientInstrumentation()
+                .AddOtlpExporter(otlpOptions =>
+                {
+                    var endpoint = configuration["SigNoz:Endpoint"] ?? throw new ArgumentNullException("SigNoz:Endpoint");
+                    otlpOptions.Endpoint = new Uri(endpoint); 
+    
+                    // otlpOptions.Protocol = OtlpExportProtocol.Grpc;
+                }))
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddRuntimeInstrumentation();
+            });
+    
+        return services;
+    }
+    
+    public static void AddSigNozLogging(this WebApplicationBuilder builder, IConfiguration configuration)
+    {
+        builder.Logging.ClearProviders(); 
+        builder.Logging.AddOpenTelemetry(logging =>
         {
+            var serviceName = configuration["SigNoz:ServiceName"] ?? throw new ArgumentNullException("SigNoz:ServiceName");
+            
+            logging.SetResourceBuilder(ResourceBuilder.CreateDefault()
+                .AddService(serviceName));
+    
             logging.IncludeFormattedMessage = true;
             logging.IncludeScopes = true;
             logging.ParseStateValues = true;
-
-            logging
-                .SetResourceBuilder(resourceBuilder)
-                .AddOtlpExporter(opt =>
-                {
-                    opt.Endpoint = new Uri(openTelemetryOptions.Endpoint);
-                    // opt.Protocol = OtlpExportProtocol.HttpProtobuf;
-                });
-        });
-    }
     
-    public static IServiceCollection AddOpenTelemetryTracing(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.Configure<OpenTelemetryOptions>(configuration.GetSection(OptionConstants.OpenTelemetry));
-        var openTelemetryOptions = configuration.GetSection(OptionConstants.OpenTelemetry).Get<OpenTelemetryOptions>();
-
-        ArgumentNullException.ThrowIfNull(openTelemetryOptions);
-
-        ActivitySourceProvider.Source = new System.Diagnostics.ActivitySource(openTelemetryOptions.ActivitySourceName);
-        
-        services.AddOpenTelemetry().WithTracing(tracing =>
-        {
-            tracing.AddSource(openTelemetryOptions.ActivitySourceName)
-                .AddSource(DiagnosticHeaders.DefaultListenerName)
-                .ConfigureResource(resource =>
-                {
-                    resource.AddService(openTelemetryOptions.ServiceName,
-                        serviceVersion: openTelemetryOptions.ServiceVersion);
-                });
-
-            tracing
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddEntityFrameworkCoreInstrumentation()
-                .AddOtlpExporter(otlpOptions =>
-                {
-                    otlpOptions.Endpoint = new Uri(openTelemetryOptions.Endpoint);
-                });
+            logging.AddOtlpExporter(otlpOptions =>
+            {
+                var endpoint = configuration["SigNoz:Endpoint"] ?? throw new ArgumentNullException("SigNoz:Endpoint");
+                otlpOptions.Endpoint = new Uri(endpoint); 
+                // otlpOptions.Protocol = OtlpExportProtocol.Grpc;
+            });
         });
-
-        return services;
-    }
-
-    public static IServiceCollection AddOpenTelemetryMetrics(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.Configure<OpenTelemetryOptions>(configuration.GetSection(OptionConstants.OpenTelemetry));
-        var openTelemetryOptions = configuration.GetSection(OptionConstants.OpenTelemetry).Get<OpenTelemetryOptions>();
-
-        ArgumentNullException.ThrowIfNull(openTelemetryOptions);
-
-        services.AddOpenTelemetry().WithMetrics(metric =>
-        {
-            metric.AddMeter(openTelemetryOptions.ServiceName);
-            metric.AddMeter("Microsft.AspNetCore.Hosting");
-            metric.AddMeter("Microsft.AspNetCore.Server.Kestrel");
-            metric.AddMeter("System.Net.Http");
-            metric
-                .AddRuntimeInstrumentation()
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation();
-            
-            metric
-                .AddOtlpExporter(otlpOptions =>
-                {
-                    otlpOptions.Endpoint = new Uri(openTelemetryOptions.Endpoint);
-                })
-                .ConfigureResource(resource =>
-                {
-                    resource.AddService(serviceName: openTelemetryOptions.ServiceName,
-                        serviceVersion: openTelemetryOptions.ServiceVersion);
-                });
-        });
-
-        return services;
-    }
+    } 
+    
+    // public static void AddOpenTelemetryLogs(this WebApplicationBuilder hostBuilder)
+    // {
+    //     var openTelemetryOptions = hostBuilder.Configuration.GetSection(OptionConstants.OpenTelemetry).Get<OpenTelemetryOptions>();
+    //
+    //     ArgumentNullException.ThrowIfNull(openTelemetryOptions);
+    //
+    //     var resourceBuilder = ResourceBuilder
+    //         .CreateDefault()
+    //         .AddService(openTelemetryOptions.ServiceName, serviceVersion: openTelemetryOptions.ServiceVersion);
+    //
+    //     hostBuilder.Logging.AddOpenTelemetry(logging =>
+    //     {
+    //         logging.IncludeFormattedMessage = true;
+    //         logging.IncludeScopes = true;
+    //         logging.ParseStateValues = true;
+    //
+    //         logging
+    //             .SetResourceBuilder(resourceBuilder)
+    //             .AddOtlpExporter(opt =>
+    //             {
+    //                 opt.Endpoint = new Uri(openTelemetryOptions.Endpoint);
+    //                 // opt.Protocol = OtlpExportProtocol.HttpProtobuf;
+    //             });
+    //     });
+    // }
+    //
+    // public static IServiceCollection AddOpenTelemetryTracing(this IServiceCollection services, IConfiguration configuration)
+    // {
+    //     services.Configure<OpenTelemetryOptions>(configuration.GetSection(OptionConstants.OpenTelemetry));
+    //     var openTelemetryOptions = configuration.GetSection(OptionConstants.OpenTelemetry).Get<OpenTelemetryOptions>();
+    //
+    //     ArgumentNullException.ThrowIfNull(openTelemetryOptions);
+    //
+    //     ActivitySourceProvider.Source = new System.Diagnostics.ActivitySource(openTelemetryOptions.ActivitySourceName);
+    //     
+    //     services.AddOpenTelemetry().WithTracing(tracing =>
+    //     {
+    //         tracing.AddSource(openTelemetryOptions.ActivitySourceName)
+    //             .AddSource(DiagnosticHeaders.DefaultListenerName)
+    //             .ConfigureResource(resource =>
+    //             {
+    //                 resource.AddService(openTelemetryOptions.ServiceName,
+    //                     serviceVersion: openTelemetryOptions.ServiceVersion);
+    //             });
+    //
+    //         tracing
+    //             .AddAspNetCoreInstrumentation()
+    //             .AddHttpClientInstrumentation()
+    //             .AddEntityFrameworkCoreInstrumentation()
+    //             .AddOtlpExporter(otlpOptions =>
+    //             {
+    //                 otlpOptions.Endpoint = new Uri(openTelemetryOptions.Endpoint);
+    //             });
+    //     });
+    //
+    //     return services;
+    // }
+    //
+    // public static IServiceCollection AddOpenTelemetryMetrics(this IServiceCollection services, IConfiguration configuration)
+    // {
+    //     services.Configure<OpenTelemetryOptions>(configuration.GetSection(OptionConstants.OpenTelemetry));
+    //     var openTelemetryOptions = configuration.GetSection(OptionConstants.OpenTelemetry).Get<OpenTelemetryOptions>();
+    //
+    //     ArgumentNullException.ThrowIfNull(openTelemetryOptions);
+    //
+    //     services.AddOpenTelemetry().WithMetrics(metric =>
+    //     {
+    //         metric.AddMeter(openTelemetryOptions.ServiceName);
+    //         metric.AddMeter("Microsft.AspNetCore.Hosting");
+    //         metric.AddMeter("Microsft.AspNetCore.Server.Kestrel");
+    //         metric.AddMeter("System.Net.Http");
+    //         metric
+    //             .AddRuntimeInstrumentation()
+    //             .AddAspNetCoreInstrumentation()
+    //             .AddHttpClientInstrumentation();
+    //         
+    //         metric
+    //             .AddOtlpExporter(otlpOptions =>
+    //             {
+    //                 otlpOptions.Endpoint = new Uri(openTelemetryOptions.Endpoint);
+    //             })
+    //             .ConfigureResource(resource =>
+    //             {
+    //                 resource.AddService(serviceName: openTelemetryOptions.ServiceName,
+    //                     serviceVersion: openTelemetryOptions.ServiceVersion);
+    //             });
+    //     });
+    //
+    //     return services;
+    // }
 }
