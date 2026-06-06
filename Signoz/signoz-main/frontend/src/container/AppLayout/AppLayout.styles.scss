@@ -1,0 +1,193 @@
+// Earlier we were having app-banner-container class
+// we change it to app-banner-wrapper as the adblocker was blocking the app-banner-container class
+// Keep an eye on What classnames are used in the codebase
+.app-banner-wrapper {
+	position: relative;
+	width: 100%;
+
+	.refresh-payment-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		margin-left: 4px;
+
+		.refresh-payment-status-btn-wrapper {
+			display: inline-block;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+}
+
+.app-layout {
+	position: relative;
+	height: 100%;
+	width: 100%;
+
+	&.isWorkspaceRestricted {
+		height: calc(100% - 48px);
+
+		// same styles as its either trial expired or payment failed
+		&.isTrialExpired {
+			height: calc(100% - 96px);
+		}
+
+		&.isPaymentFailed {
+			height: calc(100% - 96px);
+		}
+	}
+
+	&.isTrialExpired {
+		height: calc(100% - 48px);
+	}
+
+	&.isPaymentFailed {
+		height: calc(100% - 48px);
+	}
+
+	.app-content {
+		flex: 1;
+		min-width: 0; // allow shrinking below natural width when AI panel is open
+		z-index: 0;
+		background: var(--l1-background);
+
+		&.full-screen-content {
+			width: 100%;
+		}
+
+		.content-container {
+			position: relative;
+			margin: 0 1rem;
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+			width: 100%;
+		}
+	}
+}
+
+.chat-support-gateway {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	z-index: 1000;
+
+	.chat-support-gateway-btn {
+		max-width: 48px;
+		width: 48px;
+		max-height: 48px;
+		height: 48px;
+		padding: 12px;
+		border-radius: 50%;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		background-color: #f25733;
+		border: none;
+
+		&:hover {
+			color: white !important;
+			border-color: white !important;
+		}
+
+		.chat-support-gateway-btn-icon {
+			fill: white;
+		}
+	}
+}
+
+.add-credit-card-btn,
+.cancel-btn {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.highlight-text {
+	border-radius: 2px;
+	background: color-mix(in srgb, var(--primary-background) 10%, transparent);
+	padding-right: 4px;
+	font-family: 'Geist Mono';
+	color: var(--primary-foreground);
+}
+
+.add-credit-card-modal {
+	.ant-modal-footer {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.cancel-btn {
+		border-radius: 2px;
+		border: none;
+		background: var(--l1-background, #161922);
+		box-shadow: none;
+	}
+
+	.add-credit-card-btn {
+		box-shadow: none;
+	}
+}
+
+.trial-expiry-banner,
+.slow-api-warning-banner,
+.workspace-restricted-banner {
+	padding: 8px;
+	background-color: #f25733;
+	color: white;
+	text-align: center;
+}
+
+.slow-api-warning-banner {
+	background-color: var(--primary-background);
+
+	.dismiss-banner {
+		color: var(--primary-foreground);
+		float: right;
+		padding: 0 16px;
+
+		display: flex;
+		align-items: center;
+		gap: 4px;
+
+		&:hover {
+			color: var(--primary-foreground);
+		}
+	}
+}
+
+.payment-failed-banner {
+	padding: 8px;
+	background-color: var(--bg-sakura-500);
+	color: white;
+	text-align: center;
+}
+
+.upgrade-link {
+	padding: 0px;
+	padding-right: 4px;
+	display: inline !important;
+	color: white;
+	text-decoration: underline;
+	text-decoration-color: white;
+	text-decoration-thickness: 2px;
+	text-underline-offset: 2px;
+
+	&:hover {
+		color: white;
+		text-decoration: underline;
+		text-decoration-color: white;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 2px;
+	}
+}
+
+.workspace-restricted-banner,
+.trial-expiry-banner,
+.payment-failed-banner {
+	height: 48px;
+}

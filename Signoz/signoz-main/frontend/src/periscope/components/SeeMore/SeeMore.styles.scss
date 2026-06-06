@@ -1,0 +1,17 @@
+.see-more-button {
+	background: none;
+	padding: 2px;
+	font-size: 14px;
+	line-height: 18px;
+	letter-spacing: -0.005em;
+	color: var(--l2-foreground);
+	border: none;
+	cursor: pointer;
+}
+
+.see-more-popover-content {
+	display: flex;
+	gap: 6px;
+	flex-wrap: wrap;
+	width: 300px;
+}

@@ -1,0 +1,11 @@
+.top-nav-container {
+	padding: 8px;
+	border-bottom: 1px solid var(--l1-border);
+
+	display: flex;
+	align-items: center;
+	justify-content: end;
+	gap: 16px;
+
+	margin-bottom: 8px;
+}

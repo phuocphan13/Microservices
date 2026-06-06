@@ -1,0 +1,16 @@
+.steps-transition-results {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+
+	&__steps-selector {
+		display: flex;
+		justify-content: center;
+	}
+
+	&__results {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+}

@@ -1,0 +1,256 @@
+/* eslint-disable sonarjs/cognitive-complexity */
+import { QueryClient } from 'react-query';
+import getLocalStorageApi from 'api/browser/localstorage/get';
+import post from 'api/v2/sessions/rotate/post';
+import afterLogin from 'AppRoutes/utils';
+import axios, {
+	AxiosError,
+	AxiosResponse,
+	InternalAxiosRequestConfig,
+} from 'axios';
+import { ENVIRONMENT } from 'constants/env';
+import { Events } from 'constants/events';
+import { LOCALSTORAGE } from 'constants/localStorage';
+import { getBasePath } from 'utils/basePath';
+import { eventEmitter } from 'utils/getEventEmitter';
+import { getIsNoAuthMode } from 'utils/noAuthMode';
+
+import apiV1, { apiAlertManager, apiV2, apiV3, apiV4, apiV5 } from './apiV1';
+import { Logout } from './utils';
+
+const RESPONSE_TIMEOUT_THRESHOLD = 5000; // 5 seconds
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			refetchOnWindowFocus: false,
+			retry: false,
+		},
+	},
+});
+
+export const interceptorsResponse = (
+	value: AxiosResponse<any>,
+): Promise<AxiosResponse<any>> => {
+	if ((value.config as any)?.metadata) {
+		const duration =
+			new Date().getTime() - (value.config as any).metadata.startTime;
+
+		if (duration > RESPONSE_TIMEOUT_THRESHOLD && value.config.url !== '/event') {
+			eventEmitter.emit(Events.SLOW_API_WARNING, true, {
+				duration,
+				url: value.config.url,
+				threshold: RESPONSE_TIMEOUT_THRESHOLD,
+			});
+
+			console.warn(
+				`[API Warning] Request to ${value.config.url} took ${duration}ms`,
+			);
+		}
+	}
+
+	return Promise.resolve(value);
+};
+
+export const interceptorsRequestResponse = (
+	value: InternalAxiosRequestConfig,
+): InternalAxiosRequestConfig => {
+	// Attach metadata safely (not sent with the request)
+	Object.defineProperty(value, 'metadata', {
+		value: { startTime: new Date().getTime() },
+		enumerable: false, // Prevents it from being included in the request
+	});
+
+	const token = getLocalStorageApi(LOCALSTORAGE.AUTH_TOKEN) || '';
+
+	if (value && value.headers) {
+		value.headers.Authorization = token ? `Bearer ${token}` : '';
+	}
+
+	return value;
+};
+
+// Strips the leading '/' from path and joins with base — idempotent if already prefixed.
+// e.g. prependBase('/signoz/', '/api/v1/') → '/signoz/api/v1/'
+function prependBase(base: string, path: string): string {
+	return path.startsWith(base) ? path : base + path.slice(1);
+}
+
+// Prepends the runtime base path to outgoing requests so API calls work under
+// a URL prefix (e.g. /signoz/api/v1/…). No-op for root deployments and dev
+// (dev baseURL is a full http:// URL, not an absolute path).
+export const interceptorsRequestBasePath = (
+	value: InternalAxiosRequestConfig,
+): InternalAxiosRequestConfig => {
+	const basePath = getBasePath();
+	if (basePath === '/') {
+		return value;
+	}
+
+	if (value.baseURL?.startsWith('/')) {
+		// Production relative baseURL: '/api/v1/' → '/signoz/api/v1/'
+		value.baseURL = prependBase(basePath, value.baseURL);
+	} else if (value.baseURL?.startsWith('http')) {
+		// Dev absolute baseURL (VITE_FRONTEND_API_ENDPOINT): 'https://host/api/v1/' → 'https://host/signoz/api/v1/'
+		const url = new URL(value.baseURL);
+		url.pathname = prependBase(basePath, url.pathname);
+		value.baseURL = url.toString();
+	} else if (!value.baseURL && value.url?.startsWith('/')) {
+		// Orval-generated client (empty baseURL, path in url): '/api/signoz/v1/rules' → '/signoz/api/signoz/v1/rules'
+		value.url = prependBase(basePath, value.url);
+	}
+
+	return value;
+};
+
+export const interceptorRejected = async (
+	value: AxiosResponse<any>,
+): Promise<AxiosResponse<any>> => {
+	try {
+		if (axios.isAxiosError(value) && value.response) {
+			const { response } = value;
+
+			const isNoAuthMode = getIsNoAuthMode();
+
+			if (
+				!isNoAuthMode &&
+				response.status === 401 &&
+				// if the session rotate call or the create session errors out with 401 or the delete sessions call returns 401 then we do not retry!
+				response.config.url !== '/sessions/rotate' &&
+				response.config.url !== '/sessions/email_password' &&
+				!(
+					response.config.url === '/sessions' && response.config.method === 'delete'
+				) &&
+				response.config.url !== '/authz/check' &&
+				response.config.url !== '/api/v2/reset_password_tokens/verify'
+			) {
+				try {
+					const accessToken = getLocalStorageApi(LOCALSTORAGE.AUTH_TOKEN);
+					const refreshToken = getLocalStorageApi(LOCALSTORAGE.REFRESH_AUTH_TOKEN);
+					const response = await queryClient.fetchQuery({
+						queryFn: () => post({ refreshToken: refreshToken || '' }),
+						queryKey: ['/api/v2/sessions/rotate', accessToken, refreshToken],
+					});
+
+					afterLogin(response.data.accessToken, response.data.refreshToken, true);
+
+					try {
+						const reResponse = await axios({
+							...value.config,
+							headers: {
+								...value.config.headers,
+								Authorization: `Bearer ${response.data.accessToken}`,
+							},
+						});
+
+						return await Promise.resolve(reResponse);
+					} catch (error) {
+						if ((error as AxiosError)?.response?.status === 401) {
+							void Logout();
+						}
+					}
+				} catch (error) {
+					void Logout();
+				}
+			}
+
+			if (
+				!isNoAuthMode &&
+				response.status === 401 &&
+				response.config.url === '/sessions/rotate'
+			) {
+				void Logout();
+			}
+		}
+		return await Promise.reject(value);
+	} catch (error) {
+		return await Promise.reject(error);
+	}
+};
+
+const interceptorRejectedBase = async (
+	value: AxiosResponse<any>,
+): Promise<AxiosResponse<any>> => Promise.reject(value);
+
+const instance = axios.create({
+	baseURL: `${ENVIRONMENT.baseURL}${apiV1}`,
+});
+
+instance.interceptors.request.use(interceptorsRequestResponse);
+instance.interceptors.request.use(interceptorsRequestBasePath);
+instance.interceptors.response.use(interceptorsResponse, interceptorRejected);
+
+export const AxiosAlertManagerInstance = axios.create({
+	baseURL: `${ENVIRONMENT.baseURL}${apiAlertManager}`,
+});
+
+export const ApiV2Instance = axios.create({
+	baseURL: `${ENVIRONMENT.baseURL}${apiV2}`,
+});
+ApiV2Instance.interceptors.response.use(
+	interceptorsResponse,
+	interceptorRejected,
+);
+ApiV2Instance.interceptors.request.use(interceptorsRequestResponse);
+ApiV2Instance.interceptors.request.use(interceptorsRequestBasePath);
+
+// axios V3
+export const ApiV3Instance = axios.create({
+	baseURL: `${ENVIRONMENT.baseURL}${apiV3}`,
+});
+
+ApiV3Instance.interceptors.response.use(
+	interceptorsResponse,
+	interceptorRejected,
+);
+ApiV3Instance.interceptors.request.use(interceptorsRequestResponse);
+ApiV3Instance.interceptors.request.use(interceptorsRequestBasePath);
+//
+
+// axios V4
+export const ApiV4Instance = axios.create({
+	baseURL: `${ENVIRONMENT.baseURL}${apiV4}`,
+});
+
+ApiV4Instance.interceptors.response.use(
+	interceptorsResponse,
+	interceptorRejected,
+);
+ApiV4Instance.interceptors.request.use(interceptorsRequestResponse);
+ApiV4Instance.interceptors.request.use(interceptorsRequestBasePath);
+//
+
+// axios V5
+export const ApiV5Instance = axios.create({
+	baseURL: `${ENVIRONMENT.baseURL}${apiV5}`,
+});
+
+ApiV5Instance.interceptors.response.use(
+	interceptorsResponse,
+	interceptorRejected,
+);
+ApiV5Instance.interceptors.request.use(interceptorsRequestResponse);
+ApiV5Instance.interceptors.request.use(interceptorsRequestBasePath);
+//
+
+// axios Base
+export const LogEventAxiosInstance = axios.create({
+	baseURL: `${ENVIRONMENT.baseURL}${apiV1}`,
+});
+
+LogEventAxiosInstance.interceptors.response.use(
+	interceptorsResponse,
+	interceptorRejectedBase,
+);
+LogEventAxiosInstance.interceptors.request.use(interceptorsRequestResponse);
+LogEventAxiosInstance.interceptors.request.use(interceptorsRequestBasePath);
+//
+
+AxiosAlertManagerInstance.interceptors.response.use(
+	interceptorsResponse,
+	interceptorRejected,
+);
+AxiosAlertManagerInstance.interceptors.request.use(interceptorsRequestResponse);
+AxiosAlertManagerInstance.interceptors.request.use(interceptorsRequestBasePath);
+
+export { apiV1 };
+export default instance;

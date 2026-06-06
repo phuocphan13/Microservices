@@ -1,0 +1,72 @@
+package signoz
+
+import (
+	"context"
+	"reflect"
+	"testing"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/SigNoz/signoz/pkg/alertmanager"
+	"github.com/SigNoz/signoz/pkg/alertmanager/alertmanagerstore/sqlalertmanagerstore"
+	"github.com/SigNoz/signoz/pkg/alertmanager/nfmanager/nfmanagertest"
+	"github.com/SigNoz/signoz/pkg/alertmanager/signozalertmanager"
+	"github.com/SigNoz/signoz/pkg/emailing/emailingtest"
+	"github.com/SigNoz/signoz/pkg/factory"
+	"github.com/SigNoz/signoz/pkg/factory/factorytest"
+	"github.com/SigNoz/signoz/pkg/flagger"
+	"github.com/SigNoz/signoz/pkg/instrumentation/instrumentationtest"
+	"github.com/SigNoz/signoz/pkg/modules/dashboard/impldashboard"
+	"github.com/SigNoz/signoz/pkg/modules/organization/implorganization"
+	"github.com/SigNoz/signoz/pkg/modules/retention/implretention"
+	"github.com/SigNoz/signoz/pkg/modules/tag/impltag"
+	"github.com/SigNoz/signoz/pkg/modules/user/impluser"
+	"github.com/SigNoz/signoz/pkg/querier"
+	"github.com/SigNoz/signoz/pkg/queryparser"
+	"github.com/SigNoz/signoz/pkg/sharder"
+	"github.com/SigNoz/signoz/pkg/sharder/noopsharder"
+	"github.com/SigNoz/signoz/pkg/sqlstore"
+	"github.com/SigNoz/signoz/pkg/sqlstore/sqlstoretest"
+	"github.com/SigNoz/signoz/pkg/tokenizer/tokenizertest"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+// This is a test to ensure that all fields of the handlers are initialized.
+// It also helps us catch these errors at compile time instead of runtime.
+func TestNewHandlers(t *testing.T) {
+	sqlstore := sqlstoretest.New(sqlstore.Config{Provider: "sqlite"}, sqlmock.QueryMatcherEqual)
+	providerSettings := factorytest.NewSettings()
+	sharder, err := noopsharder.New(context.TODO(), providerSettings, sharder.Config{})
+	require.NoError(t, err)
+	orgGetter := implorganization.NewGetter(implorganization.NewStore(sqlstore), sharder)
+	notificationManager := nfmanagertest.NewMock()
+	require.NoError(t, err)
+	maintenanceStore := sqlalertmanagerstore.NewMaintenanceStore(sqlstore, providerSettings)
+	alertmanager, err := signozalertmanager.New(providerSettings, alertmanager.Config{}, sqlstore, orgGetter, notificationManager, maintenanceStore)
+	require.NoError(t, err)
+	tokenizer := tokenizertest.NewMockTokenizer(t)
+	emailing := emailingtest.New()
+	queryParser := queryparser.New(providerSettings)
+	require.NoError(t, err)
+	tagModule := impltag.NewModule(impltag.NewStore(sqlstore))
+	dashboardModule := impldashboard.NewModule(impldashboard.NewStore(sqlstore), providerSettings, nil, orgGetter, queryParser, tagModule)
+
+	flagger, err := flagger.New(context.Background(), instrumentationtest.New().ToProviderSettings(), flagger.Config{}, flagger.MustNewRegistry())
+	require.NoError(t, err)
+
+	userRoleStore := impluser.NewUserRoleStore(sqlstore, providerSettings)
+
+	userGetter := impluser.NewGetter(impluser.NewStore(sqlstore, providerSettings), userRoleStore, flagger)
+
+	retentionGetter := implretention.NewGetter(implretention.NewStore(sqlstore))
+	modules := NewModules(sqlstore, tokenizer, emailing, providerSettings, orgGetter, alertmanager, nil, nil, nil, nil, nil, nil, nil, queryParser, Config{}, dashboardModule, userGetter, userRoleStore, nil, nil, retentionGetter, flagger, tagModule)
+
+	querierHandler := querier.NewHandler(providerSettings, nil, nil)
+	registryHandler := factory.NewHandler(nil)
+	handlers := NewHandlers(modules, providerSettings, nil, querierHandler, nil, nil, nil, nil, nil, nil, nil, registryHandler, alertmanager, nil)
+	reflectVal := reflect.ValueOf(handlers)
+	for i := 0; i < reflectVal.NumField(); i++ {
+		f := reflectVal.Field(i)
+		assert.False(t, f.IsZero(), "%s handler has not been initialized", reflectVal.Type().Field(i).Name)
+	}
+}

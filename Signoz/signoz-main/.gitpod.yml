@@ -1,0 +1,30 @@
+# Please adjust to your needs (see https://www.gitpod.io/docs/config-gitpod-file)
+# and commit this file to your remote git repository to share the goodness with others.
+
+tasks:
+  - name: Run Docker Images
+    init: |
+      cd ./deploy/docker
+      sudo docker compose up -d
+
+  - name: Install pnpm
+    init: |
+      npm i -g pnpm
+
+  - name: Run Frontend
+    init: |
+      cd ./frontend
+      pnpm install
+    command: pnpm dev
+
+ports:
+  - port: 8080
+    onOpen: open-browser
+  - port: 9000
+    onOpen: ignore
+  - port: 8123
+    onOpen: ignore
+  - port: 8089
+    onOpen: ignore
+  - port: 9093
+    onOpen: ignore

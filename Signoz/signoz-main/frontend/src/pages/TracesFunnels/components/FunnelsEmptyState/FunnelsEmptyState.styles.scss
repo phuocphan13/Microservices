@@ -1,0 +1,62 @@
+.funnels-empty {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 24px;
+		padding: 105px 172px;
+		border-radius: 6px;
+		border: 1px dashed var(--l1-border);
+	}
+
+	&__header {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		line-height: 18px;
+	}
+	&__icon {
+		height: 32px;
+		width: 32px;
+	}
+
+	&__title {
+		color: var(--l1-foreground);
+		font-size: 14px;
+		font-weight: 500;
+		letter-spacing: -0.07px;
+	}
+
+	&__subtitle {
+		color: var(--l2-foreground);
+		font-size: 14px;
+		font-weight: 400;
+		letter-spacing: -0.07px;
+	}
+
+	&__actions {
+		display: flex;
+		gap: 24px;
+		align-items: center;
+		width: 100%;
+	}
+
+	&__new-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		background: var(--primary-background);
+		border: none;
+		width: 153px;
+		height: 32px;
+
+		&:hover {
+			background: var(--bg-robin-600);
+		}
+	}
+}

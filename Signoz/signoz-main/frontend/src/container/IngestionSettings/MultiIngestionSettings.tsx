@@ -1,0 +1,1937 @@
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
+import { useCopyToClipboard } from 'react-use';
+import { Color } from '@signozhq/design-tokens';
+import { Badge } from '@signozhq/ui/badge';
+import { Button } from '@signozhq/ui/button';
+import { Input } from '@signozhq/ui/input';
+import {
+	Col,
+	Collapse,
+	DatePicker,
+	Form,
+	InputNumber,
+	Modal,
+	Row,
+	Select,
+	Table,
+	TablePaginationConfig,
+	TableProps as AntDTableProps,
+	Tooltip,
+} from 'antd';
+import { Switch } from '@signozhq/ui/switch';
+import { Typography } from '@signozhq/ui/typography';
+import type { NotificationInstance } from 'antd/es/notification/interface';
+import type { CollapseProps } from 'antd/lib';
+import {
+	useCreateIngestionKey,
+	useCreateIngestionKeyLimit,
+	useDeleteIngestionKey,
+	useDeleteIngestionKeyLimit,
+	useGetIngestionKeys,
+	useSearchIngestionKeys,
+	useUpdateIngestionKey,
+	useUpdateIngestionKeyLimit,
+} from 'api/generated/services/gateway';
+import {
+	GatewaytypesIngestionKeyDTO,
+	RenderErrorResponseDTO,
+} from 'api/generated/services/sigNoz.schemas';
+import { AxiosError } from 'axios';
+import { getYAxisFormattedValue } from 'components/Graph/yAxisConfig';
+import Badges from 'components/Badges/Badges';
+import { UniversalYAxisUnit } from 'components/YAxisUnitSelector/types';
+import { SOMETHING_WENT_WRONG } from 'constants/api';
+import { DATE_TIME_FORMATS } from 'constants/dateTimeFormats';
+import { QueryParams } from 'constants/query';
+import { initialQueryMeterWithType } from 'constants/queryBuilder';
+import ROUTES from 'constants/routes';
+import { INITIAL_ALERT_THRESHOLD_STATE } from 'container/CreateAlertV2/context/constants';
+import dayjs from 'dayjs';
+import { convertToApiError } from 'api/ErrorResponseHandlerForGeneratedAPIs';
+import { useGetGlobalConfig } from 'api/generated/services/global';
+import useDebouncedFn from 'hooks/useDebouncedFunction';
+import { useNotifications } from 'hooks/useNotifications';
+import { cloneDeep, isNil, isUndefined } from 'lodash-es';
+import {
+	ArrowUpRight,
+	BellPlus,
+	CalendarClock,
+	Check,
+	Copy,
+	Infinity as InfinityIcon,
+	Minus,
+	PenLine,
+	Plus,
+	Search,
+	Trash2,
+	TriangleAlert,
+	X,
+} from '@signozhq/icons';
+import { useAppContext } from 'providers/App/App';
+import { useTimezone } from 'providers/Timezone';
+import {
+	AddLimitProps,
+	LimitProps,
+	UpdateLimitProps,
+} from 'types/api/ingestionKeys/limits/types';
+import { PaginationProps } from 'types/api/ingestionKeys/types';
+import { MeterAggregateOperator } from 'types/common/queryBuilder';
+import { USER_ROLES } from 'types/roles';
+import { getDaysUntilExpiry } from 'utils/timeUtils';
+
+import './IngestionSettings.styles.scss';
+
+const { Option } = Select;
+
+const BYTES = 1073741824;
+
+const INITIAL_PAGE_SIZE = 10;
+const SEARCH_PAGE_SIZE = 100;
+const FIRST_PAGE = 1;
+
+const COUNT_MULTIPLIER = {
+	thousand: 1000,
+	million: 1000000,
+	billion: 1000000000,
+};
+
+const SIGNALS_CONFIG = [
+	{
+		name: 'logs',
+		usesSize: true,
+		usesCount: false,
+		metricName: 'signoz.meter.log.size',
+		yAxisUnit: UniversalYAxisUnit.BYTES_IEC,
+		thresholdUnit: UniversalYAxisUnit.GIBIBYTES,
+	},
+	{
+		name: 'traces',
+		usesSize: true,
+		usesCount: false,
+		metricName: 'signoz.meter.span.size',
+		yAxisUnit: UniversalYAxisUnit.BYTES_IEC,
+		thresholdUnit: UniversalYAxisUnit.GIBIBYTES,
+	},
+	{
+		name: 'metrics',
+		usesSize: false,
+		usesCount: true,
+		metricName: 'signoz.meter.metric.datapoint.count',
+		yAxisUnit: UniversalYAxisUnit.COUNT,
+		thresholdUnit: UniversalYAxisUnit.COUNT,
+	},
+];
+
+// Using any type here because antd's DatePicker expects its own internal Dayjs type
+// which conflicts with our project's Dayjs type that has additional plugins (tz, utc etc).
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const disabledDate = (current: any): boolean =>
+	// Disable all dates before today
+	current && current < dayjs().endOf('day');
+
+export const showErrorNotification = (
+	notifications: NotificationInstance,
+	err: Error,
+): void => {
+	notifications.error({
+		message: err.message || SOMETHING_WENT_WRONG,
+		description: (err as AxiosError<RenderErrorResponseDTO>).response?.data?.error
+			?.message,
+	});
+};
+
+type ExpiryOption = {
+	value: string;
+	label: string;
+};
+
+export const API_KEY_EXPIRY_OPTIONS: ExpiryOption[] = [
+	{ value: '1', label: '1 day' },
+	{ value: '7', label: '1 week' },
+	{ value: '30', label: '1 month' },
+	{ value: '90', label: '3 months' },
+	{ value: '365', label: '1 year' },
+	{ value: '0', label: 'No Expiry' },
+];
+
+const countToUnit = (count: number): { value: number; unit: string } => {
+	if (
+		count >= COUNT_MULTIPLIER.billion ||
+		count / COUNT_MULTIPLIER.million >= 1000
+	) {
+		return { value: count / COUNT_MULTIPLIER.billion, unit: 'billion' };
+	}
+	if (
+		count >= COUNT_MULTIPLIER.million ||
+		count / COUNT_MULTIPLIER.thousand >= 1000
+	) {
+		return { value: count / COUNT_MULTIPLIER.million, unit: 'million' };
+	}
+	if (count >= COUNT_MULTIPLIER.thousand) {
+		return { value: count / COUNT_MULTIPLIER.thousand, unit: 'thousand' };
+	}
+	// Default to million for small numbers
+	return { value: count / COUNT_MULTIPLIER.million, unit: 'million' };
+};
+
+const countFromUnit = (value: number, unit: string): number =>
+	value *
+	(COUNT_MULTIPLIER[unit as keyof typeof COUNT_MULTIPLIER] ||
+		COUNT_MULTIPLIER.million);
+
+function MultiIngestionSettings(): JSX.Element {
+	const { user } = useAppContext();
+	const { notifications } = useNotifications();
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+	const [isDeleteLimitModalOpen, setIsDeleteLimitModalOpen] = useState(false);
+	const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+	const [, handleCopyToClipboard] = useCopyToClipboard();
+	const [updatedTags, setUpdatedTags] = useState<string[]>([]);
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+	const [isEditAddLimitOpen, setIsEditAddLimitOpen] = useState(false);
+	const [activeAPIKey, setActiveAPIKey] =
+		useState<GatewaytypesIngestionKeyDTO | null>(null);
+	const [activeSignal, setActiveSignal] = useState<LimitProps | null>(null);
+
+	const [searchValue, setSearchValue] = useState<string>('');
+	const [searchText, setSearchText] = useState<string>('');
+	const [dataSource, setDataSource] = useState<GatewaytypesIngestionKeyDTO[]>(
+		[],
+	);
+	const [paginationParams, setPaginationParams] = useState<PaginationProps>({
+		page: FIRST_PAGE,
+		per_page: INITIAL_PAGE_SIZE,
+	});
+
+	const [totalIngestionKeys, setTotalIngestionKeys] = useState(0);
+
+	const history = useHistory();
+
+	const [
+		hasCreateLimitForIngestionKeyError,
+		setHasCreateLimitForIngestionKeyError,
+	] = useState(false);
+
+	const [createLimitForIngestionKeyError, setCreateLimitForIngestionKeyError] =
+		useState<string | null>(null);
+
+	const [
+		hasUpdateLimitForIngestionKeyError,
+		setHasUpdateLimitForIngestionKeyError,
+	] = useState(false);
+
+	const [updateLimitForIngestionKeyError, setUpdateLimitForIngestionKeyError] =
+		useState<string | null>(null);
+
+	const { t } = useTranslation(['ingestionKeys']);
+
+	const [editForm] = Form.useForm();
+	const [addEditLimitForm] = Form.useForm();
+	const [createForm] = Form.useForm();
+
+	const handleFormReset = (): void => {
+		editForm.resetFields();
+		createForm.resetFields();
+		addEditLimitForm.resetFields();
+	};
+
+	const hideDeleteViewModal = (): void => {
+		setIsDeleteModalOpen(false);
+		setActiveAPIKey(null);
+		handleFormReset();
+	};
+
+	const showDeleteModal = (apiKey: GatewaytypesIngestionKeyDTO): void => {
+		setHasCreateLimitForIngestionKeyError(false);
+		setCreateLimitForIngestionKeyError(null);
+		setHasUpdateLimitForIngestionKeyError(false);
+		setUpdateLimitForIngestionKeyError(null);
+		setActiveAPIKey(apiKey);
+		setIsDeleteModalOpen(true);
+	};
+
+	const hideEditViewModal = (): void => {
+		setActiveAPIKey(null);
+		setIsEditModalOpen(false);
+		handleFormReset();
+	};
+
+	const hideAddViewModal = (): void => {
+		handleFormReset();
+		setActiveAPIKey(null);
+		setIsAddModalOpen(false);
+	};
+
+	const showEditModal = (apiKey: GatewaytypesIngestionKeyDTO): void => {
+		setHasCreateLimitForIngestionKeyError(false);
+		setCreateLimitForIngestionKeyError(null);
+		setHasUpdateLimitForIngestionKeyError(false);
+		setUpdateLimitForIngestionKeyError(null);
+		setActiveAPIKey(apiKey);
+		handleFormReset();
+		setUpdatedTags(apiKey.tags || []);
+
+		editForm.setFieldsValue({
+			name: apiKey.name,
+			tags: apiKey.tags,
+			expires_at: dayjs(apiKey?.expires_at) || null,
+		});
+
+		setIsEditModalOpen(true);
+	};
+
+	const showAddModal = (): void => {
+		setHasCreateLimitForIngestionKeyError(false);
+		setCreateLimitForIngestionKeyError(null);
+		setHasUpdateLimitForIngestionKeyError(false);
+		setUpdateLimitForIngestionKeyError(null);
+		setUpdatedTags([]);
+		setActiveAPIKey(null);
+		setIsAddModalOpen(true);
+	};
+
+	const handleModalClose = (): void => {
+		setActiveAPIKey(null);
+		setActiveSignal(null);
+	};
+
+	// Use search API when searchText is present, otherwise use normal get API
+	const isSearching = searchText.length > 0;
+
+	const {
+		data: ingestionKeysData,
+		isLoading: isLoadingGet,
+		isRefetching: isRefetchingGet,
+		refetch: refetchGetAPIKeys,
+		error: getError,
+		isError: isGetError,
+	} = useGetIngestionKeys(
+		{
+			...paginationParams,
+		},
+		{
+			query: {
+				enabled: !isSearching,
+			},
+		},
+	);
+
+	const {
+		data: searchIngestionKeysData,
+		isLoading: isLoadingSearch,
+		isRefetching: isRefetchingSearch,
+		refetch: refetchSearchAPIKeys,
+		error: searchError,
+		isError: isSearchError,
+	} = useSearchIngestionKeys(
+		{
+			page: FIRST_PAGE,
+			per_page: SEARCH_PAGE_SIZE,
+			name: searchText,
+		},
+		{
+			query: {
+				enabled: isSearching,
+			},
+		},
+	);
+
+	// Use the appropriate data based on which API is active
+	const ingestionKeys = isSearching
+		? searchIngestionKeysData
+		: ingestionKeysData;
+	const isLoading = isSearching ? isLoadingSearch : isLoadingGet;
+	const isRefetching = isSearching ? isRefetchingSearch : isRefetchingGet;
+	const refetchAPIKeys = isSearching ? refetchSearchAPIKeys : refetchGetAPIKeys;
+	const error = isSearching ? searchError : getError;
+	const isError = isSearching ? isSearchError : isGetError;
+
+	useEffect(() => {
+		setDataSource(ingestionKeys?.data.keys || []);
+		setTotalIngestionKeys(ingestionKeys?.data._pagination?.total || 0);
+	}, [ingestionKeys?.data]);
+
+	useEffect(() => {
+		if (isError && error) {
+			showErrorNotification(notifications, error);
+		}
+	}, [error, isError, notifications]);
+
+	const handleDebouncedSearch = useDebouncedFn((searchText): void => {
+		setSearchText(searchText as string);
+	}, 500);
+
+	const handleSearch = (e: ChangeEvent<HTMLInputElement>): void => {
+		setSearchValue(e.target.value);
+		handleDebouncedSearch(e.target.value || '');
+	};
+
+	const clearSearch = (): void => {
+		setSearchValue('');
+		setSearchText('');
+	};
+
+	const {
+		data: globalConfig,
+		isLoading: isLoadingGlobalConfig,
+		isError: isErrorGlobalConfig,
+		error: globalConfigError,
+	} = useGetGlobalConfig();
+
+	const globalConfigApiError = convertToApiError(globalConfigError);
+
+	const { mutate: createIngestionKey, isLoading: isLoadingCreateAPIKey } =
+		useCreateIngestionKey<AxiosError<RenderErrorResponseDTO>>();
+
+	const { mutate: updateAPIKey, isLoading: isLoadingUpdateAPIKey } =
+		useUpdateIngestionKey<AxiosError<RenderErrorResponseDTO>>();
+
+	const { mutate: deleteAPIKey, isLoading: isDeleteingAPIKey } =
+		useDeleteIngestionKey<AxiosError<RenderErrorResponseDTO>>();
+
+	const { mutate: createLimitForIngestionKey, isLoading: isLoadingLimitForKey } =
+		useCreateIngestionKeyLimit<AxiosError<RenderErrorResponseDTO>>();
+
+	const {
+		mutate: updateLimitForIngestionKey,
+		isLoading: isLoadingUpdatedLimitForKey,
+	} = useUpdateIngestionKeyLimit<AxiosError<RenderErrorResponseDTO>>();
+
+	const { mutate: deleteLimitForKey, isLoading: isDeletingLimit } =
+		useDeleteIngestionKeyLimit<AxiosError<RenderErrorResponseDTO>>();
+
+	const onDeleteHandler = (): void => {
+		clearSearch();
+
+		if (activeAPIKey && activeAPIKey.id) {
+			deleteAPIKey(
+				{
+					pathParams: { keyId: activeAPIKey.id },
+				},
+				{
+					onSuccess: () => {
+						notifications.success({
+							message: 'Ingestion key deleted successfully',
+						});
+						void refetchAPIKeys();
+						setIsDeleteModalOpen(false);
+					},
+					onError: (error) => {
+						showErrorNotification(notifications, error as AxiosError);
+					},
+				},
+			);
+		}
+	};
+
+	const onUpdateApiKey = (): void => {
+		editForm
+			.validateFields()
+			.then((values) => {
+				if (activeAPIKey && activeAPIKey.id) {
+					updateAPIKey(
+						{
+							pathParams: { keyId: activeAPIKey.id },
+							data: {
+								name: values.name,
+								tags: updatedTags,
+								expires_at: dayjs(values.expires_at).endOf('day').toISOString(),
+							},
+						},
+						{
+							onSuccess: () => {
+								notifications.success({
+									message: 'Ingestion key updated successfully',
+								});
+								void refetchAPIKeys();
+								setIsEditModalOpen(false);
+							},
+							onError: (error) => {
+								showErrorNotification(notifications, error as AxiosError);
+							},
+						},
+					);
+				}
+			})
+			.catch((errorInfo) => {
+				console.error('error info', errorInfo);
+			});
+	};
+
+	const onCreateIngestionKey = (): void => {
+		createForm
+			.validateFields()
+			.then((values) => {
+				if (user) {
+					const requestPayload = {
+						name: values.name,
+						tags: updatedTags,
+						expires_at: dayjs(values.expires_at).endOf('day').toISOString(),
+					};
+
+					createIngestionKey(
+						{ data: requestPayload },
+						{
+							onSuccess: (_data) => {
+								notifications.success({
+									message: 'Ingestion key created successfully',
+								});
+								// The new API returns GatewaytypesGettableCreatedIngestionKeyDTO with only id and value
+								// We rely on refetchAPIKeys to get the full key object
+								setActiveAPIKey(null);
+								setUpdatedTags([]);
+								hideAddViewModal();
+								void refetchAPIKeys();
+							},
+							onError: (error) => {
+								showErrorNotification(notifications, error as AxiosError);
+							},
+						},
+					);
+				}
+			})
+			.catch((errorInfo) => {
+				console.error('error info', errorInfo);
+			});
+	};
+
+	const handleCopyKey = useCallback(
+		(text: string): void => {
+			handleCopyToClipboard(text);
+			notifications.success({
+				message: 'Copied to clipboard',
+			});
+		},
+		[handleCopyToClipboard, notifications],
+	);
+
+	const gbToBytes = (gb: number): number => Math.round(gb * 1024 ** 3);
+
+	const getFormattedTime = (
+		date: string,
+		formatTimezoneAdjustedTimestamp: (date: string, format: string) => string,
+	): string =>
+		formatTimezoneAdjustedTimestamp(date, DATE_TIME_FORMATS.UTC_MONTH_COMPACT);
+
+	const showDeleteLimitModal = (
+		APIKey: GatewaytypesIngestionKeyDTO,
+		limit: LimitProps,
+	): void => {
+		setActiveAPIKey(APIKey);
+		setActiveSignal(limit);
+		setIsDeleteLimitModalOpen(true);
+	};
+
+	const hideDeleteLimitModal = (): void => {
+		setIsDeleteLimitModalOpen(false);
+	};
+
+	const handleDiscardSaveLimit = (): void => {
+		setHasCreateLimitForIngestionKeyError(false);
+		setHasUpdateLimitForIngestionKeyError(false);
+		setIsEditAddLimitOpen(false);
+		setActiveAPIKey(null);
+		setActiveSignal(null);
+
+		addEditLimitForm.resetFields();
+	};
+
+	/* eslint-disable sonarjs/cognitive-complexity */
+	const handleAddLimit = (
+		APIKey: GatewaytypesIngestionKeyDTO,
+		signalName: string,
+	): void => {
+		if (!APIKey.id) {
+			notifications.error({
+				message: 'Invalid ingestion key',
+				description: 'Cannot create limit for ingestion key without a valid ID',
+			});
+			return;
+		}
+
+		const {
+			dailyLimit,
+			secondsLimit,
+			dailyCount,
+			dailyCountUnit,
+			secondsCount,
+			secondsCountUnit,
+		} = addEditLimitForm.getFieldsValue();
+
+		const payload: AddLimitProps = {
+			keyID: APIKey.id,
+			signal: signalName,
+			config: {},
+		};
+
+		const signalCfg = SIGNALS_CONFIG.find((cfg) => cfg.name === signalName);
+		if (!signalCfg) {
+			return;
+		}
+
+		// Only set size if usesSize is true
+		if (signalCfg.usesSize) {
+			if (!isUndefined(dailyLimit)) {
+				payload.config.day = {
+					...payload.config.day,
+					size: gbToBytes(dailyLimit),
+				};
+			}
+			if (!isUndefined(secondsLimit)) {
+				payload.config.second = {
+					...payload.config.second,
+					size: gbToBytes(secondsLimit),
+				};
+			}
+		}
+
+		// Only set count if usesCount is true
+		if (signalCfg.usesCount) {
+			if (!isUndefined(dailyCount)) {
+				payload.config.day = {
+					...payload.config.day,
+					count: countFromUnit(dailyCount, dailyCountUnit || 'million'),
+				};
+			}
+			if (!isUndefined(secondsCount)) {
+				payload.config.second = {
+					...payload.config.second,
+					count: countFromUnit(secondsCount, secondsCountUnit || 'million'),
+				};
+			}
+		}
+
+		// If neither size nor count was given, skip
+		const noSizeProvided =
+			isUndefined(dailyLimit) && isUndefined(secondsLimit) && signalCfg.usesSize;
+		const noCountProvided =
+			isUndefined(dailyCount) && isUndefined(secondsCount) && signalCfg.usesCount;
+
+		if (
+			signalCfg.usesSize &&
+			signalCfg.usesCount &&
+			noSizeProvided &&
+			noCountProvided
+		) {
+			// Both size and count are effectively empty
+			setActiveSignal(null);
+			setActiveAPIKey(null);
+			setIsEditAddLimitOpen(false);
+			setUpdatedTags([]);
+			hideAddViewModal();
+			setHasCreateLimitForIngestionKeyError(false);
+			return;
+		}
+
+		if (!signalCfg.usesSize && !signalCfg.usesCount) {
+			// Edge case: If there's no count or size usage at all
+			setActiveSignal(null);
+			setActiveAPIKey(null);
+			setIsEditAddLimitOpen(false);
+			setUpdatedTags([]);
+			hideAddViewModal();
+			return;
+		}
+
+		createLimitForIngestionKey(
+			{
+				pathParams: { keyId: payload.keyID },
+				data: {
+					signal: payload.signal,
+					config: payload.config,
+				},
+			},
+			{
+				onSuccess: () => {
+					notifications.success({
+						message: 'Limit created successfully',
+						description: "Set up an alert to know when you're close to hitting it.",
+					});
+					setActiveSignal(null);
+					setActiveAPIKey(null);
+					setIsEditAddLimitOpen(false);
+					setUpdatedTags([]);
+					hideAddViewModal();
+					void refetchAPIKeys();
+					setHasCreateLimitForIngestionKeyError(false);
+				},
+				onError: (error: AxiosError<RenderErrorResponseDTO>) => {
+					setHasCreateLimitForIngestionKeyError(true);
+					setCreateLimitForIngestionKeyError(
+						error.response?.data?.error?.message || 'Failed to create limit',
+					);
+				},
+			},
+		);
+	};
+
+	const handleUpdateLimit = (
+		APIKey: GatewaytypesIngestionKeyDTO,
+		signal: LimitProps,
+	): void => {
+		if (!signal.id) {
+			notifications.error({
+				message: 'Invalid limit',
+				description: 'Cannot update limit without a valid ID',
+			});
+			return;
+		}
+
+		const {
+			dailyLimit,
+			secondsLimit,
+			dailyCount,
+			dailyCountUnit,
+			secondsCount,
+			secondsCountUnit,
+		} = addEditLimitForm.getFieldsValue();
+
+		const payload: UpdateLimitProps = {
+			limitID: signal.id,
+			signal: signal.signal,
+			config: {},
+		};
+
+		const signalCfg = SIGNALS_CONFIG.find((cfg) => cfg.name === signal.signal);
+		if (!signalCfg) {
+			return;
+		}
+
+		const noSizeProvided =
+			isUndefined(dailyLimit) && isUndefined(secondsLimit) && signalCfg.usesSize;
+		const noCountProvided =
+			isUndefined(dailyCount) && isUndefined(secondsCount) && signalCfg.usesCount;
+
+		// If the user cleared out all fields, remove the limit
+		if (noSizeProvided && noCountProvided) {
+			showDeleteLimitModal(APIKey, signal);
+			return;
+		}
+
+		if (signalCfg.usesSize) {
+			if (!isUndefined(dailyLimit)) {
+				payload.config.day = {
+					...payload.config.day,
+					size: gbToBytes(dailyLimit),
+				};
+			}
+			if (!isUndefined(secondsLimit)) {
+				payload.config.second = {
+					...payload.config.second,
+					size: gbToBytes(secondsLimit),
+				};
+			}
+		}
+
+		if (signalCfg.usesCount) {
+			if (!isUndefined(dailyCount)) {
+				payload.config.day = {
+					...payload.config.day,
+					count: countFromUnit(dailyCount, dailyCountUnit || 'million'),
+				};
+			}
+			if (!isUndefined(secondsCount)) {
+				payload.config.second = {
+					...payload.config.second,
+					count: countFromUnit(secondsCount, secondsCountUnit || 'million'),
+				};
+			}
+		}
+
+		updateLimitForIngestionKey(
+			{
+				pathParams: { limitId: payload.limitID },
+				data: {
+					config: payload.config,
+				},
+			},
+			{
+				onSuccess: () => {
+					notifications.success({
+						message: 'Limit updated successfully',
+						description: "Set up an alert to know when you're close to hitting it.",
+					});
+					setActiveSignal(null);
+					setActiveAPIKey(null);
+					setIsEditAddLimitOpen(false);
+					setUpdatedTags([]);
+					hideAddViewModal();
+					void refetchAPIKeys();
+					setHasUpdateLimitForIngestionKeyError(false);
+				},
+				onError: (error: AxiosError<RenderErrorResponseDTO>) => {
+					setHasUpdateLimitForIngestionKeyError(true);
+					setUpdateLimitForIngestionKeyError(
+						error.response?.data?.error?.message || 'Failed to update limit',
+					);
+				},
+			},
+		);
+	};
+	/* eslint-enable sonarjs/cognitive-complexity */
+
+	const bytesToGb = (size: number | undefined): number => {
+		if (!size) {
+			return 0;
+		}
+		return size / BYTES;
+	};
+
+	const enableEditLimitMode = (
+		APIKey: GatewaytypesIngestionKeyDTO,
+		signal: LimitProps,
+	): void => {
+		const dayCount = signal?.config?.day?.count;
+		const secondCount = signal?.config?.second?.count;
+
+		const dayCountConverted = countToUnit(dayCount || 0);
+		const secondCountConverted = countToUnit(secondCount || 0);
+
+		setHasCreateLimitForIngestionKeyError(false);
+		setCreateLimitForIngestionKeyError(null);
+		setHasUpdateLimitForIngestionKeyError(false);
+		setUpdateLimitForIngestionKeyError(null);
+
+		setActiveAPIKey(APIKey);
+		setActiveSignal({
+			...signal,
+			config: {
+				...signal.config,
+				day: {
+					...signal.config?.day,
+					enabled:
+						!isNil(signal?.config?.day?.size) || !isNil(signal?.config?.day?.count),
+				},
+				second: {
+					...signal.config?.second,
+					enabled:
+						!isNil(signal?.config?.second?.size) ||
+						!isNil(signal?.config?.second?.count),
+				},
+			},
+		});
+
+		addEditLimitForm.setFieldsValue({
+			dailyLimit: bytesToGb(signal?.config?.day?.size || 0),
+			secondsLimit: bytesToGb(signal?.config?.second?.size || 0),
+			enableDailyLimit:
+				!isNil(signal?.config?.day?.size) || !isNil(signal?.config?.day?.count),
+			enableSecondLimit:
+				!isNil(signal?.config?.second?.size) ||
+				!isNil(signal?.config?.second?.count),
+			dailyCount: dayCountConverted.value,
+			dailyCountUnit: dayCountConverted.unit,
+			secondsCount: secondCountConverted.value,
+			secondsCountUnit: secondCountConverted.unit,
+		});
+
+		setIsEditAddLimitOpen(true);
+	};
+
+	const onDeleteLimitHandler = (): void => {
+		if (activeSignal && activeSignal.id) {
+			deleteLimitForKey(
+				{
+					pathParams: { limitId: activeSignal.id },
+				},
+				{
+					onSuccess: () => {
+						notifications.success({
+							message: 'Limit deleted successfully',
+						});
+						setIsDeleteModalOpen(false);
+						setIsDeleteLimitModalOpen(false);
+						void refetchAPIKeys();
+					},
+					onError: (error) => {
+						showErrorNotification(notifications, error as AxiosError);
+					},
+				},
+			);
+		}
+	};
+
+	const { formatTimezoneAdjustedTimestamp } = useTimezone();
+
+	const handleCreateAlert = (
+		APIKey: GatewaytypesIngestionKeyDTO,
+		signal: LimitProps,
+	): void => {
+		const signalCfg = SIGNALS_CONFIG.find((cfg) => cfg.name === signal.signal);
+		if (!signalCfg) {
+			return;
+		}
+
+		const { metricName, yAxisUnit, thresholdUnit } = signalCfg;
+
+		// Size signals store the limit in bytes but the user entered GiB; pass the GiB
+		// value so the threshold reads "400 GiB" while the chart Y-axis stays in bytes.
+		const thresholdValue = signalCfg.usesCount
+			? signal.config?.day?.count || 0
+			: bytesToGb(signal.config?.day?.size);
+
+		const query = {
+			...initialQueryMeterWithType,
+			unit: yAxisUnit,
+			builder: {
+				...initialQueryMeterWithType.builder,
+				queryData: [
+					{
+						...initialQueryMeterWithType.builder.queryData[0],
+						aggregations: [
+							{
+								...initialQueryMeterWithType.builder.queryData[0].aggregations?.[0],
+								metricName,
+								timeAggregation: MeterAggregateOperator.INCREASE,
+								spaceAggregation: MeterAggregateOperator.SUM,
+							},
+						],
+						filter: {
+							expression: `signoz.workspace.key.id='${APIKey.id}'`,
+						},
+					},
+				],
+			},
+		};
+
+		const stringifiedQuery = JSON.stringify(query);
+
+		const thresholds = cloneDeep(INITIAL_ALERT_THRESHOLD_STATE.thresholds);
+		thresholds[0].thresholdValue = thresholdValue;
+		thresholds[0].unit = thresholdUnit;
+
+		const keyName = APIKey.name?.trim();
+		const ruleName = keyName
+			? `[ingestion][${signal.signal}] ${keyName} has exceeded daily ingestion limit`
+			: `[ingestion][${signal.signal}] ${signal.signal} has exceeded daily ingestion limit`;
+
+		const URL = `${ROUTES.ALERTS_NEW}?${
+			QueryParams.compositeQuery
+		}=${encodeURIComponent(stringifiedQuery)}&${
+			QueryParams.thresholds
+		}=${encodeURIComponent(JSON.stringify(thresholds))}&${
+			QueryParams.ruleName
+		}=${encodeURIComponent(ruleName)}&${
+			QueryParams.yAxisUnit
+		}=${encodeURIComponent(yAxisUnit)}`;
+
+		history.push(URL);
+	};
+
+	const columns: AntDTableProps<GatewaytypesIngestionKeyDTO>['columns'] = [
+		{
+			title: 'Ingestion Key',
+			key: 'ingestion-key',
+			// eslint-disable-next-line sonarjs/cognitive-complexity
+			render: (APIKey: GatewaytypesIngestionKeyDTO): JSX.Element => {
+				const createdOn = APIKey?.created_at
+					? getFormattedTime(
+							dayjs(APIKey.created_at).toISOString(),
+							formatTimezoneAdjustedTimestamp,
+						)
+					: '';
+
+				const expiresOn =
+					!APIKey?.expires_at ||
+					dayjs(APIKey?.expires_at).toISOString() === '0001-01-01T00:00:00.000Z'
+						? 'No Expiry'
+						: getFormattedTime(
+								dayjs(APIKey?.expires_at).toISOString(),
+								formatTimezoneAdjustedTimestamp,
+							);
+
+				const updatedOn = APIKey?.updated_at
+					? getFormattedTime(
+							dayjs(APIKey.updated_at).toISOString(),
+							formatTimezoneAdjustedTimestamp,
+						)
+					: '';
+
+				const onCopyKey = (e: React.MouseEvent): void => {
+					e.stopPropagation();
+					e.preventDefault();
+					if (APIKey?.value) {
+						handleCopyKey(APIKey.value);
+					}
+				};
+
+				const onEditKey = (e: React.MouseEvent): void => {
+					e.stopPropagation();
+					e.preventDefault();
+					showEditModal(APIKey);
+				};
+
+				const onDeleteKey = (e: React.MouseEvent): void => {
+					e.stopPropagation();
+					e.preventDefault();
+					showDeleteModal(APIKey);
+				};
+
+				// Convert array of limits to a dictionary for quick access
+				const limitsDict: Record<string, LimitProps> = {};
+				APIKey.limits?.forEach((limitItem) => {
+					if (limitItem.signal && limitItem.id) {
+						limitsDict[limitItem.signal] = limitItem as LimitProps;
+					}
+				});
+
+				const hasLimits = (signalName: string): boolean => !!limitsDict[signalName];
+
+				const items: CollapseProps['items'] = [
+					{
+						key: '1',
+						label: (
+							<div className="title-with-action">
+								<div className="ingestion-key-data">
+									<div className="ingestion-key-title">
+										<Typography.Text>{APIKey?.name}</Typography.Text>
+									</div>
+
+									<div className="ingestion-key-value">
+										<Typography.Text>
+											{APIKey?.value?.slice(0, 2)}********
+											{APIKey?.value
+												?.substring(APIKey?.value?.length ? APIKey.value.length - 2 : 0)
+												?.trim()}
+										</Typography.Text>
+
+										<Copy className="copy-key-btn" size={12} onClick={onCopyKey} />
+									</div>
+								</div>
+								<div className="action-btn">
+									<Button
+										variant="link"
+										size="icon"
+										color="secondary"
+										suffix={<PenLine size={14} />}
+										aria-label="Edit ingestion key"
+										onClick={onEditKey}
+									/>
+									<Button
+										variant="link"
+										size="icon"
+										color="destructive"
+										suffix={<Trash2 color={Color.BG_CHERRY_500} size={14} />}
+										onClick={onDeleteKey}
+									/>
+								</div>
+							</div>
+						),
+						children: (
+							<div className="ingestion-key-info-container">
+								<Row>
+									<Col span={6}> ID </Col>
+									<Col span={12}>
+										<Typography.Text>{APIKey?.id}</Typography.Text>
+									</Col>
+								</Row>
+
+								<Row>
+									<Col span={6}> Created on </Col>
+									<Col span={12}>
+										<Typography.Text>{createdOn}</Typography.Text>
+									</Col>
+								</Row>
+
+								{updatedOn && (
+									<Row>
+										<Col span={6}> Updated on </Col>
+										<Col span={12}>
+											<Typography.Text>{updatedOn}</Typography.Text>
+										</Col>
+									</Row>
+								)}
+
+								{APIKey.tags &&
+									Array.isArray(APIKey.tags) &&
+									APIKey.tags.length > 0 && (
+										<Row>
+											<Col span={6}> Tags </Col>
+											<Col span={12}>
+												<div className="ingestion-key-tags-container">
+													<div className="ingestion-key-tags">
+														{APIKey.tags.map((tag, index) => (
+															// eslint-disable-next-line react/no-array-index-key
+															<Badge key={`${tag}-${index}`} color="vanilla">
+																{' '}
+																{tag}{' '}
+															</Badge>
+														))}
+													</div>
+												</div>
+											</Col>
+										</Row>
+									)}
+
+								<div className="limits-container">
+									<h4 className=""> LIMITS </h4>
+
+									<div className="limits-data">
+										<div className="signals">
+											{SIGNALS_CONFIG.map((signalCfg) => {
+												const signalName = signalCfg.name;
+												const limit = limitsDict[signalName];
+
+												const hasValidDayLimit =
+													limit?.config?.day?.size !== undefined ||
+													limit?.config?.day?.count !== undefined;
+												const hasValidSecondLimit =
+													limit?.config?.second?.size !== undefined ||
+													limit?.config?.second?.count !== undefined;
+
+												const onEditSignalLimit = (e: React.MouseEvent): void => {
+													e.stopPropagation();
+													e.preventDefault();
+													enableEditLimitMode(APIKey, limit);
+												};
+
+												const onDeleteSignalLimit = (e: React.MouseEvent): void => {
+													e.stopPropagation();
+													e.preventDefault();
+													showDeleteLimitModal(APIKey, limit);
+												};
+
+												const onAddSignalLimit = (e: React.MouseEvent): void => {
+													e.stopPropagation();
+													e.preventDefault();
+													enableEditLimitMode(APIKey, {
+														id: signalName,
+														signal: signalName,
+														config: {},
+													});
+												};
+
+												const onSaveSignalLimit = (): void => {
+													if (!hasLimits(signalName)) {
+														handleAddLimit(APIKey, signalName);
+													} else {
+														handleUpdateLimit(APIKey, limitsDict[signalName]);
+													}
+												};
+
+												const onCreateSignalAlert = (): void =>
+													handleCreateAlert(APIKey, limitsDict[signalName]);
+
+												return (
+													<div className="signal" key={signalName}>
+														<div className="header">
+															<div className="signal-name">{signalName}</div>
+															<div className="actions">
+																{hasLimits(signalName) ? (
+																	<>
+																		<Button
+																			variant="link"
+																			size="icon"
+																			color="secondary"
+																			prefix={<PenLine size={14} />}
+																			aria-label={`Edit ${signalName} limit`}
+																			disabled={
+																				!!(activeAPIKey?.id === APIKey?.id && activeSignal)
+																			}
+																			onClick={onEditSignalLimit}
+																		/>
+																		<Button
+																			variant="link"
+																			size="icon"
+																			color="destructive"
+																			prefix={<Trash2 color={Color.BG_CHERRY_500} size={14} />}
+																			aria-label={`Delete ${signalName} limit`}
+																			disabled={
+																				!!(activeAPIKey?.id === APIKey?.id && activeSignal)
+																			}
+																			onClick={onDeleteSignalLimit}
+																		/>
+																	</>
+																) : (
+																	<Button
+																		variant="outlined"
+																		size="sm"
+																		color="secondary"
+																		prefix={<Plus size={12} />}
+																		disabled={!!(activeAPIKey?.id === APIKey?.id && activeSignal)}
+																		onClick={onAddSignalLimit}
+																	>
+																		Limits
+																	</Button>
+																)}
+															</div>
+														</div>
+
+														<div className="signal-limit-values">
+															{activeAPIKey?.id === APIKey?.id &&
+															activeSignal?.signal === signalName &&
+															isEditAddLimitOpen ? (
+																<Form
+																	name="edit-ingestion-key-limit-form"
+																	key="addEditLimitForm"
+																	form={addEditLimitForm}
+																	autoComplete="off"
+																	initialValues={{
+																		dailyLimit: bytesToGb(limit?.config?.day?.size || 0),
+																		secondsLimit: bytesToGb(limit?.config?.second?.size || 0),
+																	}}
+																	className="edit-ingestion-key-limit-form"
+																>
+																	<div className="signal-limit-edit-mode">
+																		<div className="daily-limit">
+																			<div className="heading">
+																				<div className="title">
+																					Daily limit
+																					<div className="limit-enable-disable-toggle">
+																						<Form.Item name="enableDailyLimit">
+																							<Switch
+																								value={activeSignal?.config?.day?.enabled}
+																								onChange={(value): void => {
+																									setActiveSignal((prev) =>
+																										prev
+																											? {
+																													...prev,
+																													config: {
+																														...prev.config,
+																														day: {
+																															...prev.config?.day,
+																															enabled: value,
+																														},
+																													},
+																												}
+																											: null,
+																									);
+																								}}
+																							/>
+																						</Form.Item>
+																					</div>
+																				</div>
+																				<div className="subtitle">
+																					Add a limit for data ingested daily
+																				</div>
+																			</div>
+																			{signalCfg.usesSize && (
+																				<div className="size">
+																					{activeSignal?.config?.day?.enabled ? (
+																						<Form.Item name="dailyLimit" key="dailyLimit">
+																							<InputNumber
+																								disabled={!activeSignal?.config?.day?.enabled}
+																								addonAfter={
+																									<Select defaultValue="GiB" disabled>
+																										<Option value="TiB">TiB</Option>
+																										<Option value="GiB">GiB</Option>
+																										<Option value="MiB">MiB</Option>
+																										<Option value="KiB">KiB</Option>
+																									</Select>
+																								}
+																							/>
+																						</Form.Item>
+																					) : (
+																						<div className="no-limit">
+																							<InfinityIcon size={16} /> NO LIMIT
+																						</div>
+																					)}
+																				</div>
+																			)}
+																			{signalCfg.usesCount && (
+																				<div className="count">
+																					{activeSignal?.config?.day?.enabled ? (
+																						<Form.Item name="dailyCount" key="dailyCount">
+																							<InputNumber
+																								placeholder="Enter max # of samples/day"
+																								addonAfter={
+																									<Form.Item
+																										name="dailyCountUnit"
+																										noStyle
+																										initialValue="million"
+																									>
+																										<Select
+																											style={{
+																												width: 90,
+																											}}
+																										>
+																											<Option value="thousand">Thousand</Option>
+																											<Option value="million">Million</Option>
+																											<Option value="billion">Billion</Option>
+																										</Select>
+																									</Form.Item>
+																								}
+																							/>
+																						</Form.Item>
+																					) : (
+																						<div className="no-limit">
+																							<InfinityIcon size={16} /> NO LIMIT
+																						</div>
+																					)}
+																				</div>
+																			)}
+																		</div>
+
+																		<div className="second-limit">
+																			<div className="heading">
+																				<div className="title">
+																					Per Second limit
+																					<div className="limit-enable-disable-toggle">
+																						<Form.Item name="enableSecondLimit">
+																							<Switch
+																								value={activeSignal?.config?.second?.enabled}
+																								onChange={(value): void => {
+																									setActiveSignal((prev) =>
+																										prev
+																											? {
+																													...prev,
+																													config: {
+																														...prev.config,
+																														second: {
+																															...prev.config?.second,
+																															enabled: value,
+																														},
+																													},
+																												}
+																											: null,
+																									);
+																								}}
+																							/>
+																						</Form.Item>
+																					</div>
+																				</div>
+																				<div className="subtitle">
+																					Add a limit for data ingested every second
+																				</div>
+																			</div>
+																			{signalCfg.usesSize && (
+																				<div className="size">
+																					{activeSignal?.config?.second?.enabled ? (
+																						<Form.Item name="secondsLimit" key="secondsLimit">
+																							<InputNumber
+																								disabled={!activeSignal?.config?.second?.enabled}
+																								addonAfter={
+																									<Select defaultValue="GiB" disabled>
+																										<Option value="TiB">TiB</Option>
+																										<Option value="GiB">GiB</Option>
+																										<Option value="MiB">MiB</Option>
+																										<Option value="KiB">KiB</Option>
+																									</Select>
+																								}
+																							/>
+																						</Form.Item>
+																					) : (
+																						<div className="no-limit">
+																							<InfinityIcon size={16} /> NO LIMIT
+																						</div>
+																					)}
+																				</div>
+																			)}
+																			{signalCfg.usesCount && (
+																				<div className="count">
+																					{activeSignal?.config?.second?.enabled ? (
+																						<Form.Item name="secondsCount" key="secondsCount">
+																							<InputNumber
+																								placeholder="Enter max # of samples/s"
+																								addonAfter={
+																									<Form.Item
+																										name="secondsCountUnit"
+																										noStyle
+																										initialValue="million"
+																									>
+																										<Select
+																											style={{
+																												width: 90,
+																											}}
+																										>
+																											<Option value="thousand">Thousand</Option>
+																											<Option value="million">Million</Option>
+																											<Option value="billion">Billion</Option>
+																										</Select>
+																									</Form.Item>
+																								}
+																							/>
+																						</Form.Item>
+																					) : (
+																						<div className="no-limit">
+																							<InfinityIcon size={16} /> NO LIMIT
+																						</div>
+																					)}
+																				</div>
+																			)}
+																		</div>
+																	</div>
+
+																	{activeAPIKey?.id === APIKey?.id &&
+																		activeSignal.signal === signalName &&
+																		!isLoadingLimitForKey &&
+																		hasCreateLimitForIngestionKeyError &&
+																		createLimitForIngestionKeyError && (
+																			<div className="error">
+																				{createLimitForIngestionKeyError}
+																			</div>
+																		)}
+
+																	{activeAPIKey?.id === APIKey?.id &&
+																		activeSignal.signal === signalName &&
+																		!isLoadingLimitForKey &&
+																		hasUpdateLimitForIngestionKeyError &&
+																		updateLimitForIngestionKeyError && (
+																			<div className="error">
+																				{updateLimitForIngestionKeyError}
+																			</div>
+																		)}
+
+																	{activeAPIKey?.id === APIKey?.id &&
+																		activeSignal.signal === signalName &&
+																		isEditAddLimitOpen && (
+																			<div className="signal-limit-save-discard">
+																				<div className="signal-limit-save-discard-actions">
+																					<Button
+																						variant="solid"
+																						size="sm"
+																						disabled={
+																							isLoadingLimitForKey || isLoadingUpdatedLimitForKey
+																						}
+																						loading={
+																							isLoadingLimitForKey || isLoadingUpdatedLimitForKey
+																						}
+																						onClick={onSaveSignalLimit}
+																					>
+																						Save
+																					</Button>
+																					<Button
+																						variant="outlined"
+																						color="secondary"
+																						size="sm"
+																						disabled={
+																							isLoadingLimitForKey || isLoadingUpdatedLimitForKey
+																						}
+																						onClick={handleDiscardSaveLimit}
+																					>
+																						Discard
+																					</Button>
+																					<span className="signal-limit-alert-helper">
+																						You can set up an alert after saving
+																					</span>
+																				</div>
+																			</div>
+																		)}
+																</Form>
+															) : (
+																<div className="signal-limit-view-mode">
+																	{/* DAILY limit usage/limit */}
+																	<div className="signal-limit-value">
+																		<div className="limit-type">
+																			Daily <Minus size={16} />
+																		</div>
+																		<div className="limit-value">
+																			{/* Size (if usesSize) */}
+																			{signalCfg.usesSize &&
+																				(hasValidDayLimit &&
+																				limit?.config?.day?.size !== undefined ? (
+																					<>
+																						{getYAxisFormattedValue(
+																							(limit?.metric?.day?.size || 0).toString(),
+																							'bytes',
+																						)}{' '}
+																						/{' '}
+																						{getYAxisFormattedValue(
+																							(limit?.config?.day?.size || 0).toString(),
+																							'bytes',
+																						)}
+																					</>
+																				) : (
+																					<>
+																						<InfinityIcon size={16} /> NO LIMIT
+																					</>
+																				))}
+
+																			{/* Count (if usesCount) */}
+																			{signalCfg.usesCount &&
+																				(limit?.config?.day?.count !== undefined ? (
+																					<div style={{ marginTop: 4 }}>
+																						{countToUnit(
+																							limit?.metric?.day?.count || 0,
+																						).value.toFixed(2)}{' '}
+																						{countToUnit(limit?.metric?.day?.count || 0).unit} /{' '}
+																						{countToUnit(
+																							limit?.config?.day?.count || 0,
+																						).value.toFixed(2)}{' '}
+																						{countToUnit(limit?.config?.day?.count || 0).unit}
+																					</div>
+																				) : (
+																					<>
+																						<InfinityIcon size={16} /> NO LIMIT
+																					</>
+																				))}
+																		</div>
+
+																		{((signalCfg.usesSize &&
+																			limit?.config?.day?.size !== undefined) ||
+																			(signalCfg.usesCount &&
+																				limit?.config?.day?.count !== undefined)) && (
+																			<Badge
+																				asChild
+																				color="cherry"
+																				variant="outline"
+																				testId={`set-alert-btn-${signalName}`}
+																				className="set-alert-btn"
+																			>
+																				<Button onClick={onCreateSignalAlert} size="sm">
+																					<BellPlus size={12} />
+																					Set alert
+																				</Button>
+																			</Badge>
+																		)}
+																	</div>
+
+																	{/* SECOND limit usage/limit */}
+																	<div className="signal-limit-value">
+																		<div className="limit-type">
+																			Seconds <Minus size={16} />
+																		</div>
+																		<div className="limit-value">
+																			{/* Size (if usesSize) */}
+																			{signalCfg.usesSize &&
+																				(hasValidSecondLimit &&
+																				limit?.config?.second?.size !== undefined ? (
+																					<>
+																						{getYAxisFormattedValue(
+																							(limit?.metric?.second?.size || 0).toString(),
+																							'bytes',
+																						)}{' '}
+																						/{' '}
+																						{getYAxisFormattedValue(
+																							(limit?.config?.second?.size || 0).toString(),
+																							'bytes',
+																						)}
+																					</>
+																				) : (
+																					<>
+																						<InfinityIcon size={16} /> NO LIMIT
+																					</>
+																				))}
+
+																			{/* Count (if usesCount) */}
+																			{signalCfg.usesCount &&
+																				(limit?.config?.second?.count !== undefined ? (
+																					<div style={{ marginTop: 4 }}>
+																						{countToUnit(
+																							limit?.metric?.second?.count || 0,
+																						).value.toFixed(2)}{' '}
+																						{countToUnit(limit?.metric?.second?.count || 0).unit} /{' '}
+																						{countToUnit(
+																							limit?.config?.second?.count || 0,
+																						).value.toFixed(2)}{' '}
+																						{countToUnit(limit?.config?.second?.count || 0).unit}
+																					</div>
+																				) : (
+																					<>
+																						<InfinityIcon size={16} /> NO LIMIT
+																					</>
+																				))}
+																		</div>
+																	</div>
+																</div>
+															)}
+														</div>
+													</div>
+												);
+											})}
+										</div>
+									</div>
+								</div>
+							</div>
+						),
+					},
+				];
+
+				return (
+					<div className="column-render">
+						<Collapse items={items} />
+
+						<div className="ingestion-key-details">
+							<div className="ingestion-key-last-used-at">
+								{((): JSX.Element | null => {
+									const daysToExpiry = getDaysUntilExpiry(expiresOn);
+									const isNoExpiry = expiresOn === 'No Expiry';
+
+									if (!isNoExpiry && daysToExpiry < 0) {
+										return (
+											<div className="ingestion-key-expires-in danger">
+												<CalendarClock size={14} /> Expired on
+												<Minus size={12} /> {expiresOn}
+											</div>
+										);
+									}
+									if (!isNoExpiry && daysToExpiry <= 3) {
+										return (
+											<div className="ingestion-key-expires-in warning">
+												<CalendarClock size={14} /> Expires on
+												<Minus size={12} /> {expiresOn}
+											</div>
+										);
+									}
+									return (
+										<>
+											{!isNoExpiry && (
+												<>
+													<CalendarClock size={14} /> Expires on <Minus size={12} />
+												</>
+											)}
+											<Typography.Text>{expiresOn}</Typography.Text>
+										</>
+									);
+								})()}
+							</div>
+						</div>
+					</div>
+				);
+			},
+		},
+	];
+
+	const handleTableChange = (pagination: TablePaginationConfig): void => {
+		setPaginationParams({
+			page: pagination?.current || 1,
+			per_page: INITIAL_PAGE_SIZE,
+		});
+	};
+
+	const handleCopyIngestionURL = useCallback(
+		(e: React.MouseEvent<HTMLDivElement>): void => {
+			e.stopPropagation();
+			e.preventDefault();
+
+			const ingestionURL = globalConfig?.data?.ingestion_url;
+			if (ingestionURL) {
+				handleCopyKey(ingestionURL);
+			}
+		},
+		[globalConfig, handleCopyKey],
+	);
+
+	return (
+		<div className="ingestion-key-container">
+			<div className="ingestion-key-content">
+				<header>
+					<Typography.Title className="title"> Ingestion Keys </Typography.Title>
+					<Typography.Text className="subtitle">
+						Create and manage ingestion keys for the SigNoz Cloud{' '}
+						<a
+							href="https://signoz.io/docs/ingestion/signoz-cloud/keys/"
+							target="_blank"
+							className="learn-more"
+							rel="noreferrer"
+						>
+							Learn more <ArrowUpRight size={14} />
+						</a>
+					</Typography.Text>
+				</header>
+
+				{!isLoadingGlobalConfig && (
+					<div className="ingestion-setup-details-links">
+						<div className="ingestion-key-url-container">
+							<div className="ingestion-key-url-label">Ingestion URL</div>
+
+							{!isErrorGlobalConfig && (
+								<div
+									className="ingestion-key-url-value"
+									onClick={handleCopyIngestionURL}
+								>
+									{globalConfig?.data.ingestion_url}
+									<Copy className="copy-key-btn" size={12} />
+								</div>
+							)}
+
+							{isErrorGlobalConfig && (
+								<Tooltip
+									rootClassName="ingestion-url-error-tooltip"
+									arrow={false}
+									title={
+										<div className="ingestion-url-error-content">
+											<Typography.Text className="ingestion-url-error-code">
+												{globalConfigApiError?.getErrorCode()}
+											</Typography.Text>
+
+											<Typography.Text className="ingestion-url-error-message">
+												{globalConfigApiError?.getErrorMessage()}
+											</Typography.Text>
+										</div>
+									}
+									placement="topLeft"
+								>
+									<Button
+										variant="ghost"
+										size="icon"
+										color="secondary"
+										prefix={<TriangleAlert size={14} />}
+										aria-label="Ingestion URL error details"
+									/>
+								</Tooltip>
+							)}
+						</div>
+					</div>
+				)}
+
+				<div className="ingestion-keys-search-add-new">
+					<Input
+						placeholder="Search for ingestion key..."
+						prefix={<Search size={12} color={Color.BG_VANILLA_400} />}
+						value={searchValue}
+						onChange={handleSearch}
+					/>
+
+					<Button
+						variant="solid"
+						className="add-new-ingestion-key-btn"
+						prefix={<Plus size={14} />}
+						onClick={showAddModal}
+					>
+						New Ingestion key
+					</Button>
+				</div>
+
+				<Table
+					columns={columns}
+					dataSource={dataSource}
+					loading={isLoading || isRefetching}
+					showHeader={false}
+					onChange={handleTableChange}
+					pagination={{
+						pageSize: isSearching ? SEARCH_PAGE_SIZE : paginationParams?.per_page,
+						hideOnSinglePage: true,
+						showTotal: (total: number, range: number[]): string =>
+							`${range[0]}-${range[1]} of ${total} Ingestion keys`,
+						total: totalIngestionKeys,
+					}}
+					className="ingestion-keys-table"
+				/>
+			</div>
+
+			{/* Delete Key Modal */}
+			<Modal
+				className="delete-ingestion-key-modal"
+				title={<span className="title">Delete Ingestion Key</span>}
+				open={isDeleteModalOpen}
+				closable
+				afterClose={handleModalClose}
+				onCancel={hideDeleteViewModal}
+				destroyOnClose
+				footer={[
+					<Button
+						key="cancel"
+						variant="ghost"
+						color="secondary"
+						prefix={<X size={16} />}
+						onClick={hideDeleteViewModal}
+						className="cancel-btn"
+					>
+						Cancel
+					</Button>,
+					<Button
+						key="submit"
+						variant="solid"
+						color="destructive"
+						prefix={<Trash2 size={16} />}
+						loading={isDeleteingAPIKey}
+						onClick={onDeleteHandler}
+						className="delete-btn"
+					>
+						Delete Ingestion Key
+					</Button>,
+				]}
+			>
+				<Typography.Text className="delete-text">
+					{t('delete_confirm_message', {
+						keyName: activeAPIKey?.name,
+					})}
+				</Typography.Text>
+			</Modal>
+
+			{/* Delete Limit Modal */}
+			<Modal
+				className="delete-ingestion-key-modal"
+				title={<span className="title">Delete Limit </span>}
+				open={isDeleteLimitModalOpen}
+				closable
+				afterClose={handleModalClose}
+				onCancel={hideDeleteLimitModal}
+				destroyOnClose
+				footer={[
+					<Button
+						key="cancel"
+						variant="ghost"
+						color="secondary"
+						prefix={<X size={16} />}
+						onClick={hideDeleteLimitModal}
+						className="cancel-btn"
+					>
+						Cancel
+					</Button>,
+					<Button
+						key="submit"
+						variant="solid"
+						color="destructive"
+						prefix={<Trash2 size={16} />}
+						loading={isDeletingLimit}
+						onClick={onDeleteLimitHandler}
+						className="delete-btn"
+					>
+						Delete Limit
+					</Button>,
+				]}
+			>
+				<Typography.Text className="delete-text">
+					{t('delete_limit_confirm_message', {
+						limit_name: activeSignal?.signal,
+						keyName: activeAPIKey?.name,
+					})}
+				</Typography.Text>
+			</Modal>
+
+			{/* Edit Modal */}
+			<Modal
+				className="ingestion-key-modal"
+				title="Edit Ingestion Key"
+				open={isEditModalOpen}
+				key="edit-ingestion-key-modal"
+				closable
+				onCancel={hideEditViewModal}
+				afterClose={handleModalClose}
+				focusTriggerAfterClose
+				destroyOnClose
+				footer={[
+					<Button
+						key="cancel"
+						variant="ghost"
+						color="secondary"
+						prefix={<X size={16} />}
+						onClick={hideEditViewModal}
+					>
+						Cancel
+					</Button>,
+					<Button
+						key="submit"
+						variant="solid"
+						prefix={<Check size={14} />}
+						loading={isLoadingUpdateAPIKey}
+						onClick={onUpdateApiKey}
+					>
+						Update Ingestion Key
+					</Button>,
+				]}
+			>
+				<Form
+					name={`edit-ingestion-key-form-${activeAPIKey?.id}`}
+					key={activeAPIKey?.id}
+					form={editForm}
+					layout="vertical"
+					autoComplete="off"
+					initialValues={{
+						name: activeAPIKey?.name || '',
+						tags: activeAPIKey?.tags || [],
+						expires_at: dayjs(activeAPIKey?.expires_at) || null,
+					}}
+				>
+					<Form.Item
+						name="name"
+						label="Name"
+						rules={[{ required: true }, { type: 'string', min: 6 }]}
+					>
+						<Input placeholder="Enter Ingestion Key name" disabled />
+					</Form.Item>
+
+					<Form.Item name="tags" label="Tags">
+						<Badges tags={updatedTags} setTags={setUpdatedTags} />
+					</Form.Item>
+
+					<Form.Item
+						className="expires-at"
+						name="expires_at"
+						label="Expiration"
+						rules={[{ required: true }]}
+					>
+						<DatePicker
+							popupClassName="ingestion-key-expires-at"
+							disabledDate={disabledDate}
+						/>
+					</Form.Item>
+				</Form>
+			</Modal>
+
+			{/* Create New Key Modal */}
+			<Modal
+				className="ingestion-key-modal"
+				title="Create new ingestion key"
+				open={isAddModalOpen}
+				key="create-ingestion-key-modal"
+				closable
+				onCancel={hideAddViewModal}
+				destroyOnClose
+				footer={[
+					<Button
+						key="cancel"
+						variant="ghost"
+						color="secondary"
+						prefix={<X size={16} />}
+						onClick={hideAddViewModal}
+					>
+						Cancel
+					</Button>,
+					<Button
+						key="submit"
+						variant="solid"
+						testId="create-new-key"
+						prefix={<Check size={14} />}
+						loading={isLoadingCreateAPIKey}
+						onClick={onCreateIngestionKey}
+					>
+						Create new Ingestion key
+					</Button>,
+				]}
+			>
+				<Form
+					key="createForm"
+					name="create-ingestion-key-form"
+					form={createForm}
+					initialValues={{
+						role: USER_ROLES.ADMIN,
+						expiration: '1',
+						name: '',
+					}}
+					layout="vertical"
+					autoComplete="off"
+				>
+					<Form.Item
+						name="name"
+						label="Name"
+						rules={[
+							{ required: true },
+							{ type: 'string', min: 6 },
+							{
+								pattern: /^[a-zA-Z0-9_-]*$/,
+								message:
+									'Ingestion key name should only contain letters, numbers, underscores, and hyphens.',
+							},
+						]}
+						validateTrigger="onBlur"
+					>
+						<Input placeholder="Enter Ingestion Key name" />
+					</Form.Item>
+
+					<Form.Item
+						className="expires-at"
+						name="expires_at"
+						label="Expiration"
+						rules={[{ required: true }]}
+					>
+						<DatePicker
+							popupClassName="ingestion-key-expires-at"
+							disabledDate={disabledDate}
+						/>
+					</Form.Item>
+
+					<Form.Item name="tags" label="Tags">
+						<Badges tags={updatedTags} setTags={setUpdatedTags} />
+					</Form.Item>
+				</Form>
+			</Modal>
+		</div>
+	);
+}
+
+export default MultiIngestionSettings;

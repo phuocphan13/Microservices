@@ -1,0 +1,54 @@
+.steps-footer {
+	border-top: 1px solid var(--l1-border);
+	background: var(--l1-background);
+	padding: 16px;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 64px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	&__left {
+		display: flex;
+		gap: 6px;
+		align-items: center;
+		font-size: 14px;
+		line-height: 18px; /* 128.571% */
+		letter-spacing: -0.07px;
+	}
+	&__valid-traces {
+		&--none {
+			color: var(--text-amber-500);
+		}
+	}
+	&__right {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	&__button {
+		border: none;
+		display: flex;
+		align-items: center;
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 10px; /* 83.333% */
+		letter-spacing: 0.12px;
+		border-radius: 2px;
+
+		&--run {
+			background-color: var(--primary-background);
+		}
+		&--updating {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+			color: var(--l2-foreground);
+			font-size: 12px;
+		}
+	}
+}

@@ -1,0 +1,46 @@
+import { ReactNode } from 'react';
+import { PANEL_TYPES } from 'constants/queryBuilder';
+import { WhereClauseConfig } from 'hooks/queryBuilder/useAutoComplete';
+import { IBuilderQuery } from 'types/api/queryBuilder/queryBuilderData';
+import { DataSource } from 'types/common/queryBuilder';
+
+import { OrderByFilterProps } from './filters/OrderByFilter/OrderByFilter.interfaces';
+
+type FilterConfigs = {
+	[Key in keyof Omit<IBuilderQuery, 'filters'>]: {
+		isHidden: boolean;
+		isDisabled: boolean;
+	};
+} & { filters: WhereClauseConfig };
+
+export type QueryBuilderConfig =
+	| {
+			queryVariant: 'static';
+			initialDataSource: DataSource;
+			signalSource?: string;
+	  }
+	| { queryVariant: 'dropdown'; signalSource?: string };
+
+export type QueryBuilderProps = {
+	config?: QueryBuilderConfig;
+	panelType: PANEL_TYPES;
+	actions?: ReactNode;
+	filterConfigs?: Partial<FilterConfigs>;
+	queryComponents?: { renderOrderBy?: (props: OrderByFilterProps) => ReactNode };
+	isListViewPanel?: boolean;
+	showFunctions?: boolean;
+	showOnlyWhereClause?: boolean;
+	showOnlyTraceOperator?: boolean;
+	showTraceViewSelector?: boolean;
+	showTraceOperator?: boolean;
+	version: string;
+	onChangeTraceView?: (view: TraceView) => void;
+	onSignalSourceChange?: (value: string) => void;
+	signalSourceChangeEnabled?: boolean;
+	savePreviousQuery?: boolean;
+};
+
+export enum TraceView {
+	SPANS = 'spans',
+	TRACES = 'traces',
+}

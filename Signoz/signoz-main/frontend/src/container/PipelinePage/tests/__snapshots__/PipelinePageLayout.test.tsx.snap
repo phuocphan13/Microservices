@@ -1,0 +1,97 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PipelinePage container test should render PipelinePageLayout section 1`] = `
+<DocumentFragment>
+  .c0.c0.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c1.c1.c1 {
+  margin-left: 1rem;
+}
+
+<div
+    class="c0"
+  >
+    <svg
+      aria-label="Help"
+      role="img"
+      style="font-size: 1rem; color: rgba(255, 255, 255, 0.835);"
+    />
+    <button
+      class="ant-btn css-dev-only-do-not-override-2i2tap ant-btn-primary c1"
+      type="button"
+    >
+      <span
+        class="ant-btn-icon"
+      >
+        <svg />
+      </span>
+      <span>
+        new_pipeline
+      </span>
+    </button>
+  </div>
+  .c0 {
+  margin-top: 3rem;
+}
+
+<div
+    class="c0"
+  >
+    <div
+      class="logs-pipelines-empty-state-centered-container"
+    >
+      <div
+        class="ant-card ant-card-bordered ant-card-small css-dev-only-do-not-override-2i2tap"
+      >
+        <div
+          class="ant-card-body"
+        >
+          <div
+            class="logs-pipelines-empty-state-centered-container"
+          >
+            <iframe
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen=""
+              class="logs-pipelines-empty-state-video-iframe"
+              frameborder="0"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+              src="https://www.youtube.com/embed/OneENGNmLd0"
+              title="learn_more"
+            />
+            <div>
+              <p
+                class="_typography_ulrzs_1"
+                data-slot="typography"
+                data-variant="text"
+              >
+                learn_more 
+                <a
+                  href="https://signoz.io/docs/logs-pipelines/introduction/?utm_source=product&utm_medium=pipelines-tab"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  here
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

@@ -1,0 +1,25 @@
+.serviceName {
+	color: var(--bg-robin-500);
+	font-weight: 600;
+	cursor: pointer;
+
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.error {
+	color: var(--danger-background);
+
+	a {
+		color: var(--danger-background);
+	}
+}
+
+.service-high-top-level-operations {
+	width: 300px;
+
+	.popover-description {
+		padding: 16px 0;
+	}
+}

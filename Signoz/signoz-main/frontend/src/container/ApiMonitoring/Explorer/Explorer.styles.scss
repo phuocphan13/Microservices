@@ -1,0 +1,228 @@
+.api-monitoring-page {
+	display: flex;
+	height: 100%;
+
+	.api-quick-filter-left-section {
+		width: 0%;
+		flex-shrink: 0;
+
+		.api-quick-filters-header {
+			padding: 12px;
+			border-bottom: 1px solid var(--l1-border);
+			border-right: 1px solid var(--l1-border);
+
+			display: flex;
+			align-items: center;
+			gap: 6px;
+
+			font-size: 14px;
+			line-height: 18px;
+		}
+	}
+
+	.api-module-right-section {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+
+		.toolbar {
+			border-bottom: 1px solid var(--l1-border);
+		}
+
+		.api-monitoring-list-header {
+			width: 100%;
+			padding: 8px;
+			display: flex;
+
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.query-builder-search-v2 {
+			min-width: 80%;
+			flex: 1;
+		}
+	}
+
+	.api-monitoring-domain-list-table {
+		.ant-table {
+			.ant-table-thead > tr > th {
+				padding: 12px;
+				font-weight: 500;
+				font-size: 12px;
+				line-height: 18px;
+				border-bottom: none;
+
+				color: var(--l2-foreground);
+				font-family: Inter;
+				font-size: 11px;
+				font-style: normal;
+				font-weight: 600;
+				line-height: 18px;
+				/* 163.636% */
+				letter-spacing: 0.44px;
+				text-transform: uppercase;
+				background: none;
+
+				&::before {
+					background-color: transparent;
+				}
+			}
+
+			.ant-table-thead > tr > th:has(.domain-list-name-col-header) {
+				background: var(--l2-background);
+			}
+
+			.ant-table-cell {
+				padding: 12px;
+				font-size: 13px;
+				line-height: 20px;
+				color: var(--l1-foreground);
+				border-bottom: none;
+			}
+
+			.ant-table-cell:has(.domain-list-name-col-value) {
+				background: var(--l2-background);
+			}
+
+			.round-metric-tag {
+				display: inline-flex;
+				padding: 2px 8px;
+				align-items: center;
+				gap: 6px;
+				width: fit-content;
+
+				border-radius: 50px;
+				border: 1px solid var(--l1-border);
+				background: var(--l1-border);
+				text-transform: lowercase;
+			}
+
+			.ant-table-tbody > tr:hover > td {
+				background: color-mix(in srgb, var(--l1-foreground) 4%, transparent);
+			}
+
+			.ant-table-tbody > tr:hover > td:has(.domain-list-name-col-value) {
+				background: color-mix(
+					in srgb,
+					var(--l1-foreground) 4%,
+					var(--l2-background)
+				);
+			}
+
+			.ant-table-cell:first-child {
+				text-align: justify;
+			}
+
+			.ant-table-cell:nth-child(2) {
+				padding-left: 16px;
+				padding-right: 16px;
+			}
+
+			.ant-table-cell:nth-child(n + 3) {
+				padding-right: 24px;
+			}
+
+			.column-header-right {
+				text-align: right;
+			}
+
+			.ant-table-tbody > tr > td {
+				border-bottom: none;
+			}
+
+			.ant-table-thead
+				> tr
+				> th:not(:last-child):not(.ant-table-selection-column):not(
+					.ant-table-row-expand-icon-cell
+				):not([colspan])::before {
+				background-color: transparent;
+			}
+
+			.ant-empty-normal {
+				visibility: hidden;
+			}
+
+			.table-row-light {
+				background: none;
+			}
+
+			.table-row-dark {
+				background: var(--l2-background);
+			}
+
+			.expanded-clickable-row {
+				cursor: pointer;
+			}
+
+			.error-rate {
+				width: 120px;
+			}
+		}
+	}
+
+	&.filter-visible {
+		.api-quick-filter-left-section {
+			width: 260px;
+		}
+
+		.api-module-right-section {
+			width: calc(100% - 260px);
+		}
+	}
+}
+
+.no-filtered-domains-message-container {
+	height: 30vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	.no-filtered-domains-message-content {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		justify-content: center;
+
+		width: fit-content;
+		padding: 24px;
+	}
+
+	.no-filtered-domains-message {
+		margin-top: 8px;
+		display: flex;
+		gap: 8px;
+		flex-direction: column;
+
+		.no-domain-title {
+			color: var(--l1-foreground);
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 500;
+			line-height: 20px; /* 142.857% */
+		}
+
+		.no-domain-subtitle {
+			color: var(--l2-foreground);
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 400;
+			line-height: 20px; /* 142.857% */
+
+			.attribute {
+				font-family: 'Space Mono';
+			}
+		}
+
+		.external-api-doc-link {
+			display: flex;
+			flex-direction: row;
+			gap: 4px;
+			align-items: center;
+		}
+	}
+}

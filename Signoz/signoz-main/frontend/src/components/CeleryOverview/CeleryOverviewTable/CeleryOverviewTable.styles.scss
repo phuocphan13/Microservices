@@ -1,0 +1,106 @@
+.progress-container {
+	display: flex;
+	align-items: center;
+}
+
+.progress-bar {
+	flex: 1;
+	margin-right: 8px;
+}
+
+.clickable-row {
+	cursor: pointer;
+}
+
+.celery-overview-table-container {
+	width: 100%;
+
+	> .ant-input-search {
+		margin-bottom: 8px;
+	}
+
+	.celery-overview-table {
+		.ant-table {
+			.ant-table-thead > tr > th {
+				padding: 12px;
+				font-weight: 500;
+				font-size: 12px;
+				line-height: 18px;
+
+				background: var(--l1-background);
+				border-bottom: none;
+
+				color: var(--l2-foreground);
+				font-family: Inter;
+				font-size: 11px;
+				font-style: normal;
+				font-weight: 600;
+				line-height: 18px; /* 163.636% */
+				letter-spacing: 0.44px;
+
+				&::before {
+					background-color: transparent;
+				}
+			}
+
+			.ant-table-cell {
+				padding: 12px;
+				font-size: 13px;
+				line-height: 20px;
+				color: var(--l1-foreground);
+				background: var(--l1-background);
+			}
+
+			.ant-table-tbody > tr:hover > td {
+				background: color-mix(in srgb, var(--l1-foreground) 4%, transparent);
+			}
+
+			.ant-table-cell:first-child {
+				text-align: justify;
+			}
+
+			.ant-table-cell:nth-child(2) {
+				padding-left: 16px;
+				padding-right: 16px;
+			}
+
+			.ant-table-cell:nth-child(n + 3) {
+				padding-right: 24px;
+			}
+			.column-header-right {
+				text-align: right;
+			}
+			.column-header-left {
+				text-align: left;
+			}
+			.ant-table-tbody > tr > td {
+				border-bottom: none;
+			}
+		}
+
+		.ant-pagination {
+			position: relative;
+			bottom: 0;
+			width: 100%;
+			background: var(--l1-background);
+			padding: 4px;
+			margin: 0;
+
+			// this is to offset chat support icon
+			padding-right: 72px;
+
+			.ant-pagination-item {
+				border-radius: 4px;
+
+				&-active {
+					background: var(--primary-background);
+					border-color: var(--primary-background);
+
+					a {
+						color: var(--primary-foreground) !important;
+					}
+				}
+			}
+		}
+	}
+}

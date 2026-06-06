@@ -1,0 +1,42 @@
+.logs-table {
+	.ant-table {
+		background: unset;
+		border: none;
+	}
+
+	.ant-table-thead {
+		.ant-table-cell {
+			background: unset !important;
+			border-bottom: unset !important;
+			color: var(--l2-foreground) !important;
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 500;
+			line-height: 20px;
+			letter-spacing: -0.07px;
+		}
+
+		.ant-table-cell::before {
+			background-color: unset !important;
+		}
+	}
+
+	.ant-table-row {
+		color: var(--l2-foreground) !important;
+		font-family: Inter;
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400 !important;
+		line-height: 20px;
+		letter-spacing: -0.07px;
+
+		.ant-table-cell-row-hover {
+			background: color-mix(
+				in srgb,
+				var(--bg-robin-200) 4%,
+				transparent
+			) !important;
+		}
+	}
+}

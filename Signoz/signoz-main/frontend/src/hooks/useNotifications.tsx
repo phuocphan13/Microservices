@@ -1,0 +1,49 @@
+import {
+	// eslint-disable-next-line no-restricted-imports
+	createContext,
+	// eslint-disable-next-line no-restricted-imports
+	useContext,
+	useMemo,
+} from 'react';
+import { notification } from 'antd';
+import type { NotificationInstance } from 'antd/es/notification/interface';
+
+type Notification = {
+	notifications: NotificationInstance;
+};
+
+const defaultNotification: Notification = {
+	notifications: {
+		success: (): void => {},
+		error: (): void => {},
+		info: (): void => {},
+		warning: (): void => {},
+		open: (): void => {},
+		destroy: (): void => {},
+	},
+};
+
+export const NotificationContext =
+	createContext<Notification>(defaultNotification);
+
+export function NotificationProvider({
+	children,
+}: {
+	children: JSX.Element;
+}): JSX.Element {
+	const [notificationApi, NotificationElement] = notification.useNotification();
+	const notifications = useMemo(
+		() => ({ notifications: notificationApi }),
+		[notificationApi],
+	);
+
+	return (
+		<NotificationContext.Provider value={notifications}>
+			{NotificationElement}
+			{children}
+		</NotificationContext.Provider>
+	);
+}
+
+export const useNotifications = (): Notification =>
+	useContext(NotificationContext);

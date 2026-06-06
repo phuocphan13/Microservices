@@ -1,0 +1,67 @@
+.announcement-tooltip {
+	&__dot {
+		position: absolute;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background-color: var(--primary-background);
+		z-index: 1000;
+	}
+
+	&__title {
+		font-weight: 500;
+		font-size: 15px;
+		padding: 0;
+		margin: 0;
+	}
+
+	&__container {
+		position: absolute;
+		width: 320px;
+		background-color: var(--primary-background);
+		color: var(--primary-foreground);
+		border-radius: 8px;
+		padding: 12px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		z-index: 1000;
+	}
+
+	&__header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	&__close-icon {
+		cursor: pointer;
+		color: var(--primary-foreground);
+	}
+
+	&__message {
+		margin: 12px 0;
+		line-height: 20px;
+	}
+
+	&__footer {
+		display: flex;
+		justify-content: flex-end;
+
+		// TODO: Need to override the button styles for this component due to container styles.
+		// Fix - @aks07
+
+		&__button {
+			margin-top: 12px;
+			color: var(--base-black);
+			background-color: var(--base-white);
+			border: none;
+			padding: 6px 12px;
+			border-radius: 4px;
+			cursor: pointer;
+
+			&:hover {
+				background-color: var(--base-white);
+				color: var(--bg-robin-500);
+			}
+		}
+	}
+}

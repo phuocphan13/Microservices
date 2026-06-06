@@ -1,0 +1,15 @@
+.show-more-button {
+	background-color: var(--l3-background);
+	color: var(--l1-foreground);
+	display: flex;
+	padding: 4px 8px;
+	align-items: center;
+	gap: 3px;
+	border: none;
+	margin: 0;
+
+	&.disabled {
+		background-color: var(--l3-background);
+		color: var(--l2-foreground);
+	}
+}

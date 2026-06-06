@@ -1,0 +1,145 @@
+package opamp
+
+import (
+	"context"
+	"crypto/sha256"
+	"log/slog"
+
+	"github.com/knadh/koanf/parsers/yaml"
+	"github.com/open-telemetry/opamp-go/protobufs"
+	"go.opentelemetry.io/collector/confmap"
+
+	"github.com/SigNoz/signoz/pkg/errors"
+	model "github.com/SigNoz/signoz/pkg/query-service/app/opamp/model"
+	"github.com/SigNoz/signoz/pkg/query-service/app/opamp/otelconfig"
+)
+
+var (
+	CodeNoAgentsAvailable          = errors.MustNewCode("no_agents_available")
+	CodeOpAmpServerDown            = errors.MustNewCode("opamp_server_down")
+	CodeMultipleAgentsNotSupported = errors.MustNewCode("multiple_agents_not_supported")
+)
+
+// inserts or updates ingestion controller processors depending
+// on the signal (metrics or traces)
+func UpsertControlProcessors(ctx context.Context, signal string,
+	processors map[string]interface{}, callback model.OnChangeCallback,
+) (string, error) {
+	// note: only processors enabled through tracesPipelinePlan will be added
+	// to pipeline. To enable or disable processors from pipeline, call
+	// AddToTracePipeline() or RemoveFromTracesPipeline() prior to calling
+	// this method
+
+	slog.Debug("initiating ingestion rules deployment config", "signal", signal, "processors", processors)
+
+	if signal != string(Metrics) && signal != string(Traces) {
+		slog.Error("received invalid signal in UpsertControlProcessors", "signal", signal)
+		return "", errors.NewInvalidInputf(errors.CodeInvalidInput, "signal not supported in ingestion rules: %s", signal)
+	}
+
+	if opAmpServer == nil {
+		return "", errors.NewInternalf(CodeOpAmpServerDown, "opamp server is down, unable to push config to agent at this moment")
+	}
+
+	agents := opAmpServer.agents.GetAllAgents()
+	if len(agents) == 0 {
+		return "", errors.NewInternalf(CodeNoAgentsAvailable, "no agents available at the moment")
+	}
+
+	if len(agents) > 1 && signal == string(Traces) {
+		slog.Debug("found multiple agents, this feature is not supported for traces pipeline (sampling rules)")
+		return "", errors.NewInvalidInputf(CodeMultipleAgentsNotSupported, "multiple agents not supported in sampling rules")
+	}
+	hash := ""
+	for _, agent := range agents {
+		agenthash, err := addIngestionControlToAgent(agent, signal, processors, false)
+		if err != nil {
+			slog.Error("failed to push ingestion rules config to agent", "agent_id", agent.AgentID, errors.Attr(err))
+			continue
+		}
+
+		if agenthash != "" {
+			// subscribe callback
+			model.ListenToConfigUpdate(agent.OrgID, agent.AgentID, agenthash, callback)
+		}
+
+		hash = agenthash
+	}
+
+	return hash, nil
+}
+
+// addIngestionControlToAgent adds ingestion contorl rules to agent config
+func addIngestionControlToAgent(agent *model.Agent, signal string, processors map[string]interface{}, withLB bool) (string, error) {
+	confHash := ""
+	config := agent.Config
+	c, err := yaml.Parser().Unmarshal([]byte(config))
+	if err != nil {
+		return confHash, err
+	}
+
+	agentConf := confmap.NewFromStringMap(c)
+
+	// add ingestion control spec
+	err = makeIngestionControlSpec(agentConf, Signal(signal), processors)
+	if err != nil {
+		slog.Error("failed to prepare ingestion control processors for agent", "agent_id", agent.AgentID, errors.Attr(err))
+		return confHash, err
+	}
+
+	// ------ complete adding processor
+	configR, err := yaml.Parser().Marshal(agentConf.ToStringMap())
+	if err != nil {
+		return confHash, err
+	}
+
+	slog.Debug("sending new config", "config", string(configR))
+	hash := sha256.New()
+	_, err = hash.Write(configR)
+	if err != nil {
+		return confHash, err
+	}
+	confHash = string(hash.Sum(nil))
+	agent.Config = string(configR)
+	err = agent.Upsert()
+	if err != nil {
+		return confHash, err
+	}
+
+	agent.SendToAgent(&protobufs.ServerToAgent{
+		RemoteConfig: &protobufs.AgentRemoteConfig{
+			Config: &protobufs.AgentConfigMap{
+				ConfigMap: map[string]*protobufs.AgentConfigFile{
+					"collector.yaml": {
+						Body:        configR,
+						ContentType: "application/x-yaml",
+					},
+				},
+			},
+			ConfigHash: []byte(confHash),
+		},
+	})
+
+	return string(confHash), nil
+}
+
+// prepare spec to introduce ingestion control in agent conf
+func makeIngestionControlSpec(agentConf *confmap.Conf, signal Signal, processors map[string]interface{}) error {
+	configParser := otelconfig.NewConfigParser(agentConf)
+	configParser.UpdateProcessors(processors)
+
+	// edit pipeline if processor is missing
+	currentPipeline := configParser.PipelineProcessors(string(signal))
+
+	// merge tracesPipelinePlan with current pipeline
+	mergedPipeline, err := buildPipeline(signal, currentPipeline)
+	if err != nil {
+		slog.Error("failed to build pipeline", "signal", string(signal), errors.Attr(err))
+		return err
+	}
+
+	// add merged pipeline to the service
+	configParser.UpdateProcsInPipeline(string(signal), mergedPipeline)
+
+	return nil
+}

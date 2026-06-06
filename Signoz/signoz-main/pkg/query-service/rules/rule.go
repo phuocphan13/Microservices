@@ -1,0 +1,53 @@
+package rules
+
+import (
+	"context"
+	"time"
+
+	"github.com/SigNoz/signoz/pkg/types/rulestatehistorytypes"
+	ruletypes "github.com/SigNoz/signoz/pkg/types/ruletypes"
+	"github.com/SigNoz/signoz/pkg/valuer"
+)
+
+// A Rule encapsulates a vector expression which is evaluated at a specified
+// interval and acted upon (currently used for alerting).
+type Rule interface {
+	ID() string
+	Name() string
+	Type() ruletypes.RuleType
+
+	Labels() ruletypes.Labels
+	Annotations() ruletypes.Labels
+	Condition() *ruletypes.RuleCondition
+	EvalDelay() valuer.TextDuration
+	EvalWindow() valuer.TextDuration
+	HoldDuration() valuer.TextDuration
+	State() ruletypes.AlertState
+	ActiveAlerts() []*ruletypes.Alert
+	// ActiveAlertsLabelFP returns a map of active alert labels fingerprint
+	ActiveAlertsLabelFP() map[uint64]struct{}
+
+	PreferredChannels() []string
+
+	// Eval evaluates the rule at the given timestamp and returns the number of active alerts.
+	Eval(context.Context, time.Time) (int, error)
+	String() string
+	SetLastError(error)
+	LastError() error
+	SetHealth(ruletypes.RuleHealth)
+	Health() ruletypes.RuleHealth
+	SetEvaluationDuration(time.Duration)
+	GetEvaluationDuration() time.Duration
+	SetEvaluationTimestamp(time.Time)
+	GetEvaluationTimestamp() time.Time
+
+	RecordRuleStateHistory(ctx context.Context, itemsToAdd []rulestatehistorytypes.RuleStateHistory) error
+
+	SendAlerts(
+		ctx context.Context,
+		ts time.Time,
+		resendDelay time.Duration,
+		interval time.Duration,
+		notifyFunc NotifyFunc,
+	)
+}

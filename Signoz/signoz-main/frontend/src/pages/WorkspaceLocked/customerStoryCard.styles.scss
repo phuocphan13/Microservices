@@ -1,0 +1,35 @@
+$component-name: 'customer-story-card';
+$ant-card-override: 'ant-card';
+$light-theme: 'lightMode';
+
+.#{$component-name} {
+	max-width: 385px;
+	margin: 0 auto; // Center the card within the column
+	margin-bottom: 24px;
+	border-radius: 6px;
+	transition:
+		transform 0.3s ease,
+		box-shadow 0.3s ease;
+	background-color: var(--card);
+	border: 1px solid var(--l1-border);
+
+	.#{$light-theme} & {
+		border: 1px solid var(--l1-border);
+		background: var(--card);
+	}
+
+	.#{$ant-card-override}-meta-title {
+		margin-bottom: 2px !important;
+	}
+
+	&:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		background-color: var(--l2-background);
+
+		.#{$light-theme} & {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			background-color: var(--card);
+		}
+	}
+}

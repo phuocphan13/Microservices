@@ -1,0 +1,28 @@
+.time-selection-target {
+	display: flex;
+	height: 32px;
+	padding: 6px 6px 6px 8px;
+	justify-content: space-between;
+	align-items: center;
+	gap: 4px;
+	align-self: stretch;
+	border-radius: 2px;
+	border: 1px solid var(--l1-border);
+	background: var(--l2-background);
+	box-shadow: none;
+
+	.button-selected-text {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.selected-value {
+		color: var(--l2-foreground);
+		font-family: Inter;
+		font-size: 12px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 16px; /* 133.333% */
+	}
+}

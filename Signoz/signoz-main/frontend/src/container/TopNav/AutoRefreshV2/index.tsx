@@ -1,0 +1,218 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+// eslint-disable-next-line no-restricted-imports
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import { useInterval } from 'react-use';
+import { Check, ChevronDown } from '@signozhq/icons';
+import { Button, Popover } from 'antd';
+import { Checkbox } from '@signozhq/ui/checkbox';
+import { Typography } from '@signozhq/ui/typography';
+import get from 'api/browser/localstorage/get';
+import set from 'api/browser/localstorage/set';
+import { DASHBOARD_TIME_IN_DURATION } from 'constants/app';
+import useUrlQuery from 'hooks/useUrlQuery';
+import { getMinMaxForSelectedTime } from 'lib/getMinMax';
+import _omit from 'lodash-es/omit';
+// eslint-disable-next-line no-restricted-imports
+import { Dispatch } from 'redux';
+import { AppState } from 'store/reducers';
+import AppActions from 'types/actions';
+import {
+	UPDATE_AUTO_REFRESH_INTERVAL,
+	UPDATE_TIME_INTERVAL,
+} from 'types/actions/globalTime';
+import { GlobalReducer } from 'types/reducer/globalTime';
+import { popupContainer } from 'utils/selectPopupContainer';
+
+import { refreshIntervalOptions } from './constants';
+import { ButtonContainer } from './styles';
+
+import './AutoRefreshV2.styles.scss';
+
+const DEFAULT_REFRESH_INTERVAL = '30s';
+
+function AutoRefresh({
+	disabled = false,
+	showAutoRefreshBtnPrimary = true,
+}: AutoRefreshProps): JSX.Element {
+	const globalTime = useSelector<AppState, GlobalReducer>(
+		(state) => state.globalTime,
+	);
+	const { pathname } = useLocation();
+
+	const isDisabled = useMemo(
+		() =>
+			disabled ||
+			globalTime.isAutoRefreshDisabled ||
+			globalTime.selectedTime === 'custom',
+		[globalTime.isAutoRefreshDisabled, disabled, globalTime.selectedTime],
+	);
+
+	const localStorageData = JSON.parse(get(DASHBOARD_TIME_IN_DURATION) || '{}');
+
+	const localStorageValue = useMemo(
+		() => localStorageData[pathname],
+		[pathname, localStorageData],
+	);
+
+	const [isAutoRefreshEnabled, setIsAutoRefreshfreshEnabled] = useState<boolean>(
+		Boolean(localStorageValue),
+	);
+
+	const dispatch = useDispatch<Dispatch<AppActions>>();
+
+	useEffect(() => {
+		const isAutoRefreshEnabled = Boolean(localStorageValue);
+		dispatch({
+			type: UPDATE_AUTO_REFRESH_INTERVAL,
+			payload: localStorageValue,
+		});
+		setIsAutoRefreshfreshEnabled(isAutoRefreshEnabled);
+	}, [localStorageValue, dispatch]);
+
+	const params = useUrlQuery();
+
+	const defaultOption = useMemo(
+		() =>
+			refreshIntervalOptions.find(
+				(option) => option.key === DEFAULT_REFRESH_INTERVAL,
+			),
+		[],
+	);
+
+	const [selectedOption, setSelectedOption] = useState<string>(
+		localStorageValue || refreshIntervalOptions[0].key,
+	);
+
+	useEffect(() => {
+		setSelectedOption(localStorageValue || refreshIntervalOptions[0].key);
+	}, [localStorageValue, params, defaultOption]);
+
+	const getOption = useMemo(
+		() => refreshIntervalOptions.find((option) => option.key === selectedOption),
+		[selectedOption],
+	);
+
+	useInterval(() => {
+		const selectedValue = getOption?.value;
+
+		if (isDisabled || !isAutoRefreshEnabled) {
+			return;
+		}
+
+		if (selectedOption !== 'off' && selectedValue) {
+			const { maxTime, minTime } = getMinMaxForSelectedTime(
+				globalTime.selectedTime,
+				globalTime.minTime,
+				globalTime.maxTime,
+			);
+
+			dispatch({
+				type: UPDATE_TIME_INTERVAL,
+				payload: {
+					maxTime,
+					minTime,
+					selectedTime: globalTime.selectedTime,
+				},
+			});
+		}
+	}, getOption?.value || 0);
+
+	const onChangeHandler = useCallback(
+		(selectedValue: string) => {
+			setSelectedOption(selectedValue);
+			params.set(DASHBOARD_TIME_IN_DURATION, selectedValue);
+			set(
+				DASHBOARD_TIME_IN_DURATION,
+				JSON.stringify({ ...localStorageData, [pathname]: selectedValue }),
+			);
+			setIsAutoRefreshfreshEnabled(true);
+		},
+		[params, pathname, localStorageData],
+	);
+
+	const onChangeAutoRefreshHandler = useCallback(
+		(value: boolean | 'indeterminate') => {
+			const checked = value === true;
+			if (!checked) {
+				// remove the path from localstorage
+				set(
+					DASHBOARD_TIME_IN_DURATION,
+					JSON.stringify(_omit(localStorageData, pathname)),
+				);
+			} else {
+				// When enabling auto-refresh, set to DEFAULT_REFRESH_INTERVAL if no previous preference
+				const refreshInterval = localStorageValue || defaultOption?.key;
+				set(
+					DASHBOARD_TIME_IN_DURATION,
+					JSON.stringify({ ...localStorageData, [pathname]: refreshInterval }),
+				);
+				setSelectedOption(refreshInterval);
+			}
+			setIsAutoRefreshfreshEnabled(checked);
+		},
+		[localStorageData, pathname, localStorageValue, defaultOption],
+	);
+
+	if (globalTime.selectedTime === 'custom') {
+		return <></>;
+	}
+
+	return (
+		<Popover
+			getPopupContainer={popupContainer}
+			placement="bottomRight"
+			rootClassName="auto-refresh-root"
+			trigger={['click']}
+			content={
+				<div className="auto-refresh-menu">
+					<Checkbox
+						onChange={onChangeAutoRefreshHandler}
+						value={isAutoRefreshEnabled}
+						disabled={isDisabled}
+						className="auto-refresh-checkbox"
+					>
+						Auto Refresh
+					</Checkbox>
+					<Typography.Text disabled={isDisabled} className="refresh-interval-text">
+						Refresh Interval
+					</Typography.Text>
+					{refreshIntervalOptions
+						.filter((e) => e.label !== 'off')
+						.map((option) => (
+							<Button
+								type="text"
+								className="refresh-interval-btns"
+								key={option.label + option.value}
+								onClick={(): void => {
+									onChangeHandler(option.key);
+								}}
+							>
+								{option.label}
+								{option.key === selectedOption && <Check size={14} />}
+							</Button>
+						))}
+				</div>
+			}
+		>
+			<ButtonContainer
+				title="Set auto refresh"
+				type={showAutoRefreshBtnPrimary ? 'primary' : 'default'}
+			>
+				<ChevronDown size={14} />
+			</ButtonContainer>
+		</Popover>
+	);
+}
+
+interface AutoRefreshProps {
+	disabled?: boolean;
+	showAutoRefreshBtnPrimary?: boolean;
+}
+
+AutoRefresh.defaultProps = {
+	disabled: false,
+	showAutoRefreshBtnPrimary: true,
+};
+
+export default AutoRefresh;

@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PipelinePage container test should render DeleteAction section 1`] = `
+<DocumentFragment>
+  <svg
+    data-testid="pipeline-delete-action"
+    style="font-size: 1rem;"
+  />
+</DocumentFragment>
+`;

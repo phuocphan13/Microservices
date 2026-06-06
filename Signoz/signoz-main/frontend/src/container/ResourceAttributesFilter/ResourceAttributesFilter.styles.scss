@@ -1,0 +1,24 @@
+.resourceAttributesFilter-container {
+	display: flex;
+	align-items: center;
+	justify-content: stretch;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 16px;
+
+	.resource-attributes-selector {
+		flex: 1;
+		border-radius: 3px;
+
+		background-color: var(--l2-background);
+		border: 1px solid var(--l1-border);
+	}
+
+	.environment-selector {
+		min-width: 200px;
+	}
+
+	.ant-form-item {
+		margin-bottom: 0;
+	}
+}

@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PipelinePage container test should render PipelineActions section 1`] = `
+<DocumentFragment>
+  .c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 1rem;
+  -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+}
+
+<div
+    class="c0"
+  >
+    <svg
+      data-testid="pipeline-preview-action"
+      style="font-size: 1rem;"
+    />
+    <svg
+      data-testid="pipeline-edit-action"
+      style="font-size: 1rem;"
+    />
+    <svg
+      data-testid="pipeline-delete-action"
+      style="font-size: 1rem;"
+    />
+  </div>
+</DocumentFragment>
+`;

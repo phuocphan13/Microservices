@@ -1,0 +1,87 @@
+import { useMemo } from 'react';
+import { Color } from '@signozhq/design-tokens';
+import { Tooltip } from 'antd';
+import { Typography } from '@signozhq/ui/typography';
+import cx from 'classnames';
+import { isEmpty, isObject } from 'lodash-es';
+import { Check, Zap } from '@signozhq/icons';
+import { BaseAutocompleteData } from 'types/api/queryBuilder/queryAutocompleteResponse';
+
+import { getTagToken } from '../QueryBuilderSearch/utils';
+import { DropdownState } from './QueryBuilderSearchV2';
+
+import './Suggestions.styles.scss';
+
+interface ISuggestionsProps {
+	label: string;
+	value: BaseAutocompleteData | string;
+	option: DropdownState;
+	searchValue: string;
+}
+
+function Suggestions(props: ISuggestionsProps): React.ReactElement {
+	const { label, value, option, searchValue } = props;
+
+	const optionType = useMemo(() => {
+		if (isObject(value)) {
+			return value.type;
+		}
+		return '';
+	}, [value]);
+
+	const dataType = useMemo(() => {
+		if (isObject(value)) {
+			return value.dataType;
+		}
+		return '';
+	}, [value]);
+
+	const { tagValue } = getTagToken(searchValue);
+
+	return (
+		<div className="option">
+			{!isEmpty(optionType) && isObject(value) ? (
+				<Tooltip title={value.key} placement="topLeft">
+					<div className="container">
+						<section className="left-section">
+							{value.isIndexed ? (
+								<Zap size={12} fill={Color.BG_AMBER_500} />
+							) : (
+								<div className="dot" />
+							)}
+							<Typography.Text className="text value" truncate={1}>
+								{label}
+							</Typography.Text>
+						</section>
+						<section className="right-section">
+							<Typography.Text className="data-type">{value.dataType}</Typography.Text>
+							<section className={cx('type-tag', value.type)}>
+								<div className="dot" />
+								<Typography.Text className="text">{value.type}</Typography.Text>
+							</section>
+						</section>
+					</div>
+				</Tooltip>
+			) : (
+				<Tooltip title={label} placement="topLeft">
+					<div className="container-without-tag">
+						<section className="left">
+							<div className="dot" />
+							<Typography.Text className={cx('text value', option)} truncate={1}>
+								{`${label}`}
+							</Typography.Text>
+						</section>
+						<section className="right">
+							{dataType && (
+								<Typography.Text className="data-type">{dataType}</Typography.Text>
+							)}
+							{tagValue.includes(label) && <Check size={14} />}
+						</section>
+					</div>
+				</Tooltip>
+			)}
+		</div>
+	);
+}
+
+export default Suggestions;

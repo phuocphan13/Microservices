@@ -1,0 +1,120 @@
+:root {
+	--bg-vanilla-100-rgb: 255, 255, 255;
+}
+.funnel-table {
+	border-radius: 3px;
+	border: 1px solid var(--l1-border);
+	table {
+		background:
+			linear-gradient(
+				0deg,
+				color-mix(in srgb, var(--bg-robin-200) 1%, transparent) 0%,
+				color-mix(in srgb, var(--bg-robin-200) 1%, transparent) 100%
+			),
+			var(--l1-background);
+	}
+
+	&__header {
+		padding: 12px 14px 12px;
+		padding-bottom: 24px;
+		color: var(--l1-foreground);
+		font-family: Inter;
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 18px;
+		background: var(--l2-background);
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.ant-table {
+		.ant-table-thead > tr > th {
+			padding: 2px 12px;
+			border-bottom: none;
+			color: var(--l2-foreground);
+			font-family: Inter;
+			font-size: 11px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 18px;
+			letter-spacing: 0.44px;
+			text-transform: uppercase;
+			background: none;
+			.ant-table-cell:first-child {
+				border-radius: 0px 4px 0px 0px !important;
+			}
+
+			&::before {
+				background-color: transparent;
+			}
+		}
+
+		.ant-table-cell {
+			padding: 12px;
+			font-size: 13px;
+			line-height: 20px;
+			color: var(--l1-foreground);
+			border-bottom: none;
+		}
+
+		.ant-table-tbody > tr:hover > td {
+			background: color-mix(in srgb, var(--l1-foreground) 4%, transparent);
+		}
+
+		.ant-table-cell:first-child {
+			text-align: justify;
+			background: color-mix(in srgb, var(--bg-robin-200) 4%, transparent);
+		}
+
+		.ant-table-cell:nth-child(2) {
+			padding-left: 16px;
+			padding-right: 16px;
+		}
+
+		.ant-table-cell:nth-child(n + 3) {
+			padding-right: 24px;
+		}
+
+		.column-header {
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+			gap: 4px;
+		}
+
+		.ant-table-tbody > tr > td {
+			border-bottom: none;
+		}
+
+		.ant-table-thead
+			> tr
+			> th:not(:last-child):not(.ant-table-selection-column):not(
+				.ant-table-row-expand-icon-cell
+			):not([colspan])::before {
+			background-color: transparent;
+		}
+
+		.ant-empty-normal {
+			visibility: hidden;
+		}
+
+		.table-row-light {
+			background: none;
+		}
+
+		.table-row-dark {
+			background: color-mix(in srgb, var(--l1-foreground) 1%, transparent);
+		}
+
+		.trace-id-cell {
+			color: var(--bg-robin-400);
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+}

@@ -1,0 +1,89 @@
+.funnel-step-modal {
+	.ant-modal-content {
+		background: var(--l2-background);
+		.ant-modal-header {
+			background: var(--l2-background);
+			.ant-modal-title {
+				color: var(--l1-foreground);
+				font-family: Inter;
+				font-size: 14px;
+				line-height: 20px;
+			}
+		}
+		.ant-modal-body {
+			padding-bottom: 20px;
+		}
+	}
+
+	&__ok-btn {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		background: var(--primary-background);
+		border: none;
+
+		&[disabled] {
+			background: var(--l1-border);
+			opacity: 1;
+		}
+
+		.ant-btn-icon {
+			margin-inline-end: 0 !important;
+		}
+	}
+
+	&__cancel-btn {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		color: var(--l2-foreground);
+
+		.ant-btn-icon {
+			margin-inline-end: 0 !important;
+		}
+	}
+}
+
+.funnel-step-modal-content {
+	display: flex;
+	flex-direction: column;
+	gap: 28px;
+
+	&__field {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	&__label {
+		color: var(--l1-foreground);
+		font-family: Inter;
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 20px;
+	}
+
+	&__input {
+		background: var(--l3-background);
+		border: 1px solid var(--l1-border);
+		color: var(--l2-foreground);
+
+		&::placeholder {
+			color: var(--l2-foreground);
+			opacity: 0.6;
+		}
+
+		&.ant-input-textarea {
+			.ant-input {
+				background: var(--l3-background);
+				border: 1px solid var(--l1-border);
+				color: var(--l2-foreground);
+
+				&::placeholder {
+					color: var(--l2-foreground);
+					opacity: 0.6;
+				}
+			}
+		}
+	}
+}

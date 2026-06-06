@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PipelinePage container test should render CreatePipelineButton section 1`] = `
+<DocumentFragment>
+  .c0.c0.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c1.c1.c1 {
+  margin-left: 1rem;
+}
+
+<div
+    class="c0"
+  >
+    <svg
+      aria-label="Help"
+      role="img"
+      style="font-size: 1rem; color: rgba(255, 255, 255, 0.835);"
+    />
+    <button
+      class="ant-btn css-dev-only-do-not-override-2i2tap ant-btn-default c1"
+      type="button"
+    >
+      <div
+        class="ant-flex css-dev-only-do-not-override-2i2tap ant-flex-align-center"
+        style="gap: 4px;"
+      >
+        <svg />
+        enter_edit_mode
+      </div>
+    </button>
+  </div>
+</DocumentFragment>
+`;

@@ -1,0 +1,32 @@
+.tabs-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+
+	.tab {
+		&.ant-btn-default {
+			box-shadow: none;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			color: var(--l2-foreground);
+			background: var(--l2-background);
+			font-size: 13px;
+			line-height: 18px;
+			letter-spacing: -0.07px;
+			padding: 6px 24px;
+			border-color: var(--l1-border);
+			justify-content: center;
+		}
+		&.reset-button {
+			.ant-btn-icon {
+				margin: 0;
+			}
+			padding: 6px 12px;
+		}
+		&.selected {
+			color: var(--l1-foreground);
+			background: var(--l1-background-hover);
+		}
+	}
+}

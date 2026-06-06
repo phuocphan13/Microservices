@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PipelinePage container test should render Tags section 1`] = `
+<DocumentFragment>
+  <span>
+    <span
+      class="_badge_1etd5_1"
+      data-capitalize="false"
+      data-color="sakura"
+      data-slot="badge"
+      data-variant="default"
+    >
+      server
+    </span>
+    <span
+      class="_badge_1etd5_1"
+      data-capitalize="false"
+      data-color="sakura"
+      data-slot="badge"
+      data-variant="default"
+    >
+      app
+    </span>
+  </span>
+</DocumentFragment>
+`;

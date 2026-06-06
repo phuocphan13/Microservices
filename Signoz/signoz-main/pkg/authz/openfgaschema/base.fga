@@ -1,0 +1,16 @@
+module base
+
+type user
+
+type serviceaccount 
+
+type role 
+  relations
+    define assignee: [user, serviceaccount]
+
+type organization 
+  relations
+    define create: [role#assignee]
+    define read: [role#assignee]
+    define update: [role#assignee]
+    define delete: [role#assignee]

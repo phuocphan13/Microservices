@@ -1,0 +1,101 @@
+package rules
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"log/slog"
+
+	"github.com/google/uuid"
+
+	"github.com/SigNoz/signoz/pkg/errors"
+	ruletypes "github.com/SigNoz/signoz/pkg/types/ruletypes"
+)
+
+// TestNotification prepares a dummy rule for given rule parameters and
+// sends a test notification. returns alert count and error (if any)
+func defaultTestNotification(opts PrepareTestRuleOptions) (int, error) {
+	ctx := context.Background()
+
+	if opts.Rule == nil {
+		return 0, errors.NewInvalidInputf(errors.CodeInvalidInput, "rule is required")
+	}
+
+	parsedRule := opts.Rule
+	var alertname = parsedRule.AlertName
+	if alertname == "" {
+		// alertname is not mandatory for testing, so picking
+		// a random string here
+		alertname = uuid.New().String()
+	}
+
+	// append name to indicate this is test alert
+	parsedRule.AlertName = fmt.Sprintf("%s%s", alertname, ruletypes.TestAlertPostFix)
+
+	var rule Rule
+	var err error
+
+	if parsedRule.RuleType == ruletypes.RuleTypeThreshold {
+
+		// add special labels for test alerts
+		parsedRule.Labels[ruletypes.RuleSourceLabel] = ""
+		parsedRule.Labels[ruletypes.AlertRuleIDLabel] = ""
+
+		// create a threshold rule
+		rule, err = NewThresholdRule(
+			alertname,
+			opts.OrgID,
+			parsedRule,
+			opts.Querier,
+			opts.Logger,
+			opts.ManagerOpts.Alertmanager.Config().ExternalURL,
+			WithSendAlways(),
+			WithSendUnmatched(),
+			WithSQLStore(opts.SQLStore),
+			WithQueryParser(opts.ManagerOpts.QueryParser),
+			WithMetadataStore(opts.ManagerOpts.MetadataStore),
+		)
+
+		if err != nil {
+			slog.Error("failed to prepare a new threshold rule for test", errors.Attr(err))
+			return 0, err
+		}
+
+	} else if parsedRule.RuleType == ruletypes.RuleTypeProm {
+
+		// create promql rule
+		rule, err = NewPromRule(
+			alertname,
+			opts.OrgID,
+			parsedRule,
+			opts.Logger,
+			opts.ManagerOpts.Prometheus,
+			opts.ManagerOpts.Alertmanager.Config().ExternalURL,
+			WithSendAlways(),
+			WithSendUnmatched(),
+			WithSQLStore(opts.SQLStore),
+			WithQueryParser(opts.ManagerOpts.QueryParser),
+			WithMetadataStore(opts.ManagerOpts.MetadataStore),
+		)
+
+		if err != nil {
+			slog.Error("failed to prepare a new promql rule for test", errors.Attr(err))
+			return 0, err
+		}
+	} else {
+		return 0, errors.NewInvalidInputf(errors.CodeInvalidInput, "invalid rule type")
+	}
+
+	// set timestamp to current utc time
+	ts := time.Now().UTC()
+
+	alertsFound, err := rule.Eval(ctx, ts)
+	if err != nil {
+		slog.Error("evaluating rule failed", slog.String("rule.id", rule.ID()), errors.Attr(err))
+		return 0, err
+	}
+	rule.SendAlerts(ctx, ts, 0, time.Duration(1*time.Minute), opts.NotifyFunc)
+
+	return alertsFound, nil
+}

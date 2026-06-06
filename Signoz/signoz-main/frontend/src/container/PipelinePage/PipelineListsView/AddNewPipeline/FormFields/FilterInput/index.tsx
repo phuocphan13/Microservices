@@ -1,0 +1,86 @@
+import { useTranslation } from 'react-i18next';
+import { Form } from 'antd';
+import { initialQueryBuilderFormValuesMap } from 'constants/queryBuilder';
+import QueryBuilderSearchV2 from 'container/QueryBuilder/filters/QueryBuilderSearchV2/QueryBuilderSearchV2';
+import isEqual from 'lodash-es/isEqual';
+import { TagFilter } from 'types/api/queryBuilder/queryBuilderData';
+
+import { ProcessorFormField } from '../../../AddNewProcessor/config';
+import { formValidationRules } from '../../../config';
+import LogsFilterPreview from '../../../Preview/LogsFilterPreview';
+
+import './styles.scss';
+
+function TagFilterInput({
+	value,
+	onChange,
+	placeholder,
+}: TagFilterInputProps): JSX.Element {
+	const query = { ...initialQueryBuilderFormValuesMap.logs };
+	if (value) {
+		query.filters = value;
+	}
+
+	const onQueryChange = (newValue: TagFilter): void => {
+		// Avoid unnecessary onChange calls
+		if (!isEqual(newValue, query.filters)) {
+			onChange(newValue);
+		}
+	};
+
+	return (
+		<QueryBuilderSearchV2
+			query={query}
+			onChange={onQueryChange}
+			placeholder={placeholder}
+		/>
+	);
+}
+
+interface TagFilterInputProps {
+	onChange: (filter: TagFilter) => void;
+	value: TagFilter;
+	placeholder: string;
+}
+
+function TagFilterInputWithLogsResultPreview({
+	value,
+	onChange,
+	placeholder,
+}: TagFilterInputProps): JSX.Element {
+	return (
+		<>
+			<TagFilterInput
+				placeholder={placeholder}
+				value={value}
+				onChange={onChange}
+			/>
+			<div className="pipeline-filter-input-preview-container">
+				<LogsFilterPreview filter={value} />
+			</div>
+		</>
+	);
+}
+
+function FilterInput({ fieldData }: FilterInputProps): JSX.Element {
+	const { t } = useTranslation('pipeline');
+	return (
+		<Form.Item
+			required={false}
+			label={fieldData.fieldName}
+			key={fieldData.id}
+			rules={formValidationRules}
+			name={fieldData.name}
+		>
+			{/* Antd form will supply value and onChange here.
+      // @ts-expect-error */}
+			<TagFilterInputWithLogsResultPreview
+				placeholder={t(fieldData.placeholder)}
+			/>
+		</Form.Item>
+	);
+}
+interface FilterInputProps {
+	fieldData: ProcessorFormField;
+}
+export default FilterInput;

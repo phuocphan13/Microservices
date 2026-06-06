@@ -1,0 +1,17 @@
+.resourceAttributesFilter-container-v2 {
+	margin: 8px;
+
+	.ant-select-selector {
+		border-radius: 2px;
+		border: 1px solid var(--border) !important;
+		background-color: var(--l2-background) !important;
+
+		input {
+			font-size: 12px;
+		}
+
+		[data-slot='badge'] .ant-typography {
+			font-size: 12px;
+		}
+	}
+}

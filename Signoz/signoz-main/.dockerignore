@@ -1,0 +1,14 @@
+.git
+.github
+.vscode
+.devenv
+README.md
+deploy
+sample-apps
+
+# frontend
+**/node_modules
+
+# local env files (tracked example.env templates are unaffected)
+**/.env
+**/.env.*

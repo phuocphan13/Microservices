@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PipelinePage container test should render DragAction section 1`] = `
+<DocumentFragment>
+  .c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  gap: 1.25rem;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+<div
+    class="c0"
+  >
+    <div
+      class="_switch-wrapper_jbsv7_1"
+    >
+      <button
+        aria-checked="true"
+        class="_switch_jbsv7_1"
+        data-color="robin"
+        data-state="checked"
+        id=":r0:"
+        role="switch"
+        type="button"
+        value="on"
+      >
+        <span
+          class="_switch__thumb_jbsv7_59"
+          data-state="checked"
+        />
+      </button>
+    </div>
+    <svg
+      style="font-size: 1rem; cursor: move;"
+    />
+  </div>
+</DocumentFragment>
+`;

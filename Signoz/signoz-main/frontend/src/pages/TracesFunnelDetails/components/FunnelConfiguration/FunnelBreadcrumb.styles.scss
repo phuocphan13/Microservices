@@ -1,0 +1,26 @@
+.funnel-breadcrumb {
+	height: 20px;
+	&__link {
+		display: flex;
+		align-items: center;
+	}
+	li:first-of-type {
+		.funnel-breadcrumb__title {
+			color: var(--l1-foreground);
+		}
+	}
+	.ant-breadcrumb-separator {
+		color: var(--l1-foreground);
+	}
+	& > ol {
+		gap: 6px;
+	}
+	&__title {
+		color: var(--l1-foreground);
+		font-family: Inter;
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 20px; /* 142.857% */
+	}
+}

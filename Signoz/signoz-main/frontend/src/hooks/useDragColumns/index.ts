@@ -1,0 +1,85 @@
+import { useCallback, useEffect, useMemo } from 'react';
+import type { TableColumnsType as ColumnsType } from 'antd';
+import getFromLocalstorage from 'api/browser/localstorage/get';
+import setToLocalstorage from 'api/browser/localstorage/set';
+import { LOCALSTORAGE } from 'constants/localStorage';
+import useUrlQueryData from 'hooks/useUrlQueryData';
+
+import { COLUMNS } from './configs';
+import { UseDragColumns } from './types';
+
+const useDragColumns = <T>(storageKey: LOCALSTORAGE): UseDragColumns<T> => {
+	const {
+		query: draggedColumnsQuery,
+		queryData: draggedColumns,
+		redirectWithQuery: redirectWithDraggedColumns,
+	} = useUrlQueryData<ColumnsType<T>>(COLUMNS, []);
+
+	const localStorageDraggedColumns = useMemo(
+		() => getFromLocalstorage(storageKey),
+		[storageKey],
+	);
+
+	const handleRedirectWithDraggedColumns = useCallback(
+		(columns: ColumnsType<T>) => {
+			redirectWithDraggedColumns(columns);
+
+			setToLocalstorage(storageKey, JSON.stringify(columns));
+		},
+		[storageKey, redirectWithDraggedColumns],
+	);
+
+	const onDragColumns = useCallback(
+		(columns: ColumnsType<T>, fromIndex: number, toIndex: number): void => {
+			const columnsData = [...columns];
+			const item = columnsData.splice(fromIndex, 1)[0];
+			columnsData.splice(toIndex, 0, item);
+
+			handleRedirectWithDraggedColumns(columnsData);
+		},
+		[handleRedirectWithDraggedColumns],
+	);
+
+	const onColumnOrderChange = useCallback(
+		(newColumns: ColumnsType<T>): void => {
+			handleRedirectWithDraggedColumns(newColumns);
+		},
+		[handleRedirectWithDraggedColumns],
+	);
+
+	const redirectWithNewDraggedColumns = useCallback(
+		async (localStorageColumns: string) => {
+			let nextDraggedColumns: ColumnsType<T> = [];
+
+			try {
+				const parsedDraggedColumns = await JSON.parse(localStorageColumns);
+				nextDraggedColumns = parsedDraggedColumns;
+			} catch (e) {
+				console.error('error while parsing json: ', e);
+			} finally {
+				redirectWithDraggedColumns(nextDraggedColumns);
+			}
+		},
+		[redirectWithDraggedColumns],
+	);
+
+	useEffect(() => {
+		if (draggedColumnsQuery || !localStorageDraggedColumns) {
+			return;
+		}
+
+		redirectWithNewDraggedColumns(localStorageDraggedColumns);
+	}, [
+		draggedColumnsQuery,
+		localStorageDraggedColumns,
+		redirectWithNewDraggedColumns,
+	]);
+
+	return {
+		draggedColumns,
+		onDragColumns,
+		onColumnOrderChange,
+	};
+};
+
+export default useDragColumns;

@@ -1,0 +1,21 @@
+.traces-funnels-header {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+
+	.traces-funnels-header-title {
+		color: var(--l1-foreground);
+		font-size: 18px;
+		font-style: normal;
+		font-weight: 500;
+		line-height: 28px;
+		letter-spacing: -0.09px;
+		margin: 0;
+	}
+
+	.traces-funnels-header-subtitle {
+		color: var(--l2-foreground);
+		font-size: 14px;
+		line-height: 20px;
+	}
+}

@@ -1,0 +1,36 @@
+.code-snippet-container {
+	position: relative;
+	// background-color: rgb(43, 43, 43);
+	background-color: var(--bg-ink-400);
+	border-color: var(--bg-ink-400);
+}
+
+.code-copy-btn {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+
+	button {
+		cursor: pointer;
+
+		background-color: color-mix(in srgb, var(--bg-ink-300) 70%, transparent);
+		color: var(--l1-foreground);
+		border: none;
+		padding: 8px;
+		border-radius: 3px;
+		transition: all 0.1s;
+
+		&:hover {
+			background-color: var(--bg-ink-300);
+		}
+	}
+
+	&.copied {
+		button {
+			background-color: var(--bg-forest-500);
+		}
+	}
+}

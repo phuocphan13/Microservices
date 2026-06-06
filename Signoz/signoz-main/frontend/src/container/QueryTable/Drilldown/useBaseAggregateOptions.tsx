@@ -1,0 +1,213 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Link, Loader } from '@signozhq/icons';
+import OverlayScrollbar from 'components/OverlayScrollbar/OverlayScrollbar';
+import { PANEL_TYPES } from 'constants/queryBuilder';
+import useUpdatedQuery from 'container/GridCardLayout/useResolveQuery';
+import { processContextLinks } from 'container/NewWidget/RightContainer/ContextLinks/utils';
+import useContextVariables from 'hooks/dashboard/useContextVariables';
+import ContextMenu from 'periscope/components/ContextMenu';
+import { useDashboardStore } from 'providers/Dashboard/store/useDashboardStore';
+import { ContextLinksData } from 'types/api/dashboard/getAll';
+import { Query } from 'types/api/queryBuilder/queryBuilderData';
+import { openInNewTab } from 'utils/navigation';
+
+import { ContextMenuItem } from './contextConfig';
+import { getDataLinks } from './dataLinksUtils';
+import { getAggregateColumnHeader } from './drilldownUtils';
+import { getBaseContextConfig } from './menuOptions';
+import { AggregateData } from './useAggregateDrilldown';
+import useBaseDrilldownNavigate from './useBaseDrilldownNavigate';
+
+interface UseBaseAggregateOptionsProps {
+	query: Query;
+	onClose: () => void;
+	subMenu: string;
+	setSubMenu: (subMenu: string) => void;
+	aggregateData: AggregateData | null;
+	contextLinks?: ContextLinksData;
+	panelType?: PANEL_TYPES;
+	fieldVariables: Record<string, string | number | boolean>;
+}
+
+interface BaseAggregateOptionsConfig {
+	header?: string | React.ReactNode;
+	items?: ContextMenuItem;
+}
+
+const useBaseAggregateOptions = ({
+	query,
+	onClose,
+	setSubMenu,
+	aggregateData,
+	contextLinks,
+	panelType,
+	fieldVariables,
+}: UseBaseAggregateOptionsProps): {
+	baseAggregateOptionsConfig: BaseAggregateOptionsConfig;
+} => {
+	const [resolvedQuery, setResolvedQuery] = useState<Query>(query);
+	const { getUpdatedQuery, isLoading: isResolveQueryLoading } =
+		useUpdatedQuery();
+	const { dashboardData } = useDashboardStore();
+
+	useEffect(() => {
+		if (!aggregateData) {
+			return;
+		}
+		const resolveQuery = async (): Promise<void> => {
+			const updatedQuery = await getUpdatedQuery({
+				widgetConfig: {
+					query,
+					panelTypes: panelType || PANEL_TYPES.TIME_SERIES,
+					timePreferance: 'GLOBAL_TIME',
+				},
+				dashboardData,
+			});
+			setResolvedQuery(updatedQuery);
+		};
+		resolveQuery();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [query, aggregateData, panelType]);
+
+	// Use the new useContextVariables hook
+	const { processedVariables } = useContextVariables({
+		maxValues: 2,
+		customVariables: fieldVariables,
+	});
+
+	const getContextLinksItems = useCallback(() => {
+		if (!contextLinks?.linksData) {
+			return [];
+		}
+
+		try {
+			const processedLinks = processContextLinks(
+				contextLinks.linksData,
+				processedVariables,
+				50, // maxLength for labels
+			);
+
+			const dataLinks = getDataLinks(query, aggregateData);
+			const allLinks = [...dataLinks, ...processedLinks];
+
+			return allLinks.map(({ id, label, url }) => (
+				<ContextMenu.Item
+					key={id}
+					icon={<Link size="md" />}
+					onClick={(): void => {
+						openInNewTab(url);
+						onClose?.();
+					}}
+				>
+					{label}
+				</ContextMenu.Item>
+			));
+		} catch {
+			return [];
+		}
+	}, [contextLinks, processedVariables, onClose, aggregateData, query]);
+
+	const handleBaseDrilldown = useBaseDrilldownNavigate({
+		resolvedQuery,
+		aggregateData,
+		callback: onClose,
+	});
+
+	const { pathname } = useLocation();
+
+	const showDashboardVariablesOption = useMemo(() => {
+		const fieldVariablesExist = Object.keys(fieldVariables).length > 0;
+		// Check if current route is exactly dashboard route (/dashboard/:dashboardId)
+		const dashboardPattern = /^\/dashboard\/[^/]+$/;
+		return fieldVariablesExist && dashboardPattern.test(pathname);
+	}, [pathname, fieldVariables]);
+
+	const baseAggregateOptionsConfig = useMemo(() => {
+		if (!aggregateData) {
+			console.warn('aggregateData is null in baseAggregateOptionsConfig');
+			return {};
+		}
+
+		// Extract the non-breakout logic from getAggregateContextMenuConfig
+		const { queryName } = aggregateData;
+		const { dataSource, aggregations } = getAggregateColumnHeader(
+			resolvedQuery,
+			queryName as string,
+		);
+
+		const baseContextConfig = getBaseContextConfig({
+			handleBaseDrilldown,
+			setSubMenu,
+			showDashboardVariablesOption,
+			showBreakoutOption: true,
+		}).filter((item) => !item.hidden);
+
+		return {
+			items: (
+				<>
+					<ContextMenu.Header>
+						<div style={{ textTransform: 'capitalize' }}>{dataSource}</div>
+						<div
+							style={{
+								fontWeight: 'normal',
+								overflow: 'hidden',
+								textOverflow: 'ellipsis',
+								whiteSpace: 'nowrap',
+							}}
+						>
+							{aggregateData?.label || aggregations}
+						</div>
+					</ContextMenu.Header>
+					<div>
+						<OverlayScrollbar
+							style={{ maxHeight: '200px' }}
+							options={{
+								overflow: {
+									x: 'hidden',
+								},
+							}}
+						>
+							<>
+								{baseContextConfig.map(({ key, label, icon, onClick }) => {
+									const isLoading =
+										isResolveQueryLoading &&
+										(key === 'view_logs' || key === 'view_traces');
+									return (
+										<ContextMenu.Item
+											key={key}
+											icon={
+												isLoading ? (
+													<Loader className="animate-spin" size="md" />
+												) : (
+													<span style={{ color: aggregateData?.seriesColor }}>{icon}</span>
+												)
+											}
+											onClick={(): void => onClick()}
+											disabled={isLoading}
+										>
+											{label}
+										</ContextMenu.Item>
+									);
+								})}
+								{getContextLinksItems()}
+							</>
+						</OverlayScrollbar>
+					</div>
+				</>
+			),
+		};
+	}, [
+		handleBaseDrilldown,
+		aggregateData,
+		getContextLinksItems,
+		isResolveQueryLoading,
+		resolvedQuery,
+		showDashboardVariablesOption,
+		setSubMenu,
+	]);
+
+	return { baseAggregateOptionsConfig };
+};
+
+export default useBaseAggregateOptions;

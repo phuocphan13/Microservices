@@ -1,0 +1,86 @@
+.signoz-modal {
+	.ant-modal-content {
+		padding: 0;
+		background: var(--l1-background);
+		border: 1px solid var(--l1-border);
+	}
+
+	.ant-modal-header {
+		background: var(--l1-background);
+		border-bottom: none;
+		padding: 12px 24px 8px;
+		border-bottom: 1px solid var(--l1-border);
+		margin-bottom: 0;
+	}
+
+	.ant-modal-close {
+		top: 15px;
+		height: 14px;
+		width: 14px;
+		.ant-modal-close-x {
+			font-size: 12px;
+		}
+	}
+
+	.ant-modal-title {
+		color: var(--l1-foreground);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 20px;
+	}
+
+	.ant-modal-body {
+		padding: 16px 24px 24px;
+	}
+
+	.ant-modal-footer {
+		padding: 24px;
+		display: flex;
+		justify-content: end;
+		gap: 12px;
+	}
+
+	.ant-typography {
+		color: var(--l1-foreground);
+	}
+
+	.ant-select {
+		border-radius: 2px !important;
+		&-selector {
+			background: var(--l1-background) !important;
+			border: 1px solid var(--l1-border) !important;
+			border-radius: 2px !important;
+		}
+	}
+
+	.ant-select-dropdown {
+		background: var(--l1-background);
+		border: 1px solid var(--l1-border);
+		-webkit-backdrop-filter: blur(20px);
+		backdrop-filter: blur(20px);
+	}
+
+	.ant-select-item {
+		color: var(--l1-foreground);
+
+		&-option-selected {
+			background: var(--l3-background);
+			color: var(--l1-foreground);
+		}
+
+		&-option-active {
+			background: var(--l2-background);
+		}
+	}
+
+	.ant-modal-footer {
+		.ant-btn {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+			&-icon {
+				margin: 0 !important;
+			}
+		}
+	}
+}

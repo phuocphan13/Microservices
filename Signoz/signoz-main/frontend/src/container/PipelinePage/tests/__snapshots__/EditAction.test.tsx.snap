@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PipelinePage container test should render EditAction section 1`] = `
+<DocumentFragment>
+  <svg
+    data-testid="pipeline-edit-action"
+    style="font-size: 1rem;"
+  />
+</DocumentFragment>
+`;

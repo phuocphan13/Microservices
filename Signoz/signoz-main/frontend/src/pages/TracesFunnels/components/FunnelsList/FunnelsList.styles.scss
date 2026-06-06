@@ -1,0 +1,145 @@
+.funnels-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.funnel-item {
+	padding: 12px 16px 16px;
+	border: 1px solid var(--l1-border);
+	background: var(--l2-background);
+	cursor: pointer;
+
+	&:first-child {
+		border-radius: 6px 6px 0 0;
+	}
+
+	&:last-child {
+		border-radius: 0 0 6px 6px;
+	}
+
+	&__header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		min-height: 24px;
+	}
+
+	&__title {
+		color: var(--l1-foreground);
+		line-height: 20px;
+		letter-spacing: -0.07px;
+		font-size: 14px;
+		font-weight: 500;
+	}
+
+	&__action-icon {
+		color: var(--l2-foreground);
+		opacity: 0;
+		transition: opacity 0.2s ease;
+		cursor: pointer;
+
+		&--active {
+			opacity: 1;
+		}
+	}
+
+	&:hover &__action-icon {
+		opacity: 1;
+	}
+
+	&__open-button {
+		display: flex;
+		height: 28px;
+		padding: 5px 12px;
+		justify-content: center;
+		align-items: center;
+		gap: 6px;
+		border-radius: 3px;
+		border: 1px solid var(--l1-border);
+		background: var(--l3-background);
+		color: var(--l2-foreground);
+		font-family: Inter;
+		font-size: 12px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 18px;
+		box-shadow: none;
+		&:disabled {
+			background-color: rgba(209, 209, 209, 0.074);
+			color: var(--muted-foreground);
+		}
+		.ant-btn-icon {
+			margin: 0 !important;
+		}
+	}
+
+	&__actions {
+		.ant-popover-inner {
+			width: 187px;
+			height: auto;
+			flex-shrink: 0;
+			border-radius: 4px;
+			border: 1px solid var(--l1-border);
+			background: linear-gradient(
+				139deg,
+				color-mix(in srgb, var(--card) 80%, transparent) 0%,
+				color-mix(in srgb, var(--card) 90%, transparent) 98.68%
+			);
+			box-shadow: 4px 10px 16px 2px rgba(0, 0, 0, 0.2);
+			backdrop-filter: blur(20px);
+			padding: 0px;
+		}
+	}
+
+	&__action-btn {
+		display: flex;
+		width: 100%;
+		align-items: center;
+		gap: 8px;
+		padding: 12px 14px;
+		color: var(--l2-foreground);
+		font-size: 14px;
+		&:not(:last-child) {
+			border-bottom: 1px solid var(--l1-border);
+		}
+
+		&--delete {
+			color: var(--bg-cherry-400);
+			&:hover {
+				background: var(--bg-cherry-600) !important;
+			}
+		}
+	}
+
+	&__details {
+		margin-top: 12px;
+		display: flex;
+		align-items: center;
+		gap: 24px;
+	}
+
+	&__created-at,
+	&__user {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		color: var(--l2-foreground);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 18px; /* 128.571% */
+		letter-spacing: -0.07px;
+	}
+	&__user-avatar {
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		background: var(--l3-background);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: var(--l2-foreground);
+		font-size: 8px;
+	}
+}
+
+// Light mode styles

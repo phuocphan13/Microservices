@@ -1,0 +1,45 @@
+import { SyntheticEvent, useMemo } from 'react';
+import { Resizable, ResizeCallbackData } from 'react-resizable';
+
+import { enableUserSelectHack } from './config';
+import { SpanStyle } from './styles';
+
+import './ResizeTable.styles.scss';
+
+function ResizableHeader(props: ResizableHeaderProps): JSX.Element {
+	const { onResize, width, ...restProps } = props;
+
+	const handle = useMemo(
+		() => (
+			<SpanStyle
+				onClick={(e): void => e.stopPropagation()}
+				className="resize-handle"
+			/>
+		),
+		[],
+	);
+
+	if (!width) {
+		return <th {...restProps} className="resizable-header" />;
+	}
+
+	return (
+		<Resizable
+			width={width}
+			height={0}
+			handle={handle}
+			onResize={onResize}
+			draggableOpts={enableUserSelectHack}
+			minConstraints={[150, 0]}
+		>
+			<th {...restProps} className="resizable-header" />
+		</Resizable>
+	);
+}
+
+interface ResizableHeaderProps {
+	onResize: (e: SyntheticEvent<Element>, data: ResizeCallbackData) => void;
+	width: number;
+}
+
+export default ResizableHeader;

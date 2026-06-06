@@ -1,0 +1,30 @@
+.funnel-results--empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+.empty-funnel-results {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+
+	&__title {
+		color: var(--l1-foreground);
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 18px;
+		letter-spacing: -0.07px;
+	}
+
+	&__description {
+		color: var(--l2-foreground);
+		font-size: 14px;
+		line-height: 18px;
+		letter-spacing: -0.07px;
+	}
+
+	&__learn-more {
+		margin-top: 8px;
+	}
+}

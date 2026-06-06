@@ -1,0 +1,11 @@
+service:
+  extensions: [zpages]
+  pipelines:
+    traces:
+      receivers: [jaeger, otlp]
+      processors: [signozspanmetrics/cumulative, batch]
+      exporters: [clickhousetraces]
+    metrics:
+      receivers: [otlp, hostmetrics]
+      processors: [batch]
+      exporters: [clickhousemetricswrite]

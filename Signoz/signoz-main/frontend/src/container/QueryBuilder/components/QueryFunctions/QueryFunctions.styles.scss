@@ -1,0 +1,124 @@
+.query-functions-container {
+	display: flex;
+	margin: 0 12px;
+	justify-content: center;
+	align-items: center;
+
+	.function-btn,
+	.add-function-btn {
+		display: flex;
+		gap: 8px;
+
+		cursor: pointer;
+		border-radius: 3px !important;
+	}
+
+	.function-btn {
+		border-top-right-radius: 0px !important;
+		border-bottom-right-radius: 0px !important;
+
+		.function-icon {
+			height: 18px;
+			width: 18px;
+		}
+	}
+
+	.add-function-btn {
+		border-top-left-radius: 0px !important;
+		border-bottom-left-radius: 0px !important;
+
+		background-color: var(--l1-border) !important;
+		opacity: 0.8;
+
+		&:disabled {
+			opacity: 0.4;
+		}
+	}
+
+	&.hasFunctions {
+		.function-btn {
+			border-top-right-radius: 3px !important;
+			border-bottom-right-radius: 3px !important;
+			margin-right: 8px;
+		}
+
+		.add-function-btn {
+			border-top-left-radius: 3px !important;
+			border-bottom-left-radius: 3px !important;
+			margin-left: 8px;
+		}
+	}
+}
+
+.query-functions-list {
+	display: flex;
+	gap: 8px;
+
+	.query-function {
+		position: relative;
+
+		&::before {
+			content: '';
+			height: 1px;
+			width: 8px;
+			position: absolute;
+			left: -8px;
+			top: 16px;
+			z-index: 0;
+			color: var(--muted-foreground);
+			background-color: var(--l3-background);
+		}
+
+		&::after {
+			content: '';
+			height: 1px;
+			width: 8px;
+			position: absolute;
+			right: -8px;
+			top: 16px;
+			z-index: 0;
+			color: var(--muted-foreground);
+			background-color: var(--l3-background);
+		}
+
+		.query-function-name-selector {
+			border-top-left-radius: 3px;
+			border-bottom-left-radius: 3px;
+
+			.ant-select-selector {
+				border: none;
+				background: var(--l3-background);
+			}
+
+			&.showInput {
+				.ant-select-selector {
+					border-top-right-radius: 0;
+					border-bottom-right-radius: 0;
+				}
+			}
+		}
+
+		.query-function-value {
+			width: 70px;
+			border-left: 0;
+			background: var(--l2-background);
+			border-radius: 0;
+			border: 1px solid transparent;
+
+			&:focus {
+				border-color: transparent !important;
+			}
+		}
+
+		.query-function-delete-btn {
+			border-top-right-radius: 3px;
+			border-bottom-right-radius: 3px;
+
+			border-left: 1px solid var(--l2-border);
+
+			border-top-left-radius: 0px !important;
+			border-bottom-left-radius: 0px !important;
+			min-width: 24px !important;
+		}
+	}
+}
