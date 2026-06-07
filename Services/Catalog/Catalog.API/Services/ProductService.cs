@@ -3,6 +3,7 @@ using ApiClient.Catalog.ProductHistory.Models;
 using ApiClient.Common.Models.Paging;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
+using Catalog.API.Services.Caches;
 using Catalog.API.Services.Grpc;
 using Platform.Database.MongoDb;
 
@@ -30,16 +31,18 @@ public class ProductService : IProductService
     private readonly IRepository<SubCategory> _subCategoryRepository;
     private readonly IDiscountGrpcService _discountGrpcService;
     private readonly IProductHistoryService _productHistoryService;
-
+    private readonly ICacheService _cacheService;
+    
     public ProductService(
         IRepository<Product> productRepository, IRepository<Category> categoryRepository, IRepository<SubCategory> subCategoryRepository,
-        IDiscountGrpcService discountGrpcService, IProductHistoryService productHistoryService)
+        IDiscountGrpcService discountGrpcService, IProductHistoryService productHistoryService, ICacheService cacheService)
     {
         _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
         _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
         _subCategoryRepository = subCategoryRepository ?? throw new ArgumentNullException(nameof(subCategoryRepository));
         _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
         _productHistoryService = productHistoryService ?? throw new ArgumentNullException(nameof(productHistoryService));
+        _cacheService = cacheService;
     }
 
     public async Task<bool> ReduceProductBalanceAsync(List<ReduceProductBalanceRequestBody> requestBodies, CancellationToken cancellationToken)
@@ -102,7 +105,7 @@ public class ProductService : IProductService
 
     public async Task<List<ProductSummary>> GetProductsAsync(CancellationToken cancellationToken)
     {
-        var entities = await _productRepository.GetEntitiesAsync(cancellationToken);
+        var entities = await _cacheService.GetAllAsync("Products", () => _productRepository.GetEntitiesAsync(cancellationToken), cancellationToken);
 
         var summaries = await GetProductSummariesInternalAsync(entities, cancellationToken);
 
@@ -111,7 +114,7 @@ public class ProductService : IProductService
 
     public async Task<List<ProductDetail>> GetProductDetailsAsync(CancellationToken cancellationToken)
     {
-        var entities = await _productRepository.GetEntitiesAsync(cancellationToken);
+        var entities = await _cacheService.GetAllAsync("Products", () => _productRepository.GetEntitiesAsync(cancellationToken), cancellationToken);
 
         var details = await MappingProductDetailsInternalAsync(entities, cancellationToken);
 
@@ -120,11 +123,11 @@ public class ProductService : IProductService
 
     public async Task<List<ProductSummary>> GetProductsByCategoryAsync(string category, CancellationToken cancellationToken)
     {
-        var categoryEntity = await _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == category, cancellationToken);
+        var categoryEntity = await _cacheService.GetSingleAsync("Category", () => _categoryRepository.GetEntityFirstOrDefaultAsync(x => x.Name == category, cancellationToken), cancellationToken);
 
         if (categoryEntity is not null)
         {
-            var entities = await _productRepository.GetEntitiesQueryAsync(x => x.CategoryId == categoryEntity.Id, cancellationToken);
+            var entities = await _cacheService.GetAllAsync("Products", () => _productRepository.GetEntitiesQueryAsync(x => x.CategoryId == categoryEntity.Id, cancellationToken), cancellationToken);
             
             return await GetProductSummariesInternalAsync(entities, cancellationToken);
         }
@@ -134,7 +137,7 @@ public class ProductService : IProductService
 
     public async Task<ProductDetail?> GetProductByIdAsync(string id, CancellationToken cancellationToken)
     {
-        var entity = await _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var entity = await _cacheService.GetSingleAsync("Product", () => _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken), cancellationToken);
 
         if (entity is null)
         {
@@ -148,7 +151,9 @@ public class ProductService : IProductService
 
     public async Task<List<ProductSummary>?> GetProductsByListCodesAsync(List<string> codes, CancellationToken cancellationToken)
     {
-        var entities = await _productRepository.GetEntitiesQueryAsync(x => !string.IsNullOrWhiteSpace(x.ProductCode) && codes.Contains(x.ProductCode), cancellationToken);
+        
+        var entities = await _cacheService.GetAllAsync("Products", () => _productRepository
+            .GetEntitiesQueryAsync(x => !string.IsNullOrWhiteSpace(x.ProductCode) && codes.Contains(x.ProductCode), cancellationToken), cancellationToken);
 
         if (entities is null || entities.Count == 0)
         {

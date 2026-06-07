@@ -2,7 +2,6 @@
 using ApiClient.Catalog.Product.Models;
 using ApiClient.Common.Models.Paging;
 using Catalog.API.Services;
-using Catalog.API.Services.Caches;
 using Core.Common.Constants;
 using IntegrationFramework.Authentication.Attributes;
 using Platform.ApiBuilder;
@@ -13,18 +12,15 @@ namespace Catalog.API.Controllers;
 [Route("api/v1/[controller]/[action]")]
 public class ProductController : ApiController
 {
-    private readonly IProductCachedService _productCachedService;
     private readonly IProductService _productService;
     private readonly ICategoryService _categoryService;
     private readonly ISubCategoryService _subCategoryService;
     private readonly ILogger<ProductController> _logger;
     
-    public ProductController(IProductCachedService productCachedService, ILogger<ProductController> logger, IProductService productService, ICategoryService categoryService, ISubCategoryService subCategoryService) : base(logger)
+    public ProductController(ILogger<ProductController> logger, IProductService productService, ICategoryService categoryService, ISubCategoryService subCategoryService) : base(logger)
     {
-        ArgumentNullException.ThrowIfNull(productCachedService);
         ArgumentNullException.ThrowIfNull(logger);
 
-        _productCachedService = productCachedService;
         _logger = logger;
         _productService = productService;
         _categoryService = categoryService;
@@ -39,7 +35,7 @@ public class ProductController : ApiController
             return BadRequest("Missing PagingInfo.");
         }
 
-        var result = await _productCachedService.GetPagingProductsAsync(pagingInfo, cancellationToken);
+        var result = await _productService.GetPagingProductsAsync(pagingInfo, cancellationToken);
 
         if (result is null)
         {
@@ -55,7 +51,7 @@ public class ProductController : ApiController
     [Permission(PermissionConstants.Feature.CatalogApi.GetAllProducts)]
     public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
     {
-        var result = await _productCachedService.GetCachedProductsAsync(cancellationToken);
+        var result = await _productService.GetProductsAsync(cancellationToken);
 
         if (result is null)
         {
@@ -76,7 +72,7 @@ public class ProductController : ApiController
             return BadRequest("Missing Id.");
         }
 
-        var result = await _productCachedService.GetCachedProductByIdAsync(id, cancellationToken);
+        var result = await _productService.GetProductByIdAsync(id, cancellationToken);
 
         if (result is null)
         {

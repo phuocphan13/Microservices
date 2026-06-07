@@ -8,7 +8,7 @@ public interface IRedisDbFactory
 {
     Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default) where T : class, new();
 
-    Task<bool> SetAsync<T>(string key, T item, TimeSpan? expiry, CancellationToken cancellationToken = default) where T : class, new();
+    Task<bool> SetAsync<T>(string key, T item, TimeSpan? expiry, CancellationToken cancellationToken = default) where T : class?, new();
 
     Task<List<string>> GetAllKeysAsync(CancellationToken cancellationToken = default);
     Task<bool> RemoveAsync(string key, CancellationToken cancellationToken = default);

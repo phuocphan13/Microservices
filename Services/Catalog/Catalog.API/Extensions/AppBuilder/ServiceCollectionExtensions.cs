@@ -1,7 +1,6 @@
 using Catalog.API.Repositories;
 using Catalog.API.Services;
 using Catalog.API.Services.Caches;
-using Catalog.API.Services.Caches.Filters;
 using Catalog.API.Services.Grpc;
 using Platform.Database.MongoDb;
 
@@ -22,9 +21,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProductHistoryService, ProductHistoryService>();
 
         // Cached Services
-        services.AddScoped<IProductCachedService, ProductCachedService>();
-
-        services.AddSingleton<IProductCachedFilter, ProductCachedFilter>();
+        services.AddScoped<ICacheService, CacheService>();
         
         // Grpc
         services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();
