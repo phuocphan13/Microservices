@@ -1,4 +1,5 @@
 using ApiClient;
+using ApiClient.Refits;
 using Catalog.API.Extensions.AppBuilder;
 using OpenTelemetryFramework;
 using Platform;
@@ -17,7 +18,8 @@ builder.Services
     .AddThirdParty(builder.Configuration)
     .AddRedisServices(builder.Configuration)
     // .AddWorkerServices(builder.Configuration)
-    .AddOptions(builder.Configuration);
+    .AddOptions(builder.Configuration)
+    .AddDiscountApiClient(builder.Configuration);
 
 CatalogExtension.InitializeDB
     .InitializePlatformDbContextsAsync(builder.Configuration)

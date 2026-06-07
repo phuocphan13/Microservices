@@ -23,27 +23,27 @@ public class CacheService : ICacheService
     public async Task<List<T>> GetAllAsync<T>(string key, Func<Task<List<T>>> func, CancellationToken cancellationToken)
         where T : class
     {
-        List<T>? item = await _redisCache.GetAsync<List<T>>(key, cancellationToken);
+        List<T>? items = await _redisCache.GetAsync<List<T>>(key, cancellationToken);
 
-        if (item is not null && item.Count != 0)
+        if (items is not null && items.Count != 0)
         {
-            return [];
+            return items;
         }
 
         await _semaphore.WaitAsync(cancellationToken);
 
         try
         {
-            item = await _redisCache.GetAsync<List<T>>(key, cancellationToken);
+            items = await _redisCache.GetAsync<List<T>>(key, cancellationToken);
 
-            if (item is not null && item.Count != 0)
+            if (items is not null && items.Count != 0)
             {
-                return item;
+                return items;
             }
 
-            item = await func();
+            items = await func();
 
-            await _redisCache.SetAsync(key, item,  TimeSpan.FromMinutes(15), cancellationToken);
+            await _redisCache.SetAsync(key, items,  TimeSpan.FromMinutes(15), cancellationToken);
         }
         finally
         {
@@ -51,7 +51,7 @@ public class CacheService : ICacheService
         }
 
 
-        return item;
+        return items;
     }
 
     public async Task<T?> GetSingleAsync<T>(string key, Func<Task<T>> func, CancellationToken cancellationToken)
@@ -61,7 +61,7 @@ public class CacheService : ICacheService
 
         if (item is not null)
         {
-            return null;
+            return item;
         }
 
         await _semaphore.WaitAsync(cancellationToken);

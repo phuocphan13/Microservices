@@ -1,7 +1,6 @@
 using Catalog.API.Repositories;
 using Catalog.API.Services;
 using Catalog.API.Services.Caches;
-using Catalog.API.Services.Grpc;
 using Platform.Database.MongoDb;
 
 namespace Catalog.API.Extensions.AppBuilder;
@@ -10,6 +9,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddServiceDependency(this IServiceCollection services)
     {
+        services.AddSingleton<SemaphoreSlim>(_ => new SemaphoreSlim(1, 1));
+        
         services.AddSingleton(typeof(IRepository<>), typeof(Repository<>));
 
         // Services
@@ -22,9 +23,6 @@ public static class ServiceCollectionExtensions
 
         // Cached Services
         services.AddScoped<ICacheService, CacheService>();
-        
-        // Grpc
-        services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();
 
         return services;
     }

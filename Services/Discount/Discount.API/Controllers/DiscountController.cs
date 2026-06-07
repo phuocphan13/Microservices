@@ -14,6 +14,42 @@ public class DiscountController : ControllerBase
     {
         _discountService = discountService ?? throw new ArgumentNullException(nameof(discountService));
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetListDiscountsByCatalogCodeAsync([FromQuery] int type, [FromQuery] List<string> catalogCodes)
+    {
+        if (catalogCodes is null || catalogCodes.Count == 0)
+        {
+            return BadRequest("CatalogCodes is not allowed null or empty.");
+        }
+
+        var result = await _discountService.GetListDiscountsByCatalogCodeAsync((DiscountEnum)type, catalogCodes);
+
+        if (result is null || result.Count == 0)
+        {
+            return Ok(new List<DiscountDetail>());
+        }
+        
+        return Ok(result);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetDiscountByCatalogCode([FromQuery] int type, [FromQuery] string catalogCode)
+    {
+        if (string.IsNullOrWhiteSpace(catalogCode))
+        {
+            return BadRequest("CatalogCode is not allowed null or empty.");
+        }
+
+        var result = await _discountService.GetDiscountByCatalogCodeAsync(type, catalogCode);
+
+        if (result is null)
+        {
+            return NotFound($"Cannot find Discount with CatalogCode: {catalogCode}");
+        }
+        
+        return Ok(result);
+    }
 
     [HttpPost]
     public async Task<IActionResult> CreateDiscount([FromBody] CreateDiscountRequestBody requestBody, CancellationToken cancellationToken)

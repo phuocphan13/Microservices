@@ -1,10 +1,11 @@
 ﻿using ApiClient.Catalog.Product.Models;
 using ApiClient.Catalog.ProductHistory.Models;
 using ApiClient.Common.Models.Paging;
+using ApiClient.Discount.Models.Discount;
+using ApiClient.Refits.Discount;
 using Catalog.API.Entities;
 using Catalog.API.Extensions;
 using Catalog.API.Services.Caches;
-using Catalog.API.Services.Grpc;
 using Platform.Database.MongoDb;
 
 namespace Catalog.API.Services;
@@ -29,20 +30,20 @@ public class ProductService : IProductService
     private readonly IRepository<Product> _productRepository;
     private readonly IRepository<Category> _categoryRepository;
     private readonly IRepository<SubCategory> _subCategoryRepository;
-    private readonly IDiscountGrpcService _discountGrpcService;
     private readonly IProductHistoryService _productHistoryService;
     private readonly ICacheService _cacheService;
+    private readonly IDiscountApiClient  _discountApiClient;
     
     public ProductService(
         IRepository<Product> productRepository, IRepository<Category> categoryRepository, IRepository<SubCategory> subCategoryRepository,
-        IDiscountGrpcService discountGrpcService, IProductHistoryService productHistoryService, ICacheService cacheService)
+        IProductHistoryService productHistoryService, ICacheService cacheService, IDiscountApiClient discountApiClient)
     {
         _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
         _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
         _subCategoryRepository = subCategoryRepository ?? throw new ArgumentNullException(nameof(subCategoryRepository));
-        _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
         _productHistoryService = productHistoryService ?? throw new ArgumentNullException(nameof(productHistoryService));
         _cacheService = cacheService;
+        _discountApiClient = discountApiClient;
     }
 
     public async Task<bool> ReduceProductBalanceAsync(List<ReduceProductBalanceRequestBody> requestBodies, CancellationToken cancellationToken)
@@ -137,7 +138,7 @@ public class ProductService : IProductService
 
     public async Task<ProductDetail?> GetProductByIdAsync(string id, CancellationToken cancellationToken)
     {
-        var entity = await _cacheService.GetSingleAsync("Product", () => _productRepository.GetEntityFirstOrDefaultAsync(x => x.Id == id, cancellationToken), cancellationToken);
+        var entity = await _cacheService.GetSingleAsync("Product", () => _productRepository.GetEntityFirstOrDefaultAsync(x => x.Name == id, cancellationToken), cancellationToken);
 
         if (entity is null)
         {
@@ -227,23 +228,30 @@ public class ProductService : IProductService
         var categories = await _categoryRepository.GetEntitiesQueryAsync(x => categoryIds.Contains(x.Id), cancellationToken);
         var subCategories = await _subCategoryRepository.GetEntitiesQueryAsync(x => subCategoryIds.Contains(x.Id), cancellationToken);
 
-        var discounts = await _discountGrpcService.GetAmountsAfterDiscountAsync(categories, subCategories, entities);
-
         var summaries = new List<ProductSummary>();
+
+        List<Task<List<DiscountDetail>>> discountTasks = [ 
+            _discountApiClient.GetDiscountByCatalogCode((int)DiscountEnum.Product, entities.Select(x => x.ProductCode ?? string.Empty).ToList()) , 
+            _discountApiClient.GetDiscountByCatalogCode((int)DiscountEnum.Category, categories.Select(x => x.CategoryCode ?? string.Empty).ToList()),
+            _discountApiClient.GetDiscountByCatalogCode((int)DiscountEnum.SubCategory, subCategories.Select(x => x.SubCategoryCode ?? string.Empty).ToList()) ];
+        
+        var discounts = (await Task.WhenAll(discountTasks)).SelectMany(x => x);
 
         foreach (var entity in entities)
         {
-            var cate = categories.FirstOrDefault(x => x.Id == entity.CategoryId)?.Name;
-            var subCate = subCategories.FirstOrDefault(x => x.Id == entity.SubCategoryId)?.Name;
-            
-            var discount = discounts?.FirstOrDefault(x => x.CatalogCode == entity.ProductCode);
+            var cate = categories.FirstOrDefault(x => x.Id == entity.CategoryId);
+            var subCate = subCategories.FirstOrDefault(x => x.Id == entity.SubCategoryId);
 
-            if (discount is not null)
+            if (cate is null || subCate is null)
             {
-                entity.Price -= discount.Amount;
+                continue;
             }
 
-            summaries.Add(entity.ToSummary(cate, subCate));
+            var discountsApplied = discounts.Where(x => x.CatalogCode == entity.ProductCode || x.CatalogCode == cate.CategoryCode || x.CatalogCode == subCate.SubCategoryCode).ToList();
+            
+            entity.Price -= discountsApplied.Sum(x => entity.Price * x.Amount);
+
+            summaries.Add(entity.ToSummary(cate.Name, subCate.Name));
         }
 
         return summaries;
@@ -282,6 +290,13 @@ public class ProductService : IProductService
 
         detail.Category = category is null ? string.Empty : category.Name;
         detail.SubCategory = subCategory is null ? string.Empty : subCategory.Name;
+        
+        var discount = await _discountApiClient.GetDiscountByCatalogCode((int)DiscountEnum.Product, detail.Code ?? string.Empty);
+
+        if (discount is not null)
+        {
+            detail.Price -= detail.Price * discount.Amount;
+        }
 
         return detail;
     }
