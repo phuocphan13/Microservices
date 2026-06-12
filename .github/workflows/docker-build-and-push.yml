@@ -2,7 +2,7 @@ name: docker-build-and-push
 
 on:
   push:
-    branches: ["main", "master"]
+    branches: [."tommy/k8s-initilization"]
     paths:
       - "Services/Catalog/**"
       - "Services/Basket/**"
