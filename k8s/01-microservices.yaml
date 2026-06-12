@@ -1,0 +1,326 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-api
+  namespace: dotnet-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-api
+  template:
+    metadata:
+      labels:
+        app: catalog-api
+    spec:
+      containers:
+        - name: catalog-api
+          image: catalogapi:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:8080
+            - name: DatabaseSettings__MongoDb__ConnectionString
+              value: mongodb://catalogdb:27017
+            - name: DatabaseSettings__MongoDb__DatabaseName
+              value: CatalogDb
+            - name: DatabaseSettings__MongoDb__IsRebuildSchema
+              value: "false"
+            - name: CacheSettings__ConnectionString
+              value: catalog_cache:6379
+            - name: DiscountGrpc__BaseUrl
+              value: http://discount-api:8080
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-api
+  namespace: dotnet-app
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+  selector:
+    app: catalog-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: basket-api
+  namespace: dotnet-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: basket-api
+  template:
+    metadata:
+      labels:
+        app: basket-api
+    spec:
+      containers:
+        - name: basket-api
+          image: basketapi:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:8080
+            - name: CacheSettings__ConnectionString
+              value: basketdb:6379
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: basket-api
+  namespace: dotnet-app
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+  selector:
+    app: basket-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discount-api
+  namespace: dotnet-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discount-api
+  template:
+    metadata:
+      labels:
+        app: discount-api
+    spec:
+      containers:
+        - name: discount-api
+          image: discountapi:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:8080
+            - name: DatabaseSettings__Postgres__ConnectionString
+              value: Host=discountdb;Port=5432;Database=DiscountDb;Username=postgres;Password=postgres
+            - name: DatabaseSettings__Postgres__IsRebuildSchema
+              value: "false"
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discount-api
+  namespace: dotnet-app
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+  selector:
+    app: discount-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discount-grpc
+  namespace: dotnet-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discount-grpc
+  template:
+    metadata:
+      labels:
+        app: discount-grpc
+    spec:
+      containers:
+        - name: discount-grpc
+          image: discountgrpc:latest
+          ports:
+            - name: grpc
+              containerPort: 8080
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:8080
+            - name: DatabaseSettings__Postgres__ConnectionString
+              value: Host=discountdb;Port=5432;Database=DiscountDb;Username=postgres;Password=postgres
+            - name: DatabaseSettings__Postgres__IsRebuildSchema
+              value: "false"
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discount-grpc
+  namespace: dotnet-app
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: grpc
+  selector:
+    app: discount-grpc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ordering-api
+  namespace: dotnet-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ordering-api
+  template:
+    metadata:
+      labels:
+        app: ordering-api
+    spec:
+      containers:
+        - name: ordering-api
+          image: orderingapi:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:8080
+            - name: ConnectionStrings__OrderingConnectionString
+              value: Server=orderdb,1433;Database=OrderDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
+            - name: ConnectionStrings__IsRebuildSchema
+              value: "false"
+            - name: Worker__IsRebuildSchema
+              value: "false"
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ordering-api
+  namespace: dotnet-app
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+  selector:
+    app: ordering-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identityserver
+  namespace: dotnet-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identityserver
+  template:
+    metadata:
+      labels:
+        app: identityserver
+    spec:
+      containers:
+        - name: identityserver
+          image: identityserver:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:8080
+            - name: ConnectionStrings__IdentityConnectionString
+              value: Server=authendb,1433;Database=AuthDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
+            - name: Configuration__IsRebuildSchema
+              value: "false"
+            - name: Configuration__IsSeedData
+              value: "false"
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: identityserver
+  namespace: dotnet-app
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+  selector:
+    app: identityserver
+

@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /.idea/.idea.Microservices/.idea
 /basketdb/data/dump.rdb
+
+TODO.md
