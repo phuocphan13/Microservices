@@ -1,0 +1,173 @@
+name: docker-build-and-push
+
+on:
+  push:
+    branches: ["main", "master"]
+    paths:
+      - "Services/Catalog/**"
+      - "Services/Basket/**"
+      - "Services/Discount/**"
+      - "Services/Ordering/**"
+      - "Identity/**"
+      - "Common/**"
+      - "EventBus.Messages/**"
+      - "Tests/**"
+      - "Tools/**"
+      - "*.sln"
+  workflow_dispatch: {}
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      IMAGE_TAG_SHA: ${{ github.sha }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate secrets
+        run: |
+          if [ -z "${DOCKERHUB_USERNAME}" ]; then
+            echo "DOCKERHUB_USERNAME secret is missing";
+            exit 1;
+          fi
+        shell: bash
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Determine which services changed
+        id: changes
+        shell: bash
+        run: |
+          echo "::group::Changed files"
+          git diff --name-only ${{ github.event.before || github.sha }} ${{ github.sha }} || true
+          echo "::endgroup::"
+
+          # For PR-less push events, github.event.before may be empty. Use a best-effort fallback.
+          BASE_REF="${{ github.event.before }}"
+          if [ -z "$BASE_REF" ]; then
+            BASE_REF=$(git rev-parse HEAD~1)
+          fi
+
+          CHANGED=$(git diff --name-only "$BASE_REF" "${{ github.sha }}" || true)
+          echo "$CHANGED" > /tmp/changed-files.txt
+
+          contains() {
+            if grep -q "$1" /tmp/changed-files.txt; then
+              return 0
+            fi
+            return 1
+          }
+
+          # Catalog
+          if contains "Services/Catalog/" || contains "Common/" || contains "EventBus.Messages/"; then
+            echo "catalog=true" >> $GITHUB_OUTPUT
+          else
+            echo "catalog=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Basket
+          if contains "Services/Basket/" || contains "Common/" || contains "Identity/" || contains "EventBus.Messages/"; then
+            echo "basket=true" >> $GITHUB_OUTPUT
+          else
+            echo "basket=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Discount (API + gRPC)
+          if contains "Services/Discount/" || contains "Common/" || contains "EventBus.Messages/"; then
+            echo "discount=true" >> $GITHUB_OUTPUT
+          else
+            echo "discount=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Ordering
+          if contains "Services/Ordering/" || contains "Common/" || contains "EventBus.Messages/"; then
+            echo "ordering=true" >> $GITHUB_OUTPUT
+          else
+            echo "ordering=false" >> $GITHUB_OUTPUT
+          fi
+
+          # IdentityServer
+          if contains "Identity/" || contains "Common/"; then
+            echo "identity=true" >> $GITHUB_OUTPUT
+          else
+            echo "identity=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build & Push catalogapi
+        if: steps.changes.outputs.catalog == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Services/Catalog/Catalog.API/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/catalogapi:latest
+            ${{ env.DOCKERHUB_USERNAME }}/catalogapi:${{ env.IMAGE_TAG_SHA }}
+
+      - name: Build & Push basketapi
+        if: steps.changes.outputs.basket == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Services/Basket/Basket.API/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/basketapi:latest
+            ${{ env.DOCKERHUB_USERNAME }}/basketapi:${{ env.IMAGE_TAG_SHA }}
+
+      - name: Build & Push discountapi
+        if: steps.changes.outputs.discount == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Services/Discount/Discount.API/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/discountapi:latest
+            ${{ env.DOCKERHUB_USERNAME }}/discountapi:${{ env.IMAGE_TAG_SHA }}
+
+      - name: Build & Push discountgrpc
+        if: steps.changes.outputs.discount == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Services/Discount/Discount.Grpc/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/discountgrpc:latest
+            ${{ env.DOCKERHUB_USERNAME }}/discountgrpc:${{ env.IMAGE_TAG_SHA }}
+
+      - name: Build & Push orderingapi
+        if: steps.changes.outputs.ordering == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Services/Ordering/Ordering.API/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/orderingapi:latest
+            ${{ env.DOCKERHUB_USERNAME }}/orderingapi:${{ env.IMAGE_TAG_SHA }}
+
+      - name: Build & Push identityserver
+        if: steps.changes.outputs.identity == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Identity/IdentityServer/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/identityserver:latest
+            ${{ env.DOCKERHUB_USERNAME }}/identityserver:${{ env.IMAGE_TAG_SHA }}
+
