@@ -2,7 +2,7 @@ name: docker-build-and-push
 
 on:
   push:
-    branches: [."tommy/k8s-initilization"]
+    branches: ["**"]
     paths:
       - "Services/Catalog/**"
       - "Services/Basket/**"
@@ -14,7 +14,12 @@ on:
       - "Tests/**"
       - "Tools/**"
       - "*.sln"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force build (ignore changed-file detection)"
+        required: false
+        default: "false"
 
 jobs:
   build_and_push:
