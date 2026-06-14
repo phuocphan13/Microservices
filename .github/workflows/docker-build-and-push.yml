@@ -134,7 +134,7 @@ jobs:
           fi
 
       - name: Build & Push catalogapi
-        if: steps.changes.outputs.catalog == 'true'
+        if: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.force == 'true') || (steps.changes.outputs.catalog == 'true') }}
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -145,7 +145,7 @@ jobs:
             ${{ env.DOCKERHUB_USERNAME }}/catalogapi:${{ env.IMAGE_TAG_SHA }}
 
       - name: Build & Push basketapi
-        if: steps.changes.outputs.basket == 'true'
+        if: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.force == 'true') || (steps.changes.outputs.basket == 'true') }}
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -156,7 +156,7 @@ jobs:
             ${{ env.DOCKERHUB_USERNAME }}/basketapi:${{ env.IMAGE_TAG_SHA }}
 
       - name: Build & Push discountapi
-        if: steps.changes.outputs.discount == 'true'
+        if: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.force == 'true') || (steps.changes.outputs.discount == 'true') }}
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -167,7 +167,7 @@ jobs:
             ${{ env.DOCKERHUB_USERNAME }}/discountapi:${{ env.IMAGE_TAG_SHA }}
 
       - name: Build & Push discountgrpc
-        if: steps.changes.outputs.discount == 'true'
+        if: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.force == 'true') || (steps.changes.outputs.discount == 'true') }}
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -178,7 +178,7 @@ jobs:
             ${{ env.DOCKERHUB_USERNAME }}/discountgrpc:${{ env.IMAGE_TAG_SHA }}
 
       - name: Build & Push orderingapi
-        if: steps.changes.outputs.ordering == 'true'
+        if: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.force == 'true') || (steps.changes.outputs.ordering == 'true') }}
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -189,7 +189,7 @@ jobs:
             ${{ env.DOCKERHUB_USERNAME }}/orderingapi:${{ env.IMAGE_TAG_SHA }}
 
       - name: Build & Push identityserver
-        if: steps.changes.outputs.identity == 'true'
+        if: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.force == 'true') || (steps.changes.outputs.identity == 'true') }}
         uses: docker/build-push-action@v6
         with:
           context: .
