@@ -65,10 +65,21 @@ jobs:
           # For PR-less push events, github.event.before may be empty. Use a best-effort fallback.
           BASE_REF="${{ github.event.before }}"
           if [ -z "$BASE_REF" ]; then
-            BASE_REF=$(git rev-parse HEAD~1)
+            # In some events/actions the checkout history can still be too shallow.
+            # Avoid failing the step when HEAD~1 is not available.
+            if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+              BASE_REF=$(git rev-parse HEAD~1)
+            else
+              echo "No BASE_REF and HEAD~1 is unavailable (shallow checkout). Treating as no changes.";
+              BASE_REF=""
+            fi
           fi
 
-          CHANGED=$(git diff --name-only "$BASE_REF" "${{ github.sha }}" || true)
+          if [ -n "$BASE_REF" ]; then
+            CHANGED=$(git diff --name-only "$BASE_REF" "${{ github.sha }}" || true)
+          else
+            CHANGED=""
+          fi
           echo "$CHANGED" > /tmp/changed-files.txt
 
           contains() {
