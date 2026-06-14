@@ -1,6 +1,7 @@
 name: docker-build-and-push
 
 on:
+  pull_request:
   push:
     branches: ["**"]
     paths:
