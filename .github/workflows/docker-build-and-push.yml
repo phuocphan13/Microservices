@@ -58,22 +58,30 @@ jobs:
         id: changes
         shell: bash
         run: |
+          set +e
           echo "::group::Changed files"
-          git diff --name-only ${{ github.event.before || github.sha }} ${{ github.sha }} || true
-          echo "::endgroup::"
 
-          # For PR-less push events, github.event.before may be empty. Use a best-effort fallback.
+          # Ensure we have enough history to diff.
+          # (fetch-depth is also set on checkout, but this makes the step resilient.)
+          git fetch --no-tags --prune --depth=0 origin +refs/heads/*:refs/remotes/origin/* 2>/dev/null || true
+
           BASE_REF="${{ github.event.before }}"
           if [ -z "$BASE_REF" ]; then
-            # In some events/actions the checkout history can still be too shallow.
-            # Avoid failing the step when HEAD~1 is not available.
-            if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
-              BASE_REF=$(git rev-parse HEAD~1)
+            # Use PR-less push events: fall back to the previous commit if it exists.
+            if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+              BASE_REF=$(git rev-parse HEAD^)
             else
-              echo "No BASE_REF and HEAD~1 is unavailable (shallow checkout). Treating as no changes.";
               BASE_REF=""
             fi
           fi
+
+          if [ -n "$BASE_REF" ]; then
+            git diff --name-only "$BASE_REF" "${{ github.sha }}" || true
+          else
+            echo "(no base ref; unable to compute diff)"
+          fi
+
+          echo "::endgroup::"
 
           if [ -n "$BASE_REF" ]; then
             CHANGED=$(git diff --name-only "$BASE_REF" "${{ github.sha }}" || true)
@@ -81,6 +89,7 @@ jobs:
             CHANGED=""
           fi
           echo "$CHANGED" > /tmp/changed-files.txt
+
 
           contains() {
             if grep -q "$1" /tmp/changed-files.txt; then
