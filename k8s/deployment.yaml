@@ -34,7 +34,7 @@ spec:
             - name: DatabaseSettings__MongoDb__IsRebuildSchema
               value: "false"
             - name: CacheSettings__ConnectionString
-              value: catalog_cache:6379
+              value: catalog-cache:6379
             - name: DiscountGrpc__BaseUrl
               value: http://discount-api:8080
           readinessProbe:
@@ -432,7 +432,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: catalog_cache
+  name: catalog-cache
   namespace: dotnet-app
 spec:
   type: ClusterIP
