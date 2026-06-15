@@ -16,7 +16,10 @@ COPY ["Services/Ordering/Ordering.Application/Ordering.Application.csproj", "Ser
 COPY ["Common/Worker/Worker.csproj", "Common/Worker/"]
 COPY ["Services/Ordering/Ordering.Domain/Ordering.Domain.csproj", "Services/Ordering/Ordering.Domain/"]
 COPY ["Services/Ordering/Ordering.Infrastructure/Ordering.Infrastructure.csproj", "Services/Ordering/Ordering.Infrastructure/"]
-RUN dotnet restore "Services/Ordering/Ordering.API/Ordering.API.csproj"
+RUN echo '--- ls /src ---' && ls -la /src || true \
+ && echo '--- ls Services/Ordering/Ordering.API ---' && ls -la Services/Ordering/Ordering.API || true \
+ && dotnet --info \
+ && dotnet restore "Services/Ordering/Ordering.API/Ordering.API.csproj" --verbosity diagnostic
 COPY . .
 WORKDIR "/src/Services/Ordering/Ordering.API"
 RUN dotnet build "./Ordering.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
