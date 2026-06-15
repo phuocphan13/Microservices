@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: catalog-api
-          image: ${DOCKERHUB_USERNAME}/catalogapi:latest
+          image: save8198/catalogapi:latest
           ports:
             - name: http
               containerPort: 8080
@@ -79,7 +79,7 @@ spec:
     spec:
       containers:
         - name: basket-api
-          image: ${DOCKERHUB_USERNAME}/basketapi:latest
+          image: save8198/basketapi:latest
           ports:
             - name: http
               containerPort: 8080
@@ -130,7 +130,7 @@ spec:
     spec:
       containers:
         - name: discount-api
-          image: ${DOCKERHUB_USERNAME}/discountapi:latest
+          image: save8198/discountapi:latest
           ports:
             - name: http
               containerPort: 8080
@@ -183,7 +183,7 @@ spec:
     spec:
       containers:
         - name: discount-grpc
-          image: ${DOCKERHUB_USERNAME}/discountgrpc:latest
+          image: save8198/discountgrpc:latest
           ports:
             - name: grpc
               containerPort: 8080
@@ -236,7 +236,7 @@ spec:
     spec:
       containers:
         - name: ordering-api
-          image: ${DOCKERHUB_USERNAME}/orderingapi:latest
+          image: save8198/orderingapi:latest
           ports:
             - name: http
               containerPort: 8080
@@ -291,7 +291,7 @@ spec:
     spec:
       containers:
         - name: identityserver
-          image: ${DOCKERHUB_USERNAME}/identityserver:latest
+          image: save8198/identityserver:latest
           ports:
             - name: http
               containerPort: 8080
