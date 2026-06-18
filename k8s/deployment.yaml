@@ -36,7 +36,21 @@ spec:
             - name: CacheSettings__ConnectionString
               value: catalog-cache:6379
             - name: DiscountGrpc__BaseUrl
+              value: http://discount-grpc:8080
+            - name: EventBusSettings__HostAddress
+              value: amqp://guest:guest@rabbitmq:5672
+            - name: Microservices__CatalogApi
+              value: http://catalog-api:8080
+            - name: Microservices__DiscountApi
               value: http://discount-api:8080
+            - name: Microservices__OrderingApi
+              value: http://ordering-api:8080
+            - name: Microservices__IdentityApi
+              value: http://identityserver:8080
+            - name: JwtSettings__Issuer
+              value: http://identityserver:8080
+            - name: JwtSettings__Audience
+              value: http://catalog-api:8080
           readinessProbe:
             tcpSocket:
               port: 8080
@@ -89,6 +103,18 @@ spec:
               value: http://+:8080
             - name: CacheSettings__ConnectionString
               value: basketdb:6379
+            - name: EventBusSettings__HostAddress
+              value: amqp://guest:guest@rabbitmq:5672
+            - name: Microservices__CatalogApi
+              value: http://catalog-api:8080
+            - name: Microservices__DiscountApi
+              value: http://discount-api:8080
+            - name: Microservices__OrderingApi
+              value: http://ordering-api:8080
+            - name: JwtSettings__Issuer
+              value: http://identityserver:8080
+            - name: JwtSettings__Audience
+              value: http://basket-api:8080
           readinessProbe:
             tcpSocket:
               port: 8080
@@ -140,9 +166,11 @@ spec:
             - name: ASPNETCORE_URLS
               value: http://+:8080
             - name: DatabaseSettings__Postgres__ConnectionString
-              value: Host=discountdb;Port=5432;Database=DiscountDb;Username=postgres;Password=postgres
+              value: Server=discountdb;Port=5432;Database=DiscountDb;User Id=postgres;Password=postgres;
             - name: DatabaseSettings__Postgres__IsRebuildSchema
               value: "false"
+            - name: ApiServices__OcelotApiGw
+              value: http://ocelot-apigw:8080
           readinessProbe:
             tcpSocket:
               port: 8080
@@ -194,7 +222,7 @@ spec:
             - name: ASPNETCORE_URLS
               value: http://+:8080
             - name: DatabaseSettings__Postgres__ConnectionString
-              value: Host=discountdb;Port=5432;Database=DiscountDb;Username=postgres;Password=postgres
+              value: Server=discountdb;Port=5432;Database=DiscountDb;User Id=postgres;Password=postgres;
             - name: DatabaseSettings__Postgres__IsRebuildSchema
               value: "false"
           readinessProbe:
@@ -253,6 +281,20 @@ spec:
               value: "false"
             - name: Worker__IsRebuildSchema
               value: "false"
+            - name: Worker__WorkerConnectionString
+              value: Server=workerdb,1433;Database=WorkerDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
+            - name: EventBusSettings__HostAddress
+              value: amqp://guest:guest@rabbitmq:5672
+            - name: Microservices__CatalogApi
+              value: http://catalog-api:8080
+            - name: Microservices__DiscountApi
+              value: http://discount-api:8080
+            - name: Microservices__OrderingApi
+              value: http://ordering-api:8080
+            - name: JwtSettings__Issuer
+              value: http://identityserver:8080
+            - name: JwtSettings__Audience
+              value: http://ordering-api:8080
           readinessProbe:
             tcpSocket:
               port: 8080
