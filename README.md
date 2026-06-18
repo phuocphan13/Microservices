@@ -71,21 +71,50 @@ Note: ArgoCD deploys the same manifests to your cluster — the `k8s/deployment.
 
 ## Local access via SSH tunnel (`shell/login.ps1`)
 
-`shell/login.ps1` creates SSH port-forwarding to your remote environment so you can access cluster services on `localhost`. Usage (PowerShell):
+Use `shell/login.ps1` to create persistent SSH port-forwards from the remote environment to `localhost` so you can access remote services locally.
 
-1. Run `shell\login.ps1` and enter your SSH username when prompted.
-2. The script will show a PORT MAPPING summary (which local ports map to remote services).
-3. It will start persistent background tunnels (toggle mode) so local ports remain available after the script exits.
+Prerequisites:
+- Windows PowerShell
+- OpenSSH client installed and available on `PATH` (the script calls `ssh`)
 
-Examples:
+How it works:
+- Run `.\
+oot\of\repo\shell\login.ps1` in PowerShell; the script will prompt for your SSH username.
+- The script lists the port mapping and starts an `ssh` process in the background.
+- The script is a toggle: running it again will detect matching `ssh` processes (by command line) and stop them.
+
+Quick usage:
 
 ```powershell
-# run the helper (PowerShell)
+# from repository root
 .\shell\login.ps1
 
-# if you prefer kubectl port-forward instead (example)
-kubectl -n dotnet-app port-forward svc/rabbitmq 5672:5672 15672:15672
+# re-run the same command to stop the tunnel(s)
+.\shell\login.ps1
 ```
+
+Forwarded port mapping (local -> remote):
+
+- IdentityServer  -> http://localhost:8081 (remote:80)
+- PgAdmin         -> http://localhost:8082 (remote:80)
+- Portainer       -> http://localhost:9000
+- Catalog API     -> http://localhost:5001
+- Basket API      -> http://localhost:5002
+- Discount API    -> http://localhost:5003
+- Discount GRPC   -> http://localhost:5004
+- Ordering API    -> http://localhost:5005
+- MongoDB         -> localhost:27017
+- Redis (basket)  -> localhost:6379
+- Redis (catalog) -> localhost:6380
+- PostgreSQL      -> localhost:5432
+- MSSQL           -> localhost:1433
+- RabbitMQ AMQP   -> localhost:5672
+- RabbitMQ UI     -> http://localhost:15672
+
+Notes:
+- The script matches and stops `ssh` processes connecting to `nextcloudsg.ddns.net` (so it only stops related tunnels).
+- If `ssh` is not found or fails to start, verify OpenSSH is installed and callable from your shell.
+- You can also use `kubectl port-forward` for in-cluster port forwarding if you prefer.
 
 ## Running infra locally with Docker Compose
 
