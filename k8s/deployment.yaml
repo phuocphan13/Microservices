@@ -54,10 +54,11 @@ metadata:
   name: catalog-api
   namespace: dotnet-app
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 80
       targetPort: 8080
+      nodePort: 30001
       name: http
   selector:
     app: catalog-api
@@ -105,10 +106,11 @@ metadata:
   name: basket-api
   namespace: dotnet-app
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 80
       targetPort: 8080
+      nodePort: 30002
       name: http
   selector:
     app: basket-api
@@ -158,10 +160,11 @@ metadata:
   name: discount-api
   namespace: dotnet-app
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 80
       targetPort: 8080
+      nodePort: 30003
       name: http
   selector:
     app: discount-api
@@ -211,10 +214,11 @@ metadata:
   name: discount-grpc
   namespace: dotnet-app
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 80
       targetPort: 8080
+      nodePort: 30004
       name: grpc
   selector:
     app: discount-grpc
@@ -266,10 +270,11 @@ metadata:
   name: ordering-api
   namespace: dotnet-app
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 80
       targetPort: 8080
+      nodePort: 30005
       name: http
   selector:
     app: ordering-api
