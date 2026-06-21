@@ -26,13 +26,15 @@ metadata:
   name: rabbitmq
   namespace: dotnet-app
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 5672
       targetPort: 5672
+      nodePort: 30672
       name: amqp
     - port: 15672
       targetPort: 15672
+      nodePort: 31672
       name: management
   selector:
     app: rabbitmq
@@ -69,10 +71,11 @@ metadata:
   name: pgadmin
   namespace: dotnet-app
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
     - port: 80
       targetPort: 80
+      nodePort: 30800
   selector:
     app: pgadmin
 ---
@@ -103,10 +106,11 @@ metadata:
   name: portainer
   namespace: dotnet-app
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
     - port: 9000
       targetPort: 9000
+      nodePort: 30900
   selector:
     app: portainer
 

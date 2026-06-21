@@ -28,6 +28,6 @@ ssh -N -p $Port "$Username@$SshHost" `
     -L 127.0.0.1:5003:localhost:30003 `
     -L 127.0.0.1:5004:localhost:30004 `
     -L 127.0.0.1:5005:localhost:30005 `
-    -L 127.0.0.1:8082:localhost:80 `
-    -L 127.0.0.1:9000:localhost:9000 `
-    -L 127.0.0.1:15672:localhost:15672
+    -L 127.0.0.1:8082:localhost:30800 `
+    -L 127.0.0.1:9000:localhost:30900 `
+    -L 127.0.0.1:15672:localhost:31672
