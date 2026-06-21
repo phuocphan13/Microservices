@@ -54,19 +54,6 @@ Key service DNS names (inside the `dotnet-app` namespace):
 - `authendb:1433` — SQL Server for Identity
 - `pgadmin`, `portainer`, `elasticsearch` — infra UIs
 
-If you want to access services locally against the cluster, use `kubectl port-forward` or `minikube service`:
-
-```bash
-# port-forward RabbitMQ and its management UI
-kubectl -n dotnet-app port-forward svc/rabbitmq 5672:5672 15672:15672
-
-# port-forward Ordering API Service to local port 8080
-kubectl -n dotnet-app port-forward svc/ordering-api 8080:80
-
-# get service URL (minikube)
-minikube -n dotnet-app service ordering-api --url
-```
-
 Note: ArgoCD deploys the same manifests to your cluster — the `k8s/deployment.yaml` file is the canonical source used here.
 
 ## Local access via SSH tunnel (`shell/login.ps1`)
