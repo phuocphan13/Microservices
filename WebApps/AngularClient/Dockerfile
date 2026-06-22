@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -11,7 +11,7 @@ RUN npm install -g @angular/cli && npm install --legacy-peer-deps
 COPY WebApps/AngularClient/ClientApp/ ./
 RUN npm run build -- --configuration production || true
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Common/Core.Common/Core.Common.csproj", "Common/Core.Common/"]
