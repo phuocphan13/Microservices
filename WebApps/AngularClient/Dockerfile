@@ -11,7 +11,7 @@ RUN npm install -g @angular/cli && npm install --legacy-peer-deps
 COPY WebApps/AngularClient/ClientApp/ ./
 RUN npm run build -- --configuration production || true
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS publish
 ARG BUILD_CONFIGURATION=Release
 # Install Node.js in the SDK image so MSBuild targets that call `npm` can run
 RUN apt-get update \
@@ -28,9 +28,6 @@ RUN dotnet restore "WebApps/AngularClient/AngularClient.csproj"
 COPY . .
 WORKDIR "/src/WebApps/AngularClient"
 RUN dotnet build "AngularClient.csproj" -c $BUILD_CONFIGURATION -o /app/build
-
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "AngularClient.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
