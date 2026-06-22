@@ -140,3 +140,32 @@ This project is licensed with the [MIT license](LICENSE.txt).
 - **Database password:** Your_password123
 - **PostgreSQL:** admin / admin1234
 - **RabbitMQ:** guest / guest
+
+## Kubernetes: accessing the main page
+
+You can deploy the Angular front-end to your `dotnet-app` namespace using the included manifest and then access it via NodePort or port-forward.
+
+- Build and push the image (example tag):
+
+```bash
+# from repository root — build and push to your registry
+docker build -t <your-registry>/angularclient:latest -f WebApps/AngularClient/Dockerfile .
+docker push <your-registry>/angularclient:latest
+```
+
+- Update the image name in `k8s/angularclient.yaml` (replace `save8198/angularclient:latest`), then apply:
+
+```bash
+kubectl apply -f k8s/angularclient.yaml
+```
+
+- Access options:
+	- NodePort (default in manifest): open http://<node-ip>:30010
+	- Port-forward (for local access):
+
+```bash
+kubectl -n dotnet-app port-forward svc/angular-client 8080:80
+# then open http://localhost:8080
+```
+
+If you use an Ingress controller in your cluster, you can create an Ingress resource that routes to the `angular-client` service instead of using NodePort.
