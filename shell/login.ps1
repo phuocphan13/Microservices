@@ -14,6 +14,7 @@ Write-Host 'Ordering API    -> http://localhost:5005'
 Write-Host 'PgAdmin         -> http://localhost:8082'
 Write-Host 'Portainer       -> http://localhost:9000'
 Write-Host 'RabbitMQ UI     -> http://localhost:15672'
+Write-Host 'Main page - Angular client  -> http://localhost:7273'
 Write-Host '==============================================='
 Write-Host ''
 Write-Host 'Enter your password and MFA when prompted...'
@@ -30,4 +31,5 @@ ssh -N -p $Port "$Username@$SshHost" `
     -L 127.0.0.1:5005:localhost:30005 `
     -L 127.0.0.1:8082:localhost:30800 `
     -L 127.0.0.1:9000:localhost:30900 `
+    -L 127.0.0.1:7273:localhost:30010 `
     -L 127.0.0.1:15672:localhost:31672
