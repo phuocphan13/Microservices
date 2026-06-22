@@ -13,6 +13,12 @@ RUN npm run build -- --configuration production || true
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
+# Install Node.js in the SDK image so MSBuild targets that call `npm` can run
+RUN apt-get update \
+	&& apt-get install -y curl gnupg \
+	&& curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+	&& apt-get install -y nodejs \
+	&& rm -rf /var/lib/apt/lists/*
 WORKDIR /src
 COPY ["Common/Core.Common/Core.Common.csproj", "Common/Core.Common/"]
 COPY ["Common/Platform/Platform.csproj", "Common/Platform/"]
