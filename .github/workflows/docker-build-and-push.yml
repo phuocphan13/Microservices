@@ -133,6 +133,13 @@ jobs:
             echo "identity=false" >> $GITHUB_OUTPUT
           fi
 
+          # Angular client
+          if contains "WebApps/AngularClient/" || contains "Common/"; then
+            echo "angularclient=true" >> $GITHUB_OUTPUT
+          else
+            echo "angularclient=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build & Push catalogapi
         if: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.force == 'true') || (steps.changes.outputs.catalog == 'true') }}
         uses: docker/build-push-action@v6
@@ -198,4 +205,15 @@ jobs:
           tags: |
             ${{ env.DOCKERHUB_USERNAME }}/identityserver:latest
             ${{ env.DOCKERHUB_USERNAME }}/identityserver:${{ env.IMAGE_TAG_SHA }}
+
+      - name: Build & Push angularclient
+        if: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.force == 'true') || (steps.changes.outputs.angularclient == 'true') }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: WebApps/AngularClient/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/angularclient:latest
+            ${{ env.DOCKERHUB_USERNAME }}/angularclient:${{ env.IMAGE_TAG_SHA }}
 
