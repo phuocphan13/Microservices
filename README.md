@@ -39,6 +39,94 @@ After running the app, if you want to stop, you can use the command
 docker-compose -f .\docker-compose.yml -f .\docker-compose.override.yml down
 ```
 
+## Kubernetes (k8s) Deployment
+
+This repository contains Kubernetes manifests in the `k8s/` folder. The cluster deployment uses the `dotnet-app` namespace and is managed via ArgoCD in your environment. The main manifest is `k8s/deployment.yaml` which defines Deployments and Services for all microservices and supporting infra (RabbitMQ, databases, Redis, etc.).
+
+Key service DNS names (inside the `dotnet-app` namespace):
+
+- `rabbitmq:5672` — RabbitMQ AMQP
+- `catalogdb:27017` — MongoDB for Catalog
+- `basketdb:6379` — Redis for Basket
+- `catalog-cache:6379` — Redis for Catalog cache
+- `discountdb:5432` — PostgreSQL for Discount
+- `orderdb:1433` — SQL Server for Orders
+- `authendb:1433` — SQL Server for Identity
+- `pgadmin`, `portainer`, `elasticsearch` — infra UIs
+
+Note: ArgoCD deploys the same manifests to your cluster — the `k8s/deployment.yaml` file is the canonical source used here.
+
+## Local access via SSH tunnel (`shell/login.ps1`)
+
+Use `shell/login.ps1` to create persistent SSH port-forwards from the remote environment to `localhost` so you can access remote services locally.
+
+Prerequisites:
+- Windows PowerShell
+- OpenSSH client installed and available on `PATH` (the script calls `ssh`)
+
+How it works:
+- Run `.\
+oot\of\repo\shell\login.ps1` in PowerShell; the script will prompt for your SSH username.
+- The script lists the port mapping and starts an `ssh` process in the background.
+- The script is a toggle: running it again will detect matching `ssh` processes (by command line) and stop them.
+
+Quick usage:
+
+```powershell
+# from repository root
+.\shell\login.ps1
+
+# re-run the same command to stop the tunnel(s)
+.\shell\login.ps1
+```
+
+Forwarded port mapping (local -> remote):
+
+- IdentityServer  -> http://localhost:8081 (remote:80)
+- PgAdmin         -> http://localhost:8082 (remote:80)
+- Portainer       -> http://localhost:9000
+- Catalog API     -> http://localhost:5001
+- Basket API      -> http://localhost:5002
+- Discount API    -> http://localhost:5003
+- Discount GRPC   -> http://localhost:5004
+- Ordering API    -> http://localhost:5005
+- MongoDB         -> localhost:27017
+- Redis (basket)  -> localhost:6379
+- Redis (catalog) -> localhost:6380
+- PostgreSQL      -> localhost:5432
+- MSSQL           -> localhost:1433
+- RabbitMQ AMQP   -> localhost:5672
+- RabbitMQ UI     -> http://localhost:15672
+
+Notes:
+- The script matches and stops `ssh` processes connecting to `nextcloudsg.ddns.net` (so it only stops related tunnels).
+- If `ssh` is not found or fails to start, verify OpenSSH is installed and callable from your shell.
+- You can also use `kubectl port-forward` for in-cluster port forwarding if you prefer.
+
+## Running infra locally with Docker Compose
+
+If you cannot or do not want to use the remote cluster, start the local infra with Docker Compose (recommended for local dev):
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+
+# check containers
+docker-compose ps
+
+# stop
+docker-compose -f docker-compose.yml -f docker-compose.override.yml down
+```
+
+When running locally with Docker Compose you can:
+- Use `amqp://guest:guest@localhost:5672` for RabbitMQ
+- Connect to SQL Server on the ports published by the compose files (see `docker-compose.override.yml`)
+
+---
+
+If you'd like, I can:
+- Add a short `shell/README.md` describing `login.ps1` usage and examples, or
+- Run `docker-compose` locally and verify connectivity for one service (requires Docker on your machine).
+
 ## Support
 
 If you are having problems, please let me know by contacting me in [Linkedin](https://www.linkedin.com/in/phuoc-phan-47a3ab138/).
@@ -46,3 +134,38 @@ If you are having problems, please let me know by contacting me in [Linkedin](ht
 ## License
 
 This project is licensed with the [MIT license](LICENSE.txt).
+
+## Local credentials
+
+- **Database password:** Your_password123
+- **PostgreSQL:** admin / admin1234
+- **RabbitMQ:** guest / guest
+
+## Kubernetes: accessing the main page
+
+You can deploy the Angular front-end to your `dotnet-app` namespace using the included manifest and then access it via NodePort or port-forward.
+
+- Build and push the image (example tag):
+
+```bash
+# from repository root — build and push to your registry
+docker build -t <your-registry>/angularclient:latest -f WebApps/AngularClient/Dockerfile .
+docker push <your-registry>/angularclient:latest
+```
+
+- Update the image name in `k8s/angularclient.yaml` (replace `save8198/angularclient:latest`), then apply:
+
+```bash
+kubectl apply -f k8s/angularclient.yaml
+```
+
+- Access options:
+	- NodePort (default in manifest): open http://<node-ip>:30010
+	- Port-forward (for local access):
+
+```bash
+kubectl -n dotnet-app port-forward svc/angular-client 8080:80
+# then open http://localhost:8080
+```
+
+If you use an Ingress controller in your cluster, you can create an Ingress resource that routes to the `angular-client` service instead of using NodePort.
