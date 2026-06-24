@@ -3,21 +3,19 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-# ================== Angular Build Stage (Clean & Consistent) ==================
+# ================== Angular Build Stage ==================
 FROM node:20-alpine AS node-build
 WORKDIR /src/WebApps/AngularClient/ClientApp
 
-# Copy package files
 COPY WebApps/AngularClient/ClientApp/package*.json ./
 
 # Force consistent Angular 17 versions + clean install
 RUN npm install -g npm@latest && \
-    npm ci --legacy-peer-deps --force || \
-    npm install --legacy-peer-deps --force
+    npm ci --legacy-peer-deps --force
 
 COPY WebApps/AngularClient/ClientApp/ ./
 
-# Build Angular
+# Build
 RUN npm run build -- --configuration production
 
 # ================== .NET Publish Stage ==================
@@ -32,7 +30,7 @@ RUN apt-get update && apt-get install -y curl \
 
 WORKDIR /src
 
-# Restore .NET
+# .NET restore
 COPY ["Common/Core.Common/Core.Common.csproj", "Common/Core.Common/"]
 COPY ["Common/Platform/Platform.csproj", "Common/Platform/"]
 COPY ["Common/ApiClient/ApiClient.csproj", "Common/ApiClient/"]
@@ -41,12 +39,11 @@ RUN dotnet restore "WebApps/AngularClient/AngularClient.csproj"
 
 COPY . .
 
-# Copy pre-built Angular output
+# Copy pre-built Angular (Correct path based on your outputPath: "dist")
 COPY --from=node-build /src/WebApps/AngularClient/ClientApp/dist ./WebApps/AngularClient/wwwroot
 
 WORKDIR "/src/WebApps/AngularClient"
 
-# Publish .NET
 RUN dotnet publish "AngularClient.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # ================== Final Stage ==================
