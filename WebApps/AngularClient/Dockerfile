@@ -9,13 +9,26 @@ WORKDIR /src/WebApps/AngularClient/ClientApp
 
 COPY WebApps/AngularClient/ClientApp/package*.json ./
 
-# Force consistent Angular 17 versions + clean install
+# Fix for workspaces + force consistent versions
 RUN npm install -g npm@latest && \
-    npm ci --legacy-peer-deps --force
+    npm install --legacy-peer-deps --force \
+        @angular/core@17.3.8 \
+        @angular/common@17.3.8 \
+        @angular/compiler@17.3.8 \
+        @angular/cli@17.3.8 \
+        @angular-devkit/build-angular@17.3.8 \
+        @angular/compiler-cli@17.3.8 \
+        @angular/animations@17.3.8 \
+        @angular/forms@17.3.8 \
+        @angular/platform-browser@17.3.8 \
+        @angular/platform-browser-dynamic@17.3.8 \
+        @angular/platform-server@17.3.8 \
+        @angular/router@17.3.8 \
+        @angular/localize@17.3.8
 
 COPY WebApps/AngularClient/ClientApp/ ./
 
-# Build
+# Build Angular
 RUN npm run build -- --configuration production
 
 # ================== .NET Publish Stage ==================
@@ -39,7 +52,7 @@ RUN dotnet restore "WebApps/AngularClient/AngularClient.csproj"
 
 COPY . .
 
-# Copy pre-built Angular (Correct path based on your outputPath: "dist")
+# Copy pre-built Angular (outputPath: "dist")
 COPY --from=node-build /src/WebApps/AngularClient/ClientApp/dist ./WebApps/AngularClient/wwwroot
 
 WORKDIR "/src/WebApps/AngularClient"
